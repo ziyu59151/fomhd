@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+tmp/
+/build/
+/CMakeUserPresets.json
+/compile_commands.json
+/runs/
+/data/
+/analysis/
+.env
+.env.*
