@@ -24,3 +24,8 @@ explicit = true
 name = "pypi"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
+
+[dependency-groups]
+plot = [
+    "matplotlib>=3.10,<4",
+]

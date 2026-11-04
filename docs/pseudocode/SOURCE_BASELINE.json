@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "created_date": "2026-11-04",
+  "purpose": "Design provenance for implementation-level A0 pseudocode; not a runtime filesystem dependency",
+  "source_repository": "fomhd-design",
+  "git_head_at_capture": "4d773f81591da3544990b736e29bbebcd4fa6ffe",
+  "authoritative_worktree_is_dirty": true,
+  "authority_identity": "The per-file SHA256 values, not git HEAD alone, identify this worktree baseline",
+  "decisions": [
+    "D045",
+    "D053",
+    "D054",
+    "D055",
+    "D056",
+    "D057",
+    "D058",
+    "D059"
+  ],
+  "files": [
+    {
+      "path": "DECISIONS.md",
+      "bytes": 132775,
+      "sha256": "4230bfdee7c5275bdc28f35721ef7c6f6d7721d43afac17de0f4d9c0235c1590"
+    },
+    {
+      "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
+      "bytes": 63189,
+      "sha256": "8f5b4a9fff9ff5eefa855b37b266f8abee8142062ced8f6730c394ce43a1db7a"
+    },
+    {
+      "path": "mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
+      "bytes": 24535,
+      "sha256": "a127bdee9bb74fce716be252574ec0b699d4868b21cc63e414001b43463df731"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/integrated_contracts.md",
+      "bytes": 38980,
+      "sha256": "6d475423d10f60be3c9f647a8b1a47243206ed7336e455b1d7fc13267799b8e3"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/08_constraints/constraints.md",
+      "bytes": 15669,
+      "sha256": "6273e851d2102142b38cf43172d0bb45dcc15f086fc7c73e8768fa051106b9a1"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/09_diagnostics/diagnostics.md",
+      "bytes": 34872,
+      "sha256": "6c6609d340231e9e0db01c2daf63773fc7119157794e51e84d7e91310b6c906f"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
+      "bytes": 5373,
+      "sha256": "37459a7907f5f9a7a52f14157cbe5b0d332de6181de58f399499ca45cf1a0b4c"
+    }
+  ],
+  "solver_implemented": true,
+  "scientific_benchmark_run": true,
+  "captured_utc": "2026-11-04T04:34:05.962151+00:00",
+  "benchmark_scope": {
+    "record": "docs/A0_VERIFICATION.md",
+    "cpu_ctest_passed": 84,
+    "cpu_ctest_total": 84,
+    "local_continuum_cases_passed": 7,
+    "local_continuum_cases_total": 7,
+    "verification": "Manufactured solutions, constraints, transactions, I/O, source accounting, CPU/CUDA comparison and memory checks",
+    "theoretical_confirmation": "Local two-fluid/CGL/Darwin response with independent continuum matrices and stable/unstable controls",
+    "global_tokamak_validation": false,
+    "experimental_validation": false,
+    "performance_optimization": false,
+    "release_frozen": false
+  }
+}
