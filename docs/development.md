@@ -3,7 +3,7 @@
 > Status: active A0 implementation record.
 > The implementation is runnable and has CPU/GPU correctness evidence; it has
 > not received production-scale scientific validation.
-> Authority: the design repository decisions D045/D053–D059 and the A0
+> Authority: the design repository decisions D045/D053–D060 and the A0
 > implementation/discretization specifications.
 
 Update this file and the matching pseudocode whenever the source tree, toolchain,
@@ -14,8 +14,10 @@ bilingual edition is maintained separately.
 
 ## 1. Language, build, and auxiliary environments
 
-The solver is C++20 with a CUDA backend. Standard-library code and established
-numerical libraries are preferred for the initial implementation. CUDA
+The active solver uses Python, NVIDIA Warp, and CuPy; NumPy/SciPy provide the
+explicit CPU reference. The frozen C++20/CUDA baseline remains available at
+`reference/a0-native`. Standard-library code and established numerical
+libraries are preferred for the initial implementation. CUDA
 correctness support is part of A0; performance tuning, fusion, reduced
 precision, and NCU-based optimization remain a separate later phase.
 
@@ -31,11 +33,11 @@ configure time.
 | `CMakeLists.txt`, `cmake/` | Native targets, compile flags, dependencies, and build manifest |
 | `CMakePresets.json` | Shareable CPU/CUDA and Debug/Release configurations |
 | `CMakeUserPresets.json` | Optional machine-local paths; never commit it |
-| `pyproject.toml`, `uv.lock`, `.python-version` | Auxiliary Python, PyTorch, input, and analysis tools only |
+| `pyproject.toml`, `uv.lock`, `.python-version` | Project-local Warp/CuPy, Python tests and auxiliary PyTorch/input/analysis tools |
 | `build/<preset>/` | Ignored CMake cache, objects, binaries, and evidence |
-| `.venv/` | Reconstructible project-local Python environment; never a solver dependency |
+| `.venv/` | Reconstructible project-local Python solver environment; never committed |
 
-The C++ solver does not start through uv and does not link LibTorch. PyTorch is
+The native C++ solver does not start through uv and does not link LibTorch. PyTorch is
 available only for reference, input processing, and offline analysis. Its CUDA
 user-space libraries do not replace the public CUDA Toolkit or grant device
 access. GPU scheduling and permission remain controlled by Slurm and the
@@ -44,6 +46,8 @@ server administrator.
 ## 2. Source tree and ownership
 
 ```text
+fomhd/                     Warp/CuPy implementation and NumPy/SciPy CPU reference
+tests/warp/                Actual-stage parity, model routing, MMS and runtime tests
 include/fomhd/             Public interfaces and data types
 src/core/                  State, tags, allocation, and failure ownership
 src/geometry/              RZ mesh, masks, entities, weights, and topology
@@ -65,7 +69,8 @@ docs/pseudocode/            Implementation-level specification by source path
 The A0–A3 line shares one set of spatial, field, fluid, and I/O modules. A1
 changes time scheduling rather than copying A0. A2 and A3 add explicitly
 registered consumers or producers with their own source ownership contracts.
-RAII owns host/device allocations and library handles; borrowed views cannot
+Native RAII and Python backend owners manage allocations/library handles;
+CuPy owns complex128 buffers shared as float64 views with Warp. Borrowed views cannot
 outlive their owner. Numerical modules do not perform file I/O. The time layer
 owns accepted/rejected state transactions, diagnostics return records, and the
 I/O layer publishes records and checkpoints.
@@ -81,7 +86,7 @@ The implementation chain is:
 
 ```text
 continuous equations -> discrete algorithm -> implementation pseudocode
--> C++/CUDA source -> independent verification and validation evidence
+-> Warp/CuPy or native C++/CUDA source -> independent verification and validation evidence
 ```
 
 Every pseudocode block specifies units, shapes, index order, interleaved
@@ -113,8 +118,8 @@ clean commit. Debug runs may be dirty only when the manifest retains the exact
 patch or source snapshot.
 
 Different versions use different clones or Git worktrees and build directories.
-A running job uses a frozen executable and matching libraries; the build path is
-never overwritten while that job is running. No commit, tag, or remote push is
+A running job uses a frozen executable or Python source checkout and matching
+libraries; its source/build path is never overwritten while it runs. No commit, tag, or remote push is
 created automatically by the solver workflow.
 
 ## 5. Run products and restart rules
@@ -144,6 +149,13 @@ checkpoint is authoritative for recovery, not the number of CSV rows.
 
 Use the smallest independent test that proves a change, then run the complete
 required scope before reporting a result:
+
+For Warp changes, run `OPENBLAS_NUM_THREADS=1 .venv/bin/python -W error -m
+pytest -q tests/warp`, then the applicable CUDA tests with `FOMHD_TEST_GPU=1`
+inside an owned Slurm job. Numerical source changes require actual-stage
+analytical/MMS checks and exact source/lock provenance. The explicit RK4
+control has four physical stages; algebraic field solves at those stages
+do not make the time integrator implicit.
 
 1. Configure and build the affected CPU target.
 2. Run the focused regression or negative-control test.

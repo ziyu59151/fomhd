@@ -10,5 +10,6 @@ tmp/
 /runs/
 /data/
 /analysis/
+/warp-cache/
 .env
 .env.*

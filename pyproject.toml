@@ -4,8 +4,11 @@ version = "0.1.0"
 description = "FOMHD research and algorithm-validation environment"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "cupy-cuda13x==14.2.0",
     "numpy==2.5.4",
+    "scipy>=1.17,<2",
     "torch==2.14.1",
+    "warp-lang==1.19.0",
 ]
 
 [tool.uv]
@@ -26,6 +29,14 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
 
 [dependency-groups]
+dev = [
+    "pytest>=9,<10",
+]
 plot = [
     "matplotlib>=3.10,<4",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/warp"]
+pythonpath = [".", "tests/warp"]
+python_files = ["test_*.py", "foundation_*.py"]

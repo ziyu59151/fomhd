@@ -1,6 +1,7 @@
 # FOMHD source collaboration rules
 
-- The implementation language is C++20 with a CUDA backend. All source code,
+- The new solver implementation uses Python with NVIDIA Warp kernels and
+  CuPy CUDA libraries. The C++20/CUDA implementation remains a frozen reference. All source code,
   comments, test descriptions, runtime logs, diagnostics, and implementation
   records must be English. The pseudocode directory is excluded because its
   bilingual edition is maintained separately.
@@ -17,8 +18,9 @@
   accepted/rejected transaction; diagnostics are read-only; shared physical
   fluxes and currents have one producer.
 - CMake owns C++/CUDA targets and native dependencies. `pyproject.toml` and
-  `uv.lock` manage auxiliary Python/PyTorch tools only. Do not assume an
-  unrecorded library is installed or silently switch the solver to Python.
+  `uv.lock` manage the Warp/CuPy solver and auxiliary Python tools. The user
+  authorized the Warp migration; docs/WARP_IMPLEMENTATION.md records its order.
+  Do not assume an unrecorded library is installed.
 - Use ordinary user permissions. Do not use sudo or modify public drivers,
   CUDA Toolkit installation, device ACLs, Slurm configuration, or other users'
   files. Run GPU work only inside the user's own Slurm allocation. Never read,
@@ -32,7 +34,7 @@
 - Use `/home/lxzeng/runs/fomhd/` for personal FOMHD runs. Each run has a new
   recognizable output directory and retains inputs, provenance, diagnostics,
   checkpoints, and failure evidence.
-- Select the relevant C++/CUDA, testing, systematic-debugging, and
+- Select the relevant Warp/Python or native C++/CUDA, testing, systematic-debugging, and
   verification skills for changes. Performance optimization is a separate
   opt-in phase and is not implied by ordinary CUDA correctness work.
 - Before any completion claim, run the required build/tests and inspect their

@@ -1,6 +1,8 @@
-# FOMHD — C++ / CUDA A0 solver
+# FOMHD — Warp/CuPy A0 solver and native reference
 
-FOMHD is implemented as a C++20 solver with an explicit CUDA backend. A0
+The current A0 development uses Python with NVIDIA Warp and CuPy on CUDA,
+with an explicit NumPy/SciPy CPU reference. The C++20/CUDA implementation is
+preserved at `reference/a0-native` (`48beca7`). A0
 prioritizes a runnable reference implementation, numerical diagnostics,
 benchmarkable verification, and reproducible run artifacts. Kernel fusion,
 reduced precision, and profiler-driven tuning are deferred until a later
@@ -8,14 +10,44 @@ optimization task.
 
 The repository contains the A0 implementation-level pseudocode in
 [`docs/pseudocode`](docs/pseudocode/README.md), the corresponding C++/CUDA
-source tree, and an English implementation record. The design repository
+source tree, mirrored Warp pseudocode, and an English implementation record. The design repository
 `/home/lxzeng/fomhd-design` remains the authority for the mathematical model
 and A0 boundary/discretization decisions; it is not a runtime dependency.
 
-The current branch is `codex/a0-implementation`. It contains a complete small
-CPU solver, a CUDA backend, NPZ/NPY input and output, restart support, failure
-evidence, and diagnostic contracts. It has not received a production-scale
-experimental validation or an NCU optimization study.
+Changes reach `master` after independent review and verification.
+[The migration record](docs/WARP_IMPLEMENTATION.md)
+defines finite-mass equivalence, the optional quasineutral model, explicit
+integrators, and acceptance scope. No production-scale experimental validation
+or NCU optimization is claimed.
+
+## Warp environment and checks
+
+Use the project-local environment from a repository checkout:
+
+```bash
+uv sync --frozen --group dev --group plot
+.venv/bin/python -m fomhd --help
+```
+
+The full verification suite uses independent arrays exported by the native
+CPU implementation. After the native build below, generate them once into a
+new directory (the exporter refuses overwrite):
+
+```bash
+mkdir -p build/native-oracles
+build/cpu-release/fomhd_export_native build/native-oracles/native-oracle-4-k1.npz 4 1 0.01 0
+build/cpu-release/fomhd_export_native build/native-oracles/native-oracle-stress.npz 4 1 0 1
+OPENBLAS_NUM_THREADS=1 .venv/bin/python -W error -m pytest -q tests/warp
+```
+
+Set `FOMHD_NATIVE_ORACLE_DIR` to use another archived native dataset. The
+solver itself never reads these test arrays.
+
+The CUDA backend requires an owned Slurm allocation. It uses FP64/complex128
+arrays, Warp kernels, and CuPy FFT/LU/SVD without silent CPU fallback. The
+complete stage keeps numerical arrays on the selected device; geometry setup,
+scalar diagnostics, and explicit I/O are host activities. This is a dense
+correctness reference, without a performance advantage claim.
 
 ## Build and test
 
@@ -45,8 +77,10 @@ baseline, not a claim of an all-device optimized solver.
 
 ## Python and PyTorch
 
-`pyproject.toml`, `uv.lock`, and `.python-version` describe only auxiliary
-Python tools for input generation, cross-format checks, and offline analysis.
+`pyproject.toml`, `uv.lock`, and `.python-version` manage the Warp/CuPy solver
+and auxiliary input/analysis tools. Warp is pinned to 1.19.0 and CuPy CUDA13x
+to 14.2.0. PyTorch remains an auxiliary library; the Warp solver does not use
+autograd or require a PyTorch tensor path.
 The C++ solver does not require Python, LibTorch, or PyTorch at runtime. The
 project-local `.venv` is isolated from the public server environment; it does
 not grant or change GPU permissions.
@@ -59,10 +93,12 @@ plotted data and provenance. Install their optional dependencies with
 ## Repository layout
 
 ```text
+fomhd/               Warp/CuPy solver, explicit CPU reference and command-line entry
 include/fomhd/       Public C++ types and interfaces
 src/                 Geometry, operators, fluid, fields, boundary, time, I/O, CUDA
 app/                 fomhd solver command-line program
 tests/               Unit, integration, runtime, verification, and CUDA tests
+tests/warp/          Warp CPU/GPU parity, transactions, convergence and model checks
 tools/               fomhd_make_case, offline analysis and equilibrium audit tools
 docs/pseudocode/     Implementation-level specification aligned with the source tree
 cmake/               Build manifest and reproducibility helpers
@@ -91,7 +127,14 @@ repository data are excluded from the source repository.
 
 ## Current evidence and limits
 
-The current [A0 verification record](docs/A0_VERIFICATION.md) reports 84/84
+The [Warp implementation record](docs/WARP_IMPLEMENTATION.md) distinguishes
+CPU/CUDA execution, finite/massless model checks, local Hall and longitudinal
+waves, coupled temporal MMS, and unresolved global spatial accuracy. The
+finite-mass longitudinal control demonstrates numerical coarse-step
+amplification against an independent analytic mode and integrator polynomial;
+it does not attribute a production-wall rejection to Langmuir instability.
+
+The native [A0 verification record](docs/A0_VERIFICATION.md) reports 84/84
 integrated CPU CTests, coupled temporal and staggered spatial manufactured
 solutions, restart/failure controls, CUDA numerical/stage checks, and zero-error
 NVIDIA memcheck/initcheck. Seven local two-fluid/CGL/Darwin theory comparisons

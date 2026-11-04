@@ -1,11 +1,11 @@
 {
-  "schema_version": 1,
-  "created_date": "2026-11-04",
-  "purpose": "Design provenance for implementation-level A0 pseudocode; not a runtime filesystem dependency",
+  "schema_version": 2,
+  "created_date": "2026-11-05",
+  "purpose": "Design provenance for mirrored native and Warp pseudocode; not a runtime dependency",
   "source_repository": "fomhd-design",
   "git_head_at_capture": "4d773f81591da3544990b736e29bbebcd4fa6ffe",
   "authoritative_worktree_is_dirty": true,
-  "authority_identity": "The per-file SHA256 values, not git HEAD alone, identify this worktree baseline",
+  "authority_identity": "Per-file SHA256 values identify the uncommitted authoritative baseline",
   "decisions": [
     "D045",
     "D053",
@@ -14,28 +14,29 @@
     "D056",
     "D057",
     "D058",
-    "D059"
+    "D059",
+    "D060"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 132775,
-      "sha256": "4230bfdee7c5275bdc28f35721ef7c6f6d7721d43afac17de0f4d9c0235c1590"
+      "bytes": 139832,
+      "sha256": "1355b94f4ef4165b604e793ec701503b3d53386899a121a33530ef7f56dfc615"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
-      "bytes": 63189,
-      "sha256": "8f5b4a9fff9ff5eefa855b37b266f8abee8142062ced8f6730c394ce43a1db7a"
+      "bytes": 69122,
+      "sha256": "04ee0b0a57f4b1d376121292d692e5404a48368f4f7f334a270e4f502f2472d1"
     },
     {
       "path": "mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
-      "bytes": 24535,
-      "sha256": "a127bdee9bb74fce716be252574ec0b699d4868b21cc63e414001b43463df731"
+      "bytes": 25384,
+      "sha256": "fd27c43afb264a4219b811d0e88db5f2c8d6c693e0d49a3656da93c353e1f31d"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/integrated_contracts.md",
-      "bytes": 38980,
-      "sha256": "6d475423d10f60be3c9f647a8b1a47243206ed7336e455b1d7fc13267799b8e3"
+      "bytes": 39554,
+      "sha256": "d52dd3e4b82a6b33818540333fee343bda5cf694ccfdc57fea24841735c29aba"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/08_constraints/constraints.md",
@@ -44,19 +45,22 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/09_diagnostics/diagnostics.md",
-      "bytes": 34872,
-      "sha256": "6c6609d340231e9e0db01c2daf63773fc7119157794e51e84d7e91310b6c906f"
+      "bytes": 35549,
+      "sha256": "d724cbbc5f2341b363332912feb3815d480d1944e21eba1b5ddb5b9bd108ae14"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
-      "bytes": 5373,
-      "sha256": "37459a7907f5f9a7a52f14157cbe5b0d332de6181de58f399499ca45cf1a0b4c"
+      "bytes": 6172,
+      "sha256": "b4efb3ae5ba714e7a932da701309a125f5179c2bcd9576b4ee1a8ff9450d1c5d"
+    },
+    {
+      "path": "mainline_design/implementation/A0/A0_MASSLESS_ELECTRON.md",
+      "bytes": 16146,
+      "sha256": "ced8de849435864a2526500a02070b9451a195432ba4c65171db85132c77e383"
     }
   ],
-  "solver_implemented": true,
-  "scientific_benchmark_run": true,
-  "captured_utc": "2026-11-04T04:34:05.962151+00:00",
-  "benchmark_scope": {
+  "captured_utc": "2026-11-04T20:24:23.386975+00:00",
+  "native_reference_scope": {
     "record": "docs/A0_VERIFICATION.md",
     "cpu_ctest_passed": 84,
     "cpu_ctest_total": 84,
@@ -64,6 +68,18 @@
     "local_continuum_cases_total": 7,
     "verification": "Manufactured solutions, constraints, transactions, I/O, source accounting, CPU/CUDA comparison and memory checks",
     "theoretical_confirmation": "Local two-fluid/CGL/Darwin response with independent continuum matrices and stable/unstable controls",
+    "global_tokamak_validation": false,
+    "experimental_validation": false,
+    "performance_optimization": false,
+    "release_frozen": false
+  },
+  "warp_scope": {
+    "record": "docs/WARP_IMPLEMENTATION.md",
+    "finite_mass_cpu_gpu_parity": "bounded pass; original run hashes retained",
+    "massless_cpu_gpu_workflow": "bounded pass; global spatial acceptance unresolved",
+    "local_hall_and_coupled_temporal_mms": "bounded pass; not global physical validation",
+    "unforced_finite_longitudinal_time": "12 CPU and 12 CUDA cases pass; periodic adapter, not physical CGL or global validation",
+    "overnight_finite_scan": "running; see external immutable run receipt",
     "global_tokamak_validation": false,
     "experimental_validation": false,
     "performance_optimization": false,

@@ -1,7 +1,7 @@
 # Exploratory A0 figures
 
 These are small, independent Python/Matplotlib scripts for inspecting existing
-C++/CUDA solver evidence. They do not change solver state or rerun a simulation.
+native and Warp solver evidence. They do not change solver state or rerun a simulation.
 Keep case-specific figures here while the output schema is evolving. Extract a
 shared plotting module only when repeated use identifies stable readers,
 normalizations, and figure types. `plot_run.py` already reuses the checked
@@ -27,6 +27,9 @@ access, PyTorch operations, or C++ runtime dependency are needed for plotting.
 | `plot_verification.py` | Coupled MMS JSON, spatial MMS log, reviewed three-run Richardson JSON | Temporal orders, interior spatial orders, interior/global contrast, actual CLI differences |
 | `plot_local_modes.py` | Accepted seven-case local dispersion JSON | Theory/production spectra, growth controls, error budgets, four reconstructed magnetic eigenfunctions |
 | `plot_run.py` | Accepted run with first/last snapshots, history, observations and checks | Native geometry and B-phi samples, Fourier velocity slice, number/energy drift, selected momentum response, diagnostic budget use |
+| `plot_warp_benchmarks.py` | Warp benchmark scan directory with `summary.json` | Accepted and rejected equal-horizon outcomes, measured frequency and amplitude, baseline timing |
+| `plot_warp_verification.py` | Massless `report.json` with sibling Hall NPZs and coupled MMS `results.json` | Local Hall frequencies, midpoint/RK4 time refinement, measured closed-grid spatial errors |
+| `plot_warp_longitudinal.py` | Completed finite-mass longitudinal `report.json` and sibling numeric NPZ histories | Unforced wave histories, numerical amplitude against the integrator polynomial, continuum endpoint error |
 
 Every `--output` must be a **new directory**. Each script saves PNG for browsing,
 PDF for export, `plot-data.json`, `provenance.json`, and an English scope note.
@@ -78,6 +81,10 @@ input paths on this server to regenerate five figures in a new directory.
   exceeding its budget is displayed, not silently converted to a passing gate.
   Exact zeros are retained in the data even when omitted on logarithmic axes.
   Short histories do not establish long-time stability or experimental validity.
+- The longitudinal plot uses a periodic local test adapter and an independent
+  warm two-species analytic mode. Coarse-step amplification is numerical;
+  agreement with the time polynomial is distinct from continuum accuracy.
+  It does not explain a separate closed-wall rejection or validate CGL ordering.
 
 Each script checks the numerical transformations it uses, including reported
 orders, SI conversion, phase alignment, accepted step/time identity, and real

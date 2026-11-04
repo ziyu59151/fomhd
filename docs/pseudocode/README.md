@@ -1,14 +1,30 @@
 # A0 实现级伪代码与维护说明书
 
-> Status: active implementation specification. The C++/CUDA solver is implemented and has CPU/GPU verification evidence; production-scale scientific validation remains pending.  
-> 依赖：[开发约定](../development.md)、[A0 主规格](../../../../fomhd-design/mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md)、[全域离散](../../../../fomhd-design/mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md)及其 GC1–GC16。  
-> 权威：设计库拥有数学模型；本目录拥有该模型到 C++/CUDA 的逐步实现映射。项目工程选择不是文献原算法或稳定性证明。  
-> 同步触发：对应源码、接口、文件格式、库绑定或数学合同改变；伪代码、实现、测试须同版本维护。  
-> 最近同步：2026-11-04。
+> Status: active implementation specification. Warp/CuPy is the D060 development implementation; the native C++/CUDA reference is preserved. Acceptance evidence is recorded separately in [the migration record](../WARP_IMPLEMENTATION.md) and [native V&V](../A0_VERIFICATION.md).
+> 依赖：[开发约定](../development.md)、[A0 主规格](../../../../fomhd-design/mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md)、[全域离散](../../../../fomhd-design/mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md)及其 GC1–GC16。
+> 权威：设计库拥有数学模型；本目录拥有该模型到 Warp/CuPy 与固定 C++/CUDA 参考的逐步实现映射。项目工程选择不是文献原算法或稳定性证明。
+> 同步触发：对应源码、接口、文件格式、库绑定或数学合同改变；伪代码、实现、测试须同版本维护。
+> 最近同步：2026-11-05。
 
 ## 阅读与文件对应
 
-Remove the `docs/pseudocode/` prefix and final `.md` suffix to obtain the implementation path. For example, `src/fields/darwin.cpp.md` maps to `src/fields/darwin.cpp`. The mapped source files, tests, and command-line programs now exist; this directory remains the synchronized implementation specification.公共类型先看 `include/`，算法从 `app/` 进入，函数正文按 `src/` 分块。每个 `A0-…` 标题是稳定步骤 ID，不随源码行号变化。
+Remove the `docs/pseudocode/` prefix and final `.md` suffix to obtain the implementation path. For example, `fomhd/fields.py.md` maps to `fomhd/fields.py`, and `src/fields/darwin.cpp.md` maps to the native reference. README and routing narratives are navigation documents, not fictitious source modules. The Warp entry point is `fomhd/__main__.py`; native types and entry points remain under `include/` and `app/`. Python steps use the distinct `A0-PY-…` namespace so their IDs cannot collide with native steps.
+
+| Warp responsibility | Mirrored pseudocode |
+|---|---|
+| CLI, strict configuration, run products and restart | [entry](fomhd/__main__.py.md), [I/O](fomhd/io.py.md) |
+| Physical records, layout and state operations | [types](fomhd/types.py.md), [core](fomhd/core.py.md) |
+| Device ownership, established FFT/LU/SVD and Warp kernels | [backend](fomhd/backend.py.md) |
+| Closed geometry and compatible RZ/Fourier operators | [geometry](fomhd/geometry.py.md), [operators](fomhd/operators.py.md) |
+| Fluid equations, wall reactions and finite-mass Darwin fields | [fluid](fomhd/fluid.py.md), [wall](fomhd/wall.py.md), [fields](fomhd/fields.py.md) |
+| Stage evaluation, explicit midpoint/RK4 and timestep guards | [stage](fomhd/stage.py.md), [time](fomhd/time.py.md), [stability](fomhd/stability.py.md) |
+| Diagnostics and source/interval accounting | [diagnostics](fomhd/diagnostics.py.md) |
+| Coupled manufactured solutions and independent spatial checks | [MMS fixture](tests/warp/mms_fixture.py.md), [MMS CLI](tools/warp_mms.py.md) |
+| Quasineutral massless equations, constraints and diagnostics | [massless stage](fomhd/massless.py.md), [massless checks](fomhd/massless_checks.py.md) |
+| Local Hall response, closed-wall reconstruction and evidence output | [massless fixture](tests/warp/massless_verification_fixture.py.md), [massless verification CLI](tools/warp_massless_verify.py.md), [verification tests](tests/warp/test_massless_verification.py.md) |
+| Equal-horizon scans, physical scales and plots | [benchmark](tools/warp_benchmark.py.md), [frequency table](tools/frequency_table.py.md), [plots](tools/plots/plot_warp_benchmarks.py.md) |
+
+The following table describes the fixed native reference.
 
 | 目标与职责 | 伪代码正文 |
 |---|---|
@@ -40,7 +56,7 @@ Remove the `docs/pseudocode/` prefix and final `.md` suffix to obtain the implem
 | Exploratory benchmark, local-mode and accepted-run figures | [verification plots](tools/plots/plot_verification.py.md), [local modes](tools/plots/plot_local_modes.py.md), [run overview](tools/plots/plot_run.py.md) |
 | 单 GPU 作业与运行目录 | [a0.slurm](jobs/a0.slurm.md) |
 
-[TRACEABILITY.tsv](TRACEABILITY.tsv)连接步骤 ID、公式、目标文件和测试 ID；[SOURCE_BASELINE.json](SOURCE_BASELINE.json)记录设计来源哈希。这里的设计库链接用于本工作区导航；构建/运行不读取家目录中的设计库。复制仓库后仍可阅读完整伪代码，核对数学来源时按基线记录找相应设计版本。
+[TRACEABILITY.tsv](TRACEABILITY.tsv)连接步骤 ID、公式、目标文件和测试 ID；跨模块路由的 `target_path` 用分号列出真实源码文件，测试辅助 fixture 映射到使用它的测试，不把 fixture 本身当成独立通过的测试。[SOURCE_BASELINE.json](SOURCE_BASELINE.json)记录设计来源哈希，并分别保留原生参考与 Warp 的证据范围。这里的设计库链接用于本工作区导航；构建/运行不读取家目录中的设计库。复制仓库后仍可阅读完整伪代码，核对数学来源时按基线记录找相应设计版本。
 
 ## 记号与执行约定
 
@@ -71,4 +87,4 @@ flowchart TD
 
 A0 全路径覆盖固定封闭阶梯域及其输入、错误和输出。A1 复用空间核心并换时间调度；A2 只增只读粒子消费者；A3 的 FK 生产者还须专项实现，不在本目录伪造完成。周期 Cartesian 盒属于独立测试 fixture，不从 `fixed_lcfs_static` 偷换边界。
 
-完整伪代码不等于完整程序。首个实现仍必须完成原生构建、输入往返、独立空间/时间收敛、CPU/CUDA、restart 和真实初态验收。四阶只针对远内域，低阶阶梯壁与显式中点有限观察窗的限制继续有效。
+伪代码是可执行实现的说明书，不能替代运行证据。原生与 Warp 的构建、输入往返、空间/时间收敛、CPU/GPU 和 restart 结果分别登记在各自 V&V 记录中；未运行项目不因本目录存在而通过。四阶只针对远内域，低阶阶梯壁与显式中点有限观察窗的限制继续有效。
