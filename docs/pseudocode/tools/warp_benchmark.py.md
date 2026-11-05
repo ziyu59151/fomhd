@@ -5,6 +5,7 @@
 ```text
 CLI pilot:
   require --output, a grid list, K=1, one device, an explicit wall-clock budget
+  default --integrator to rk4 unless midpoint is explicitly requested
   create the output root exclusively; reject every pre-existing path
 
 CLI scan:
@@ -19,9 +20,9 @@ Invariant:
 ## A0-PY-BENCHMARK-02 - Case bootstrap
 
 ```text
-locate the repository-owned fomhd_make_case native generator
-run it once in output/work/seed with the documented fixture settings
-verify n=1e12, P=1e-9, B=1e-5 from the generated TOML
+render a Python-owned case template from the documented fixture settings
+require n=1e12, P=1e-9, B=1e-5 in the template
+do not search for a native builder or read a native binary
 
 resolve the actually executed benchmark and plotting CLI files from __file__
 archive their exact bytes under provenance/tools
@@ -37,7 +38,8 @@ else:
 for each required grid:
   build the rectangular geometry with public build_rectangle
   write R_nodes, Z_nodes, lcfs_R, lcfs_Z
-  render a provisional case with an existing seed initial file
+  write a bounded bootstrap NPZ solely to satisfy strict input hashing
+  render a provisional case around that bootstrap input
   load_case
   construct Context
   state = stage.closed_reference(context, n, P, P, B, velocity=0)
@@ -47,17 +49,18 @@ for each required grid:
   set electron density +1 coefficient to 0.5*1e-6*n*envelope
   set electron density -1 coefficient to its conjugate
   leave ion density, pressures, momentum, and harmonic B unchanged
-  encode_state
-  publish initial.npz and source_manifest.json
+  encode_state with production state I/O
+  publish the real initial.npz and rewrite source_manifest.json
   re-load the final case to prove the input hashes and solver schema match
   load_initial and initialize in the real runtime
   require positivity, finite values, initial Ampere/divB checks, and all
     physical hard gates to pass
 ```
 
-The native generator is a production bootstrap dependency, not a test
-oracle. It prevents a second hand-maintained diagnostic-budget registry.
-Tests never substitute the solver's `initialize` or `advance`.
+The Python case builder uses production geometry, operators, closed-reference
+state, stage initialization and I/O. Native exported arrays are optional test
+oracles only. Tests never substitute a synthetic stage for `initialize` or
+`advance`, and required benchmark coverage does not depend on native files.
 
 ## A0-PY-BENCHMARK-03 - One solver case
 

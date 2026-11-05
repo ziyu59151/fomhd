@@ -6,16 +6,20 @@ import pytest
 
 from fomhd.stage import initialize
 from fomhd.time import advance
-from workflow_fixture import assert_dimensional, cumulative, from_oracle
+from workflow_fixture import ORACLE_ROOT, assert_dimensional, cumulative, from_oracle
 
 @pytest.mark.parametrize('device', ['cpu', 'cuda:0'])
 @pytest.mark.parametrize('stress', [True, False])
 def test_gpu_stage_and_midpoint_against_native(device, stress, monkeypatch):
+    oracle = 'native-oracle-stress.npz' if stress else 'native-oracle-4-k1.npz'
+    if not (ORACLE_ROOT / oracle).is_file():
+        pytest.skip('optional independent native oracle unavailable: ' + str(ORACLE_ROOT / oracle))
     if device.startswith('cuda'):
         if os.environ.get('FOMHD_TEST_GPU') != '1':
             pytest.skip('owned Slurm GPU run required')
         assert os.environ.get('SLURM_JOB_ID')
     context, state, native = from_oracle(device, stress)
+    context.p.integrator = 'midpoint'
     backend = context.compute
     # Explicit observations below own host copies. Stages must not call this API.
     to_host = backend.to_host

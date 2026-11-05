@@ -1,211 +1,185 @@
 # FOMHD development and release policy
 
-> Status: active A0 implementation record.
-> The implementation is runnable and has CPU/GPU correctness evidence; it has
-> not received production-scale scientific validation.
-> Authority: the design repository decisions D045/D053–D060 and the A0
-> implementation/discretization specifications.
+> Status: active A0 Python/Warp implementation record. The implementation is
+> runnable with bounded CPU/GPU evidence; it has not received production-scale
+> scientific validation.
 
-Update this file and the matching pseudocode whenever the source tree, toolchain,
-module contract, branch policy, or run artifact schema changes. All source
-comments, tests, diagnostics, logs, and implementation records are written in
-English. The pseudocode directory is an intentional exception because its
-bilingual edition is maintained separately.
+The mathematical authority is the sibling design repository:
+`DECISIONS`, `A0_IMPLEMENTATION_SPEC`, and `A0_GLOBAL_DISCRETIZATION`. Design
+materials are review context, not a build or runtime dependency. All active
+source, comments, tests, diagnostics, logs, and implementation records are
+English. The separately maintained bilingual pseudocode is the sole exception.
 
-## 1. Language, build, and auxiliary environments
+## 1. Implementation and environment
 
-The active solver uses Python, NVIDIA Warp, and CuPy; NumPy/SciPy provide the
-explicit CPU reference. The frozen C++20/CUDA baseline remains available at
-`reference/a0-native`. Standard-library code and established numerical
-libraries are preferred for the initial implementation. CUDA
-correctness support is part of A0; performance tuning, fusion, reduced
-precision, and NCU-based optimization remain a separate later phase.
+`main` has one solver implementation: Python with NVIDIA Warp kernels and CuPy
+CUDA libraries under `src/fomhd/`. NumPy/SciPy exercise the explicit CPU
+reference. The selected time path is fully explicit RK4 by default; midpoint
+is retained for explicitly requested comparisons and historical controls.
+FP64 state and complex128 retained arrays are requirements. There is no reduced
+precision, autodiff, implicit electron update, or performance claim in ordinary
+correctness work.
 
-Choose CPU/GPU placement by workload and data ownership. Repeated large-array
-stage operations use the selected numerical backend; configuration, geometry
-metadata, file I/O, plotting, and small independent analytical tests can stay on
-the CPU. Explicit host setup and scalar synchronization are expected. Avoid
-per-stage full-state transfers and silent fallback from a selected CUDA backend.
-A new CPU path or GPU kernel is justified by the operation's needs, not by a
-requirement to put every activity on the GPU. Warp is the chosen implementation
-tool; routine native/Warp timing comparisons are not an acceptance gate.
-See [A0 runtime guidance](A0_RUNTIME_GUIDANCE.md) for the current model limits.
+The C++20/CUDA implementation baseline is `48beca7` on `reference/a0-native`.
+Native source, CMake targets, native-only tests, generators, and native
+pseudocode remain on that branch. `main` does not carry a second source copy or
+a mandatory native build dependency.
 
-CMake, Ninja, and CTest own native targets and dependencies. The current build
-baseline is GNU 15.2.0, CPU Release/Debug configurations, FFTW, MKL, OpenSSL,
-TOML++, nlohmann/json, bundled miniz, and CUDA Toolkit 13.3 for the CUDA target.
-The build manifest records the executable hash, source snapshot, compiler, and
-resolved library versions. No dependency manager downloads native libraries at
-configure time.
+`pyproject.toml`, `uv.lock`, and `uv_build` own the project package and
+auxiliary Python tools. Warp is pinned to 1.19.0 and CuPy CUDA13x to 14.2.0.
+PyTorch is auxiliary and is not imported by the solver. Use only the
+project-local environment:
 
-| File or directory | Responsibility |
-|---|---|
-| `CMakeLists.txt`, `cmake/` | Native targets, compile flags, dependencies, and build manifest |
-| `CMakePresets.json` | Shareable CPU/CUDA and Debug/Release configurations |
-| `CMakeUserPresets.json` | Optional machine-local paths; never commit it |
-| `pyproject.toml`, `uv.lock`, `.python-version` | Project-local Warp/CuPy, Python tests and auxiliary PyTorch/input/analysis tools |
-| `build/<preset>/` | Ignored CMake cache, objects, binaries, and evidence |
-| `.venv/` | Reconstructible project-local Python solver environment; never committed |
+```bash
+uv sync --frozen --group dev --group plot
+uv run python -m fomhd --help
+```
 
-The native C++ solver does not start through uv and does not link LibTorch. PyTorch is
-available only for reference, input processing, and offline analysis. Its CUDA
-user-space libraries do not replace the public CUDA Toolkit or grant device
-access. GPU scheduling and permission remain controlled by Slurm and the
-server administrator.
+Do not install the solver with global pip. Build products, virtual
+environments, run products, literature, and design evidence stay outside the
+source tree.
+
+GPU placement follows data ownership. Warp kernels and CuPy arrays remain on
+one selected device and stream; explicit synchronization occurs at declared
+dependency and observation boundaries. Configuration, geometry setup, scalar
+metadata, and file I/O are host activities. There is no silent CPU fallback.
+GPU work runs only in the user's own Slurm allocation.
 
 ## 2. Source tree and ownership
 
 ```text
-fomhd/                     Warp/CuPy implementation and NumPy/SciPy CPU reference
-tests/warp/                Actual-stage parity, model routing, MMS and runtime tests
-include/fomhd/             Public interfaces and data types
-src/core/                  State, tags, allocation, and failure ownership
-src/geometry/              RZ mesh, masks, entities, weights, and topology
-src/numerics/              Compatible operators, Fourier transforms, dense solves
-src/fluid/                 Ion and finite-mass CGL electron equations
-src/fields/                Darwin electric solve and CT magnetic update
-src/boundary/              Fixed closed staircase wall constraints and ledgers
-src/time/                  Stage evaluation and explicit midpoint transactions
-src/diagnostics/            Read-only checks, budgets, regions, and totals
-src/io/                    Configuration, NPZ/NPY, run metadata, checkpoints
-src/cuda/                  cuBLAS/cuFFT/cuSOLVER adapters and required kernels
-app/                       `fomhd` solver command-line program
-tests/                     Unit, integration, runtime, V&V, and CUDA tests
-tools/                     `fomhd_make_case`, offline analysis and equilibrium audit
-jobs/                      User-owned Slurm launch scripts when needed
-docs/pseudocode/            Implementation-level specification by source path
+src/fomhd/                  active Warp/CuPy solver and NumPy/SciPy CPU reference
+tests/warp/                 actual-stage parity, routing, MMS and runtime tests
+tests/test_analyze.py       offline run-analysis tests
+tests/test_geqdsk.py        equilibrium parser tests
+tools/                      Python benchmark, verification, analysis and plots
+jobs/                       user-owned Slurm launchers
+cases/                      case-generation guidance
+docs/pseudocode/src/fomhd/  bilingual implementation pseudocode
 ```
 
-The A0–A3 line shares one set of spatial, field, fluid, and I/O modules. A1
-changes time scheduling rather than copying A0. A2 and A3 add explicitly
-registered consumers or producers with their own source ownership contracts.
-Native RAII and Python backend owners manage allocations/library handles;
-CuPy owns complex128 buffers shared as float64 views with Warp. Borrowed views cannot
-outlive their owner. Numerical modules do not perform file I/O. The time layer
-owns accepted/rejected state transactions, diagnostics return records, and the
-I/O layer publishes records and checkpoints.
+CuPy owns complex128 buffers. Warp receives explicit float64 component views
+with documented order, layout, stream, and lifetime. Geometry tables and static
+metadata are host setup. Numerical modules do not perform file I/O. The time
+layer owns the accepted/rejected transaction; diagnostics are read-only; shared
+physical fluxes and currents have one producer. The I/O layer publishes run
+metadata, snapshots, checkpoints, and failure records.
 
-`RHS` means the complete semi-discrete evolution derivative: flux divergence,
-pressure and magnetic forces, electric response, wall reaction, and other
-terms required for a state update. It is not limited to an externally imposed
-physical source term.
+`RHS` means the complete semi-discrete evolution derivative, not only an
+external source term. Interfaces state units, shape, index order, stage
+identity, ownership, host/device placement, synchronization, and failure
+behavior.
 
-## 3. Pseudocode, source mapping, and traceability
+## 3. Pseudocode, traceability, and provenance
 
 The implementation chain is:
 
 ```text
 continuous equations -> discrete algorithm -> implementation pseudocode
--> Warp/CuPy or native C++/CUDA source -> independent verification and validation evidence
+-> Python/Warp/CuPy source -> independent verification evidence
 ```
 
-Every pseudocode block specifies units, shapes, index order, interleaved
-locations, ownership, host/device placement, library calls, synchronization,
-failure retention, and independent tests. `docs/pseudocode/TRACEABILITY.tsv`
-connects stable step IDs to source files, design authority, and test names. It
-now records implementation and CPU/GPU verification status separately from the
-remaining scientific-validation scope.
+`docs/pseudocode/TRACEABILITY.tsv` maps active Python step IDs to the actual
+`src/fomhd` file and its tests. Deleted native paths are not retained as broken
+main-branch links; their historical mapping remains on
+`reference/a0-native`. `SOURCE_BASELINE.json` records design-source authority
+hashes without making the design repository a runtime dependency.
 
-Pseudocode is an implementation specification and maintenance guide, not a
-proof of correctness. Manufactured solutions, convergence, conservation,
-restart equivalence, negative controls, and independent input checks remain
-mandatory. Changes discovered by those checks must update the pseudocode and
-source in the same change.
+Run provenance is generated from the imported package, not from the current
+working directory. The imported package must resolve under the exact
+checkout's `src/fomhd`. Snapshots use the same `src/fomhd/...` relative paths
+and hash the actual imported source plus `pyproject.toml` and `uv.lock`. A
+runtime root that does not match the imported package is rejected.
 
 ## 4. Branches, tags, and reproducibility
 
-Short-lived task branches use `codex/<task>`. Verified changes merge into
-`master`. After an A0, A1, A2, or A3 benchmark scope is explicitly frozen, create
-an immutable tag such as `a1-v1.0.0` and, only if maintenance is needed, a
-`release/a1` branch. A later boundary or physics change is a new commit on the
-maintenance branch; the original tag remains unchanged.
+Development uses short-lived `codex/<task>` branches and merges into `main`
+after review and verification. The native reference is
+`reference/a0-native`. Release branches and immutable tags are created only
+after a stated benchmark scope has passed. Do not force-push, rewrite tags, or
+manufacture history to make implementations look equivalent.
 
-The [GitHub Network graph](https://github.com/ziyu59151/fomhd/network)
-shows the branch history from one page (repository **Insights -> Network**).
-[All branches](https://github.com/ziyu59151/fomhd/branches) lists remote branch
-heads. Network is a built-in GitHub feature, not a plugin or repository toggle;
-for this private repository, access depends on the account's GitHub plan.
-See [GitHub's availability documentation](https://docs.github.com/en/repositories/viewing-activity-and-data-for-your-repository/understanding-connections-between-repositories).
-The links do not imply that a paid feature has been enabled.
+Formal benchmark runs use a clean source commit. Debug runs may be dirty only
+when the manifest retains the exact source snapshot. A running job uses a
+frozen Python/Warp checkout and matching lock and environment; those paths are
+not overwritten while the job is active.
 
-For an account-independent graph in any local checkout, configure this
-repository-local alias once:
-
-```bash
-git config --local alias.graph 'log --graph --decorate --oneline --all --date-order'
-git fetch origin
-git graph
-```
-
-The alias includes local branches and fetched remote branches. It is installed
-in the development checkout, but Git configuration is not cloned; other
-checkouts use the same setup command. The current native, Warp, and gallery
-milestones are ancestor commits in one mostly linear history. Branch names
-point to commits; a milestone branch does not itself create a divergent line.
-Do not manufacture commits or rewrite history just to make the graph branch.
-
-A reproducible run records the source commit and dirty state, the complete
-bounded source snapshot used by the build, executable SHA-256, compiler flags,
-dynamic libraries, case/config/input hashes, semantic and operator fingerprints,
-precision, backend, device, and Slurm job ID. A formal benchmark must use a
-clean commit. Debug runs may be dirty only when the manifest retains the exact
-patch or source snapshot.
-
-Different versions use different clones or Git worktrees and build directories.
-A running job uses a frozen executable or Python source checkout and matching
-libraries; its source/build path is never overwritten while it runs. No commit, tag, or remote push is
-created automatically by the solver workflow.
+The Slurm launcher records the resolved project, Python executable, package and
+lock hashes, Python/CuPy/Warp versions, case hash, Slurm job identity, visible
+device, host, timestamps, and exit status. The solver run independently retains
+its exact inputs and runtime-generated source snapshot.
 
 ## 5. Run products and restart rules
 
 Use `/home/lxzeng/runs/fomhd/` as the personal run root. Put a recognizable case
-prefix first and the timestamp/unique suffix last, for example:
+prefix first and the UTC timestamp/unique suffix last:
 
 ```text
-/home/lxzeng/runs/fomhd/a0-wave_reference__20261104T120000Z__7c21/
+/home/lxzeng/runs/fomhd/a0-wave_reference__20261105T120000Z__7c21/
 ```
 
 Each run is single-writer and refuses a non-empty output directory. It stores:
 
 - `inputs/`: exact case, geometry, initial state, source manifest, and resolved paths;
-- `provenance/`: executable, build manifest, and verified source snapshot;
+- `provenance/`: runtime source snapshot, project metadata, lock, and versions;
 - `logs/`, `history.csv`, `checks.jsonl`, and `observations.jsonl`;
 - `snapshots/` and `checkpoints/` with atomic publication and SHA-256 pointers;
-- `failure/`: structured numerical/I/O metadata and, when available, a matching
-  NPZ containing the rejected stage arrays.
+- `failure/`: structured numerical/I/O metadata and matching rejected arrays
+  when available.
 
 A restart reads only an accepted checkpoint with matching semantic, geometry,
 operator, schema, and time fingerprints. It creates a new run directory and
-records a parent link; it never overwrites or replays the previous run. A
-checkpoint is authoritative for recovery, not the number of CSV rows.
+records a parent link. It never overwrites or replays the previous run.
 
 ## 6. Verification and validation workflow
 
 Use the smallest independent test that proves a change, then run the complete
 required scope before reporting a result:
 
-For Warp changes, run `OPENBLAS_NUM_THREADS=1 .venv/bin/python -W error -m
-pytest -q tests/warp`, then the applicable CUDA tests with `FOMHD_TEST_GPU=1`
-inside an owned Slurm job. Numerical source changes require actual-stage
-analytical/MMS checks and exact source/lock provenance. The explicit RK4
-control has four physical stages; algebraic field solves at those stages
-do not make the time integrator implicit.
+```bash
+OPENBLAS_NUM_THREADS=1 \
+FOMHD_NATIVE_ORACLE_DIR=/home/lxzeng/projects/fomhd/build/native-oracles \
+uv run python -W error -m pytest -q
+```
 
-1. Configure and build the affected CPU target.
-2. Run the focused regression or negative-control test.
-3. Run the full CPU Release CTest suite.
-4. For CUDA changes, run the CUDA numeric/stage comparison in the user's Slurm
-   allocation and use Compute Sanitizer for memory and initialization checks.
-5. Preserve commands, versions, raw output, and machine/job identity under a
-   dated `tmp/` evidence directory.
-6. Report verification (implementation contracts and numerical checks) separately
-   from validation (agreement with physical or experimental reference data).
+The oracle directory supplies already exported independent arrays only to
+parity tests. Missing external oracle evidence is reported as unavailable; it
+does not disable required core tests. Native arrays must not be regenerated by
+Python and relabeled native.
 
-The current [A0 verification record](A0_VERIFICATION.md) includes 84/84 passing
-CPU CTests, coupled temporal and staggered spatial manufactured solutions,
-seven local two-fluid/CGL/Darwin theory comparisons, CPU/CUDA stage comparison,
-and zero-error Compute Sanitizer memcheck/initcheck. The analyzer's 45 behavioral
-tests are included in one CTest entry. Current raw evidence is retained under
-`tmp/a0-completion-20261104/`; the earlier 68-test result is historical.
-No experimental tokamak validation, production-scale equilibrium validation,
-global fourth-order staircase-wall accuracy or optimized performance is claimed.
+For numerical source changes, run actual-stage analytical/MMS, transaction,
+restart, and exact source/lock provenance checks. For CUDA changes, run the
+applicable tests in the user's Slurm allocation and use Compute Sanitizer where
+the task requires it. Preserve commands, versions, raw output, and job identity
+under a dated run directory.
+
+Report verification separately from scientific validation. The historical
+native record in `A0_VERIFICATION.md` is not rerun by this branch. No current
+check establishes experimental tokamak validation, production-scale
+equilibrium validation, global staircase-wall fourth-order accuracy, or
+optimized performance.
+
+## Branch visualization
+
+Open [the visual branch history](BRANCH_GRAPH.md) directly on GitHub. It is a
+Mermaid view of real commit parents and every fetched branch head, refreshed
+automatically on main changes and hourly for older branches. It is a bounded
+snapshot, preceding its own graph-only commit. This does not require a browser
+plugin or public GitHub Pages. GitHub Network is also linked there; private
+repository availability depends on the account plan. VS Code Git Graph is an
+editor extension, while gitgraph.js is a diagram library; neither installs a
+new GitHub website interface.
+
+For this checkout, `git graph` invokes `git log --graph --decorate --oneline
+--all --date-order`. On another clone, install that repository-local alias:
+
+```bash
+git config alias.graph 'log --graph --decorate --oneline --all --date-order'
+git fetch origin --prune
+git graph
+```
+
+The native reference branch additionally retains the independent oracle
+exporter imported unchanged from `d9390ac`; its solver baseline remains
+`48beca7`. Python core tests need no native build. Set
+`FOMHD_NATIVE_ORACLE_DIR` only for the optional independent parity tests.

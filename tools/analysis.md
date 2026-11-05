@@ -7,7 +7,7 @@ It never changes a run, snapshot, observation, or existing report.
 Run it from the repository root with the project environment:
 
 ```bash
-/home/lxzeng/projects/fomhd/.venv/bin/python tools/analyze.py --help
+uv run python tools/analyze.py --help
 ```
 
 ## Convergence
@@ -170,7 +170,7 @@ effective values. Unequal Richardson refinement is evaluated with scale-free
 ratios `h0/h1` and `h1/h2`; SI-sized `h` values are never subtracted directly.
 
 ```bash
-/home/lxzeng/projects/fomhd/.venv/bin/python tools/analyze.py convergence \
+uv run python tools/analyze.py convergence \
   analysis/a0-spatial/comparison.json \
   --output analysis/a0-spatial/convergence.json
 ```
@@ -195,7 +195,7 @@ Fit the convention `A(t) = A0 exp(gamma t) exp(i(phase0 - omega t))`. The
 target frequency, fit window, and amplitude floor are explicit:
 
 ```bash
-/home/lxzeng/projects/fomhd/.venv/bin/python tools/analyze.py fit-mode \
+uv run python tools/analyze.py fit-mode \
   /home/lxzeng/runs/fomhd/example-run \
   --t-start 2.0e-7 --t-end 8.0e-7 \
   --target-frequency-hz 2.5e6 \

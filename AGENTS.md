@@ -1,10 +1,11 @@
 # FOMHD source collaboration rules
 
-- The new solver implementation uses Python with NVIDIA Warp kernels and
-  CuPy CUDA libraries. The C++20/CUDA implementation remains a frozen reference. All source code,
-  comments, test descriptions, runtime logs, diagnostics, and implementation
-  records must be English. The pseudocode directory is excluded because its
-  bilingual edition is maintained separately.
+- The `main` implementation uses Python with NVIDIA Warp kernels and CuPy CUDA
+  libraries under `src/fomhd/`. The C++20/CUDA implementation is frozen on
+  `reference/a0-native`; it is not an active second implementation on `main`.
+  All source code, comments, test descriptions, runtime logs, diagnostics, and
+  implementation records must be English. The pseudocode directory is excluded
+  because its bilingual edition is maintained separately.
 - The design authority is the sibling repository
   `/home/lxzeng/fomhd-design`: DECISIONS, A0_IMPLEMENTATION_SPEC, and
   A0_GLOBAL_DISCRETIZATION. It is navigation and review context, not a build
@@ -17,15 +18,16 @@
   placement, synchronization, and failure behavior. Time integration owns the
   accepted/rejected transaction; diagnostics are read-only; shared physical
   fluxes and currents have one producer.
-- CMake owns C++/CUDA targets and native dependencies. `pyproject.toml` and
-  `uv.lock` manage the Warp/CuPy solver and auxiliary Python tools. The user
-  authorized the Warp migration; docs/WARP_IMPLEMENTATION.md records its order.
-  Do not assume an unrecorded library is installed.
+- `pyproject.toml`, `uv.lock`, and `uv_build` own the Warp/CuPy package and
+  auxiliary Python tools. Native build files live only on
+  `reference/a0-native`. The user authorized the Warp migration;
+  docs/WARP_IMPLEMENTATION.md records its order. Do not assume an unrecorded
+  library is installed.
 - Use ordinary user permissions. Do not use sudo or modify public drivers,
   CUDA Toolkit installation, device ACLs, Slurm configuration, or other users'
   files. Run GPU work only inside the user's own Slurm allocation. Never read,
   print, or commit credentials.
-- Use `codex/<task>` branches during development. Merge to `master` only after
+- Use `codex/<task>` branches during development. Merge to `main` only after
   review and verification. Create release branches and immutable tags only for
   a stated, passed benchmark scope. Do not force-push or rewrite tags.
 - Verify the repository root before Git operations. Keep build directories,
@@ -34,8 +36,8 @@
 - Use `/home/lxzeng/runs/fomhd/` for personal FOMHD runs. Each run has a new
   recognizable output directory and retains inputs, provenance, diagnostics,
   checkpoints, and failure evidence.
-- Select the relevant Warp/Python or native C++/CUDA, testing, systematic-debugging, and
-  verification skills for changes. Performance optimization is a separate
-  opt-in phase and is not implied by ordinary CUDA correctness work.
+- Select the relevant Warp/Python, testing, systematic-debugging, and
+  verification skills for `main` changes. Performance optimization is a
+  separate opt-in phase and is not implied by ordinary CUDA correctness work.
 - Before any completion claim, run the required build/tests and inspect their
   actual output. Report unverified scientific or performance scope explicitly.

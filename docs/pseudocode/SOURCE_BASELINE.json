@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "created_date": "2026-11-05",
-  "purpose": "Design provenance for mirrored native and Warp pseudocode; not a runtime dependency",
+  "purpose": "Design provenance for active Python/Warp pseudocode; not a runtime dependency",
   "source_repository": "fomhd-design",
   "git_head_at_capture": "4d773f81591da3544990b736e29bbebcd4fa6ffe",
   "authoritative_worktree_is_dirty": true,
@@ -15,18 +15,19 @@
     "D057",
     "D058",
     "D059",
-    "D060"
+    "D060",
+    "D061"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 139832,
-      "sha256": "1355b94f4ef4165b604e793ec701503b3d53386899a121a33530ef7f56dfc615"
+      "bytes": 141914,
+      "sha256": "0966372c2c117c4a9815650125c9725da0cb3c084b7d409fbbb5356fc36ab3f7"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
-      "bytes": 69122,
-      "sha256": "04ee0b0a57f4b1d376121292d692e5404a48368f4f7f334a270e4f502f2472d1"
+      "bytes": 72061,
+      "sha256": "bc3bd90182ed01f89437fa43570971e8d0a1372278d488bc7c10ec573aec39e5"
     },
     {
       "path": "mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
@@ -45,13 +46,13 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/09_diagnostics/diagnostics.md",
-      "bytes": 35549,
-      "sha256": "d724cbbc5f2341b363332912feb3815d480d1944e21eba1b5ddb5b9bd108ae14"
+      "bytes": 36244,
+      "sha256": "cbeaf643e80de35cc1e061b078bf182235d54b2608be1b8cb5685d974be7002c"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
-      "bytes": 6172,
-      "sha256": "b4efb3ae5ba714e7a932da701309a125f5179c2bcd9576b4ee1a8ff9450d1c5d"
+      "bytes": 6231,
+      "sha256": "b07d199e6d3aeb2c0f783f0ba5a619a1359acdd5cb18e8118e008f76ca368d7c"
     },
     {
       "path": "mainline_design/implementation/A0/A0_MASSLESS_ELECTRON.md",
@@ -61,6 +62,8 @@
   ],
   "captured_utc": "2026-11-04T20:24:23.386975+00:00",
   "native_reference_scope": {
+    "branch": "reference/a0-native",
+    "commit": "48beca7",
     "record": "docs/A0_VERIFICATION.md",
     "cpu_ctest_passed": 84,
     "cpu_ctest_total": 84,

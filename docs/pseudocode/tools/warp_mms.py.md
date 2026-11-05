@@ -18,7 +18,7 @@ main(arguments):
     harness_root=ExecutedHarnessFiles())
   snapshot = ArchiveBoundedSource(
     output/source_snapshot,
-    all current runtime fomhd/*.py,
+    all current runtime src/fomhd/*.py,
     pyproject.toml,
     uv.lock,
     MMS fixture, test, CLI and pseudocode)
@@ -51,8 +51,10 @@ on Failure:
   retain Failure code, stage, partial-array names, array descriptors and hash
   write FAIL results.json
 
-No solver source under scratch/proposal is imported or delivered. CUDA without
-an existing SLURM_JOB_ID is refused before backend construction.
+No solver source under a scratch proposal is imported or delivered. CUDA
+without an existing SLURM_JOB_ID is refused before backend construction. The
+imported package must resolve under the checkout's `src/fomhd`; snapshots
+retain that exact relative path.
 ```
 
 An explicitly supplied runtime root is accepted only when it resolves to the

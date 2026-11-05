@@ -202,6 +202,7 @@ def test_harness_imports_current_main_solver():
     imported = Path(fomhd.__file__).resolve()
     assert imported.name == "__init__.py"
     assert imported.parent.name == "fomhd"
+    assert imported.parent.parent.name == "src"
     assert "scratch/proposal" not in imported.parts
 
 
@@ -315,7 +316,7 @@ def test_source_magnetic_divergence_negative_control():
 
 
 def test_source_snapshot_and_identity_cover_runtime_and_harness(tmp_path):
-    runtime_root = Path(fomhd.__file__).resolve().parents[1]
+    runtime_root = Path(fomhd.__file__).resolve().parents[2]
     harness_root = Path(mms.__file__).resolve().parents[2]
     snapshot = tmp_path / "source_snapshot"
     manifest = mms.archive_source_snapshot(
@@ -325,8 +326,8 @@ def test_source_snapshot_and_identity_cover_runtime_and_harness(tmp_path):
     )
     destinations = {entry["path"]: entry for entry in manifest["files"]}
     runtime_modules = {
-        f"runtime/fomhd/{path.name}"
-        for path in (runtime_root / "fomhd").glob("*.py")
+        f"runtime/src/fomhd/{path.name}"
+        for path in (runtime_root / "src" / "fomhd").glob("*.py")
     }
     assert runtime_modules <= set(destinations)
     assert {
@@ -346,8 +347,8 @@ def test_source_snapshot_and_identity_cover_runtime_and_harness(tmp_path):
     )
     assert identity["runtime_root"] == str(runtime_root.resolve())
     assert identity["harness_root"] == str(harness_root.resolve())
-    assert identity["runtime_hashes"]["fomhd/time.py"] == mms.sha256_file(
-        runtime_root / "fomhd/time.py"
+    assert identity["runtime_hashes"]["src/fomhd/time.py"] == mms.sha256_file(
+        runtime_root / "src/fomhd/time.py"
     )
     assert identity["repository_hashes"]["pyproject.toml"] == mms.sha256_file(
         runtime_root / "pyproject.toml"
@@ -355,13 +356,13 @@ def test_source_snapshot_and_identity_cover_runtime_and_harness(tmp_path):
 
 
 def test_runtime_origin_uses_imported_package_and_rejects_mismatch(tmp_path):
-    actual_root = Path(fomhd.__file__).resolve().parents[1]
+    actual_root = Path(fomhd.__file__).resolve().parents[2]
     origin = mms.resolve_runtime_origin()
     assert Path(origin["root"]) == actual_root
-    assert Path(origin["package_root"]) == actual_root / "fomhd"
+    assert Path(origin["package_root"]) == actual_root / "src/fomhd"
     assert origin["loaded_modules"]
     assert all(
-        Path(path).is_relative_to(actual_root / "fomhd")
+        Path(path).is_relative_to(actual_root / "src/fomhd")
         for path in origin["loaded_modules"].values()
     )
     with pytest.raises(Failure, match="RuntimeMismatch"):
@@ -377,16 +378,60 @@ def test_runtime_origin_uses_imported_package_and_rejects_mismatch(tmp_path):
     assert not rejected_snapshot.exists()
 
 
+def test_exact_checkout_executes_and_provenance_works_outside_repository(
+    tmp_path,
+):
+    repository = Path(__file__).resolve().parents[2]
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = os.pathsep.join(
+        (str(repository / "src"), str(repository / "tests" / "warp"))
+    )
+    script = """
+import json
+from pathlib import Path
+import fomhd
+from mms_fixture import resolve_runtime_origin
+print(json.dumps({
+    "module": fomhd.__file__,
+    "origin": resolve_runtime_origin(),
+}))
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=tmp_path,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    evidence = json.loads(completed.stdout)
+    expected_package = (repository / "src" / "fomhd").resolve()
+    assert Path(evidence["module"]).resolve().parent == expected_package
+    assert Path(evidence["origin"]["root"]) == repository.resolve()
+    assert Path(evidence["origin"]["package_root"]) == expected_package
+    cli = subprocess.run(
+        [sys.executable, "-m", "fomhd", "--version"],
+        cwd=tmp_path,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "A0 Python/Warp" in cli.stdout
+
+
 def test_frozen_checkout_provenance_tracks_executed_package(tmp_path):
-    source_root = Path(fomhd.__file__).resolve().parents[1]
+    source_root = Path(fomhd.__file__).resolve().parents[2]
     frozen_root = tmp_path / "frozen-runtime"
-    (frozen_root / "fomhd").mkdir(parents=True)
-    for module in (source_root / "fomhd").glob("*.py"):
-        shutil.copyfile(module, frozen_root / "fomhd" / module.name)
+    (frozen_root / "src" / "fomhd").mkdir(parents=True)
+    for module in (source_root / "src" / "fomhd").glob("*.py"):
+        shutil.copyfile(module, frozen_root / "src" / "fomhd" / module.name)
     shutil.copyfile(source_root / "pyproject.toml", frozen_root / "pyproject.toml")
     shutil.copyfile(source_root / "uv.lock", frozen_root / "uv.lock")
     sentinel = "# frozen-checkout-provenance-sentinel\n"
-    with (frozen_root / "fomhd" / "__init__.py").open("a", encoding="utf-8") as stream:
+    with (frozen_root / "src" / "fomhd" / "__init__.py").open(
+        "a", encoding="utf-8"
+    ) as stream:
         stream.write(sentinel)
 
     harness_tests = Path(mms.__file__).resolve().parent
@@ -407,7 +452,7 @@ print(json.dumps({
 """
     environment = os.environ.copy()
     environment["PYTHONPATH"] = os.pathsep.join(
-        (str(frozen_root), str(harness_tests))
+        (str(frozen_root / "src"), str(harness_tests))
     )
     completed = subprocess.run(
         [sys.executable, "-c", script, str(output)],
@@ -419,23 +464,23 @@ print(json.dumps({
     )
     evidence = json.loads(completed.stdout)
     imported = Path(evidence["module"]).resolve()
-    assert imported.is_relative_to(frozen_root / "fomhd")
+    assert imported.is_relative_to(frozen_root / "src" / "fomhd")
     assert evidence["identity"]["runtime_root"] == str(frozen_root)
     assert evidence["snapshot"]["runtime_root"] == str(frozen_root)
 
-    frozen_init = frozen_root / "fomhd" / "__init__.py"
+    frozen_init = frozen_root / "src" / "fomhd" / "__init__.py"
     frozen_hash = mms.sha256_file(frozen_init)
-    source_hash = mms.sha256_file(source_root / "fomhd" / "__init__.py")
+    source_hash = mms.sha256_file(source_root / "src" / "fomhd" / "__init__.py")
     assert frozen_hash != source_hash
     assert (
-        evidence["identity"]["runtime_hashes"]["fomhd/__init__.py"]
+        evidence["identity"]["runtime_hashes"]["src/fomhd/__init__.py"]
         == frozen_hash
     )
-    snapshot_init = output / "runtime" / "fomhd" / "__init__.py"
+    snapshot_init = output / "runtime" / "src" / "fomhd" / "__init__.py"
     assert snapshot_init.read_text(encoding="utf-8").endswith(sentinel)
     assert mms.sha256_file(snapshot_init) == frozen_hash
     assert all(
-        path.startswith(str(frozen_root / "fomhd"))
+        path.startswith(str(frozen_root / "src" / "fomhd"))
         for path in evidence["identity"]["imported_modules"].values()
     )
     runtime_entries = [
@@ -445,7 +490,7 @@ print(json.dumps({
     ]
     assert runtime_entries
     assert all(
-        entry["source_path"].startswith(str(frozen_root / "fomhd"))
+        entry["source_path"].startswith(str(frozen_root / "src" / "fomhd"))
         for entry in runtime_entries
     )
     for entry in runtime_entries:

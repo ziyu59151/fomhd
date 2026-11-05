@@ -293,12 +293,23 @@ def load_run(run_dir: str | Path) -> RunData:
     if not isinstance(build, dict):
         raise AnalysisError("run manifest lacks build provenance")
     source_files = build.get("source_files")
+    if source_files is None:
+        versions = build.get("versions")
+        if isinstance(versions, dict):
+            source_files = versions.get("source_files")
     if not isinstance(source_files, dict) or not source_files:
         raise AnalysisError("run manifest lacks measured source-file hashes")
     source_root = directory / "provenance/source"
+    normalized_sources = {}
     for relative, expected in source_files.items():
+        if isinstance(expected, dict):
+            if expected.get("relative") != relative:
+                raise AnalysisError(f"source record relative path mismatch: {relative}")
+            expected = expected.get("sha256")
         source_path = _safe_relative(source_root, relative, "source snapshot")
         _verified_hash(source_path, expected, hashes, f"source snapshot {relative}")
+        normalized_sources[relative] = expected
+    source_files = normalized_sources
 
     columns = str(manifest.get("history_columns", "")).split(",")
     if not columns or any(not column for column in columns):

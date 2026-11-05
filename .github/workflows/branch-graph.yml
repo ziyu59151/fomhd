@@ -1,0 +1,45 @@
+name: Branch graph
+
+on:
+  push:
+    paths-ignore:
+      - docs/BRANCH_GRAPH.md
+  delete:
+  create:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: branch-graph
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Publish graph snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+            git checkout -B main origin/main
+            python3 tools/branch_graph.py --output docs/BRANCH_GRAPH.md
+            if git diff --quiet -- docs/BRANCH_GRAPH.md && git ls-files --error-unmatch docs/BRANCH_GRAPH.md >/dev/null 2>&1; then
+              exit 0
+            fi
+            git add docs/BRANCH_GRAPH.md
+            git commit -m 'docs: update branch graph [skip ci]'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+          done
+          exit 1

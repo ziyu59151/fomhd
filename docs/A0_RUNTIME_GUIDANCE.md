@@ -1,9 +1,10 @@
 # A0 runtime guidance and diagnostic audit
 
-Date: 2026-11-05. Current numerical contract inspected at `0f09411`; archived
-run source and inputs are identified separately by their recorded SHA-256 hashes.
-This is an interpretation and workflow record. It does not change the model,
-integrator defaults, numerical budgets, or archived benchmark verdicts.
+Date: 2026-11-05. The active `main` numerical contract is the Python/Warp
+implementation under `src/fomhd/`; archived run source and inputs are identified
+separately by their recorded SHA-256 hashes. This is an interpretation and
+workflow record. The current default is fully explicit RK4 with electron
+inertia enabled; numerical budgets and archived benchmark verdicts are unchanged.
 The [implementation record](WARP_IMPLEMENTATION.md) owns the executed test
 scope; mirrored [pseudocode](pseudocode/README.md) owns the implementation contract.
 
@@ -184,13 +185,14 @@ filter, or clipping removes this stiffness.
 RK4 has the scalar imaginary-axis limit `abs(omega*dt)<=2*sqrt(2)`, with stricter
 accuracy limits still needed. Explicit midpoint has no nonzero imaginary-axis
 absolute-stability interval; its finite-horizon amplification must be bounded.
-RK4 is a useful preferred choice for new explicit oscillation reference cases.
+RK4 is the default for the active Python/Warp mainline and is the preferred
+choice for new explicit oscillation reference cases.
 It uses four derivative stages rather than two and has numerical damping, so
 growth/damping-rate errors still require measurement. The observed advantage is
 case dependent; both implementations also evaluate endpoints for diagnostics.
-Existing midpoint defaults and historical controls are retained
-pending an explicit default-policy change. A1 time decoupling is deferred to the
-user's forthcoming algorithm, including its own global-order verification.
+Existing midpoint implementations and historical controls remain available only
+when explicitly requested. A1 time decoupling is deferred to the user's
+forthcoming algorithm, including its own global-order verification.
 
 ## Remaining A0 acceptance work
 

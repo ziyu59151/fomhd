@@ -24,8 +24,8 @@ import numpy as np
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
 WORKER_ROOT = SOURCE_ROOT.parents[1]
 FIXTURE_DIR = SOURCE_ROOT / "tests" / "warp"
-if str(SOURCE_ROOT) not in sys.path:
-    sys.path.insert(0, str(SOURCE_ROOT))
+if str(SOURCE_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(SOURCE_ROOT / "src"))
 if str(FIXTURE_DIR) not in sys.path:
     sys.path.insert(0, str(FIXTURE_DIR))
 
@@ -62,7 +62,7 @@ def _sha256(path: Path) -> str:
 
 def _source_hashes() -> dict[str, str]:
     result = {}
-    for path in sorted((SOURCE_ROOT / "fomhd").glob("*.py")):
+    for path in sorted((SOURCE_ROOT / "src" / "fomhd").glob("*.py")):
         result[str(path.relative_to(SOURCE_ROOT))] = _sha256(path)
     return result
 

@@ -1,157 +1,118 @@
-# FOMHD — Warp/CuPy A0 solver and native reference
+# FOMHD A0 Python/Warp mainline
 
-[Branch graph](https://github.com/ziyu59151/fomhd/network) ·
-[All branches](https://github.com/ziyu59151/fomhd/branches) ·
-[Local graph and version policy](docs/development.md#4-branches-tags-and-reproducibility)
+[Visual branch history](docs/BRANCH_GRAPH.md) · [Development policy](docs/development.md)
 
-The current A0 development uses Python with NVIDIA Warp and CuPy on CUDA,
-with an explicit NumPy/SciPy CPU reference. The C++20/CUDA implementation is
-preserved at `reference/a0-native` (`48beca7`). A0
-prioritizes a runnable reference implementation, numerical diagnostics,
-benchmarkable verification, and reproducible run artifacts. Kernel fusion,
-reduced precision, and profiler-driven tuning are deferred until a later
-optimization task.
+The active `main` implementation is the FP64/complex128 Python solver under
+[`src/fomhd/`](src/fomhd), using NVIDIA Warp 1.19.0, CuPy CUDA13x 14.2.0, and
+an explicit NumPy/SciPy CPU reference. The fully explicit RK4 two-fluid path is
+the default; `time.integrator = "midpoint"` remains available when a test or
+study explicitly requests midpoint. The electron-inertia switch and massless
+quasineutral branch remain available.
 
-The repository contains the A0 implementation-level pseudocode in
-[`docs/pseudocode`](docs/pseudocode/README.md), the corresponding C++/CUDA
-source tree, mirrored Warp pseudocode, and an English implementation record. The design repository
-`/home/lxzeng/fomhd-design` remains the authority for the mathematical model
-and A0 boundary/discretization decisions; it is not a runtime dependency.
+The C++20/CUDA solver baseline is `48beca7` on `reference/a0-native`. It is a
+separate implementation branch and is not duplicated in this source tree. The
+historical native verification record is in
+[A0_VERIFICATION.md](docs/A0_VERIFICATION.md); the native implementation and
+its native-only tests and generators remain on that reference branch.
 
-Changes reach `master` after independent review and verification.
-[The migration record](docs/WARP_IMPLEMENTATION.md)
-defines finite-mass equivalence, the optional quasineutral model, explicit
-integrators, and acceptance scope. No production-scale experimental validation
-or NCU optimization is claimed.
+The mathematical authority is the sibling repository
+`/home/lxzeng/fomhd-design`: `DECISIONS`, `A0_IMPLEMENTATION_SPEC`, and
+`A0_GLOBAL_DISCRETIZATION`. It is review context, not a build or runtime
+dependency. The implementation-level pseudocode under
+[`docs/pseudocode/src/fomhd`](docs/pseudocode/src/fomhd) is synchronized with
+the active source and tests.
 
-## Warp environment and checks
+## Environment and execution
 
-Use the project-local environment from a repository checkout:
+Use the project-local environment from an exact checkout:
 
 ```bash
 uv sync --frozen --group dev --group plot
-.venv/bin/python -m fomhd --help
+uv run python -m fomhd --help
 ```
 
-The full verification suite uses independent arrays exported by the native
-CPU implementation. After the native build below, generate them once into a
-new directory (the exporter refuses overwrite):
+The package uses the conventional `src/` layout and the `uv_build` backend
+pinned to the repository's uv version. Do not install the solver with global
+pip. The project-local `.venv` is isolated from the public server environment
+and does not grant or change GPU permissions.
+
+Validate or run a case:
 
 ```bash
-mkdir -p build/native-oracles
-build/cpu-release/fomhd_export_native build/native-oracles/native-oracle-4-k1.npz 4 1 0.01 0
-build/cpu-release/fomhd_export_native build/native-oracles/native-oracle-stress.npz 4 1 0 1
-OPENBLAS_NUM_THREADS=1 .venv/bin/python -W error -m pytest -q tests/warp
+uv run python -m fomhd validate /absolute/path/to/case.toml \
+  --output /home/lxzeng/runs/fomhd/a0-validate__20261105T120000Z
+uv run python -m fomhd run /absolute/path/to/case.toml \
+  --output /home/lxzeng/runs/fomhd/a0-case__20261105T120000Z
 ```
 
-Set `FOMHD_NATIVE_ORACLE_DIR` to use another archived native dataset. The
-solver itself never reads these test arrays.
+The solver has no native builder dependency. `tools/warp_benchmark.py`
+generates its controlled closed-reference geometry, state, and case through
+the production geometry, operator, stage, and I/O functions.
+
+## Tests and independent references
+
+The CPU suite runs with one BLAS thread and warnings treated as errors:
+
+```bash
+OPENBLAS_NUM_THREADS=1 \
+FOMHD_NATIVE_ORACLE_DIR=/home/lxzeng/projects/fomhd/build/native-oracles \
+uv run python -W error -m pytest -q
+```
+
+`FOMHD_NATIVE_ORACLE_DIR` is optional and contains already exported independent
+native arrays used only by parity tests. The solver and ordinary benchmark case
+generation never read native binaries or oracle arrays. Missing oracle-only
+comparisons remain explicitly unavailable; required CPU tests do not depend on
+the native build.
 
 The CUDA backend requires an owned Slurm allocation. It uses FP64/complex128
-arrays, Warp kernels, and CuPy FFT/LU/SVD without silent CPU fallback. The
-complete stage keeps numerical arrays on the selected device; geometry setup,
-scalar diagnostics, and explicit I/O are host activities. This is a dense
-correctness reference, without a performance advantage claim.
-
-## Build and test
-
-The native build uses CMake, Ninja, C++20, FFTW, MKL, OpenSSL, and the bundled
-TOML/JSON/NPZ support. The CUDA build uses Toolkit 13.3 with cuBLAS, cuFFT, and
-cuSOLVER. Use the checked-in presets where possible:
-
-```bash
-cmake --preset cpu-release -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
-cmake --build --preset cpu-release --parallel 4
-ctest --preset cpu-release --output-on-failure
-```
-
-The CUDA target is configured separately on a host with the required Toolkit:
-
-```bash
-cmake --preset cuda-release \
-  -DCMAKE_CUDA_COMPILER=/usr/local/cuda-13.3/bin/nvcc \
-  -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
-cmake --build --preset cuda-release --parallel 4
-```
-
-GPU execution must run inside the user's own Slurm allocation. The CUDA path
-accelerates the numerical primitives and FFT/linear algebra calls; the
-pointwise fluid assembly remains host-side in A0. This is an implementation
-baseline, not a claim of an all-device optimized solver.
-
-## Python and PyTorch
-
-`pyproject.toml`, `uv.lock`, and `.python-version` manage the Warp/CuPy solver
-and auxiliary input/analysis tools. Warp is pinned to 1.19.0 and CuPy CUDA13x
-to 14.2.0. PyTorch remains an auxiliary library; the Warp solver does not use
-autograd or require a PyTorch tensor path.
-The C++ solver does not require Python, LibTorch, or PyTorch at runtime. The
-project-local `.venv` is isolated from the public server environment; it does
-not grant or change GPU permissions.
-
-Small [plotting scripts](tools/plots/README.md) render benchmark convergence,
-local eigenmode comparisons, and accepted-run diagnostics as PNG/PDF with
-plotted data and provenance. Install their optional dependencies with
-`uv sync --frozen --group plot`; plotting remains an offline Python activity.
+arrays, Warp kernels, and CuPy FFT/LU/SVD without silent CPU fallback. A device,
+stream, dtype, or shape mismatch is an error. No GPU acceptance or performance
+claim is made by the CPU checks in this source checkout.
 
 ## Repository layout
 
 ```text
-fomhd/               Warp/CuPy solver, explicit CPU reference and command-line entry
-include/fomhd/       Public C++ types and interfaces
-src/                 Geometry, operators, fluid, fields, boundary, time, I/O, CUDA
-app/                 fomhd solver command-line program
-tests/               Unit, integration, runtime, verification, and CUDA tests
-tests/warp/          Warp CPU/GPU parity, transactions, convergence and model checks
-tools/               fomhd_make_case, offline analysis and equilibrium audit tools
-docs/pseudocode/     Implementation-level specification aligned with the source tree
-cmake/               Build manifest and reproducibility helpers
-build/               Ignored build trees
-tmp/                 Ignored verification evidence and regenerated logs
+src/fomhd/                 active Warp/CuPy solver and CPU reference
+tests/warp/                actual-stage, routing, MMS, runtime and parity tests
+tests/test_analyze.py      offline run-analysis behavioral tests
+tests/test_geqdsk.py       equilibrium-input parser tests
+tools/                     Python benchmark, verification, analysis and plots
+cases/                     case-generation and reference-fixture guidance
+jobs/a0.slurm              user-owned frozen-checkout GPU launcher
+docs/pseudocode/           bilingual specification mirrored under src/fomhd
 ```
 
-Runtime directories are kept under `/home/lxzeng/runs/fomhd/`. Each run has a
-distinct, tab-completion-friendly case prefix followed by a timestamp and
-unique suffix. A run stores its exact inputs, source snapshot, executable
-hash, resolved configuration, logs, diagnostic records, snapshots,
-checkpoints, and failure evidence.
+Build products, virtual environments, run products, literature, and design
+repository evidence stay out of the source tree. Personal runs are created
+under `/home/lxzeng/runs/fomhd/` with a recognizable case prefix, UTC timestamp,
+and unique suffix. Each run retains exact inputs, source and lock hashes,
+diagnostics, snapshots, checkpoints, restart linkage, and failure evidence.
 
-## Version policy
+## Branch and version policy
 
-Development uses short-lived `codex/<task>` branches and merges into `master`
-after review and verification. A stable `release/aN` branch and immutable
-`aN-vX.Y.Z` tag are created only after that version's stated benchmark scope
-has passed. A later boundary or physics change is a new maintenance change
-with its own pseudocode, compatibility statement, and evidence; it does not
-rewrite an earlier tag.
+Development uses short-lived `codex/<task>` branches and merges into `main`
+after review and verification. The native reference remains on
+`reference/a0-native`. Release branches and immutable tags are created only for
+a stated, passed benchmark scope. Do not force-push, rewrite tags, or manifest
+a different implementation merely to make two branches look equivalent.
 
-The source tree, build manifests, and documentation are versioned. Build
-directories, virtual environments, run outputs, literature, and design
-repository data are excluded from the source repository.
+Formal benchmark runs use a clean source commit. Debug runs may be dirty only
+when provenance retains the exact source snapshot. A running job uses a frozen
+source checkout and its matching lock and environment; those paths are not
+overwritten while the job is active.
 
-## Current evidence and limits
+## Evidence and limits
 
-The [A0 runtime guidance](docs/A0_RUNTIME_GUIDANCE.md) explains CPU/GPU
-placement, the observe-only diagnostic audit, the massless closure, and the
-remaining A0 acceptance work. Native/Warp correctness comparisons remain
-useful; routine speed comparisons are not a development acceptance requirement.
+[WARP_IMPLEMENTATION.md](docs/WARP_IMPLEMENTATION.md) records the migration
+order and existing bounded CPU/GPU evidence. [A0_RUNTIME_GUIDANCE.md](docs/A0_RUNTIME_GUIDANCE.md)
+records timestep and model guidance. [A0_VERIFICATION.md](docs/A0_VERIFICATION.md)
+is a historical native-reference record, not evidence that the native tests
+run from this branch.
 
-The [Warp implementation record](docs/WARP_IMPLEMENTATION.md) distinguishes
-CPU/CUDA execution, finite/massless model checks, local Hall and longitudinal
-waves, coupled temporal MMS, and unresolved global spatial accuracy. The
-finite-mass longitudinal control demonstrates numerical coarse-step
-amplification against an independent analytic mode and integrator polynomial;
-it does not attribute a production-wall rejection to Langmuir instability.
-
-The native [A0 verification record](docs/A0_VERIFICATION.md) reports 84/84
-integrated CPU CTests, coupled temporal and staggered spatial manufactured
-solutions, restart/failure controls, CUDA numerical/stage checks, and zero-error
-NVIDIA memcheck/initcheck. Seven local two-fluid/CGL/Darwin theory comparisons
-pass, with independent reference matrices and stable/unstable controls.
-Raw evidence is in `tmp/a0-completion-20261104/`.
-
-The solver remains a dense small-domain reference. Interior spatial accuracy
-does not establish global fourth-order accuracy at the staircase wall. Local
-theory comparisons do not establish a global tokamak mode or experimental
-validation. The GTAW G-EQDSK file is only an input audit. Optimization, sparse
-scalability, long-time nonlinear studies and A1–A3 remain separate work.
+Existing results remain historical and are not rewritten as new acceptance.
+The solver is a dense small-domain correctness reference. Local analytical,
+MMS, restart, conservation, and CPU/GPU comparisons do not establish global
+tokamak accuracy, production equilibrium validation, optimized performance, or
+all-branch scientific acceptance. Performance tuning, reduced precision,
+autodiff, NCU work, and new physics are separate tasks.

@@ -1,8 +1,9 @@
 # A0 Warp migration and electron-model work
 
-Status: implemented with bounded CPU/GPU verification, 2026-11-05. Native reference is
-commit 48beca7 on reference/a0-native; this change was developed on codex/a0-warp
-for reviewed promotion to the master development baseline.
+Status: active `main` implementation with bounded CPU/GPU verification,
+2026-11-05. Native reference is commit 48beca7 on `reference/a0-native`. This
+branch contains one active implementation under `src/fomhd/`; the native
+implementation is not duplicated here.
 The long finite-mass scan finished: nine cases reached the requested horizon,
 and one case was rejected by a wall constraint. This is a development baseline;
 massless global spatial accuracy and physical Tokamak validation remain open.
@@ -13,7 +14,7 @@ massless global spatial accuracy and physical Tokamak validation remain open.
    rank-checked field solves, diagnostics, and explicit midpoint.
 3. Compare independently produced native and Python CPU/GPU arrays; run
    manufactured/convergence/constraint/transaction tests and short GPU pilots.
-   Promote to master only after review and equivalent-physics verification.
+   Promote to `main` only after review and equivalent-physics verification.
 4. Derive and implement the optional massless, exactly quasineutral branch.
    Preserve physical electron mass metadata; do not set a divisor to zero.
    Reconstruct a compatible electron flux, constrained Ohm field, and CGL
@@ -31,12 +32,19 @@ scientific reference; GTC is secondary. Benchmark labels distinguish numerical
 verification, controlled theory comparisons, and experimental validation.
 Performance tuning and higher-order boundary upgrades remain deferred.
 
+The migrated workflow is now fully explicit RK4 by default. Existing midpoint
+transactions, historical midpoint controls, and explicit
+`time.integrator = "midpoint"` cases remain supported; equations and diagnostic
+budgets did not change with the default.
+
 ## Shared port interface (revision 1)
 
-The package is `fomhd/` at repository root; invoke `.venv/bin/python -m fomhd`
-from the repository checkout. Installed distributions are not configured;
-provenance requires the checkout's source and dependency lock. Names and numerical formulas follow native
-`include/fomhd/{types,physics,geometry,operators}.hpp`. Module boundaries:
+The package is `src/fomhd/`; invoke `uv run python -m fomhd` from any working
+directory while selecting the exact checkout. `uv_build` packages this
+src-layout project. Runtime provenance requires the imported package to resolve
+under that checkout's `src/fomhd` and hashes the actual source plus
+`pyproject.toml` and `uv.lock`. Names and numerical formulas follow the frozen
+native reference interfaces. Module boundaries:
 
 - `types.py`: dataclasses Species, References, Budget, Parameters, StageTag,
   FluidState, State, Context; Failure; namespace records for native outputs.
@@ -57,7 +65,9 @@ provenance requires the checkout's source and dependency lock. Names and numeric
 - `stage.py`: evaluate_stage, initialize, retain_failure_evidence.
 - `diagnostics.py`: native diagnostics.hpp functions plus boundary_ledger,
   state_totals, momentum. `check_stage` mutates result; gates raise Failure.
-- `time.py`: advance; transaction semantics follow native midpoint.
+- `time.py`: explicit `advance`; RK4 is the default and midpoint remains an
+  explicit option. Both preserve the native-compatible accepted/rejected
+  transaction and evidence contract.
 - `massless.py`, `massless_checks.py`: quasineutral state reconstruction,
   shared ion/electron/current fluxes, constrained Ohm field, pressure evolution,
   and original-equation/interval diagnostics. `stage.py` and `time.py` route the
@@ -87,14 +97,16 @@ backend implementation details. Setup independent-row selection is deterministic
 and must match the native algorithm; all original constraint rows remain checked.
 
 No source module may read C++ source, load a native binary, or rely on an oracle
-at runtime. Tests may compare exported native NPZ evidence. Tests under
-`tests/warp/`; mirrored pseudocode under `docs/pseudocode/fomhd/`. Source,
-comments, tests, logs, and this implementation record are English.
+at runtime. Tests may compare already exported native NPZ evidence selected by
+`FOMHD_NATIVE_ORACLE_DIR`. Tests are under `tests/warp/`; mirrored pseudocode
+is under `docs/pseudocode/src/fomhd/`. Source, comments, tests, logs, and this
+implementation record are English.
 
 ## Acceptance and dt policy
 
-`species.electron_inertia=1|0` defaults to 1. `time.integrator` selects midpoint
-(default) or rk4. `time.dt_guard=error|warn` defaults to error. A warn override
+`species.electron_inertia=1|0` defaults to 1. `time.integrator` selects rk4
+(default) or midpoint; omitted configuration and the pilot CLI default to RK4.
+`time.dt_guard=error|warn` defaults to error. A warn override
 is for controlled instability scans; finite/positive/linear-solver failures
 remain fatal. Frequency checks use physical parameters and operator-resolution
 rate estimates, including plasma, cyclotron, pressure/advection, and Hall scales

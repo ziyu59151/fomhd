@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 
-SOURCE = Path(__file__).resolve().parents[2] / "fomhd"
+SOURCE = Path(__file__).resolve().parents[2] / "src" / "fomhd"
 
 
 class Failure(Exception):
@@ -572,7 +572,7 @@ def test_parameter_defaults_accept_integrator_contract():
     assert "allow_pickle=False" in source
 
 
-def test_config_defaults_preserve_mass_metadata_and_midpoint(runtime):
+def test_config_defaults_use_rk4_and_preserve_explicit_midpoint(runtime):
     io = runtime["io"]
     species = {
         "ion_id": "ion", "electron_id": "electron", "qi": 1.0, "mi": 1.0,
@@ -608,12 +608,13 @@ def test_config_defaults_preserve_mass_metadata_and_midpoint(runtime):
     )
     assert parameters.electron_inertia == 1
     assert parameters.species[1].mass == 1.0
-    assert parameters.integrator == "midpoint"
+    assert parameters.integrator == "rk4"
     assert parameters.dt_guard == "error"
     assert parameters.minimum_samples_per_cycle == 32.0
     assert parameters.max_amplitude_error == 0.01
     assert parameters.max_phase_error_rad == 0.1
     time.update(
+        integrator="midpoint",
         minimum_samples_per_cycle=48.0,
         max_amplitude_error=0.005,
         max_phase_error_rad=0.05,
@@ -621,6 +622,7 @@ def test_config_defaults_preserve_mass_metadata_and_midpoint(runtime):
     configured = io._build_parameters(
         species, solver, grid, time, budgets, diagnostics
     )
+    assert configured.integrator == "midpoint"
     assert configured.minimum_samples_per_cycle == 48.0
     assert configured.max_amplitude_error == 0.005
     assert configured.max_phase_error_rad == 0.05
@@ -1058,13 +1060,13 @@ def test_checkpoint_and_restart_preserve_ledger_and_reject_tamper(runtime,
         assert run.manifest["time_guard"]["minimum_samples_per_cycle"] == 32.0
         assert run.manifest["time_guard"]["max_amplitude_error"] == 0.01
         assert run.manifest["time_guard"]["max_phase_error_rad"] == 0.1
-        archived_time = run.path() / "provenance/source/fomhd/time.py"
+        archived_time = run.path() / "provenance/source/src/fomhd/time.py"
         assert archived_time.is_file()
         assert (
-            run.path() / "provenance/source/fomhd/__main__.py"
+            run.path() / "provenance/source/src/fomhd/__main__.py"
         ).is_file()
         assert io.sha256_file(archived_time) == io.sha256_file(
-            Path(__file__).resolve().parents[2] / "fomhd/time.py"
+            Path(__file__).resolve().parents[2] / "src/fomhd/time.py"
         )
         run.checkpoint(committed, cumulative, context)
         checkpoint = next(

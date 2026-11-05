@@ -19,9 +19,10 @@ interior order above 3.5; preserve wall/total errors separately and run a
 negative spatial sign control.
 Refuse CUDA outside Slurm and refuse existing output directories.
 Keep production dt reports, complete checks, ledgers and failure NaN/Inf arrays.
-Hash runtime/harness/dependency sources and archives, test execution from a
-frozen checkout, reject mixed-package origins, and aggregate negative controls
-once. Inject a CLI failure and verify exact phase/check/partial-array evidence.
+Hash `src/fomhd` runtime/harness/dependency sources and archives, test execution
+from a frozen checkout and from outside the repository, reject mixed-package
+origins, and aggregate negative controls once. Inject a CLI failure and verify
+exact phase/check/partial-array evidence.
 ```
 
 Covered top-level functions and fixture classes:
@@ -45,6 +46,7 @@ Covered top-level functions and fixture classes:
 - `test_source_magnetic_divergence_negative_control`
 - `test_source_snapshot_and_identity_cover_runtime_and_harness`
 - `test_runtime_origin_uses_imported_package_and_rejects_mismatch`
+- `test_exact_checkout_executes_and_provenance_works_outside_repository`
 - `test_frozen_checkout_provenance_tracks_executed_package`
 - `test_cli_failure_record_preserves_partial_arrays`
 

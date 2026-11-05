@@ -1,7 +1,9 @@
 # 独立测试与验收规格
 
-> Status: active; target test responsibilities are implemented across the unit, integration, runtime, verification, and CUDA test executables. This table remains the contract; actual results are recorded in the dated evidence directory.  
-> 依赖：[完整步骤映射](../TRACEABILITY.tsv)、[算例](../cases/README.md)、[构建](../CMakeLists.txt.md)。最近同步：2026-11-04。
+> Status: active test contracts for the Python/Warp mainline. Actual results
+> are recorded separately from this implementation specification.
+> 依赖：[完整步骤映射](../TRACEABILITY.tsv)、[算例](../cases/README.md)、
+> [Python 项目](../../../pyproject.toml)。最近同步：2026-11-05。
 
 ## A0-TEST-01 — HarnessAndGates
 
@@ -92,15 +94,18 @@ FullA0Integration:
   measure actual finite-window error vs finer dt reference; freeze comparison budgets beforehand
 ```
 
-原生实现每完成一个模块就接对应 tests；接口无正式实现时不得注册永远 PASS 的占位测试。A1 后续重用这些空间核与相同输入，再增加窗口/迭代/区间电流检查。
+Each active Python module is linked to a real test. A missing implementation
+must not be represented by a permanent PASS placeholder. Native-only test
+contracts and executable paths remain on `reference/a0-native`.
 
-The detailed supplementary contracts are [coupled MMS](coupled_verification.cpp.md),
-[staggered spatial MMS](spatial_verification.cpp.md),
-[source-accounting sensitivity](source_controls.cpp.md),
-[linear refinement](linear_refinement.cpp.md), [transactions](transaction.cpp.md),
-and [local dispersion](dispersion.cpp.md). The latter compares all 14 response
-components and constraint invariants, then the 11-dimensional admissible
-spectrum; its periodic adapter is test-only. The current evidence and remaining
-scientific scope are recorded in [A0 verification](../../A0_VERIFICATION.md).
+Detailed active Python contracts are indexed in
+[TRACEABILITY.tsv](../TRACEABILITY.tsv) and mirrored under
+`docs/pseudocode/tests/warp/`. The historical native test contracts are on
+`reference/a0-native`; they are not reproduced as broken local links. Current
+evidence and remaining scientific scope are recorded in
+[A0 verification](../../A0_VERIFICATION.md) and
+[Warp implementation](../../WARP_IMPLEMENTATION.md).
 
-AUX 测试属于 tools 的辅助 Python 测试标签，使用源码项目 uv 环境及人工快照；不把 Python 作为原生库测试或求解器的运行依赖。构建与辅助测试的范围分别记录，缺辅助环境时该组为 NOT_RUN。
+AUX tests use the project uv environment and controlled offline snapshots. The
+missing optional oracle directory makes only oracle-only comparisons
+unavailable; required Python solver tests must still run.

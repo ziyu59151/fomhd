@@ -6,6 +6,8 @@ Source: `tests/warp/test_benchmark_harness.py`.
 
 ```text
 Import the actual CLI by path; require import alone creates no run files.
+Require the pilot CLI default to be RK4 and exercise Python case generation
+without a native `fomhd_make_case` executable.
 Construct equal-final-time plans and a positive Hermitian density perturbation.
 Archive executed tool bytes and verify hashes, without attributing a copied
 snapshot to an unrelated parent Git worktree; a real checkout retains status.
@@ -30,6 +32,7 @@ Covered top-level functions and fixture classes:
 - `_environment`
 - `test_tool_source_paths_resolve_executed_files`
 - `test_import_has_no_run_side_effect`
+- `test_pilot_cli_default_integrator_is_rk4`
 - `test_scan_plan_preserves_equal_final_time`
 - `test_density_seed_is_hermitian_and_positive`
 - `test_failure_arrays_preserve_nan_and_last_accepted_state`

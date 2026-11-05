@@ -38,7 +38,7 @@ def harness():
 
 def _environment() -> dict[str, str]:
     env = os.environ.copy()
-    paths = [str(FOMHD_ROOT), str(PROPOSAL_ROOT)]
+    paths = [str(FOMHD_ROOT / "src"), str(PROPOSAL_ROOT)]
     if env.get("PYTHONPATH"):
         paths.append(env["PYTHONPATH"])
     env["PYTHONPATH"] = os.pathsep.join(paths)
@@ -54,11 +54,22 @@ def test_tool_source_paths_resolve_executed_files(harness):
     hashes = harness._source_hashes(FOMHD_ROOT)
     for relative, path in paths.items():
         assert hashes[relative] == hashlib.sha256(path.read_bytes()).hexdigest()
+    package_source = FOMHD_ROOT / "src" / "fomhd" / "time.py"
+    assert hashes["src/fomhd/time.py"] == hashlib.sha256(
+        package_source.read_bytes()
+    ).hexdigest()
 
 
 def test_import_has_no_run_side_effect(harness, tmp_path):
     assert harness.SCHEMA == "fomhd-warp-benchmark-v1"
     assert not list(tmp_path.iterdir())
+
+
+def test_pilot_cli_default_integrator_is_rk4(harness, tmp_path):
+    arguments = harness._parser().parse_args(
+        ["pilot", "--output", str(tmp_path / "pilot")]
+    )
+    assert arguments.integrator == "rk4"
 
 
 def test_scan_plan_preserves_equal_final_time(harness):
@@ -602,6 +613,10 @@ def test_real_cpu_smoke_and_plot(tmp_path):
     assert (case_dir / "run" / "checkpoints" / "latest.json").is_file()
     assert (case_dir / "time_step_reports.json").is_file()
     assert (case_dir / "run" / "time_estimates.jsonl").is_file()
+    from tools.analyze import load_run
+    loaded = load_run(case_dir / "run")
+    assert loaded.source_files["src/fomhd/time.py"]
+    assert loaded.config_hash_verification["status"] == "PASS"
     runtime_guard = json.loads(
         (case_dir / "time_step_reports.json").read_text()
     )

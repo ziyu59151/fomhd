@@ -1,3 +1,7 @@
+[build-system]
+requires = ["uv_build==0.13.6"]
+build-backend = "uv_build"
+
 [project]
 name = "fomhd-research"
 version = "0.1.0"
@@ -12,8 +16,10 @@ dependencies = [
 ]
 
 [tool.uv]
-package = false
 environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[tool.uv.build-backend]
+module-name = "fomhd"
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu130" }
@@ -37,6 +43,6 @@ plot = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests/warp"]
-pythonpath = [".", "tests/warp"]
+testpaths = ["tests"]
+pythonpath = ["src", "tests/warp", "."]
 python_files = ["test_*.py", "foundation_*.py"]

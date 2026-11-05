@@ -81,14 +81,14 @@ def _write_run(
     definitions: list[dict[str, object]] | None = None,
     observation_rows: list[dict[str, object]] | None = None,
 ) -> Path:
-    """Write the accepted runtime v1 layout used by the C++ solver."""
+    """Write the accepted runtime v1 layout produced by the Python solver."""
 
     run = root / f"run-{len(list(root.glob('run-*'))):02d}"
     (run / "inputs").mkdir(parents=True)
     (run / "snapshots").mkdir()
-    source_file = run / "provenance/source/src/model.cpp"
+    source_file = run / "provenance/source/src/fomhd/time.py"
     source_file.parent.mkdir(parents=True)
-    source_file.write_text("// measured source snapshot\n", encoding="utf-8")
+    source_file.write_text("# measured source snapshot\n", encoding="utf-8")
     case = run / "inputs/case.toml"
     case.write_text("schema_version = 1\n", encoding="utf-8")
     geometry = run / "inputs/geometry.npz"
@@ -270,7 +270,7 @@ def _write_run(
         encoding="utf-8",
     )
 
-    source_hashes = {"src/model.cpp": _sha(source_file)}
+    source_hashes = {"src/fomhd/time.py": _sha(source_file)}
     config_hash = hashlib.sha256(
         analyze._minify_original_json(resolved_path.read_bytes())
     ).hexdigest()
@@ -354,12 +354,8 @@ def _write_run(
         "matrix_fingerprint": "b" * 64,
         "input_hashes": input_hashes,
         "build": {
-            "schema_version": 1,
-            "binary_sha256": "c" * 64,
-            "source_commit": "d" * 40,
-            "dirty": True,
-            "source_sha256": "e" * 64,
-            "source_files": source_hashes,
+            "status": "runtime-generated",
+            "versions": {"source_files": source_hashes},
         },
         "backend": "cpu",
         "precision": "fp64/complex128",

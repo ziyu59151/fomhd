@@ -11,7 +11,7 @@ import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 from fomhd.stability import E_MASS, frequency_scales  # noqa: E402
 
 
@@ -46,7 +46,7 @@ def main():
     archive = args.output/"source"
     archive.mkdir()
     hashes = {}
-    for name in ("tools/frequency_table.py", "fomhd/stability.py"):
+    for name in ("tools/frequency_table.py", "src/fomhd/stability.py"):
         data = (ROOT/name).read_bytes()
         hashes[name] = hashlib.sha256(data).hexdigest()
         target = archive/name

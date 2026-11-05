@@ -6,7 +6,7 @@ import pytest
 
 
 def module():
-    path = Path(__file__).parents[2] / 'fomhd' / 'stability.py'
+    path = Path(__file__).parents[2] / 'src' / 'fomhd' / 'stability.py'
     assert path.is_file(), 'stability guard has not been implemented'
     spec=importlib.util.spec_from_file_location('stability', path)
     mod=importlib.util.module_from_spec(spec)
@@ -118,9 +118,20 @@ def test_real_time_transaction_guard_and_warn_override():
     from fomhd.stage import initialize
     from fomhd.time import advance
     from fomhd.types import Failure
-    from workflow_fixture import cumulative, from_oracle
+    from workflow_fixture import cumulative
+    from foundation_fixture import parameters
+    from fomhd.backend import Backend
+    from fomhd.geometry import build_rectangle
+    from fomhd.operators import build_operators
+    from fomhd.types import Context
+    from fomhd.stage import closed_reference
 
-    context, initial, _ = from_oracle('cpu', False)
+    p = parameters(1)
+    backend = Backend('cpu')
+    geometry = build_rectangle(4, 4, 1., 0., .2, .2)
+    context = Context(p, geometry, build_operators(geometry, 1, backend=backend), backend, p.Nphi)
+    initial = closed_reference(context, p.ref.ni, p.ref.pressure, p.ref.pressure, p.ref.magnetic)
+    context.p.integrator = "midpoint"
     context.p.nsteps = 1_000_000
     ledger = cumulative()
     committed = initialize(initial, context, ledger, False)

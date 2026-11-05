@@ -1,13 +1,18 @@
 # A0 implementation and verification record
 
-Date: 2026-11-04. Scope: the small FP64/complex128 C++20 reference solver and
-explicit single-GPU CUDA backend, with a fixed closed staircase conductor/slip
-boundary. This is a development verification record, not a release or an
-experimental tokamak validation. No commit, tag, or push was made.
+Date: 2026-11-04. Historical scope: the small FP64/complex128 C++20 reference
+solver and explicit single-GPU CUDA backend, with a fixed closed staircase
+conductor/slip boundary. The implementation and its reproducible build
+instructions are preserved on the
+[`reference/a0-native`](https://github.com/ziyu59151/fomhd/tree/reference/a0-native)
+branch at `48beca7`. This record is not evidence that those native tests run
+from the active Python/Warp mainline, not a release, and not experimental
+tokamak validation.
 
 The authoritative continuous/discrete model remains in the sibling design
-repository. Source and mirrored implementation pseudocode are maintained here.
-The current raw evidence directory is `tmp/a0-completion-20261104/`.
+repository. Native source and mirrored native pseudocode are maintained on the
+reference branch. The historical raw evidence directory is
+`tmp/a0-completion-20261104/`.
 The earlier `tmp/a0-implementation-20261104/` 68-test report is historical and
 is not the current acceptance result.
 
@@ -181,20 +186,11 @@ disconnects left some work incomplete. The interaction layer and native review
 agents completed integration, repairs and independent acceptance. A worker's
 success message was never used as a substitute for the integrated tests.
 
-The final integrated CPU commands were:
-
-```bash
-cmake --preset cpu-release -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
-cmake --build --preset cpu-release --parallel 4
-ctest --test-dir build/cpu-release --output-on-failure --parallel 2
-build/cpu-release/fomhd_local_dispersion --preflight
-build/cpu-release/fomhd_local_dispersion
-```
-
-The final two commands also retain complete JSON from the actual integrated
-executable, rather than relying on a staged worker binary. The 84-test suite
-includes the analyzer's 45 behavioral tests as one CTest entry; those counts
-must not be added as if they were separate CTest cases.
+The recorded build and final integrated CPU command list remain on
+`reference/a0-native`; it is intentionally not reproduced as a broken local
+build path here. The historical 84-test suite includes the analyzer's 45
+behavioral tests as one CTest entry; those counts must not be added as if they
+were separate CTest cases or transferred to the Python mainline result.
 
 `acceptance-identity-before-doc-sync.json` records the measured executable
 hashes and preserves both build manifests before this documentation sync.

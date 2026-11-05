@@ -494,6 +494,55 @@ def test_actual_cpu_midpoint_and_rk4_commit_once(inertia, integrator):
         )
 
 
+@pytest.mark.parametrize(
+    ("configured", "expected"),
+    [(None, "rk4"), ("midpoint", "midpoint")],
+    ids=["omitted-default", "explicit-midpoint"],
+)
+def test_cli_integrator_default_and_explicit_midpoint(
+    tmp_path, configured, expected, monkeypatch
+):
+    context = _context(inertia=1, nsteps=1, hard=True)
+    state = closed_reference(
+        context,
+        context.p.ref.ni,
+        context.p.ref.pressure,
+        context.p.ref.pressure,
+        context.p.ref.magnetic,
+    )
+    case_path = _write_case(
+        tmp_path / expected,
+        context.p,
+        context.geometry,
+        state,
+        configured,
+        1,
+    )
+    output = tmp_path / expected / "run"
+    assert _run_command(
+        ["run", str(case_path), "--output", str(output)]
+    ) == 0
+    manifest = json.loads((output / "run.json").read_text())
+    assert manifest["integrator"] == expected
+    assert manifest["last_accepted_step"] == 1
+    loaded = io.load_case(case_path)
+    assert loaded.parameters.integrator == expected
+    # Keep the identical omitted document, but emulate the historical effective default.
+    if configured is None:
+        build_parameters = io._build_parameters
+
+        def historical_default(*args, **kwargs):
+            parameters = build_parameters(*args, **kwargs)
+            parameters.integrator = "midpoint"
+            return parameters
+
+        with monkeypatch.context() as patch:
+            patch.setattr(io, "_build_parameters", historical_default)
+            midpoint = io.load_case(case_path)
+        assert midpoint.input_hashes == loaded.input_hashes
+        assert midpoint.semantic_hash != loaded.semantic_hash
+
+
 def test_guard_error_preserves_commit_and_warn_publishes_report():
     context = _context(inertia=0, nsteps=1)
     context.p.dt_guard = "error"
@@ -620,7 +669,6 @@ def _write_case(
         f"dt={p.dt!r}",
         f"nsteps={nsteps}",
         'initial_kind="non_equilibrium"',
-        f'integrator="{integrator}"',
         f'dt_guard="{dt_guard}"',
         f"minimum_samples_per_cycle={minimum_samples_per_cycle!r}",
         "max_amplitude_error=0.01",
@@ -663,6 +711,15 @@ def _write_case(
         f"p_min_parallel_e={p.species[1].parallel_min!r}",
         f"B_min={p.B_min!r}",
     ]
+    if integrator is not None:
+        lines.insert(
+            next(
+                index
+                for index, value in enumerate(lines)
+                if value.startswith("dt_guard=")
+            ),
+            f'integrator="{integrator}"',
+        )
     for name, budget in p.budgets.items():
         norm = (
             budget.norm.value

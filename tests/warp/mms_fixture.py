@@ -944,7 +944,7 @@ def run_level(
         "dt_s": context.p.dt,
         "duration_s": DURATION_S,
         "levels_note": (
-            "native required midpoint levels"
+            "reference midpoint levels"
             if integrator == "midpoint"
             else "RK4 levels selected to remain above roundoff"
         ),
@@ -1688,7 +1688,12 @@ def resolve_runtime_origin(explicit_root=None):
     package_root = Path(__import__("fomhd").__file__).resolve().parent
     if package_root.name != "fomhd":
         raise Failure("RuntimeIdentity", "imported fomhd package is malformed")
-    runtime_root = package_root.parent
+    if package_root.parent.name != "src":
+        raise Failure(
+            "RuntimeIdentity",
+            f"imported fomhd package is not under src/fomhd: {package_root}",
+        )
+    runtime_root = package_root.parents[1]
     metadata = {
         name: runtime_root / name for name in ("pyproject.toml", "uv.lock")
     }
@@ -1716,6 +1721,8 @@ def resolve_runtime_origin(explicit_root=None):
     if explicit_root is not None:
         requested = Path(explicit_root).resolve()
         if requested == package_root:
+            requested = requested.parents[1]
+        elif requested == package_root.parent:
             requested = requested.parent
         if requested != runtime_root:
             raise Failure(

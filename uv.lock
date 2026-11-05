@@ -122,7 +122,7 @@ wheels = [
 [[package]]
 name = "fomhd-research"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "cupy-cuda13x" },
     { name = "numpy" },

@@ -37,12 +37,12 @@ import numpy as np
 
 
 SCRIPT_REPO_ROOT = Path(__file__).resolve().parents[1]
-if (SCRIPT_REPO_ROOT / "fomhd").is_dir() and str(SCRIPT_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(SCRIPT_REPO_ROOT))
+SCRIPT_SOURCE_ROOT = SCRIPT_REPO_ROOT / "src"
+if SCRIPT_SOURCE_ROOT.is_dir() and str(SCRIPT_SOURCE_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_SOURCE_ROOT))
 
 
 SCHEMA = "fomhd-warp-benchmark-v1"
-NATIVE_SEED_NAME = "fomhd_make_case"
 INITIAL_DENSITY_FRACTION = 1.0e-6
 EXPECTED_N = 1.0e12
 EXPECTED_P = 1.0e-9
@@ -233,19 +233,19 @@ def _package_version(name: str) -> str | None:
 
 
 def _source_root() -> Path:
-    try:
-        import fomhd
+    import fomhd
 
-        return Path(fomhd.__file__).resolve().parent.parent
-    except Exception:
-        return Path(__file__).resolve().parents[1]
+    package_root = Path(fomhd.__file__).resolve().parent
+    if package_root.name != "fomhd" or package_root.parent.name != "src":
+        raise RuntimeError(f"fomhd is not imported from src/fomhd: {package_root}")
+    return package_root.parents[1]
 
 
 def _source_hashes(root: Path) -> dict[str, str]:
-    package = root / "fomhd"
+    package = root / "src" / "fomhd"
     records = {}
     for path in sorted(package.glob("*.py")):
-        records[f"fomhd/{path.name}"] = _sha256(path)
+        records[f"src/fomhd/{path.name}"] = _sha256(path)
     for name in ("pyproject.toml", "uv.lock"):
         path = root / name
         if path.is_file():
@@ -479,72 +479,286 @@ def hermite_density_pair(
     return positive, np.conj(positive)
 
 
-def _locate_case_builder(root: Path, explicit: str | None) -> Path:
-    candidates = []
-    if explicit:
-        candidates.append(Path(explicit).expanduser().absolute())
-    if os.environ.get("FOMHD_MAKE_CASE"):
-        candidates.append(Path(os.environ["FOMHD_MAKE_CASE"]).expanduser())
-    candidates.extend(
-        root / relative
-        for relative in (
-            "build/cpu-release/fomhd_make_case",
-            "build/cuda-release/fomhd_make_case",
-            "build/cpu-debug/fomhd_make_case",
+def _budget_checks() -> dict[str, dict[str, Any]]:
+    """Return production finite-model check metadata with physical scales."""
+    ion_mass = 1.67262192595e-27
+    ion_charge = 1.602176634e-19
+    electron_mass = 9.1093837139e-31
+    electron_charge = -1.602176634e-19
+    length = 0.2
+    time_scale = 1.0e-6
+    density = EXPECTED_N
+    pressure = EXPECTED_P
+    magnetic = EXPECTED_B
+    mu0 = 1.25663706127e-6
+    response = (
+        ion_charge * ion_charge * density / ion_mass
+        + electron_charge * electron_charge * density / electron_mass
+    )
+    current = time_scale * (
+        response + 1.0 / (mu0 * length * length)
+    )
+    charge = 1.0e-7
+    velocity = EXPECTED_U
+    force = ion_mass * density * velocity / time_scale
+    power = pressure * length**3 / time_scale
+    energy = pressure * length**3 + magnetic * magnetic * length**3 / mu0
+    checks: dict[str, dict[str, Any]] = {}
+
+    def array(
+        key: str,
+        unit: str,
+        reference: float,
+        hard: bool = True,
+    ) -> None:
+        for norm in ("linf", "weighted_L2"):
+            checks[f"{key}.{norm}"] = {
+                "unit": unit,
+                "norm": norm,
+                "reference": reference,
+                "hard": hard,
+            }
+
+    def value(
+        key: str,
+        unit: str,
+        reference: float,
+        hard: bool = True,
+    ) -> None:
+        checks[f"{key}.value"] = {
+            "unit": unit,
+            "norm": "value",
+            "reference": reference,
+            "hard": hard,
+        }
+
+    for key in ("gauss", "poisson_linear", "transverse_divergence"):
+        array(key, "V/m^2", 1.0 / length)
+    array("longitudinal_projection", "A/m^3", current / length)
+    array("darwin_dynamic", "A/(m^2*s)", current / time_scale)
+    for key in ("current_divB", "current_ampere"):
+        array(key, "T/m", magnetic / length, False)
+    for key in (
+        "initial_divB",
+        "initial_ampere",
+        "divB_update",
+        "long_term_divB_change",
+    ):
+        array(key, "T/m", magnetic / length)
+    array("CT_increment", "T/(m*s)", magnetic / (length * time_scale))
+    for key in ("CT_update", "equilibrium_B", "alias_B"):
+        array(key, "T/s", magnetic / time_scale)
+    array("current_response", "A/(m^2*s)", current / time_scale)
+    for key in ("RC_flux", "RC_mom", "deltaC"):
+        array(key, "C/(m^3*s)", charge / time_scale)
+    array("RL", "A/m^2", current)
+    for key in (
+        "ion_internal",
+        "electron_perp",
+        "electron_parallel",
+        "field_energy_B",
+        "field_energy_L",
+        "total_energy",
+    ):
+        value(key, "J", energy, False)
+    value("field_exchange", "W", energy / time_scale, False)
+    value("topology_increment", "Wb", magnetic * length * length)
+    value("total_charge_balance", "C", charge * length**3)
+    for key in ("momentum_x", "momentum_y", "momentum_z"):
+        value(
+            key,
+            "kg*m/s",
+            ion_mass * density * length**3 * velocity,
+            False,
         )
+    value(
+        "angular_momentum",
+        "kg*m^2/s",
+        ion_mass * density * length**4 * velocity,
+        False,
     )
-    for candidate in candidates:
-        if candidate.is_file() and os.access(candidate, os.X_OK):
-            return candidate.resolve()
-    raise FileNotFoundError(
-        "native fomhd_make_case was not found; pass --case-builder"
-    )
+    for suffix in (".ion", ".electron"):
+        for key in (
+            "stage_continuity",
+            "species_continuity",
+            "alias_n",
+            "equilibrium_n",
+        ):
+            array(key + suffix, "1/(m^3*s)", density / time_scale)
+        for key in (
+            "wall_rhs",
+            "wall_multiplier",
+            "alias_mom",
+            "equilibrium_mom",
+        ):
+            array(key + suffix, "kg/(m^2*s^2)", force)
+        array("wall_state" + suffix, "kg/(m^2*s)", force * time_scale)
+        array("theta_identity" + suffix, "1/s", 1.0 / time_scale)
+        array(
+            "wall_number_flux" + suffix,
+            "1/(m^2*s)",
+            density * velocity,
+        )
+        array("wall_perp_flux" + suffix, "Pa*m/s", pressure * velocity)
+        if suffix == ".electron":
+            array(
+                "wall_parallel_flux" + suffix,
+                "Pa*m/s",
+                pressure * velocity,
+            )
+        for key in ("alias_perp", "equilibrium_perp"):
+            array(key + suffix, "Pa/s", pressure / time_scale)
+        if suffix == ".electron":
+            for key in (
+                "cgl_source",
+                "alias_parallel",
+                "equilibrium_parallel",
+            ):
+                array(key + suffix, "Pa/s", pressure / time_scale)
+        for key in (
+            "electric_pairing",
+            "pressure_pairing",
+            "magnetic_work",
+            "wall_work",
+            "convection_pairing",
+        ):
+            value(key + suffix, "W", power)
+        value(
+            "spectral_transfer_defect" + suffix,
+            "W",
+            power,
+            False,
+        )
+        value(
+            "total_number_balance" + suffix,
+            "1",
+            density * length**3,
+        )
+        value("kinetic_energy" + suffix, "J", energy, False)
+    return checks
 
 
-def _make_native_seed(
-    output: Path,
-    builder: Path,
-    *,
-    deadline: float,
-) -> tuple[Path, str]:
-    seed = output / "work" / "native-seed"
-    seed.parent.mkdir()
-    remaining = deadline - time.monotonic()
-    if remaining <= 0:
-        raise BudgetExhausted("wall-clock budget exhausted before case bootstrap")
-    completed = subprocess.run(
-        [str(builder), str(seed), "1", "0.0", "1e-9", "1"],
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        check=False,
-        timeout=remaining,
+def _python_case_template() -> str:
+    """Render a complete finite-mass case using only project-owned data."""
+    mu0 = 1.25663706127e-6
+    response = (
+        1.602176634e-19**2 * EXPECTED_N / 1.67262192595e-27
+        + 1.602176634e-19**2 * EXPECTED_N / 9.1093837139e-31
     )
-    _write_text(
-        output / "logs" / "native_make_case.log",
-        completed.stdout
-        + f"\nexit_code={completed.returncode}\ncommand={builder}\n",
+    current = 1.0e-6 * (response + 1.0 / (mu0 * 0.2 * 0.2))
+    values = {
+        "schema_version": 1,
+        "model": "A0",
+        "units": "SI",
+        "layout_version": 1,
+        "case_name": "python-template",
+    }
+    lines = [f"{key} = {json.dumps(value) if isinstance(value, str) else value}"
+             for key, value in values.items()]
+    lines.extend(
+        [
+            "[species]",
+            'ion_id = "ion"',
+            'electron_id = "electron"',
+            "qi = 1.602176634e-19",
+            "mi = 1.67262192595e-27",
+            "qe = -1.602176634e-19",
+            "me = 9.1093837139e-31",
+            "gamma_i = 1.6666666666666667",
+            "electron_inertia = 1",
+            "[grid]",
+            "R0 = 1.0",
+            "Z0 = 0.0",
+            "hR = 0.2",
+            "hZ = 0.2",
+            "NR = 4",
+            "NZ = 4",
+            "K = 1",
+            "Nphi = 5",
+            "[time]",
+            "start_time = 0.0",
+            "dt = 2.0e-9",
+            "nsteps = 1",
+            'initial_kind = "non_equilibrium"',
+            'integrator = "rk4"',
+            'dt_guard = "warn"',
+            "minimum_samples_per_cycle = 32.0",
+            "max_amplitude_error = 0.01",
+            "max_phase_error_rad = 0.1",
+            "[boundary]",
+            'kind = "fixed_lcfs_static"',
+            "potential = 0.0",
+            'version = "staircase_relative_v1"',
+            "[solver]",
+            'backend = "cpu"',
+            'precision = "fp64"',
+            'complex_precision = "complex128"',
+            f"memory_limit_bytes = {512 << 20}",
+            f"device_memory_limit_bytes = {512 << 20}",
+            "rank_rtol = 1.0e-12",
+            "device_ordinal = 0",
+            "cpu_threads = 1",
+            "[solver.constants]",
+            "epsilon0_Fpm = 8.8541878188e-12",
+            f"mu0_Hpm = {mu0!r}",
+            'version = "A0-SI-v1"',
+            "[solver.references]",
+            "L_m = 0.2",
+            "t_s = 1.0e-6",
+            "n_i_m3 = 1.0e12",
+            "n_e_m3 = 1.0e12",
+            "u_mps = 1.0",
+            "E_Vpm = 1.0",
+            "B_T = 1.0e-5",
+            f"J_Apm2 = {current!r}",
+            "rho_Cpm3 = 1.0e-7",
+            "p_Pa = 1.0e-9",
+            "[budgets.domain]",
+            "n_min_i = 0.0",
+            "n_min_e = 0.0",
+            "n_face_min_i = 0.0",
+            "n_face_min_e = 0.0",
+            "p_min_i = 0.0",
+            "p_min_perp_e = 0.0",
+            "p_min_parallel_e = 0.0",
+            "B_min = 1.0e-12",
+        ]
     )
-    if completed.returncode != 0:
-        raise RuntimeError(
-            f"native case generator failed with exit {completed.returncode}"
+    for name, check in _budget_checks().items():
+        lines.extend(
+            [
+                f'[budgets.checks."{name}"]',
+                "atol = 0.0",
+                "rtol = 1.0e-9",
+                f"reference = {check['reference']!r}",
+                f"unit = {json.dumps(check['unit'])}",
+                f"norm = {json.dumps(check['norm'])}",
+                f"gate = {json.dumps('hard' if check['hard'] else 'observe')}",
+            ]
         )
-    case_path = seed / "case.toml"
-    with case_path.open("rb") as handle:
-        document = tomllib.load(handle)
-    references = document["solver"]["references"]
-    actual_case = (
-        float(references["n_i_m3"]),
-        float(references["p_Pa"]),
-        float(references["B_T"]),
+    lines.extend(
+        [
+            "[diagnostics]",
+            "inner_distance_m = 0.05",
+            'alias_policy = "initial_midpoint_restart"',
+            "timing_repetitions = 1",
+            "timing_warmup = 0",
+            "mode_observations = []",
+            "[io]",
+            'geometry_file = "geometry.npz"',
+            'initial_file = "initial.npz"',
+            'output_dir = "run"',
+            "snapshot_stride = 1",
+            "checkpoint_stride = 1",
+            "max_input_bytes = 16777216",
+            "max_uncompressed_bytes = 33554432",
+            "max_entries = 4096",
+            "max_header_bytes = 1048576",
+            'source_manifest_file = "source_manifest.json"',
+            "write_residual_arrays = false",
+        ]
     )
-    actual = actual_case + (float(references["u_mps"]),)
-    expected = (EXPECTED_N, EXPECTED_P, EXPECTED_B, EXPECTED_U)
-    if actual != expected:
-        raise ValueError(
-            f"native fixture constants differ: got {actual}, expected {expected}"
-        )
-    return case_path, _sha256(builder)
+    return "\n".join(lines) + "\n"
 
 
 def _replace_top_key(text: str, key: str, literal: str) -> str:
@@ -637,8 +851,8 @@ def _source_manifest(
         "provider_version": "v1",
         "units": "SI",
         "conversion_method": (
-            "Native generated case schema; Python closed_reference with zero "
-            "flow; Hermitian electron-density k=+/-1 seed under a smooth "
+            "Python-generated A0 case schema; production closed_reference with "
+            "zero flow; Hermitian electron-density k=+/-1 seed under a smooth "
             "spatial envelope; unchanged ion density, positive pressures, and "
             "discrete harmonic magnetic field."
         ),
@@ -771,7 +985,6 @@ def _initial_physical_metadata(
 def _build_grid_inputs(
     output: Path,
     template: str,
-    seed_case: Path,
     *,
     grid: int,
     K: int,
@@ -791,6 +1004,11 @@ def _build_grid_inputs(
     bootstrap_dir = directory / "bootstrap"
     bootstrap_dir.mkdir()
     bootstrap_case = bootstrap_dir / "case.toml"
+    bootstrap_initial = bootstrap_dir / "bootstrap_initial.npz"
+    _write_npz(
+        bootstrap_initial,
+        {"bootstrap": np.asarray(True)},
+    )
     bootstrap_text = _render_case(
         template,
         case_name=f"bootstrap-g{grid}-k{K}",
@@ -803,7 +1021,7 @@ def _build_grid_inputs(
         backend=backend,
         device_ordinal=device_ordinal,
         geometry_path=_relative_path(geometry_path, bootstrap_dir),
-        initial_path=_relative_path(seed_case.parent / "initial.npz", bootstrap_dir),
+        initial_path=_relative_path(bootstrap_initial, bootstrap_dir),
         source_path="source_manifest.json",
     )
     _write_text(bootstrap_case, bootstrap_text)
@@ -812,7 +1030,7 @@ def _build_grid_inputs(
         _source_manifest(
             bootstrap_case,
             geometry_path,
-            seed_case.parent / "initial.npz",
+            bootstrap_initial,
             grid=grid,
             initial_metadata={"bootstrap_seed": True},
         ),
@@ -2107,9 +2325,9 @@ def _pilot_specs(
 
 
 def _frequency_reference(
-    seed_case: Path, modules: Any
+    template_case: Path, modules: Any
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    with seed_case.open("rb") as handle:
+    with template_case.open("rb") as handle:
         document = tomllib.load(handle)
     species = document["species"]
     references = document["solver"]["references"]
@@ -2200,16 +2418,23 @@ def _run_command_impl(arguments: argparse.Namespace, deadline: float) -> int:
     command_error = None
     status = "completed"
     try:
-        builder = _locate_case_builder(root, arguments.case_builder)
+        template = _python_case_template()
+        template_case = output / "work" / "python-template" / "case.toml"
+        _write_text(template_case, template)
+        builder_source = Path(__file__).resolve()
         provenance["case_builder"] = {
-            "path": str(builder),
-            "sha256": _sha256(builder),
+            "kind": "python",
+            "path": str(builder_source),
+            "sha256": _sha256(builder_source),
+            "entry_point": "_python_case_template",
+            "geometry": "fomhd.geometry.build_rectangle",
+            "operators": "fomhd.io.load_case -> fomhd.operators.build_operators",
+            "initial_state": "fomhd.stage.closed_reference",
+            "state_io": "fomhd.io.encode_state and run-owned source manifest",
         }
-        seed_case, _ = _make_native_seed(output, builder, deadline=deadline)
         frequency_reference, _template_document = _frequency_reference(
-            seed_case, modules
+            template_case, modules
         )
-        template = seed_case.read_text(encoding="utf-8")
         omega = float(frequency_reference["omega_plasma"])
         provenance["time"] = {
             "omega_plasma_rad_s": omega,
@@ -2266,7 +2491,6 @@ def _run_command_impl(arguments: argparse.Namespace, deadline: float) -> int:
                 by_grid[spec.grid] = _build_grid_inputs(
                     output,
                     template,
-                    seed_case,
                     grid=spec.grid,
                     K=spec.K,
                     first_case=spec,
@@ -2423,11 +2647,10 @@ def _parser() -> argparse.ArgumentParser:
     pilot.add_argument("--device", default="cpu", help="cpu or cuda:N")
     pilot.add_argument("--grids", default="4", help="comma-separated NR=NZ values")
     pilot.add_argument("--K", type=int, default=1)
-    pilot.add_argument("--integrator", choices=("midpoint", "rk4"), default="midpoint")
+    pilot.add_argument("--integrator", choices=("midpoint", "rk4"), default="rk4")
     pilot.add_argument("--steps", type=int, default=4)
     pilot.add_argument("--samples-per-cycle", type=float, default=64.0)
     pilot.add_argument("--time-budget-s", type=float, default=300.0)
-    pilot.add_argument("--case-builder")
 
     scan = subparsers.add_parser("scan")
     scan.add_argument("--output", required=True)
@@ -2441,7 +2664,6 @@ def _parser() -> argparse.ArgumentParser:
     scan.add_argument("--amplitude-budget", type=float, default=0.01)
     scan.add_argument("--phase-budget", type=float, default=0.1)
     scan.add_argument("--time-budget-s", type=float, default=300.0)
-    scan.add_argument("--case-builder")
     return parser
 
 

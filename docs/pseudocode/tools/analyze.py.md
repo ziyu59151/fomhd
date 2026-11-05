@@ -98,3 +98,5 @@ compare independent temporal FFT as crosscheck; never modify evolution data
 相位正负约定为系数 `exp(-i*omega*t)` 与空间 `exp(i*k*phi)`；不同约定先转换。有限窗拟合的不确定度与模型/插值误差分开；不能把数值衰减叫 Landau 阻尼。
 
 输入工具若从速度生成 mom：pad n/u 到同一 N 点→逐点 `m*n*u`→forward→截谱→保存转换误差；不能 Fourier 系数逐项相乘。脚本在项目 uv 环境运行，输出单独 analysis 目录并记录输入 run/代码版本，不覆写原结果。
+
+Accept native source hash strings and Python source records containing relative and sha256 fields. Validate matching relative paths and exact source snapshot hashes. Production resolved-file SHA256 anchors must verify before analysis.

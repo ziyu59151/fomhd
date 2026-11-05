@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import warnings
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -27,6 +28,19 @@ from fomhd.types import (
 )
 
 from foundation_fixture import parameters
+
+
+SOURCE_ROOT = Path(__file__).resolve().parents[2] / "src"
+
+
+def _subprocess_environment():
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = os.pathsep.join(
+        item
+        for item in (str(SOURCE_ROOT), environment.get("PYTHONPATH", ""))
+        if item
+    )
+    return environment
 
 
 def test_native_field_order_and_defaults() -> None:
@@ -57,7 +71,7 @@ def test_native_field_order_and_defaults() -> None:
         "max_phase_error_rad",
     ]
     assert Parameters().electron_inertia == 1
-    assert Parameters().integrator == "midpoint"
+    assert Parameters().integrator == "rk4"
     assert Parameters().dt_guard == "error"
     assert Parameters().minimum_samples_per_cycle == 32
     assert Parameters().max_amplitude_error == 0.01
@@ -154,7 +168,11 @@ def test_cpu_import_does_not_eagerly_load_warp_or_cupy() -> None:
         "import sys; import fomhd.backend; "
         "assert 'warp' not in sys.modules; assert 'cupy' not in sys.modules"
     )
-    subprocess.run([sys.executable, "-c", script], check=True)
+    subprocess.run(
+        [sys.executable, "-c", script],
+        env=_subprocess_environment(),
+        check=True,
+    )
 
 
 def test_warp_kernels_compile_and_execute_on_warp_cpu_device() -> None:
@@ -204,7 +222,7 @@ rejected([[1.0, 0.0], [2.0, 2e-3], [3.0, 0.0]], 1e-11, 1)
 rejected([[1.0, 0.0], [2.0, 2e-3], [3.0, 0.0], [4.0, -3e-3]], 1e-11, 1)
 """
     with tempfile.TemporaryDirectory(prefix="a0-warp-cache-") as cache:
-        environment = os.environ.copy()
+        environment = _subprocess_environment()
         environment["WARP_CACHE_PATH"] = cache
         completed = subprocess.run(
             [sys.executable, "-c", script],

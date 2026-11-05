@@ -13,7 +13,8 @@ Fail K3 or a source payload, retain completed stage/raw source evidence and
 preserve the old commit. Massless routes through the same transaction checks.
 Reject unknown TOML, unsafe NPZ/object arrays, duplicate/missing/unavailable
 hard diagnostics and inconsistent configuration. Verify default physical mass,
-integrator and dt budgets.
+RK4 integrator and dt budgets; retain explicit midpoint coverage through an
+actual CLI run.
 Use weighted device reductions, physical-real inverse defaults, correct
 energy/time power units, signed wall trace weights and dimensional source
 bounds; test failure of deliberate work/source errors.
@@ -46,7 +47,7 @@ Covered top-level functions and fixture classes:
 - `test_gate_rejects_duplicate_and_unavailable_hard_records`
 - `test_gate_records_missing_diagnostic_raises_failure`
 - `test_parameter_defaults_accept_integrator_contract`
-- `test_config_defaults_preserve_mass_metadata_and_midpoint`
+- `test_config_defaults_use_rk4_and_preserve_explicit_midpoint`
 - `test_measure_uses_device_weighted_l2_reference`
 - `test_diagnostic_inverse_defaults_to_physical_real_checks`
 - `test_field_exchange_converts_integrated_energy_to_watts`
