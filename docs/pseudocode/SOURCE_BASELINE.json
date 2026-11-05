@@ -21,13 +21,13 @@
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 141914,
-      "sha256": "0966372c2c117c4a9815650125c9725da0cb3c084b7d409fbbb5356fc36ab3f7"
+      "bytes": 142316,
+      "sha256": "e12158498ca316f7c1a3977a676f1677f5273f4fe543f0ddd0a08a6734b35e79"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
-      "bytes": 72061,
-      "sha256": "bc3bd90182ed01f89437fa43570971e8d0a1372278d488bc7c10ec573aec39e5"
+      "bytes": 72659,
+      "sha256": "b59bf14b00c44733b66276b880465daf5a22cb4f23971fc4b4f50173c71d1ad6"
     },
     {
       "path": "mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
@@ -60,7 +60,7 @@
       "sha256": "ced8de849435864a2526500a02070b9451a195432ba4c65171db85132c77e383"
     }
   ],
-  "captured_utc": "2026-11-04T20:24:23.386975+00:00",
+  "captured_utc": "2026-11-05T10:11:07.103325+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",

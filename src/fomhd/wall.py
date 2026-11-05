@@ -95,36 +95,103 @@ def project_wall(wall, r, context):
     wall_matrix = xp.asarray(context.op.T, dtype=xp.complex128)
     wall_adjoint = _hermitian(wall_matrix, context)
     rows = wall_matrix.shape[0]
+    full_wall_matrix = xp.asarray(context.op.T_full, dtype=xp.complex128)
     multiplier = xp.zeros((context.N, rows), dtype=xp.complex128)
     multiplier_residual = xp.zeros_like(multiplier)
+
+    def normal_solve(record, rhs):
+        if record.lu is not None:
+            return xp.asarray(
+                context.compute.solve(record.lu, rhs / record.row_scale),
+                dtype=xp.complex128,
+            ) * record.col_scale
+        linear = context.compute.linear(
+            record.S,
+            rhs,
+            xp.full((rows,), record.row_scale, dtype=xp.float64),
+            xp.full((rows,), record.col_scale, dtype=xp.float64),
+            context.p.rank_rtol,
+            1.0e-10,
+        )
+        return xp.asarray(linear.x, dtype=xp.complex128)
+
+    epsilon = float(xp.finfo(xp.float64).eps)
+    minimum_scale = float(xp.finfo(xp.float64).tiny)
+    matrix_norm = (
+        float(xp.max(xp.sum(xp.abs(wall_matrix), axis=1)).item())
+        if rows
+        else 0.0
+    )
+
+    def forward_bound(sample_value, trace_norm=matrix_norm):
+        value_scale = context.compute.max_abs(sample_value)
+        return (
+            256.0
+            * epsilon
+            * trace_norm
+            * max(value_scale, minimum_scale)
+            + minimum_scale
+        )
+
     for sample, record in enumerate(wall.samples):
         if rows == 0:
             continue
         rhs = wall_matrix @ sampled[sample]
-        if record.lu is not None:
-            lam = xp.asarray(
-                context.compute.solve(
-                    record.lu, rhs / record.row_scale
-                ),
-                dtype=xp.complex128,
-            ) * record.col_scale
-        else:
-            linear = context.compute.linear(
-                record.S,
-                rhs,
-                xp.full((rows,), record.row_scale, dtype=xp.float64),
-                xp.full((rows,), record.col_scale, dtype=xp.float64),
-                context.p.rank_rtol,
-                1.0e-10,
-            )
-            lam = xp.asarray(linear.x, dtype=xp.complex128)
+        lam = normal_solve(record, rhs)
         sample_reaction = -(wall_adjoint @ lam) * record.winv
         value[sample] += sample_reaction
+        forward = wall_matrix @ value[sample]
+        converged = False
+        for _ in range(5):
+            forward_scale = context.compute.max_abs(forward)
+            if forward_scale <= forward_bound(value[sample]):
+                converged = True
+                break
+            correction = normal_solve(record, forward)
+            correction_reaction = -(wall_adjoint @ correction) * record.winv
+            corrected_value = value[sample] + correction_reaction
+            corrected_forward = wall_matrix @ corrected_value
+            corrected_scale = context.compute.max_abs(corrected_forward)
+            if corrected_scale >= forward_scale:
+                raise Failure(
+                    "WallProjection",
+                    "forward wall trace refinement stagnated",
+                )
+            value[sample] = corrected_value
+            sample_reaction = sample_reaction + correction_reaction
+            lam = lam + correction
+            forward = corrected_forward
+            if corrected_scale <= forward_bound(value[sample]):
+                converged = True
+                break
+        if not converged:
+            raise Failure(
+                "WallProjection",
+                "forward wall trace refinement did not converge in five corrections",
+            )
         reaction[sample] = sample_reaction
         multiplier[sample] = lam
         multiplier_residual[sample] = record.S @ lam - rhs
-    if not bool(xp.all(xp.isfinite(value))):
-        raise Failure("Finite", "wall-projected momentum is non-finite")
+    if not bool(
+        xp.all(xp.isfinite(value))
+        and xp.all(xp.isfinite(reaction))
+        and xp.all(xp.isfinite(multiplier))
+        and xp.all(xp.isfinite(multiplier_residual))
+    ):
+        raise Failure("Finite", "wall projection contains non-finite values")
+    if full_wall_matrix.shape[0]:
+        full_norm = float(
+            xp.max(xp.sum(xp.abs(full_wall_matrix), axis=1)).item()
+        )
+        for sample_value in value:
+            full_trace = full_wall_matrix @ sample_value
+            if context.compute.max_abs(full_trace) > forward_bound(
+                sample_value, full_norm
+            ):
+                raise Failure(
+                    "WallProjection",
+                    "full wall trace exceeds the projected-output roundoff bound",
+                )
     return SimpleNamespace(
         value=value.reshape(-1),
         reaction=reaction.reshape(-1),
