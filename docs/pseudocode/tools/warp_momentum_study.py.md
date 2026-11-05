@@ -1,5 +1,7 @@
 # Fixed-domain finite-inertia momentum evidence
 
+Traceability: `A0-TOOL-WARP_MOMENTUM_STUDY`.
+
 This harness uses the production finite-electron-mass stage and RK4 transaction.
 It changes neither tolerances nor wall conditions. CPU setup and plotting are
 allowed; CUDA execution requires an owned Slurm allocation.

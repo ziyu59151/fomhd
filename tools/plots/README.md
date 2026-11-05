@@ -30,12 +30,17 @@ access, PyTorch operations, or C++ runtime dependency are needed for plotting.
 | `plot_warp_benchmarks.py` | Warp benchmark scan directory with `summary.json` | Accepted and rejected equal-horizon outcomes, measured frequency and amplitude, baseline timing |
 | `plot_warp_verification.py` | Massless `report.json` with sibling Hall NPZs and coupled MMS `results.json` | Local Hall frequencies, midpoint/RK4 time refinement, measured closed-grid spatial errors |
 | `plot_warp_longitudinal.py` | Completed finite-mass longitudinal `report.json` and sibling numeric NPZ histories | Unforced wave histories, numerical amplitude against the integrator polynomial, continuum endpoint error |
+| `plot_spatial_modes.py` | Fixed-domain spatial/momentum campaign root with report JSON and sibling NPZ files | Geometry, independent continuum Ohm errors, physical momentum balances, partial quiet failures, and independently refitted eight-cycle modes |
 
 Every `--output` must be a **new directory**. Each script saves PNG for browsing,
 PDF for export, `plot-data.json`, `provenance.json`, and an English scope note.
 The local-mode script also writes `eigenvalues.csv`. Provenance includes the
 command arguments, input/script hashes, and package versions. Inputs remain
 read-only; missing or unsupported evidence causes an explicit failure.
+The campaign plotter additionally retains unavailable and rejected cases in a
+visible ledger and annotates them in its figures. Partial quiet histories stop
+at the last accepted sample. A retry has a separate identity and never erases
+the original attempt.
 
 Example commands with the current evidence (choose a new output root):
 

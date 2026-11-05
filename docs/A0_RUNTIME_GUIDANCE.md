@@ -196,6 +196,12 @@ forthcoming algorithm, including its own global-order verification.
 
 ## Remaining A0 acceptance work
 
+The [fixed-domain and multi-period campaign](A0_SPATIAL_MODE_EVIDENCE.md) now
+supplies independent continuum Ohm-field errors, finite-mass momentum
+refinement, a same-grid half-dt control, and eight-cycle CUDA mode measurements.
+It also retains failed cases; these measurements do not close global A0
+acceptance. The earlier short-window results above remain historical evidence.
+
 1. Isolate the momentum floor with an independent semidiscrete balance and
    fixed-domain grid refinement, separating wall, transfer, and field terms.
 2. Establish global spatial error budgets for the current closed wall, including

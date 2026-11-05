@@ -1,5 +1,7 @@
 # `warp_spatial_study.py` pseudocode
 
+Traceability: `A0-TOOL-WARP_SPATIAL_STUDY`.
+
 ## A0-TOOL-FIXED-SPATIAL-STUDY-01 - Purpose and ownership
 
 Stable documentation entry: `A0-TOOL-FIXED-SPATIAL-STUDY`.

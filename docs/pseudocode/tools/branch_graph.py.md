@@ -1,5 +1,7 @@
 # Git branch graph generation
 
+Traceability: `A0-TOOL-BRANCH_GRAPH`.
+
 ## A0-TOOL-GRAPH-01
 
 Read fetched remote branch refs (excluding symbolic HEAD), then read their real

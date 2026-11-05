@@ -37,6 +37,12 @@ transactions, historical midpoint controls, and explicit
 `time.integrator = "midpoint"` cases remain supported; equations and diagnostic
 budgets did not change with the default.
 
+The subsequent [fixed-domain and multi-period campaign](A0_SPATIAL_MODE_EVIDENCE.md)
+records the Python-only RK4 mainline, independent continuum field comparisons,
+momentum balance refinement and measured multi-cycle modes. It supersedes
+earlier statements that those measurements have not yet been attempted; all
+historical attempts and their original limits remain intact.
+
 ## Shared port interface (revision 1)
 
 The package is `src/fomhd/`; invoke `uv run python -m fomhd` from any working

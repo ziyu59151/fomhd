@@ -60,7 +60,7 @@
       "sha256": "ced8de849435864a2526500a02070b9451a195432ba4c65171db85132c77e383"
     }
   ],
-  "captured_utc": "2026-11-05T10:11:07.103325+00:00",
+  "captured_utc": "2026-11-05T10:48:30.481106+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -74,7 +74,8 @@
     "global_tokamak_validation": false,
     "experimental_validation": false,
     "performance_optimization": false,
-    "release_frozen": false
+    "release_frozen": false,
+    "maintenance_head": "1840cfa; exporter restored, numerical solver unchanged from 48beca7"
   },
   "warp_scope": {
     "record": "docs/WARP_IMPLEMENTATION.md",
@@ -82,10 +83,12 @@
     "massless_cpu_gpu_workflow": "bounded pass; global spatial acceptance unresolved",
     "local_hall_and_coupled_temporal_mms": "bounded pass; not global physical validation",
     "unforced_finite_longitudinal_time": "12 CPU and 12 CUDA cases pass; periodic adapter, not physical CGL or global validation",
-    "overnight_finite_scan": "running; see external immutable run receipt",
+    "overnight_finite_scan": "completed; nine of ten cases reached the horizon; see docs/A0_RUNTIME_GUIDANCE.md",
     "global_tokamak_validation": false,
     "experimental_validation": false,
     "performance_optimization": false,
-    "release_frozen": false
+    "release_frozen": false,
+    "fixed_domain_spatial_and_modes": "measured; boundary limitations and failed disk n20 retained; see docs/A0_SPATIAL_MODE_EVIDENCE.md",
+    "quiet_wall_refinement": "CPU n3/n6/n9 64-step rerun complete; CUDA bounded projection regressions pass; c55f1b6"
   }
 }
