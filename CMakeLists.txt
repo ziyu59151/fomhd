@@ -186,3 +186,7 @@ add_test(NAME verification_local_dispersion_preflight COMMAND fomhd_local_disper
 add_test(NAME verification_local_dispersion COMMAND fomhd_local_dispersion)
 set_tests_properties(verification_local_dispersion_preflight verification_local_dispersion
     PROPERTIES LABELS "cpu;verification;dispersion" TIMEOUT 600)
+
+add_executable(fomhd_export_native tools/export_native.cpp)
+target_include_directories(fomhd_export_native PRIVATE tests)
+target_link_libraries(fomhd_export_native PRIVATE fomhd_runtime)
