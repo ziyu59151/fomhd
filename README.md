@@ -1,5 +1,9 @@
 # FOMHD — Warp/CuPy A0 solver and native reference
 
+[Branch graph](https://github.com/ziyu59151/fomhd/network) ·
+[All branches](https://github.com/ziyu59151/fomhd/branches) ·
+[Local graph and version policy](docs/development.md#4-branches-tags-and-reproducibility)
+
 The current A0 development uses Python with NVIDIA Warp and CuPy on CUDA,
 with an explicit NumPy/SciPy CPU reference. The C++20/CUDA implementation is
 preserved at `reference/a0-native` (`48beca7`). A0
@@ -126,6 +130,11 @@ directories, virtual environments, run outputs, literature, and design
 repository data are excluded from the source repository.
 
 ## Current evidence and limits
+
+The [A0 runtime guidance](docs/A0_RUNTIME_GUIDANCE.md) explains CPU/GPU
+placement, the observe-only diagnostic audit, the massless closure, and the
+remaining A0 acceptance work. Native/Warp correctness comparisons remain
+useful; routine speed comparisons are not a development acceptance requirement.
 
 The [Warp implementation record](docs/WARP_IMPLEMENTATION.md) distinguishes
 CPU/CUDA execution, finite/massless model checks, local Hall and longitudinal

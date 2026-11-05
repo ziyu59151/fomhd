@@ -21,6 +21,16 @@ libraries are preferred for the initial implementation. CUDA
 correctness support is part of A0; performance tuning, fusion, reduced
 precision, and NCU-based optimization remain a separate later phase.
 
+Choose CPU/GPU placement by workload and data ownership. Repeated large-array
+stage operations use the selected numerical backend; configuration, geometry
+metadata, file I/O, plotting, and small independent analytical tests can stay on
+the CPU. Explicit host setup and scalar synchronization are expected. Avoid
+per-stage full-state transfers and silent fallback from a selected CUDA backend.
+A new CPU path or GPU kernel is justified by the operation's needs, not by a
+requirement to put every activity on the GPU. Warp is the chosen implementation
+tool; routine native/Warp timing comparisons are not an acceptance gate.
+See [A0 runtime guidance](A0_RUNTIME_GUIDANCE.md) for the current model limits.
+
 CMake, Ninja, and CTest own native targets and dependencies. The current build
 baseline is GNU 15.2.0, CPU Release/Debug configurations, FFTW, MKL, OpenSSL,
 TOML++, nlohmann/json, bundled miniz, and CUDA Toolkit 13.3 for the CUDA target.
@@ -109,6 +119,30 @@ Short-lived task branches use `codex/<task>`. Verified changes merge into
 an immutable tag such as `a1-v1.0.0` and, only if maintenance is needed, a
 `release/a1` branch. A later boundary or physics change is a new commit on the
 maintenance branch; the original tag remains unchanged.
+
+The [GitHub Network graph](https://github.com/ziyu59151/fomhd/network)
+shows the branch history from one page (repository **Insights -> Network**).
+[All branches](https://github.com/ziyu59151/fomhd/branches) lists remote branch
+heads. Network is a built-in GitHub feature, not a plugin or repository toggle;
+for this private repository, access depends on the account's GitHub plan.
+See [GitHub's availability documentation](https://docs.github.com/en/repositories/viewing-activity-and-data-for-your-repository/understanding-connections-between-repositories).
+The links do not imply that a paid feature has been enabled.
+
+For an account-independent graph in any local checkout, configure this
+repository-local alias once:
+
+```bash
+git config --local alias.graph 'log --graph --decorate --oneline --all --date-order'
+git fetch origin
+git graph
+```
+
+The alias includes local branches and fetched remote branches. It is installed
+in the development checkout, but Git configuration is not cloned; other
+checkouts use the same setup command. The current native, Warp, and gallery
+milestones are ancestor commits in one mostly linear history. Branch names
+point to commits; a milestone branch does not itself create a divergent line.
+Do not manufacture commits or rewrite history just to make the graph branch.
 
 A reproducible run records the source commit and dirty state, the complete
 bounded source snapshot used by the build, executable SHA-256, compiler flags,
