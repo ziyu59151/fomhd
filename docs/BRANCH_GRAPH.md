@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-warp": "d9390ac65657974a1cbf7819b9c79b35e2cecd03", "main": "92c1d3e461424018ac85b1bc71deb5904caf838e", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "main": "aa06cf91b5a0255c31345989f660299822eec8ef", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1"} -->
 
 ```mermaid
 flowchart LR
@@ -34,10 +34,13 @@ flowchart LR
   c92c1d3e461424018ac85b1bc71deb5904caf838e["92c1d3e4 · docs: update branch graph [skip ci]"]
   cb2dc5797fbe11ef32bb0e42d1b52a411591370e8 --> c92c1d3e461424018ac85b1bc71deb5904caf838e
   click c92c1d3e461424018ac85b1bc71deb5904caf838e "https://github.com/ziyu59151/fomhd/commit/92c1d3e461424018ac85b1bc71deb5904caf838e"
+  caa06cf91b5a0255c31345989f660299822eec8ef["aa06cf91 · docs: update branch graph [skip ci]"]
+  c92c1d3e461424018ac85b1bc71deb5904caf838e --> caa06cf91b5a0255c31345989f660299822eec8ef
+  click caa06cf91b5a0255c31345989f660299822eec8ef "https://github.com/ziyu59151/fomhd/commit/aa06cf91b5a0255c31345989f660299822eec8ef"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
-  b2(["codex/a0-warp"]) -.-> cd9390ac65657974a1cbf7819b9c79b35e2cecd03
-  b3(["main"]) -.-> c92c1d3e461424018ac85b1bc71deb5904caf838e
+  b2(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
+  b3(["main"]) -.-> caa06cf91b5a0255c31345989f660299822eec8ef
   b4(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
 ```
 
