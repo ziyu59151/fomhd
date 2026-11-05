@@ -3,7 +3,8 @@
 Status: implemented with bounded CPU/GPU verification, 2026-11-05. Native reference is
 commit 48beca7 on reference/a0-native; this change was developed on codex/a0-warp
 for reviewed promotion to the master development baseline.
-The long finite-mass scan is still running. This is a development baseline;
+The long finite-mass scan finished: nine cases reached the requested horizon,
+and one case was rejected by a wall constraint. This is a development baseline;
 massless global spatial accuracy and physical Tokamak validation remain open.
 
 1. Preserve the native CPU/CUDA reference and its evidence (done).
@@ -95,8 +96,10 @@ comments, tests, logs, and this implementation record are English.
 `species.electron_inertia=1|0` defaults to 1. `time.integrator` selects midpoint
 (default) or rk4. `time.dt_guard=error|warn` defaults to error. A warn override
 is for controlled instability scans; finite/positive/linear-solver failures
-remain fatal. Frequency checks use physical parameters and resolved spectra,
-including plasma, cyclotron, pressure/advection, and Hall limits as applicable.
+remain fatal. Frequency checks use physical parameters and operator-resolution
+rate estimates, including plasma, cyclotron, pressure/advection, and Hall scales
+as applicable. These estimates are not a computed constrained eigenspectrum or
+a proven upper bound on the nonlinear production operator.
 Midpoint has |R(ix)|^2=1+x^4/4, so no nonzero imaginary-axis stability interval.
 Report horizon-dependent amplitude/phase errors, not a fictitious stable CFL.
 Initial configurable budgets: at least 32 samples per fastest cycle, amplitude
@@ -122,6 +125,7 @@ sufficient for these pre-commit runs. Historical failures remain available.
 | GPU local Hall response | Three kdi samples passed with real CUDA execution | `warp-final-gpu__20261105T0320/hall/report.json`, job 10811 |
 | Narrow GPU memory check | Actual Warp kernels and FFT/LU tests: 2 passed, 1 deselected; memcheck 0 errors | `warp-final-gpu-r2__20261105T0330/memcheck.log` |
 | GPU coupled temporal MMS | Midpoint combined orders 1.936/1.969; RK4 3.998/3.996; all required hard checks available and passed | `warp-overnight-retry__20261105T0132/mms/results.json`, job 10810 |
+| Completed closed-wall finite-mass GPU scan | 9 cases completed, 1 WallState rejection after 7 of 8 requested steps; all 10 frequency estimates unavailable; observe-only budget exceedances retained | `warp-overnight-retry__20261105T0132/scan/summary.json`, job 10810 |
 | Unforced finite-mass longitudinal control | 12 CPU and 12 CUDA cases pass the declared polynomial/diagnostic gates; coarse continuum errors remain large and explicitly reported | `warp-longitudinal-cpu__20261105T0403/report.json`, `warp-longitudinal-gpu__20261105T0406/results/report.json`, job 10813 |
 | Same-input native/Warp endpoints | Four-step finite-mass comparison passed; timing scopes differ, so no speedup ratio | `native-warp-parity-cost__20261105/comparison.json` |
 | Spatial review and corrections | Fixed physical MMS, 1/s field metadata, rounding-aware containment accepted; global accuracy still unresolved | `warp-integration__20261105T0236/spatial-review/REPORT.md`, `fix-addendum/ADDENDUM.md` |
@@ -183,16 +187,22 @@ reported as validation of the CGL physical regime.
 
 The separate overnight closed-wall midpoint case at eight steps rejects
 with `WallState` after seven accepted steps. Its archived electron mode-zero
-residual is 4.2686974e-31 against a 4.1424681e-31 limit. The first eight
-completed closed-wall cases do not provide available frequency estimates
-under the estimator's sample/coherent-cycle requirements. These records do
+residual is 4.2686974e-31 against a 4.1424681e-31 limit. The completed scan has
+nine accepted cases and this one rejected case. All ten frequency estimates
+are unavailable under the estimator's sample/coherent-cycle requirements. These records do
 not establish that Langmuir growth caused the rejection. The direct periodic
 control above supplies a separate, attributable time-step experiment.
+Observe-only time-step and momentum-budget exceedances also remain in the
+scan. Its normalized residual maximum covers available linf/weighted_L2
+checks with positive thresholds; it does not cover every diagnostic or turn
+case completion into a scientific acceptance verdict.
 
 ## Overnight experiment and physical scales
 
-Job 10810 reserves one RTX 5090, two CPU cores and 16 GiB for at most five
-hours. After coupled temporal MMS, it scans midpoint/RK4 at the same final
+Job 10810 used one RTX 5090, two CPU cores and a 16 GiB reservation with a
+five-hour limit. It finished on 2026-11-05 at 05:30:50 Asia/Shanghai, after
+14,333.05 s (about 3 h 59 min). After coupled temporal MMS, it scanned
+midpoint/RK4 at the same final
 time of five plasma periods with 8, 16, 80, 160 and 320 steps. The small
 controlled case uses n=1e12 m^-3, P=1e-9 Pa and B=1e-5 T; these are **not
 Tokamak parameters**. A measured pilot estimated 12,425 s for the scan plus
@@ -206,8 +216,18 @@ The tool-generated frequency table is
 B=3 T it gives fci=22.879 MHz, fpe=28.393 GHz, fce=83.977 GHz and an
 upper-hybrid estimate of 88.647 GHz. Ten samples of the 30th ion harmonic give
 dt=1.457e-10 s; 32 samples of that upper-hybrid period give dt=3.525e-13 s.
-These are sampling estimates, not a universal stability bound. Plasma
-frequency alone need not be the fastest resolved finite-mass scale.
+These are characteristic scales and sampling estimates, not a universal
+stability bound. In particular, comparing the bare electron cyclotron and
+plasma frequencies alone does not identify the fastest resolved Darwin mode.
+The finite-mass momentum equation retains electron bulk gyromotion through
+the full Lorentz force; a gyrotropic pressure closure does not itself remove
+that response. Kinetic gyrophase physics and higher cyclotron harmonics are
+not implied. The transverse Darwin constraint changes the response with
+wavenumber and propagation angle, so the usual upper-hybrid expression is
+not automatically the exact frequency here. The current parallel longitudinal
+control isolates the plasma branch. Its results do not determine the fastest
+branch for every production grid, and its mathematical test does not validate
+the physical ordering of CGL at arbitrary high frequencies.
 
 The massless branch removes the finite-charge/Langmuir degree of freedom and
 uses its quasineutral constraint at every stage. Its Hall high-k branch grows
@@ -230,3 +250,12 @@ integrator data. All prior failures and earlier renders remain archived.
 The direct longitudinal CUDA figure is in
 `warp-longitudinal-figures-r2__20261105T0420/`, with the same PNG/PDF, data,
 provenance and scope products. Plotting never reruns a solver.
+
+The combined gallery at
+`/home/lxzeng/runs/fomhd/a0-benchmark-figures__20261104T050738Z/index.html`
+retains the original five native figures and appends separate finite-mass
+and massless Warp groups. The 2026-11-05 appendix includes completed scan
+histories, retained failure and observe-only records, explicit CPU/CUDA
+labels, and source hashes. The original gallery is preserved as
+`index-native-20261104.html`. This update only inspects and renders existing
+solver runs; it does not change a physical model, numerical guard, or solver.
