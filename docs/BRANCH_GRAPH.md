@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-warp": "d9390ac65657974a1cbf7819b9c79b35e2cecd03", "main": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "reference/a0-native": "48beca72d3b7260673d6a6823cbbd2b7fcb90581"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-warp": "d9390ac65657974a1cbf7819b9c79b35e2cecd03", "main": "92c1d3e461424018ac85b1bc71deb5904caf838e", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1"} -->
 
 ```mermaid
 flowchart LR
@@ -16,6 +16,9 @@ flowchart LR
   c48beca72d3b7260673d6a6823cbbd2b7fcb90581["48beca72 · Preserve verified A0 native reference and implementation pseudocode"]
   cf25329978364763a695bd185e986a6c0255f5df6 --> c48beca72d3b7260673d6a6823cbbd2b7fcb90581
   click c48beca72d3b7260673d6a6823cbbd2b7fcb90581 "https://github.com/ziyu59151/fomhd/commit/48beca72d3b7260673d6a6823cbbd2b7fcb90581"
+  c1840cfa60e3b29401c9ea55a4ee8876351f582c1["1840cfa6 · Preserve independent native oracle exporter on reference branch"]
+  c48beca72d3b7260673d6a6823cbbd2b7fcb90581 --> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
+  click c1840cfa60e3b29401c9ea55a4ee8876351f582c1 "https://github.com/ziyu59151/fomhd/commit/1840cfa60e3b29401c9ea55a4ee8876351f582c1"
   cd9390ac65657974a1cbf7819b9c79b35e2cecd03["d9390ac6 · Implement Warp A0 and switchable quasineutral electrons"]
   c48beca72d3b7260673d6a6823cbbd2b7fcb90581 --> cd9390ac65657974a1cbf7819b9c79b35e2cecd03
   click cd9390ac65657974a1cbf7819b9c79b35e2cecd03 "https://github.com/ziyu59151/fomhd/commit/d9390ac65657974a1cbf7819b9c79b35e2cecd03"
@@ -28,11 +31,14 @@ flowchart LR
   cb2dc5797fbe11ef32bb0e42d1b52a411591370e8["b2dc5797 · Make Python Warp the RK4 mainline and add fixed-domain verification"]
   cf514d38fd4f51a92ca93f68035896675b11dffe1 --> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
   click cb2dc5797fbe11ef32bb0e42d1b52a411591370e8 "https://github.com/ziyu59151/fomhd/commit/b2dc5797fbe11ef32bb0e42d1b52a411591370e8"
+  c92c1d3e461424018ac85b1bc71deb5904caf838e["92c1d3e4 · docs: update branch graph [skip ci]"]
+  cb2dc5797fbe11ef32bb0e42d1b52a411591370e8 --> c92c1d3e461424018ac85b1bc71deb5904caf838e
+  click c92c1d3e461424018ac85b1bc71deb5904caf838e "https://github.com/ziyu59151/fomhd/commit/92c1d3e461424018ac85b1bc71deb5904caf838e"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
   b2(["codex/a0-warp"]) -.-> cd9390ac65657974a1cbf7819b9c79b35e2cecd03
-  b3(["main"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
-  b4(["reference/a0-native"]) -.-> c48beca72d3b7260673d6a6823cbbd2b7fcb90581
+  b3(["main"]) -.-> c92c1d3e461424018ac85b1bc71deb5904caf838e
+  b4(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
 ```
 
 Regenerate after fetching:
