@@ -16,18 +16,19 @@
     "D058",
     "D059",
     "D060",
-    "D061"
+    "D061",
+    "D062"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 142316,
-      "sha256": "e12158498ca316f7c1a3977a676f1677f5273f4fe543f0ddd0a08a6734b35e79"
+      "bytes": 144362,
+      "sha256": "c19db9d03ad220f8c702ecac488d4342514cdc64f602b36884d5d5492d22fb85"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
-      "bytes": 72659,
-      "sha256": "b59bf14b00c44733b66276b880465daf5a22cb4f23971fc4b4f50173c71d1ad6"
+      "bytes": 75304,
+      "sha256": "4b281407b7e8e987b51f0a3f47cde852a1ab9f0688f66cda974b0f8932f0c872"
     },
     {
       "path": "mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
@@ -46,21 +47,26 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/09_diagnostics/diagnostics.md",
-      "bytes": 36244,
-      "sha256": "cbeaf643e80de35cc1e061b078bf182235d54b2608be1b8cb5685d974be7002c"
+      "bytes": 36612,
+      "sha256": "13e99f0ccbffbb184780234761a143897adbe67cfd779109bad446fc5094e87d"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
-      "bytes": 6231,
-      "sha256": "b07d199e6d3aeb2c0f783f0ba5a619a1359acdd5cb18e8118e008f76ca368d7c"
+      "bytes": 6538,
+      "sha256": "018186b5422cfd1e407b4dba282dfb0cbb88586e04649424ca4215137b77aebc"
     },
     {
       "path": "mainline_design/implementation/A0/A0_MASSLESS_ELECTRON.md",
-      "bytes": 16146,
-      "sha256": "ced8de849435864a2526500a02070b9451a195432ba4c65171db85132c77e383"
+      "bytes": 16524,
+      "sha256": "233988f2e72fac671aa20b842fb373f4642ef3965cd680139df60306f5df86c1"
+    },
+    {
+      "path": "mainline_design/implementation/A0/A0_TOKAMAK_CAE.md",
+      "bytes": 9440,
+      "sha256": "0e00ebc8f83ab43aa04a8117be6b4b50f20f68cdfdefd9f2f9fdfab3ec8e0875"
     }
   ],
-  "captured_utc": "2026-11-05T10:48:30.481106+00:00",
+  "captured_utc": "2026-11-06T00:43:05.494858+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -89,6 +95,7 @@
     "performance_optimization": false,
     "release_frozen": false,
     "fixed_domain_spatial_and_modes": "measured; boundary limitations and failed disk n20 retained; see docs/A0_SPATIAL_MODE_EVIDENCE.md",
-    "quiet_wall_refinement": "CPU n3/n6/n9 64-step rerun complete; CUDA bounded projection regressions pass; c55f1b6"
+    "quiet_wall_refinement": "CPU n3/n6/n9 64-step rerun complete; CUDA bounded projection regressions pass; c55f1b6",
+    "global_fast_branch_prototype": "Circle grid12 CUDA/grid16 CPU and EAST grid12 matched responses; see docs/A0_TOKAMAK_CAE_EVIDENCE.md; not experimental validation"
   }
 }

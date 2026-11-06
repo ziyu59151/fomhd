@@ -3,8 +3,10 @@
 Date: 2026-11-05. The active `main` numerical contract is the Python/Warp
 implementation under `src/fomhd/`; archived run source and inputs are identified
 separately by their recorded SHA-256 hashes. This is an interpretation and
-workflow record. The current default is fully explicit RK4 with electron
-inertia enabled; numerical budgets and archived benchmark verdicts are unchanged.
+workflow record. The current default is fully explicit RK4 with massless
+quasineutral electrons (`electron_inertia=0`); finite electron inertia is an
+explicit local opt-in. Numerical budgets and archived benchmark verdicts are
+unchanged.
 The [implementation record](WARP_IMPLEMENTATION.md) owns the executed test
 scope; mirrored [pseudocode](pseudocode/README.md) owns the implementation contract.
 
@@ -145,6 +147,10 @@ known analytic reference and a usable two-period observation window.
 time, state, and I/O interfaces. This is a singular physical limit: removing
 electron inertia turns its differential momentum equation into force balance.
 It is not implemented by setting a mass divisor to zero.
+
+An omitted `electron_inertia` also resolves to `0`. Historical finite-mass
+benchmarks and finite local validation cases set `electron_inertia=1`
+explicitly; they remain bounded local studies, not global Tokamak validation.
 
 At every stage, with `e=-q_e>0`, the branch constructs:
 

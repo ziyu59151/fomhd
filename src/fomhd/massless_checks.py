@@ -1401,7 +1401,7 @@ def check_stage(state, result, context):
         out,
         "model_massless_quasineutral",
         result.model == MODEL_NAME
-        and int(context.p.electron_inertia) == 0
+        and int(getattr(context.p, "electron_inertia", 0)) == 0
         and context.p.species[1].mass > 0.0,
         tag,
     )

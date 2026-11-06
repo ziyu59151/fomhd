@@ -56,3 +56,6 @@ Covered top-level functions and fixture classes:
 This mirror describes the implemented checks. Passing it is evidence only
 for its stated fixtures and backend; it does not imply global Tokamak, ICE,
 experimental, or production-performance validation.
+
+Historical finite-electron expectations explicitly request electron_inertia=1;
+the production omitted-model default is massless electron_inertia=0 (D062).

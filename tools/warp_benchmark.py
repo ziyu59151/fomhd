@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Bounded finite-mass FOMHD pilot and explicit-integrator scan harness.
+"""Historical finite-electron FOMHD pilot and explicit-integrator scan harness.
 
 The harness uses the production case loader, closed-reference constructor,
 initialization transaction, and explicit time transaction. It never replaces a
 complete solver stage with a synthetic model.
+
+The workload deliberately sets ``electron_inertia=1``. It remains a historical
+finite-electron local benchmark after the solver-wide default becomes massless.
 """
 
 from __future__ import annotations
@@ -48,6 +51,10 @@ EXPECTED_N = 1.0e12
 EXPECTED_P = 1.0e-9
 EXPECTED_B = 1.0e-5
 EXPECTED_U = 1.0
+MODEL_SCOPE = (
+    "historical finite-electron benchmark; controlled numerical benchmark, "
+    "not experimental or global Tokamak validation"
+)
 
 
 class BudgetExhausted(RuntimeError):
@@ -341,7 +348,7 @@ def _base_provenance(command: str, argv: list[str], root: Path) -> dict[str, Any
             "variant": "finite_mass",
             "electron_inertia": 1,
             "precision": "float64/complex128",
-            "scope": "controlled numerical benchmark; not experimental validation",
+            "scope": MODEL_SCOPE,
         },
     }
 

@@ -36,7 +36,7 @@ SAFE_KEY = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 def _model_applicability(parameters):
     """Return JSON-safe model applicability shared by restart and provenance."""
-    if int(getattr(parameters, "electron_inertia", 1)) == 0:
+    if int(getattr(parameters, "electron_inertia", 0)) == 0:
         return {
             "model": MASSLESS_MODEL,
             "electron_inertia": "not_applicable",
@@ -462,7 +462,7 @@ def _massless_budget_registry(parameters):
 
 
 def _budget_registry(parameters):
-    if int(getattr(parameters, "electron_inertia", 1)) == 0:
+    if int(getattr(parameters, "electron_inertia", 0)) == 0:
         return _massless_budget_registry(parameters)
     return _finite_budget_registry(parameters)
 
@@ -1011,7 +1011,7 @@ def _build_parameters(species, solver, grid, time, budgets, diagnostics):
         inner_distance=diagnostics["inner_distance_m"],
         ref=references,
         budgets=registry,
-        electron_inertia=species.get("electron_inertia", 1),
+        electron_inertia=species.get("electron_inertia", 0),
         integrator=time.get("integrator", "rk4"),
         dt_guard=time.get("dt_guard", "error"),
         minimum_samples_per_cycle=time.get(
@@ -1075,7 +1075,7 @@ def load_case(path, overrides=None, backend=None):
     _real(species, "qe")
     if species["qe"] >= 0 or species["gamma_i"] <= 1:
         raise ValueError("invalid species constants")
-    inertia = species.get("electron_inertia", 1)
+    inertia = species.get("electron_inertia", 0)
     if type(inertia) is not int or inertia not in (0, 1):
         raise ValueError("electron_inertia must be 0 or 1")
 
@@ -1432,6 +1432,7 @@ def load_case(path, overrides=None, backend=None):
     semantic = json.loads(json.dumps(document))
     # Effective defaults are part of restart identity; an omitted historical
     # midpoint choice must not silently become RK4 after a default change.
+    semantic["species"]["electron_inertia"] = parameters.electron_inertia
     semantic["time"]["integrator"] = parameters.integrator
     semantic["time"].pop("nsteps", None)
     for name in (
@@ -2499,7 +2500,7 @@ def read_restart(path, case):
         parse_json(_array_text(arrays["cumulative_json"]))
     )
     stored_applicability = cumulative.applicability
-    if int(getattr(case.parameters, "electron_inertia", 1)) == 0:
+    if int(getattr(case.parameters, "electron_inertia", 0)) == 0:
         if stored_applicability != expected_applicability:
             raise ValueError(
                 "restart cumulative applicability mismatch"
@@ -2511,7 +2512,7 @@ def read_restart(path, case):
     state.step = _array_scalar(arrays["step"], np.uint64)
     state.time = _array_scalar(arrays["time"], np.float64)
     state.generation = _array_scalar(arrays["generation"], np.uint64)
-    if int(getattr(case.parameters, "electron_inertia", 1)) == 0:
+    if int(getattr(case.parameters, "electron_inertia", 0)) == 0:
         from .massless import canonicalize_state
         from .types import Context
 

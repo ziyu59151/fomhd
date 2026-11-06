@@ -52,6 +52,7 @@ def parameters(K: int = 1) -> Parameters:
         device_memory_limit=512 << 20,
         inner_distance=0.05,
         ref=ref,
+        electron_inertia=1,
     )
     L, t, n, P = ref.length, ref.time, ref.ni, ref.pressure
     electric, magnetic = ref.electric, ref.magnetic

@@ -69,7 +69,7 @@ class Parameters:
     inner_distance: float = 0.0
     ref: References = field(default_factory=References)
     budgets: dict[str, Budget] = field(default_factory=dict)
-    electron_inertia: int = 1
+    electron_inertia: int = 0
     integrator: str = "rk4"
     dt_guard: str = "error"
     minimum_samples_per_cycle: float = 32.0

@@ -1,5 +1,8 @@
 # Massless quasineutral electron implementation pseudocode
 
+The branch accepts an absent `electron_inertia` as the default `0` and rejects
+explicit `1` rather than mixing finite and massless ownership.
+
 ## A0-PY-MASSLESS-01: Model and ownership contract
 
 This branch represents collisionless ions, two independent electron CGL-B

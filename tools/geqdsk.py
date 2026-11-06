@@ -15,27 +15,58 @@ def read_geqdsk(path):
     if not path.is_file() or path.stat().st_size > 32 << 20:
         raise ValueError("G-EQDSK input must be a regular file at most 32 MiB")
     raw = path.read_bytes()
-    header, body = raw.decode("ascii").split("\n", 1)
+    try:
+        header, body = raw.decode("ascii").split("\n", 1)
+    except (UnicodeDecodeError, ValueError) as error:
+        raise ValueError("G-EQDSK input must be ASCII with a header and body") from error
     dimensions = re.search(r"\s([+-]?\d+)\s+(\d+)\s+(\d+)\s*$", header)
     if dimensions is None:
         raise ValueError("missing G-EQDSK dimensions")
     nr, nz = map(int, dimensions.groups()[1:])
     if nr < 3 or nz < 3 or nr * nz > 2_000_000:
         raise ValueError("unsupported G-EQDSK dimensions")
-    if NUMBER.sub("", body).strip():
-        raise ValueError("unsupported nonnumeric G-EQDSK extension")
-    values = np.array([float(x.replace("D", "E").replace("d", "e")) for x in NUMBER.findall(body)])
+    numbers = list(NUMBER.finditer(body))
+    end = 20 + 5 * nr + nr * nz
+    if len(numbers) < end + 2:
+        raise ValueError("truncated G-EQDSK arrays")
+    counts = np.array(
+        [
+            float(numbers[end].group()),
+            float(numbers[end + 1].group()),
+        ]
+    )
+    remaining_pairs = (len(numbers) - end - 2) // 2
+    if (
+        not np.isfinite(counts).all()
+        or np.any(counts < 0)
+        or np.any(counts != np.floor(counts))
+        or np.sum(counts) > remaining_pairs
+    ):
+        raise ValueError("invalid boundary/limiter count")
+    nb, nl = int(counts[0]), int(counts[1])
+    core_end = end + 2 + 2 * (nb + nl)
+    if nb < 3 or len(numbers) < core_end:
+        raise ValueError("truncated boundary or limiter arrays")
+    core_text = body[:numbers[core_end - 1].end()]
+    if NUMBER.sub("", core_text).strip():
+        raise ValueError("nonnumeric data inside G-EQDSK numeric core")
+    values = np.array(
+        [
+            float(match.group().replace("D", "E").replace("d", "e"))
+            for match in numbers[:core_end]
+        ]
+    )
     if not np.isfinite(values).all():
         raise ValueError("nonfinite G-EQDSK value")
-    end = 20 + 5 * nr + nr * nz
-    if len(values) < end + 2:
-        raise ValueError("truncated G-EQDSK arrays")
-    counts = values[end:end + 2]
-    if np.any(counts < 0) or np.any(counts != np.floor(counts)):
-        raise ValueError("invalid boundary/limiter count")
-    nb, nl = counts.astype(int)
-    if nb < 3 or len(values) != end + 2 + 2 * (nb + nl):
-        raise ValueError("truncated boundary or unsupported G-EQDSK extension")
+    extension = body[numbers[core_end - 1].end():].encode("ascii")
+    if extension.strip(b" \t\r\n"):
+        header_tag = header.split(maxsplit=1)[0] if header.split() else ""
+        if not header_tag.upper().startswith("EFIT"):
+            raise ValueError("unsupported nonnumeric G-EQDSK extension")
+        extension_format = header_tag
+    else:
+        extension = b""
+        extension_format = None
     rdim, zdim, rcentr, rleft, zmid, raxis, zaxis, psiaxis, psibdry, bcentr = values[:10]
     if min(rdim, zdim, rleft) <= 0 or psiaxis == psibdry:
         raise ValueError("invalid G-EQDSK extent or flux normalization")
@@ -45,7 +76,10 @@ def read_geqdsk(path):
               "magnetic_axis": [float(raxis), float(zaxis)],
               "central_R_B": [float(rcentr), float(bcentr)],
               "header_current_A": float(values[10]), "header": header,
-              "sha256": hashlib.sha256(raw).hexdigest()}
+              "sha256": hashlib.sha256(raw).hexdigest(),
+              "extension": extension, "extension_format": extension_format,
+              "extension_bytes": len(extension),
+              "extension_sha256": hashlib.sha256(extension).hexdigest() if extension else None}
     cursor = 20
     for name in ("F", "pressure", "FFprime", "pprime"):
         result[name] = values[cursor:cursor + nr].copy()
@@ -84,7 +118,10 @@ def main():
     arrays = {key: value for key, value in eq.items() if isinstance(value, np.ndarray)}
     arrays.update(fields)
     np.savez_compressed(a.output / "equilibrium_audit.npz", **arrays)
-    report = {key: value for key, value in eq.items() if not isinstance(value, np.ndarray)}
+    report = {
+        key: value for key, value in eq.items()
+        if not isinstance(value, (np.ndarray, bytes))
+    }
     boundary = eq["boundary"]
     radii = np.linalg.norm(boundary - np.array(eq["magnetic_axis"]), axis=1)
     report.update({"source_url": a.source_url, "psi_factor_assumption": a.psi_factor,

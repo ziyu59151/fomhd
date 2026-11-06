@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import importlib.util
 import json
 import sys
+import tomllib
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
@@ -625,6 +627,7 @@ def _write_case(
     *,
     dt_guard="warn",
     minimum_samples_per_cycle=32.0,
+    include_inertia=True,
 ):
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
@@ -654,7 +657,6 @@ def _write_case(
         f"qe={p.species[1].charge!r}",
         f"me={p.species[1].mass!r}",
         f"gamma_i={p.species[0].gamma!r}",
-        f"electron_inertia={p.electron_inertia}",
         "[grid]",
         f"R0={float(geometry.R[0])!r}",
         f"Z0={float(geometry.Z[0])!r}",
@@ -711,6 +713,11 @@ def _write_case(
         f"p_min_parallel_e={p.species[1].parallel_min!r}",
         f"B_min={p.B_min!r}",
     ]
+    if include_inertia:
+        lines.insert(
+            lines.index("[grid]"),
+            f"electron_inertia={p.electron_inertia}",
+        )
     if integrator is not None:
         lines.insert(
             next(
@@ -783,6 +790,158 @@ def _write_case(
         json.dumps(manifest), encoding="utf-8"
     )
     return case
+
+
+@pytest.mark.parametrize(
+    ("inertia", "include_inertia"),
+    ((0, False), (0, True), (1, True)),
+    ids=("omitted-massless-default", "explicit-massless", "explicit-finite"),
+)
+def test_cli_electron_inertia_default_and_explicit_finite(
+    tmp_path, inertia, include_inertia
+):
+    context = _context(inertia=inertia, nsteps=0, hard=True)
+    state = (
+        _state(context)
+        if inertia == 0
+        else closed_reference(
+            context,
+            context.p.ref.ni,
+            context.p.ref.pressure,
+            context.p.ref.pressure,
+            context.p.ref.magnetic,
+        )
+    )
+    case_path = _write_case(
+        tmp_path / f"inertia-{inertia}-{include_inertia}",
+        context.p,
+        context.geometry,
+        state,
+        "rk4",
+        0,
+        include_inertia=include_inertia,
+    )
+    loaded = io.load_case(case_path)
+    assert loaded.parameters.electron_inertia == inertia
+    assert loaded.parameters.species[1].mass > 0.0
+    assert loaded.parameters.integrator == "rk4"
+    assert io._model_applicability(loaded.parameters)["model"] == (
+        FINITE_MODEL if inertia else MASSLESS_MODEL
+    )
+
+
+def test_effective_electron_inertia_joins_semantic_restart_identity(
+    tmp_path, monkeypatch
+):
+    context = _context(inertia=0, nsteps=0, hard=True)
+    case_path = _write_case(
+        tmp_path / "omitted-inertia",
+        context.p,
+        context.geometry,
+        _state(context),
+        "rk4",
+        0,
+        include_inertia=False,
+    )
+    current = io.load_case(case_path)
+    build_parameters = io._build_parameters
+
+    def historical_omitted_finite(*args, **kwargs):
+        parameters = build_parameters(*args, **kwargs)
+        parameters.electron_inertia = 1
+        return parameters
+
+    with monkeypatch.context() as patch:
+        patch.setattr(io, "_build_parameters", historical_omitted_finite)
+        patch.setattr(io, "_budget_registry", io._massless_budget_registry)
+        historical = io.load_case(case_path)
+
+    assert current.input_hashes == historical.input_hashes
+    assert current.parameters.electron_inertia == 0
+    assert historical.parameters.electron_inertia == 1
+    assert current.semantic_hash != historical.semantic_hash
+
+
+def test_massless_example_is_strict_complete_and_fully_documented(tmp_path):
+    example = Path(__file__).resolve().parents[2] / "cases/massless-example.toml"
+    text = example.read_text(encoding="utf-8")
+    document = tomllib.loads(text)
+    assert document["species"]["electron_inertia"] == 0
+    assert document["species"]["me"] > 0.0
+    assert set(document["budgets"]["checks"]) == set(
+        io._massless_budget_registry(foundation_parameters(0))
+    )
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith(("#", "[")):
+            continue
+        assert "=" in stripped, (line_number, stripped)
+        assert "#" in stripped, (
+            f"parameter lacks an English unit/choice/purpose comment "
+            f"at line {line_number}: {stripped}"
+        )
+
+    root = tmp_path / "example"
+    root.mkdir()
+    geometry = build_rectangle(4, 4, 1.0, 0.0, 0.2, 0.2)
+    p = foundation_parameters(0)
+    p.K = 1
+    p.Nphi = 5
+    p.electron_inertia = 0
+    backend = Backend("cpu")
+    operators = build_operators(geometry, 1, backend=backend)
+    context = Context(p, geometry, operators, backend, p.Nphi)
+    initial = closed_reference(
+        context,
+        p.ref.ni,
+        p.ref.pressure,
+        p.ref.pressure,
+        p.ref.magnetic,
+    )
+    np.savez(root / "initial.npz", **io.encode_state(initial, geometry))
+    polygon = np.asarray(
+        [[point.R, point.Z] for point in geometry.polygon_input],
+        dtype=np.float64,
+    )
+    np.savez(
+        root / "geometry.npz",
+        R_nodes=np.asarray(geometry.R, dtype=np.float64),
+        Z_nodes=np.asarray(geometry.Z, dtype=np.float64),
+        lcfs_R=polygon[:, 0],
+        lcfs_Z=polygon[:, 1],
+    )
+    (root / "case.toml").write_text(text, encoding="utf-8")
+    manifest = {
+        "provider_name": "documented-massless-example",
+        "provider_version": "1",
+        "units": "SI",
+        "conversion_method": "test fixture direct complex128 encoding",
+        "continuous_residual_status": "UNVERIFIED",
+        "input_hashes": {
+            "case": io.sha256_file(root / "case.toml"),
+            "geometry": io.sha256_file(root / "geometry.npz"),
+            "initial": io.sha256_file(root / "initial.npz"),
+        },
+    }
+    (root / "source_manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8"
+    )
+    loaded = io.load_case(root / "case.toml")
+    assert loaded.parameters.electron_inertia == 0
+    assert io._model_applicability(loaded.parameters)["model"] == MASSLESS_MODEL
+
+
+def test_massless_example_matches_public_generator():
+    root = Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "case_config_under_test", root / "tools/case_config.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    assert module.render_massless_example() == (
+        root / "cases/massless-example.toml"
+    ).read_text(encoding="utf-8")
 
 
 def _latest_checkpoint(run):

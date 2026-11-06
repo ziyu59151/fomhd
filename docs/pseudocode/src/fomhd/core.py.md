@@ -1,5 +1,8 @@
 # `src/fomhd/core.py` implementation pseudocode
 
+Model-aware combination reads an absent `electron_inertia` as `0`; only an
+explicit `1` selects finite-fluid combination.
+
 ## A0-PY-CORE-01 State layout and allocation
 
 1. `M=2K+1`; electron and ion density, momentum, and perpendicular pressure

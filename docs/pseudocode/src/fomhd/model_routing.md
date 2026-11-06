@@ -2,9 +2,10 @@
 
 ## A0-PY-ROUTE-01: Common public entry points
 
-`electron_inertia=1` remains the finite-mass CGL-B/Darwin branch.
-`electron_inertia=0` selects `massless_quasineutral_cgl_b`; it never sets the
-physical electron mass to zero.
+An absent or explicit `electron_inertia=0` selects the default
+`massless_quasineutral_cgl_b` branch. Explicit `electron_inertia=1` remains the
+finite-mass CGL-B/Darwin branch. Choosing massless never sets the physical
+electron mass to zero.
 
 ```text
 stage.evaluate_stage:
@@ -64,7 +65,7 @@ boundary ledger.
 
 ```text
 load_case:
-  preserve electron_inertia in {0,1}
+  resolve omitted electron_inertia to 0 and preserve explicit values {0,1}
   choose the exact finite or massless budget registry by model
   require every registry entry with its specified unit, norm, gate and scale
   model metadata identifies electron_inertia=not_applicable for massless
@@ -113,6 +114,7 @@ model metadata:
                        finite_charge_gauss=not_applicable
 
 identity/cumulative/run manifest:
+  materialize effective electron inertia in semantic identity
   serialize model applicability without converting unavailable to zero
 
 checkpoint:
@@ -121,6 +123,7 @@ checkpoint:
 
 read_restart:
   read bounded checkpoint metadata
+  reject a historical omitted-finite semantic identity before decode/upload
   compare checkpoint model/applicability with configured model
   reject either cross-model direction before decode_state or backend upload
   after acceptance, canonicalize compatibility fields from independent state

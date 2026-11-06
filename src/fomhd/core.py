@@ -212,7 +212,7 @@ def check_retained(state: State, c: Context) -> None:
 
 
 def combine(base: State, rhs: State, weight: float, tag: StageTag, c: Context) -> State:
-    if int(getattr(c.p, "electron_inertia", 1)) == 0:
+    if int(getattr(c.p, "electron_inertia", 0)) == 0:
         from .massless import combine as combine_massless
 
         return combine_massless(base, rhs, weight, tag, c)

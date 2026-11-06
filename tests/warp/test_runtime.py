@@ -235,7 +235,7 @@ def test_midpoint_uses_half_then_full_step_and_commits_once(runtime, monkeypatch
     monkeypatch.setattr(diagnostics, "check_step", check_step)
     context = SimpleNamespace(
         p=SimpleNamespace(dt=0.2, nsteps=1, start_time=0.0,
-                          integrator="midpoint"),
+                          integrator="midpoint", electron_inertia=1),
         compute=SimpleNamespace(synchronize=lambda: None),
         next_generation=1, next_trial=1,
     )
@@ -299,7 +299,7 @@ def test_rk4_uses_four_explicit_stages_and_weighted_quadrature(runtime,
     monkeypatch.setattr(diagnostics, "check_step", check_step)
     context = SimpleNamespace(
         p=SimpleNamespace(dt=0.3, nsteps=1, start_time=0.0,
-                          integrator="rk4"),
+                          integrator="rk4", electron_inertia=1),
         compute=SimpleNamespace(synchronize=lambda: None),
         next_generation=1, next_trial=1,
     )
@@ -357,7 +357,7 @@ def test_rk4_k3_failure_retains_completed_k2_and_k3_tag(runtime, monkeypatch):
     )
     context = SimpleNamespace(
         p=SimpleNamespace(dt=0.3, nsteps=1, start_time=0.0,
-                          integrator="rk4"),
+                          integrator="rk4", electron_inertia=1),
         compute=SimpleNamespace(synchronize=lambda: None),
         next_generation=1, next_trial=1,
     )
@@ -409,7 +409,7 @@ def test_rejected_source_payload_is_retained_before_validation(runtime,
     )
     context = SimpleNamespace(
         p=SimpleNamespace(dt=0.1, nsteps=1, start_time=0.0,
-                          integrator="midpoint"),
+                          integrator="midpoint", electron_inertia=1),
         compute=SimpleNamespace(synchronize=lambda: None),
         next_generation=1, next_trial=1,
     )
@@ -447,7 +447,7 @@ def test_rejected_advance_leaves_committed_state_and_ledger_unchanged(
     )
     context = SimpleNamespace(
         p=SimpleNamespace(dt=0.1, nsteps=1, start_time=0.0,
-                          integrator="midpoint"),
+                          integrator="midpoint", electron_inertia=1),
         compute=SimpleNamespace(synchronize=lambda: None),
         next_generation=1, next_trial=1,
     )
@@ -572,7 +572,9 @@ def test_parameter_defaults_accept_integrator_contract():
     assert "allow_pickle=False" in source
 
 
-def test_config_defaults_use_rk4_and_preserve_explicit_midpoint(runtime):
+def test_config_defaults_use_massless_rk4_and_preserve_explicit_finite_midpoint(
+    runtime,
+):
     io = runtime["io"]
     species = {
         "ion_id": "ion", "electron_id": "electron", "qi": 1.0, "mi": 1.0,
@@ -606,13 +608,14 @@ def test_config_defaults_use_rk4_and_preserve_explicit_midpoint(runtime):
     parameters = io._build_parameters(
         species, solver, grid, time, budgets, diagnostics
     )
-    assert parameters.electron_inertia == 1
+    assert parameters.electron_inertia == 0
     assert parameters.species[1].mass == 1.0
     assert parameters.integrator == "rk4"
     assert parameters.dt_guard == "error"
     assert parameters.minimum_samples_per_cycle == 32.0
     assert parameters.max_amplitude_error == 0.01
     assert parameters.max_phase_error_rad == 0.1
+    species["electron_inertia"] = 1
     time.update(
         integrator="midpoint",
         minimum_samples_per_cycle=48.0,
@@ -623,6 +626,7 @@ def test_config_defaults_use_rk4_and_preserve_explicit_midpoint(runtime):
         species, solver, grid, time, budgets, diagnostics
     )
     assert configured.integrator == "midpoint"
+    assert configured.electron_inertia == 1
     assert configured.minimum_samples_per_cycle == 48.0
     assert configured.max_amplitude_error == 0.005
     assert configured.max_phase_error_rad == 0.05
@@ -784,6 +788,7 @@ def test_wall_trace_uses_normal_weights_and_unsigned_electric_trace(runtime,
         N=1,
         p=SimpleNamespace(
             B_min=0.0, mu0=1.0, epsilon0=1.0,
+            electron_inertia=1,
             ref=SimpleNamespace(electric=1.0),
             species=(
                 SimpleNamespace(id="ion", mass=1.0, gamma=2.0, face_min=0.0),
@@ -846,6 +851,7 @@ def test_check_source_divergence_uses_exact_subunit_physical_scale(
         N=1,
         p=SimpleNamespace(
             K=0,
+            electron_inertia=1,
             ref=SimpleNamespace(
                 ni=1.0, ne=1.0, pressure=1.0, velocity=1.0,
                 magnetic=1.0e-12, length=1.0, time=1.0,
