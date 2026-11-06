@@ -85,10 +85,16 @@ coherence at least0.99999975, while EAST12 ends at0.940963 (n0) and0.917186
 evolution; background relaxation is a possible contributor, not a demonstrated
 cause. New grid spectra/evolution remain separate evidence.
 
-Implementation validation for the scan tools:640 CPU tests passed,9 skipped,
+Implementation validation for the scan tools:643 CPU tests passed,9 skipped,
 3 subtests passed;12 GPU gate tests passed with the existing expected singular
 matrix negative-test warning. Three archived preparation comparisons returned
 exactly the same rows, operators and accepted states. Source/report hashes,
 raw attempts and detailed receipts reside in the personal run directory
 `a0-grid-scan__20261106T010047Z`; these checks do not establish spatial
 convergence or physical validation.
+
+Absolute and adjacent-difference mode maps remove the eigensolver's arbitrary
+complex scale using one shared staggered-magnetic plus ion-kinetic quadratic
+normalization. The compression phase is declared and the same factor applies
+to all physical components. This display-only normalization preserves relative
+polarization and never changes physical response histories or raw spectra.

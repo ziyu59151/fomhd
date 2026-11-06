@@ -411,11 +411,33 @@ def selected_structure_fields(selected: dict, mode: int = 0) -> dict:
     }
 
 
+def normalized_structure_fields(selected: dict, mode: int) -> dict:
+    """Remove arbitrary eigenvector scale/phase with one shared physical norm."""
+    norm2 = float(selected["MB_magnetic_norm"]) + float(selected["M0_ion_kinetic_norm"])
+    if not math.isfinite(norm2) or norm2 <= 0:
+        raise ValueError("selected eigenmode quadratic norm must be positive and finite")
+    fields = selected_structure_fields(selected, mode=0)
+    if mode == 1:
+        # One common compression phase preserves nonaxisymmetric polarization.
+        fields["velocity"] = fields["compression_velocity"]
+        fields["velocity_snapshot"] = fields["compression_velocity"]
+        fields["speed"] = np.linalg.norm(fields["compression_velocity"], axis=0)
+        fields["velocity_phase_rad"] = fields["compression_phase_rad"]
+        fields["velocity_factor_real"] = fields["compression_factor_real"]
+        fields["velocity_factor_imag"] = fields["compression_factor_imag"]
+    scale = math.sqrt(norm2)
+    for key in ("B_parallel", "density", "speed", "velocity",
+                "velocity_snapshot", "compression_velocity"):
+        fields[key] = fields[key] / scale
+    fields["normalization_scale"] = scale
+    return fields
+
+
 def render_selected_structure(branches: list[dict], output: Path) -> dict:
     """Render absolute selected eigenmode structure for every supplied grid."""
     branches = sorted(branches, key=lambda item: item["nodes"])
     fields = [
-        selected_structure_fields(item["selected"], item["mode"])
+        normalized_structure_fields(item["selected"], item["mode"])
         for item in branches
     ]
     keys = ("B_parallel", "density", "speed")
@@ -437,7 +459,7 @@ def render_selected_structure(branches: list[dict], output: Path) -> dict:
             if key == "speed":
                 phase_title = (
                     f", vphase={item['velocity_phase_rad']:.4g} rad"
-                    if branch["mode"] == 0 else ", phi=0"
+                    if branch["mode"] == 0 else f", aligned phase={item['compression_phase_rad']:.4g} rad"
                 )
                 _flat_panel(
                     axes[row, column], branch["selected"]["R"],
@@ -458,10 +480,10 @@ def render_selected_structure(branches: list[dict], output: Path) -> dict:
                         else "normalized density at compression phase"
                     )
                 else:
-                    phase_title = ", phi=0"
+                    phase_title = f", aligned phase={item['compression_phase_rad']:.4g} rad"
                     label = (
-                        "normalized Re(A_B) . b0"
-                        if key == "B_parallel" else "normalized Re(A_n)"
+                        "normalized phase-aligned B_parallel"
+                        if key == "B_parallel" else "normalized phase-aligned density"
                     )
                 _flat_panel(
                     axes[row, column], branch["selected"]["R"],
@@ -476,10 +498,11 @@ def render_selected_structure(branches: list[dict], output: Path) -> dict:
             "are declared in panel labels and manifest"
         )
     else:
-        phase_note = "n1 selected eigenvector amplitudes at phi=0; Re(A)"
+        phase_note = "n1 one shared compression phase per mode; relative B/v phase preserved"
     fig.suptitle(
         "Absolute selected linear discrete eigenmode; not time evolved\n"
-        f"{phase_note}; flat actual cells; scales common across grids",
+        f"{phase_note}; flat actual cells\n"
+        "Unit MB+ion-kinetic quadratic norm (not total wave energy); common color scales",
         fontsize=11,
     )
     fig.tight_layout()
@@ -490,10 +513,22 @@ def render_selected_structure(branches: list[dict], output: Path) -> dict:
                 "nodes": branch["nodes"],
                 "compression_phase_rad": item["compression_phase_rad"],
                 "velocity_phase_rad": item["velocity_phase_rad"],
+                "normalization_scale": item["normalization_scale"],
             }
             for branch, item in zip(branches, fields)
         ],
     }
+
+
+def normalized_structure_delta(previous: dict, current: dict) -> dict:
+    """Align previous fields to the current mode's unit quadratic norm/phase."""
+    normalized = normalized_structure_fields(current, mode=0)
+    factor = np.exp(1j * normalized["compression_phase_rad"]) / normalized["normalization_scale"]
+    fields = {key: current[key] * factor for key in ("velocity", "B_node", "density")}
+    delta = signed_structure_delta(previous, current, fields)
+    delta["current_normalization_scale"] = normalized["normalization_scale"]
+    delta["current_compression_phase_rad"] = normalized["compression_phase_rad"]
+    return delta
 
 
 def render_structure(branches: list[dict], output: Path) -> dict:
@@ -516,14 +551,7 @@ def render_structure(branches: list[dict], output: Path) -> dict:
             "Z": previous["selected"]["Z"],
             "M0": previous["selected"]["M0"],
         }
-        current_fields = {
-            "velocity": current["selected"]["velocity"],
-            "B_node": current["selected"]["B_node"],
-            "density": current["selected"]["density"],
-        }
-        delta = signed_structure_delta(
-            previous_fields, current["selected"], current_fields
-        )
+        delta = normalized_structure_delta(previous_fields, current["selected"])
         deltas.append(delta)
     keys = ("delta_B_parallel", "delta_n", "delta_vR", "delta_vZ")
     scales = {
@@ -569,7 +597,7 @@ def render_structure(branches: list[dict], output: Path) -> dict:
         )
     fig.suptitle(
         "Jointly aligned linear discrete eigenmode: signed common-support delta\n"
-        "one weighted B/v factor applied to B, v, and density; flat actual cells",
+        "unit current quadratic norm/phase; one joint B/v alignment; flat actual cells",
         fontsize=11,
     )
     fig.tight_layout()
@@ -585,6 +613,8 @@ def render_structure(branches: list[dict], output: Path) -> dict:
                 "imag": delta["alignment_factor_imag"],
                 "magnitude": delta["alignment_factor_abs"],
                 "covered_M0_fraction": delta["covered_M0_fraction"],
+                "current_normalization_scale": delta["current_normalization_scale"],
+                "current_compression_phase_rad": delta["current_compression_phase_rad"],
             }
             for previous, current, delta in zip(
                 branches[:-1], branches[1:], deltas
@@ -1036,7 +1066,8 @@ def render(branch_pairs: list[tuple[Path, Path]], output: Path,
         "mode": branches[0]["mode"],
         "comparison_identity": identities[0],
         "field_convention": (
-            "selected eigenvector maps use Re(A) for n0 and n1; "
+            "selected maps use a declared compression phase and one shared "
+            "MB+ion-kinetic quadratic normalization per eigenvector; "
             "matched response uses encoded physical phi reconstruction"
         ),
         "overlap_meaning": (

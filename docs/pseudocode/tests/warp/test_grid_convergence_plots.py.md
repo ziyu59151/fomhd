@@ -29,3 +29,11 @@ velocity is near zero, but the declared global velocity quadrature snapshot is
 nonzero and uses one consistent phase for both poloidal components.
 Include toroidal velocity and require the displayed speed to include all three
 components while retaining poloidal arrows.
+
+Multiply all B/velocity/density eigenvector amplitudes by `2j` and their
+quadratic norms by4. For both harmonics, phase-aligned jointly normalized
+absolute structure fields must stay identical. Preserve the single shared
+factor across physical components and record the divisor.
+For a nonzero cross-grid difference, independently rephase/rescale both input
+eigenvectors and update their quadratic norms; the normalized residual must
+remain identical so shared colors across adjacent pairs retain meaning.

@@ -13,12 +13,20 @@
    masked `pcolormesh`; inactive/non-common cells are masked. Use a shared
    diverging, symmetric per-quantity scale and velocity-direction arrows rather
    than a smooth image that can hide coherent central or boundary-local spots.
-   Before subtracting, fit one complex factor to the joint weighted nodal
+   Before subtracting, place the current complex B, velocity and density in
+   its declared compression phase and unit shared quadratic norm, then fit
+   one complex factor to the joint weighted nodal
    velocity/B vector, then apply that same factor to previous B, velocity, and
    density so their phase relation is preserved. Record the factor and common
    support. Identical modes under `-1` or `2j` must produce zero difference.
-4. Treat selected eigenvector fields as unencoded physical amplitudes: use
-   `Re(A)` for both n0 and n1 and label maps as a linear discrete eigenmode.
+   Independent rescaling/rephasing of either member must not change a nonzero
+   residual or the shared residual color scale across grid pairs.
+4. Treat selected eigenvector fields as unencoded physical amplitudes and
+   label maps as a linear discrete eigenmode. Remove arbitrary eigensolver
+   scale with one shared divisor
+   `sqrt(MB_magnetic_norm + M0_ion_kinetic_norm)` applied to B, velocity and
+   density together; this quadratic normalization is not total wave energy.
+   A global factor such as `2j` must not change the displayed shape.
    Always render absolute selected structures for every supplied grid, including
    a one-grid invocation: signed `B_parallel`, signed density, and full
    three-component `|v|` with
@@ -31,6 +39,10 @@
    real, apply that same factor to `vR` and `vZ`, and label the phase. Never
    present roundoff `Re(v)` at the compression phase as a velocity mode.
    Inter-grid subtraction continues to use one joint B/velocity alignment factor.
+   For n1 use one declared compression phase for all fields, including velocity,
+   retaining their relative polarization. This chooses the arbitrary toroidal
+   angle origin for comparing selected linear modes; it does not rephase actual
+   evolved responses. Record both phase and normalization in the manifest.
    For an optional matched-control response, reconstruct the physical phi=0
    field from retained response coefficients: mode 0 is `Re(A)`, mode 1 is
    `2 Re(A exp(i phi))`; label the encoded time-evolved response separately.

@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from tools.grid_mode_analysis import save_selected, sha256_path
+from tools.plots import plot_grid_convergence as grid_plots
 from tools.plots.plot_grid_convergence import (
     flat_cell_grid,
     load_branch,
@@ -326,6 +327,54 @@ def test_n0_velocity_panel_uses_declared_quadrature_phase():
     np.testing.assert_allclose(fields["velocity_snapshot"][2], [-2, -1, 1, 2])
     np.testing.assert_allclose(fields["B_parallel"], [0.5, 1.0, -0.5, 2.0])
     np.testing.assert_allclose(fields["density"], [1.0, -2.0, 3.0, -4.0])
+
+
+@pytest.mark.parametrize("mode", [0, 1])
+def test_absolute_structure_is_invariant_to_eigenvector_phase_and_scale(mode):
+    selected = {
+        "velocity": np.array([[1j, 2j], [0.3j, -0.1j], [2j, -1j]]),
+        "B_node": np.array([[0j, 0j], [1.0, -2.0], [0j, 0j]]),
+        "density": np.array([3.0, -4.0], dtype=complex),
+        "background_B_node": np.array([[0j, 0j], [1.0, 1.0], [0j, 0j]]),
+        "MB_magnetic_norm": np.array(4.0),
+        "M0_ion_kinetic_norm": np.array(2.0),
+    }
+    factor = 2j
+    scaled = dict(selected)
+    for name in ["velocity", "B_node", "density"]:
+        scaled[name] = factor * selected[name]
+    for name in ["MB_magnetic_norm", "M0_ion_kinetic_norm"]:
+        scaled[name] = abs(factor)**2 * selected[name]
+    expected = grid_plots.normalized_structure_fields(selected, mode)
+    actual = grid_plots.normalized_structure_fields(scaled, mode)
+    for name in ["B_parallel", "density", "speed", "velocity"]:
+        np.testing.assert_allclose(actual[name], expected[name], atol=1e-14)
+    assert expected["normalization_scale"] == pytest.approx(np.sqrt(6.0))
+
+
+def test_normalized_structure_delta_is_invariant_to_each_eigenvector_gauge():
+    common = {"R": np.array([0., 1., 0., 1.]),
+              "Z": np.array([0., 0., 1., 1.]), "M0": np.ones(4),
+              "rho": np.array(2.), "mu0": np.array(2.),
+              "background_B_node": np.tile([[0.], [1.], [0.]], (1, 4)),
+              "MB_magnetic_norm": np.array(4.),
+              "M0_ion_kinetic_norm": np.array(2.)}
+    previous = dict(common, velocity=np.full((3, 4), 1j),
+                    B_node=np.tile([[0j], [1.], [0j]], (1, 4)),
+                    density=np.ones(4, dtype=complex))
+    current = {k: np.array(v, copy=True) for k, v in previous.items()}
+    current["B_node"][1, 1] += .3
+    current["velocity"][0, 2] += .2j
+    expected = grid_plots.normalized_structure_delta(previous, current)
+    assert np.linalg.norm(expected["delta_B_parallel"]) > 0
+    for fields, factor in [(previous, -3j), (current, 10*np.exp(.731j))]:
+        for name in ["B_node", "velocity", "density"]:
+            fields[name] = fields[name] * factor
+        for name in ["MB_magnetic_norm", "M0_ion_kinetic_norm"]:
+            fields[name] = fields[name] * abs(factor)**2
+    actual = grid_plots.normalized_structure_delta(previous, current)
+    for name in ["delta_B_parallel", "delta_n", "delta_velocity"]:
+        np.testing.assert_allclose(actual[name], expected[name], atol=1e-14)
 
 
 @pytest.mark.parametrize("corruption", [
