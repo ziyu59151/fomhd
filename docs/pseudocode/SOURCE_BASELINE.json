@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "created_date": "2026-11-06",
+  "created_date": "2026-11-07",
   "purpose": "Design provenance for active Python/Warp pseudocode; not a runtime dependency",
   "source_repository": "fomhd-design",
   "git_head_at_capture": "4d773f81591da3544990b736e29bbebcd4fa6ffe",
@@ -18,13 +18,14 @@
     "D060",
     "D061",
     "D062",
-    "D063"
+    "D063",
+    "D064"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 152653,
-      "sha256": "746bf5e8bc98defb410363f03a7458207c5ea7f222ca7cb9b55bdf79b07ef765"
+      "bytes": 154862,
+      "sha256": "019c3c94eff2cc9a4da2e95636b0cd45bcadee5881d9c620533ade245763d986"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -68,8 +69,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 12783,
-      "sha256": "818fe1cd069a40c0467cccb00a9763ae47c0946458769a183844faae90d0a8ba"
+      "bytes": 13205,
+      "sha256": "58ca7450c9592e568b2cf6f3834ab713808d3957433afb7d90a2d3dfd3c3176f"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
@@ -90,9 +91,14 @@
       "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
       "bytes": 16995,
       "sha256": "0888bc6df131a7e01bcc3e0b6f4446d3166206d51cf6073b35c657941afef1bb"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_T0_BENCHMARK.md",
+      "bytes": 7279,
+      "sha256": "53d8b02a1c36399b0a8849cbfafe0f1074d6340ab5130253882ad05ed5744d23"
     }
   ],
-  "captured_utc": "2026-11-06T13:50:43.074773+00:00",
+  "captured_utc": "2026-11-06T18:39:01.712888+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -141,6 +147,7 @@
     "report_presentation": "Plain-language issue assessment and offline HTML gallery; numerical solver unchanged",
     "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T130923Z/a1-benchmark.html",
     "next_tier": "T1 awaits user judgment; known scoped limitations do not automatically block prototype development",
-    "gallery_format": "Existing A0 report renderer, English labels/captions, numbered pages/figures and matching plot conventions"
+    "gallery_format": "Existing A0 report renderer, English labels/captions, numbered pages/figures and matching plot conventions",
+    "controlled_temporal_protocol": "D064; fixed h=T/2048, 2T; main matrix pending"
   }
 }
