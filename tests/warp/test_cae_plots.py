@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from tools.plots import plot_tokamak_cae as cae_plots
 from tools.plots.plot_tokamak_cae import (
     main,
     mode_history,
@@ -26,8 +27,13 @@ def _json(path: Path, value) -> None:
     path.write_text(json.dumps(value, allow_nan=False) + "\n")
 
 
-def _fixture(root: Path, *, status: str = "budget_stopped") -> Path:
-    case = root / "circle4-n0-test-r2"
+def _fixture(
+    root: Path,
+    *,
+    status: str = "budget_stopped",
+    mode: int = 0,
+) -> Path:
+    case = root / f"circle4-n{mode}-test-r2"
     case.mkdir(parents=True)
     times = np.array([0.0, 1.0e-9, 2.0e-9])
     control_energy = [
@@ -121,7 +127,7 @@ def _fixture(root: Path, *, status: str = "budget_stopped") -> Path:
     (case / "case.toml").write_text(
         'kind = "circle"\n'
         "nodes = 4\n"
-        "nphi = 0\n"
+        f"nphi = {mode}\n"
         "K = 0\n"
         "Nphi = 5\n"
     )
@@ -194,6 +200,57 @@ def test_n0_once_and_n1_half_coefficient_give_same_phi0_physics():
     np.testing.assert_allclose(n0, n1)
 
 
+@pytest.mark.parametrize(
+    "status", ["completed", "budget_stopped", "failed", "unavailable",
+               "initializing"]
+)
+def test_evolution_figure_names_linearity_device_and_solver_status(status):
+    from matplotlib.figure import Figure
+
+    data = {
+        "name": "circle20-n1-device-test-r1",
+        "backend": "cuda",
+        "nodes": 20,
+        "K": 1,
+        "mode": 1,
+        "solver_status": status,
+    }
+    fig = Figure()
+    cae_plots._figure_heading(fig, data, "Evidence summary")
+    visible = "\n".join(text.get_text() for text in fig.texts)
+
+    assert "NL | FOMHD time evolution" in visible
+    assert "device=cuda" in visible
+    assert f"solver status={status}" in visible
+    assert "grid 20 x 20" in visible
+    assert "n_phi=1" in visible
+    if status == "completed":
+        assert "no claim of completed evolution" not in visible
+    else:
+        assert "no claim of completed evolution" in visible
+    banner = next(
+        text for text in fig.texts
+        if "NL | FOMHD time evolution" in text.get_text()
+    )
+    assert banner.get_color().lower() == "#00796b"
+
+
+def test_n1_overview_renders_imaginary_retained_coefficient(tmp_path):
+    run_root = tmp_path / "runs"
+    case = _fixture(run_root, mode=1)
+    output = tmp_path / "figures"
+
+    assert main([
+        "--run-root", str(run_root), "--output", str(output),
+        "--cases", case.name,
+    ]) == 0
+
+    overview = (output / "overview" / f"{case.name}.svg").read_text()
+    assert "n_phi=1" in overview
+    assert "retained ion-density coefficient (A/2): imag" in overview
+    assert "Imaginary retained ion-density coefficient" in overview
+
+
 def test_synthetic_cli_preserves_stop_and_hashes_every_input(tmp_path):
     run_root = tmp_path / "runs"
     case = _fixture(run_root)
@@ -232,6 +289,14 @@ def test_synthetic_cli_preserves_stop_and_hashes_every_input(tmp_path):
     for stem in ("overview", "structure"):
         assert (output / stem / f"{case.name}.png").is_file()
         assert (output / stem / f"{case.name}.svg").is_file()
+    overview_svg = (output / "overview" / f"{case.name}.svg").read_text()
+    structure_svg = (output / "structure" / f"{case.name}.svg").read_text()
+    for svg in (overview_svg, structure_svg):
+        assert "NL | FOMHD time evolution" in svg
+        assert "device=cpu" in svg
+        assert "solver status=budget_stopped" in svg
+        assert "n_phi=0" in svg
+    assert "n_i" in structure_svg
     fragment = (output / "fragment.html").read_text()
     assert 'id="cae-20261106"' in fragment
     assert "budget_stopped" in fragment
@@ -241,7 +306,7 @@ def test_synthetic_cli_preserves_stop_and_hashes_every_input(tmp_path):
     assert "kg/m^3" not in fragment
     assert "m^-3" in fragment
     assert "A/2" in fragment
-    assert "2 Re(c exp(i*n*phi))" in (
+    assert "2 Re(c exp(i*n_phi*phi))" in (
         receipt["cases"][0]["field_meanings"]["physical_structure"]
     )
     assert "zero-Fourier" in fragment

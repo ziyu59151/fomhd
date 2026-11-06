@@ -22,8 +22,8 @@
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 144362,
-      "sha256": "c19db9d03ad220f8c702ecac488d4342514cdc64f602b36884d5d5492d22fb85"
+      "bytes": 145875,
+      "sha256": "ae7c193dcff458a3dfb6fb57a33d91a4a3ac6d258afa6bd094a7e085081ce5d1"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -62,8 +62,8 @@
     },
     {
       "path": "mainline_design/implementation/A0/A0_TOKAMAK_CAE.md",
-      "bytes": 11875,
-      "sha256": "fdb6ffa6ba0c88d8b182af9670da89b18ded69e87345a2258974da20774352e5"
+      "bytes": 13952,
+      "sha256": "4a58042aa875d675fa2691efb72c1b3221882ad17fe0e1fa35bf2a09e965652e"
     }
   ],
   "captured_utc": "2026-11-06T00:43:05.494858+00:00",

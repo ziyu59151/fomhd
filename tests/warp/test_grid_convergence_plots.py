@@ -698,3 +698,45 @@ def test_render_writes_hash_manifest_and_detects_changed_report(tmp_path):
     first[0].write_text(first[0].read_text() + "\n")
     with pytest.raises(ValueError, match="report bytes"):
         load_branch(first[0], first[1])
+
+
+def test_grid_figures_name_dimensions_harmonic_and_linear_identity(tmp_path):
+    R = np.array([0.0, 1.0, 0.0, 1.0])
+    Z = np.array([0.0, 0.0, 1.0, 1.0])
+    velocity = np.zeros((3, 4), dtype=complex)
+    velocity[0] = [1.0, 2.0, 3.0, 4.0]
+    velocity[2] = [-1.0, 0.0, 1.0, 2.0]
+    magnetic = np.zeros((3, 4), dtype=complex)
+    magnetic[1] = [0.5, 1.0, -0.5, 2.0]
+    density = np.array([1.0, -2.0, 3.0, -4.0], dtype=complex)
+    branches = [
+        load_branch(*_write_branch(
+            tmp_path, f"grid{nodes}", nodes, 1.0e6,
+            R, Z, velocity, magnetic, density,
+        ))
+        for nodes in (20, 40)
+    ]
+    output = tmp_path / "figures-labels"
+    output.mkdir()
+
+    grid_plots.render_convergence(branches, output)
+    grid_plots.render_structure(branches, output)
+
+    convergence = (output / "grid_mode_convergence.svg").read_text()
+    selected = (output / "grid_mode_selected_structure.svg").read_text()
+    deltas = (output / "grid_mode_structure_deltas.svg").read_text()
+    for svg in (convergence, selected, deltas):
+        assert "LIN | FOMHD discrete Jacobian" in svg
+        assert "not time evolved" in svg
+        assert "#6a3d9a" in svg
+    assert "grid 20 x 20" in convergence
+    assert "N_R x N_Z" in convergence
+    assert "n_phi=1" in convergence
+    assert "grid 20 x 20" in selected
+    assert "n_phi=1" in selected
+    assert "n_i" in selected
+    assert "grid 40 x 40" in deltas
+    assert "n_phi=1" in deltas
+    assert "n_i" in deltas
+    assert "n=20" not in convergence
+    assert "n=20" not in selected

@@ -43,3 +43,8 @@
   separate opt-in phase and is not implied by ordinary CUDA correctness work.
 - Before any completion claim, run the required build/tests and inspect their
   actual output. Report unverified scientific or performance scope explicitly.
+- Scientific benchmark work follows `docs/RESEARCH_PROTOTYPE_WORKFLOW.md`:
+  prioritize interpretable physical comparisons, retain unresolved evidence,
+  and distinguish nonlinear evolution, local Jacobian analysis, and independent
+  references in every presentation. Small observed residuals are not automatic
+  prerequisites for the next algorithm version.

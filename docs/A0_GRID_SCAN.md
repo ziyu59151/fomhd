@@ -99,21 +99,26 @@ normalization. The compression phase is declared and the same factor applies
 to all physical components. This display-only normalization preserves relative
 polarization and never changes physical response histories or raw spectra.
 
-## Interim spectrum evidence
+## Spectrum evidence and final presentation
 
-The24-grid spectra and actual fine-grid response windows are still pending.
-Do not interpret this table as completed spatial validation.
+The table records working discrete candidates, not established same-branch
+spatial convergence. Full nonlinear follow-ups and the remaining readiness
+sectors have separate statuses in the live evidence archive.
 
 | Circle enclosing grid | nphi=0 working frequency [MHz] | nphi=1 working frequency [MHz] |
 |---|---:|---:|
 |12|16.217947|16.476521|
 |16|15.873736|16.059240|
 |20|15.680648|16.287291|
+|24|16.886549|17.092433|
 
 The16-to20 changes are -1.2164%/+1.4201%. The corresponding continuation
 overlaps are0.59423/0.70117; independent cold-reference overlaps are
 0.60233/0.75880. Both rankings identify the same working candidates, but
 frequency changes alone do not establish structural or spatial convergence.
+At24 the nphi=1 continuation ranking selects index806, while the independent
+cold-reference ranking selects index804 at17.352989MHz. Keep that disagreement
+visible rather than treating the first selected image as an accepted branch.
 
 EAST16 has no strong individual continuation of the archived EAST12 seeds.
 The highest classified-candidate overlaps are0.21136/0.27410 at
@@ -130,3 +135,21 @@ EAST16 n0 K0/K1 fast-candidate frequencies agree to a maximum nearest relative
 difference1.9241e-14, so that particular retained-sector check does not explain
 the spatial discrepancy. All original spectra, excluded modes and failed
 continuation evidence remain archived.
+
+The user identified a recognizable two-lobe EAST20 n_phi=1 magnetic pattern
+(saved index651,9.582281306MHz). A new follow-up compares24/28/32 with this
+resolved20-grid direction, without requiring it to match the coarse12 seed.
+Component overlaps distinguish magnetic compression from velocity, density
+and the joint nodal metric. In the classified24-grid candidates the largest
+magnetic-compression overlap is0.27986, at11.916495MHz; its joint overlap
+is0.09440 on91.27% common M0 support. This is an emerging-structure hypothesis
+and unresolved branch tracking, not a named-mode identification or convergence
+pass. Excluded raw eigenpairs remain archived. Owned CPU28/32 full spectra are
+running separately and do not consume additional GPU budget.
+
+The curated report distinguishes teal NL nonlinear time evolution, purple LIN
+production-Jacobian analysis, and independently formulated REF evidence.
+Grid counts are N_R/N_Z, the harmonic is n_phi, and densities are n_i/n_e.
+The report has numbered logical pages and keeps historical figures17/18;
+detail reduction never deletes the full evidence. Prototype priorities follow
+[RESEARCH_PROTOTYPE_WORKFLOW.md](RESEARCH_PROTOTYPE_WORKFLOW.md).

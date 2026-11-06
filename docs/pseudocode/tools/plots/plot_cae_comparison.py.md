@@ -17,6 +17,12 @@ Produce a small standalone summary table/JSON and two PNG/SVG figures. These
 are offline diagnostics, not scientific pass gates. Missing/failed cases remain
 listed rather than being discarded from plots or acceptance claims.
 
+Visible matched-response titles use `n_phi` for the harmonic and explicitly
+state the selected `12 x 12` enclosing grid. Number density is never represented
+by that harmonic label. The comparison combines actual nonlinear histories
+with separately named discrete frequencies and independent references; the
+report gives this mixed provenance an explicit badge.
+
 Backend comparisons require equal source hashes, prescribed physical geometry,
 seed, amplitude, resolved parameters and timestep before selecting a common
 accepted prefix. Exclude only measured background projection residuals from

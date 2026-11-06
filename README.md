@@ -2,6 +2,10 @@
 
 [Visual branch history](docs/BRANCH_GRAPH.md) · [Development policy](docs/development.md)
 
+[Physical simulation prototype workflow](docs/RESEARCH_PROTOTYPE_WORKFLOW.md)
+records how verification, independent physical comparisons, and retained known
+issues determine prototype development priorities.
+
 The active `main` implementation is the FP64/complex128 Python solver under
 [`src/fomhd/`](src/fomhd), using NVIDIA Warp 1.19.0, CuPy CUDA13x 14.2.0, and
 an explicit NumPy/SciPy CPU reference. The fully explicit RK4 fluid path is
