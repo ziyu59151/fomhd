@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "created_date": "2026-11-05",
+  "created_date": "2026-11-06",
   "purpose": "Design provenance for active Python/Warp pseudocode; not a runtime dependency",
   "source_repository": "fomhd-design",
   "git_head_at_capture": "4d773f81591da3544990b736e29bbebcd4fa6ffe",
@@ -17,13 +17,14 @@
     "D059",
     "D060",
     "D061",
-    "D062"
+    "D062",
+    "D063"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 147721,
-      "sha256": "b92cc9826e81bb7e293006452957ffa30d578c3f8f65bc396356df4ccc360808"
+      "bytes": 151294,
+      "sha256": "55aea9a845580176c7ae0e342b02529d81d1517f5e82f4a1d77f3d29ad21d218"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -37,8 +38,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/integrated_contracts.md",
-      "bytes": 39554,
-      "sha256": "d52dd3e4b82a6b33818540333fee343bda5cf694ccfdc57fea24841735c29aba"
+      "bytes": 39763,
+      "sha256": "d98e756b2c320b88f894267af37d6d60b216c0504a550ff73e6f84ef342c6c1a"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/08_constraints/constraints.md",
@@ -52,8 +53,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
-      "bytes": 6538,
-      "sha256": "018186b5422cfd1e407b4dba282dfb0cbb88586e04649424ca4215137b77aebc"
+      "bytes": 6816,
+      "sha256": "7d314702fec4b124c5a03cb062fe7527c5d7979495e7d1600d9638cf53d1eb8b"
     },
     {
       "path": "mainline_design/implementation/A0/A0_MASSLESS_ELECTRON.md",
@@ -64,9 +65,34 @@
       "path": "mainline_design/implementation/A0/A0_TOKAMAK_CAE.md",
       "bytes": 13952,
       "sha256": "4a58042aa875d675fa2691efb72c1b3221882ad17fe0e1fa35bf2a09e965652e"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
+      "bytes": 11820,
+      "sha256": "dfb05f8aa8f751fa64297b3ae4715d2ea4c30bf9b838041a0d2642e8b28e4633"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
+      "bytes": 66974,
+      "sha256": "d386f810d6c524f4099f1ede5fc4910c7021655414d682ed113282eb58ebb55c"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/HYM_COST_MAP.md",
+      "bytes": 6832,
+      "sha256": "08ee8687c4efdc4589deb399d163f11b32b17b5a4b76bb14912862e520503ec0"
+    },
+    {
+      "path": "references/A1_PARALLEL_SOURCES.md",
+      "bytes": 3366,
+      "sha256": "1655165856c083d8e8a316c3592eb0452f948eecfae3abdfad3b66166b0c68ac"
+    },
+    {
+      "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
+      "bytes": 17951,
+      "sha256": "9d6031d1f5af7f2b1b479cb278cf807cdc988a57ede874db56fa21e682a93fc3"
     }
   ],
-  "captured_utc": "2026-11-06T00:43:05.494858+00:00",
+  "captured_utc": "2026-11-06T12:17:11.918723+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -97,5 +123,20 @@
     "fixed_domain_spatial_and_modes": "measured; boundary limitations and failed disk n20 retained; see docs/A0_SPATIAL_MODE_EVIDENCE.md",
     "quiet_wall_refinement": "CPU n3/n6/n9 64-step rerun complete; CUDA bounded projection regressions pass; c55f1b6",
     "global_fast_branch_prototype": "Circle grid12 CUDA/grid16 CPU and EAST grid12 matched responses; see docs/A0_TOKAMAK_CAE_EVIDENCE.md; not experimental validation"
+  },
+  "a1_scope": {
+    "record": "docs/A1_T0_EVIDENCE.md",
+    "baseline_branch": "release/a0",
+    "baseline_commit": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8",
+    "implemented": "T0 predictor and fixed-wall factor reuse",
+    "acceptance": "T0 report delivered: bounded periodic CPU/RTX5090 evidence; large-macro and closed-perturbation failures retained; T1 awaits user",
+    "later_tiers": "T1-T4 require user decision at each algorithm tier",
+    "multi_gpu": "reference and interface planning only",
+    "numerical_commit": "93219d2f85c5185cefaa97fd3e8125cef632f4cb",
+    "closed_fixture_repair": "581f20d050df50718e028d7550e9e65d57cc2ea7",
+    "cpu_tests_passed": 770,
+    "gpu_regression_passed": 12,
+    "global_physical_validation": false,
+    "equal_accuracy_speedup": false
   }
 }

@@ -43,3 +43,24 @@ massless default `0`; explicit `1` selects finite plasma/cyclotron saturation.
    caller records the full report; a failing error policy rejects before state
    mutation and a warn policy records the failed estimate without disabling
    physical, positivity, rank, or transaction gates. Recheck every base stage.
+
+## A1-PY-STABILITY-01 - Predictor micro-horizon estimate
+
+```text
+assess_predictor_runtime(estimate,context,macro_step):
+  require coupling=predictor, massless electrons, and RK4
+  M=validated micro_steps; h=dt/M
+  remaining_micro_steps=(nsteps-macro_step)*M
+  report=assess_dt("rk4",omega_estimate,h,remaining_micro_steps,...)
+  report.coupling="predictor"
+  report.micro_steps=M
+  report.micro_dt=h
+  report.macro_remaining_horizon_s=dt*(nsteps-macro_step)
+  report.scope="micro-RK4 only; does not prove macro-coupling stability"
+  report.action=continue if accepted else configured dt_guard
+```
+
+The same frequency estimate and configured sample/amplitude/phase budgets are
+used. No predictor tolerance is added or weakened. A failed error policy raises
+`TimeStepGuard` before trial allocation; a warning is retained in the accepted
+or rejected evidence.

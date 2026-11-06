@@ -62,6 +62,195 @@ def repeat_weights(weights: Any, count: int, backend: Any) -> Any:
     return backend.real_array(backend.xp.tile(weights, count))
 
 
+def predictor_history_entries(c: Context) -> int:
+    """Conservatively count retained T0 predictor stage/quadrature state."""
+    coupling = getattr(c.p, "coupling", "synchronous")
+    if coupling == "synchronous":
+        return 0
+    if coupling != "predictor":
+        raise Failure("Config", f"unknown time coupling: {coupling}")
+    micro_steps = getattr(c.p, "micro_steps", None)
+    if (
+        isinstance(micro_steps, bool)
+        or type(micro_steps) is not int
+        or micro_steps <= 0
+    ):
+        raise Failure(
+            "Config",
+            "micro_steps must be a positive non-boolean integer",
+        )
+    modes = 2 * c.p.K + 1
+    full_state = _checked_product(
+        modes,
+        _checked_sum(11 * c.op.Nc, c.op.MB.size, "predictor state"),
+        "predictor state",
+    )
+    # Four independent RK4 stages per microstep retain both the evaluated
+    # state and its RHS. The cache allowance is deliberately conservative;
+    # this is a rejection estimate, not a measured allocator result.
+    per_stage = _checked_sum(
+        _checked_sum(full_state, full_state, "predictor history"),
+        _checked_product(
+            modes,
+            _checked_sum(8 * c.op.Nc, c.op.Ne, "predictor cache"),
+            "predictor cache",
+        ),
+        "predictor history",
+    )
+    per_stage = _checked_sum(
+        per_stage,
+        _checked_product(
+            256,
+            _checked_product(
+                c.N,
+                _checked_sum(
+                    _checked_sum(
+                        3 * c.op.Nc,
+                        c.op.Ne,
+                        "predictor sample workspace",
+                    ),
+                    c.op.Nb,
+                    "predictor sample workspace",
+                ),
+                "predictor sample workspace",
+            ),
+            "predictor sample workspace",
+        ),
+        "predictor history",
+    )
+    history = _checked_product(
+        _checked_product(4, micro_steps, "memory predictor microstage count"),
+        per_stage,
+        "memory predictor history",
+    )
+    return _checked_sum(
+        history,
+        predictor_wall_history_entries(c),
+        "memory predictor history",
+    )
+
+
+def predictor_wall_history_entries(c: Context) -> int:
+    """Count retained per-stage dense wall samples and their factors."""
+    if int(getattr(c.p, "electron_inertia", 0)) != 0:
+        return 0
+    coupling = getattr(c.p, "coupling", "synchronous")
+    if coupling == "synchronous":
+        return 0
+    if coupling != "predictor":
+        raise Failure("Config", f"unknown time coupling: {coupling}")
+    micro_steps = getattr(c.p, "micro_steps", None)
+    if (
+        isinstance(micro_steps, bool)
+        or type(micro_steps) is not int
+        or micro_steps <= 0
+    ):
+        raise Failure(
+            "Config",
+            "micro_steps must be a positive non-boolean integer",
+        )
+    walls = getattr(c.geometry, "walls", ())
+    wall_count = len(walls) if walls is not None else 0
+    if wall_count == 0:
+        return 0
+    # Each retained ion wall context stores one dense w-by-w S matrix and, on
+    # CPU, a dense LU original/factor set per phi sample. The factor 16 is a
+    # conservative complex128-entry allowance for those matrices and copies.
+    matrix_entries = _checked_product(
+        16,
+        _checked_product(
+            c.N,
+            _checked_product(
+                wall_count,
+                wall_count,
+                "predictor wall matrix history",
+            ),
+            "predictor wall matrix history",
+        ),
+        "predictor wall matrix history",
+    )
+    vector_entries = _checked_product(
+        32,
+        _checked_product(
+            c.N,
+            _checked_sum(
+                wall_count,
+                3 * c.op.Nc,
+                "predictor wall vector history",
+            ),
+            "predictor wall vector history",
+        ),
+        "predictor wall vector history",
+    )
+    per_stage = _checked_sum(
+        matrix_entries,
+        vector_entries,
+        "predictor wall matrix history",
+    )
+    return _checked_product(
+        _checked_product(4, micro_steps, "predictor wall history"),
+        per_stage,
+        "predictor wall history",
+    )
+
+
+def fixed_wall_cache_bytes(c: Context) -> int:
+    """Conservative static upper bound for the independent massless wall cache."""
+    if int(getattr(c.p, "electron_inertia", 0)) != 0:
+        return 0
+    walls = getattr(c.geometry, "walls", ())
+    wall_count = len(walls) if walls is not None else 0
+    if wall_count == 0:
+        return 0
+    modes = 2 * c.p.K + 1
+    per_mode = _checked_sum(
+        _checked_product(
+            64,
+            _checked_product(
+                c.op.Ne,
+                wall_count,
+                "fixed-wall cache storage",
+            ),
+            "fixed-wall cache storage",
+        ),
+        _checked_product(
+            128,
+            _checked_product(
+                wall_count,
+                wall_count,
+                "fixed-wall cache storage",
+            ),
+            "fixed-wall cache storage",
+        ),
+        "fixed-wall cache storage",
+    )
+    per_mode = _checked_sum(
+        per_mode,
+        _checked_product(
+            64, wall_count, "fixed-wall cache storage"
+        ),
+        "fixed-wall cache storage",
+    )
+    per_mode = _checked_sum(
+        per_mode,
+        _checked_product(
+            32,
+            _checked_product(
+                c.op.Nb,
+                wall_count,
+                "fixed-wall cache storage",
+            ),
+            "fixed-wall cache storage",
+        ),
+        "fixed-wall cache storage",
+    )
+    return _checked_product(
+        modes,
+        per_mode,
+        "fixed-wall cache storage",
+    )
+
+
 def estimated_peak_bytes(c: Context) -> int:
     product = lambda left, right: _checked_product(left, right, "host memory plan")
     add = lambda left, right: _checked_sum(left, right, "host memory plan")
@@ -75,6 +264,7 @@ def estimated_peak_bytes(c: Context) -> int:
         product(256, product(c.N, add(add(3 * c.op.Nc, c.op.Ne), c.op.Nb))),
     )
     entries = add(entries, product(32, product(modes, add(11 * c.op.Nc, c.op.Nb))))
+    entries = add(entries, predictor_history_entries(c))
     resident = 0
     for group in (
         c.op.G,
@@ -101,23 +291,38 @@ def estimated_peak_bytes(c: Context) -> int:
     ):
         resident = add(resident, matrix.size)
     entries = add(entries, product(8, resident))
-    return product(entries, 16)
+    return add(
+        product(entries, 16),
+        fixed_wall_cache_bytes(c),
+    )
 
 
-def allocate_state(c: Context) -> State:
+def _workspace_bytes(c: Context) -> int:
+    modes = 2 * c.p.K + 1
+    entries = _checked_product(
+        modes,
+        _checked_sum(11 * c.op.Nc, c.op.MB.size, "state"),
+        "state",
+    )
+    bytes_value = _checked_product(entries, 16 * 20, "state/workspace")
+    return _checked_sum(
+        bytes_value,
+        _checked_product(
+            predictor_history_entries(c),
+            16,
+            "predictor history bytes",
+        ),
+        "state/workspace",
+    )
+
+
+def preflight_memory(c: Context) -> int:
+    """Apply complete allocation caps before any trial state is allocated."""
     if c.p.memory_limit == 0:
         raise Failure("Memory", "a positive host memory cap is required")
     peak_bytes = estimated_peak_bytes(c)
     _require_memory(peak_bytes, c.p.memory_limit, "complete A0 peak storage plan")
-    xp = c.compute.xp
-    nc = c.op.Nc
-    modes = 2 * c.p.K + 1
-    entries = _checked_product(
-        modes,
-        _checked_sum(11 * nc, c.op.MB.size, "state"),
-        "state",
-    )
-    workspace_bytes = _checked_product(entries, 16 * 20, "state/workspace")
+    workspace_bytes = _workspace_bytes(c)
     _require_memory(workspace_bytes, c.p.memory_limit, "state/workspace")
     if c.compute.name == "cuda":
         if c.p.device_memory_limit == 0:
@@ -132,6 +337,14 @@ def allocate_state(c: Context) -> State:
             c.p.device_memory_limit,
             "device state/workspace",
         )
+    return peak_bytes
+
+
+def allocate_state(c: Context) -> State:
+    preflight_memory(c)
+    xp = c.compute.xp
+    nc = c.op.Nc
+    modes = 2 * c.p.K + 1
 
     def empty() -> Any:
         return c.compute.array(xp.empty(0, dtype=xp.complex128))
@@ -309,3 +522,77 @@ def time_at_midpoint(p: Any, step: int) -> float:
     if not (time_at_step(p, step) < midpoint < time_at_step(p, step + 1)):
         raise Failure("TimeResolution", "midpoint not representable")
     return midpoint
+
+
+def _microstage_fraction(
+    p: Any,
+    micro_step: int,
+    rk_stage: int,
+) -> tuple[int, int]:
+    """Validate and return the common integer fraction for one microstage."""
+    if (
+        type(micro_step) is not int
+        or type(rk_stage) is not int
+        or rk_stage not in (0, 1, 2, 3)
+    ):
+        raise Failure("Time", "invalid predictor clock index")
+    micro_steps = getattr(p, "micro_steps", None)
+    if (
+        isinstance(micro_steps, bool)
+        or type(micro_steps) is not int
+        or micro_steps <= 0
+        or micro_step < 0
+        or micro_step >= micro_steps
+    ):
+        raise Failure(
+            "Config",
+            "micro_steps must be a positive non-boolean integer",
+        )
+    denominator = 4 * micro_steps
+    numerator = 4 * micro_step + (0, 2, 2, 4)[rk_stage]
+    return numerator, denominator
+
+
+def microstage_time(
+    p: Any,
+    macro_step: int,
+    micro_step: int,
+    rk_stage: int,
+) -> float:
+    """Return a deterministic T0 clock from integer microstage fractions."""
+    if type(macro_step) is not int or macro_step < 0:
+        raise Failure("Time", "invalid predictor clock index")
+    numerator, denominator = _microstage_fraction(
+        p, micro_step, rk_stage
+    )
+    t0 = time_at_step(p, macro_step)
+    t1 = time_at_step(p, macro_step + 1)
+    if numerator == 0:
+        return t0
+    if numerator == denominator:
+        return t1
+    value = _fma(float(p.dt), numerator / denominator, t0)
+    if not math.isfinite(value) or not (t0 < value < t1):
+        raise Failure(
+            "TimeResolution",
+            "predictor microstage midpoint is not representable",
+        )
+    return value
+
+
+def microstage_offset(
+    p: Any,
+    micro_step: int,
+    rk_stage: int,
+) -> float:
+    """Return the integer-fraction offset from a macro interval boundary."""
+    numerator, denominator = _microstage_fraction(
+        p, micro_step, rk_stage
+    )
+    value = _fma(float(p.dt), numerator / denominator, 0.0)
+    if not math.isfinite(value):
+        raise Failure(
+            "TimeResolution",
+            "predictor microstage offset is not representable",
+        )
+    return value

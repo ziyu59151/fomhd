@@ -72,6 +72,15 @@ check_stage(state,result,context):
     DB rhs.B=0 and DJ J=0
     CT consistency
     full padded pressure adjoint and retained-pressure truncation
+      pressure_adjoint_scale =
+        integral(
+          abs(pdot_perp) + 0.5*abs(pdot_parallel)
+          + sum_components abs(conj(u)*pressure_force)
+          + sum_components abs(P*grad(u)))
+      retain the physical residual, configured physical budget, hard status,
+      and 4096*eps scale factor; all operands are pre-cancellation backend arrays
+      use pressure_adjoint_scale only for electron_pressure_adjoint and the
+      duplicate pressure_pairing residual
     pressure tensor moment and CGL source identities
     corrected-field wall reaction work checked separately for Fi, Fe, and J
       each reference = ang_integral(abs(q F Er)) in watts
@@ -84,6 +93,18 @@ check_stage(state,result,context):
     finite-charge Gauss, longitudinal displacement current,
     electron inertia work/energy
 ```
+
+The pressure-adjoint scale includes the pressure-rate operands that can cancel
+before the retained pressure work residual is formed. The signed near-zero
+result is not used as its own scale, and no background-energy floor or
+host-side fallback is introduced. The configured physical threshold remains
+separate and unchanged.
+
+The pre-existing `pressure_scale=integral(abs(P:grad(u)))` remains the
+reference for `electron_electric_pairing`, `electric_pairing`,
+`electron_pressure_only_pairing`, and electron pressure truncation. The repair
+does not broaden or change any of those unrelated references or configured
+thresholds.
 
 Theta consistency applies the full-sample cylindrical divergence to
 `Fe/nf`; its Fourier projection is stored separately. It is not replaced by

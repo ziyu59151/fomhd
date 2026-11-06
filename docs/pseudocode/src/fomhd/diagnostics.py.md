@@ -136,4 +136,12 @@ All physical-state sample recovery defaults to `physical=true`, matching the
 native inverse contract. Complex linear-algebra paths must request
 `physical=false` explicitly; diagnostics never omit the imaginary-residue check
 by relying on an implicit default.
+
+## A1-PY-DIAG-01 - Stage identity serialization
+
+Diagnostic deduplication and JSON serialization include the appended
+`micro_step`, `iteration`, and `slab` values in addition to the A0 stage,
+macrostep, generation, trial, spectral context, and time fields. Missing
+attributes from historical record doubles read as synchronous defaults
+`-1,0,0`; native `StageTag` values are always serialized explicitly.
 ```

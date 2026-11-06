@@ -61,15 +61,22 @@ def test_native_field_order_and_defaults() -> None:
         "spectral_context",
         "time",
         "stage",
+        "micro_step",
+        "iteration",
+        "slab",
     ]
-    assert [field.name for field in dataclasses.fields(Parameters)][-6:] == [
+    assert [field.name for field in dataclasses.fields(Parameters)][-8:] == [
         "electron_inertia",
         "integrator",
         "dt_guard",
         "minimum_samples_per_cycle",
         "max_amplitude_error",
         "max_phase_error_rad",
+        "coupling",
+        "micro_steps",
     ]
+    assert Parameters().coupling == "synchronous"
+    assert Parameters().micro_steps == 1
     assert Parameters().electron_inertia == 0
     assert Parameters(electron_inertia=1).electron_inertia == 1
     assert Parameters().integrator == "rk4"
@@ -77,6 +84,10 @@ def test_native_field_order_and_defaults() -> None:
     assert Parameters().minimum_samples_per_cycle == 32
     assert Parameters().max_amplitude_error == 0.01
     assert Parameters().max_phase_error_rad == 0.1
+    tag = StageTag()
+    assert tag.micro_step == -1
+    assert tag.iteration == 0
+    assert tag.slab == 0
     assert [field.name for field in dataclasses.fields(References)] == [
         "length",
         "time",

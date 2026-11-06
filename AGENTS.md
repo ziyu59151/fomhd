@@ -10,7 +10,8 @@
   (`electron_inertia=0`, default); historical finite-inertia cases opt in with 1.
 - The design authority is the sibling repository
   `/home/lxzeng/fomhd-design`: DECISIONS, A0_IMPLEMENTATION_SPEC, and
-  A0_GLOBAL_DISCRETIZATION. It is navigation and review context, not a build
+  A0_GLOBAL_DISCRETIZATION, and A1/A1_ALGORITHM_DESIGN for selected A1 time
+  scheduling. It is navigation and review context, not a build
   or runtime dependency. If it is unavailable, report that fact instead of
   reconstructing the model.
 - Implementation-level pseudocode under `docs/pseudocode/` precedes and stays

@@ -269,6 +269,8 @@ def _run_command(argv):
             exit_code = 5
             if getattr(result, "time_step_report", None) is not None:
                 run.time_estimate(result.time_step_report)
+            if getattr(result, "coupling_metadata", None) is not None:
+                run.time_coupling_evidence(result.coupling_metadata)
             run.diagnostics(
                 committed.state,
                 result.checks,

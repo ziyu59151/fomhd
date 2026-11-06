@@ -628,6 +628,8 @@ def _write_case(
     dt_guard="warn",
     minimum_samples_per_cycle=32.0,
     include_inertia=True,
+    coupling=None,
+    micro_steps=None,
 ):
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
@@ -726,6 +728,24 @@ def _write_case(
                 if value.startswith("dt_guard=")
             ),
             f'integrator="{integrator}"',
+        )
+    if coupling is not None:
+        lines.insert(
+            next(
+                index
+                for index, value in enumerate(lines)
+                if value.startswith("dt_guard=")
+            ),
+            f'coupling="{coupling}"',
+        )
+    if micro_steps is not None:
+        lines.insert(
+            next(
+                index
+                for index, value in enumerate(lines)
+                if value.startswith("dt_guard=")
+            ),
+            f"micro_steps={_toml_value(micro_steps)}",
         )
     for name, budget in p.budgets.items():
         norm = (

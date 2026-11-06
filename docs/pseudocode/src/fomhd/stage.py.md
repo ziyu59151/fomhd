@@ -142,3 +142,12 @@ including the former three-component kinetic-density error, and requires each
 mutation to fail. The stress oracle uses zero velocity, inhomogeneous density,
 anisotropic electron pressure, nonzero transverse forcing, and an independent
 dense KKT check.
+
+## A1-PY-STAGE-01 - Alias and failure identity
+
+Every finite and massless alias probe copies the source tag's `micro_step`,
+`iteration`, and `slab` fields while changing only the stage label, generation
+as required by the evaluator, time, and alternate spectral context. Common
+failure deduplication compares those three fields with the existing record
+identity. Alias evaluation therefore cannot collapse a predictor k2 and k3 that
+share a clock.

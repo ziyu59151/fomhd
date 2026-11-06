@@ -38,6 +38,11 @@
     GPU work.
 15. Compare sampled density on multiple meshes with the same analytic physical
     Z-domain modulation. Require delta-theta norm metadata to use 1/s.
+16. For the deliberately wrong-sign Hall oracle, require a finite full-horizon
+    production trajectory with hard checks available, then require order-one
+    disagreement with that oracle. A reference-sign error does not require the
+    correct production solver to reject a valid state. Do not use an incidental
+    pressure-roundoff failure as the oracle comparison.
 
 Every test names the production defect or harness contract it catches. Tests
 that cannot run a requested CUDA case report it as unavailable; they do not

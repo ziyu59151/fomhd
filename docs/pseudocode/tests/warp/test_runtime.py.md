@@ -61,3 +61,21 @@ Covered top-level functions and fixture classes:
 This mirror describes the implemented checks. Passing it is evidence only
 for its stated fixtures and backend; it does not imply global Tokamak, ICE,
 experimental, or production-performance validation.
+
+## A1-PY-TEST-RUNTIME-01 - Coupling configuration and transaction edges
+
+The A1 additions keep the A0 fixture and transaction checks above unchanged,
+and add:
+
+```text
+omitted synchronous/default M=1 and explicit synchronous/default M=1
+  have equal semantic identity
+synchronous micro_steps!=1, predictor finite, predictor midpoint, invalid
+  bool/fractional/nonpositive M, and unknown coupling fail before trial mutation
+predictor source callback is rejected before invocation/state mutation
+same-scheme/M restart succeeds; changed scheme or M is rejected clearly
+synchronous checkpoint/restart and all existing A0 runtime checks remain valid
+```
+
+The test metadata distinguishes these configuration/transaction checks from
+the algorithmic predictor ODE tests and real massless fixture checks.

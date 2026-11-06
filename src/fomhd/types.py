@@ -75,6 +75,8 @@ class Parameters:
     minimum_samples_per_cycle: float = 32.0
     max_amplitude_error: float = 0.01
     max_phase_error_rad: float = 0.1
+    coupling: str = "synchronous"
+    micro_steps: int = 1
 
 
 @dataclass
@@ -85,6 +87,9 @@ class StageTag:
     spectral_context: int = 0
     time: float = 0.0
     stage: str = ""
+    micro_step: int = -1
+    iteration: int = 0
+    slab: int = 0
 
 
 @dataclass

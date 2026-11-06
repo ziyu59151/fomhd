@@ -1565,20 +1565,58 @@ def check_stage(state, result, context):
     velocity_gradient = xp.asarray(result.fluid[1].gradient).reshape(
         context.N, 3, 3, nc
     )
-    pressure_scale = abs(
+    # The CGL pressure-rate terms may cancel before the retained pressure-work
+    # sum is formed. Include their pre-cancellation operands so 4096*eps scales
+    # the arithmetic that actually produced the residual, not only P:grad(u).
+    pressure_rate_operands = (
+        xp.abs(
+            xp.asarray(result.fluid[1].pdot_perp).reshape(context.N, nc)
+        )
+        + 0.5
+        * xp.abs(
+            xp.asarray(result.fluid[1].pdot_parallel).reshape(context.N, nc)
+        )
+    )
+    pressure_force_work_operands = xp.sum(
+        xp.abs(
+            xp.conj(
+                xp.asarray(result.fluid[1].u).reshape(
+                    context.N, 3, nc
+                )
+            )
+            * xp.asarray(result.fluid[1].pressure_force).reshape(
+                context.N, 3, nc
+            )
+        ),
+        axis=1,
+    )
+    pressure_gradient_operands = xp.sum(
+        xp.abs(pressure_tensor * velocity_gradient),
+        axis=(1, 2),
+    )
+    pressure_scale = xp.abs(
         _integrate_cells(
-            xp.sum(
-                xp.abs(pressure_tensor * velocity_gradient), axis=(1, 2)
-            ).reshape(-1),
-            1,
-            context,
+            pressure_gradient_operands.reshape(-1), 1, context
+        )
+    )
+    pressure_adjoint_scale = (
+        pressure_scale
+        + xp.abs(
+            _integrate_cells(
+                pressure_rate_operands.reshape(-1), 1, context
+            )
+        )
+        + xp.abs(
+            _integrate_cells(
+                pressure_force_work_operands.reshape(-1), 1, context
+            )
         )
     )
     _scaled_scalar(
         out,
         "electron_pressure_adjoint",
         result.residuals["electron_pressure_adjoint"][0].real,
-        pressure_scale,
+        pressure_adjoint_scale,
         "W",
         tag,
         context,
@@ -1598,7 +1636,7 @@ def check_stage(state, result, context):
         out,
         "pressure_pairing",
         result.residuals["electron_pressure_adjoint"][0].real,
-        pressure_scale,
+        pressure_adjoint_scale,
         "W",
         tag,
         context,

@@ -10,6 +10,8 @@ on `reference/a0-native` rather than duplicated here.
 | `warp/test_physics.py` | FLUID, WALL, FIELD; force/work pairing, Darwin, CT and domain checks |
 | `warp/test_diagnostic_evidence_io.py` | DIAG and IO; regions, norms, unavailable data and evidence |
 | `warp/test_runtime.py`, `warp/test_model_routing.py` | TIME; explicit RK4/midpoint transactions, accepted/rejected evidence, routing and restart |
+| `warp/test_massless_pressure_scale.py` | Strict pressure-adjoint operand scaling and corrupted-work negative control |
+| `warp/test_time_predictor.py` | A1-T0 fixed-tangent predictor scheduling, micro-RK4 guard, rollback, restart and bounded massless fixtures |
 | `warp/test_mms.py`, `warp/test_massless_verification.py` | Independent temporal/spatial manufactured solutions and constrained-model checks |
 | `warp/test_stability.py`, `warp/test_longitudinal.py` | Explicit-integrator polynomials, finite-horizon guards and local longitudinal response |
 | `warp/test_benchmark_harness.py`, `warp/test_*plots.py` | Python case generation, CLI products and offline figure provenance |

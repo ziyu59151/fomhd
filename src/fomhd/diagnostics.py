@@ -359,6 +359,9 @@ def _check_identity(record, key):
         record.tag.trial,
         record.tag.spectral_context,
         float(record.tag.time).hex(),
+        int(getattr(record.tag, "micro_step", -1)),
+        int(getattr(record.tag, "iteration", 0)),
+        int(getattr(record.tag, "slab", 0)),
     )
 
 

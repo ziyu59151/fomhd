@@ -144,3 +144,20 @@ massless budget keys use the configured species IDs. A rejected local
 massless-combine candidate is retained through the common failure helper before
 the canonicalization failure is re-raised; the accepted state and cumulative
 ledger are not changed.
+
+## A1-PY-ROUTE-01 - Time coupling dispatch
+
+```text
+time.advance:
+  validate coupling and micro_steps before any scheduler mutation
+  synchronous + micro_steps=1 -> unchanged A0 midpoint/RK4 path for either model
+  predictor + electron_inertia=0 + rk4 -> local time_predictor dispatch
+  all other combinations -> Failure("Config", exact combination reason)
+  predictor source callback on massless path -> Failure("ManufacturedSource")
+    before callback invocation, stage evaluation, or trial allocation
+```
+
+The massless independent variables remain `P=(ion n,mom,perp)` and
+`Z=(electron perp,parallel,B)`. Compatibility electron density/momentum are
+reconstructed by existing canonicalization at every assembled stage and at the
+accepted endpoint. They are never advanced as independent predictor state.

@@ -1,4 +1,4 @@
-# A0 实现级伪代码与维护说明书
+# A1 实现级伪代码与维护说明书
 
 > Status: active Python/Warp implementation specification for `main`.
 > `reference/a0-native` owns the frozen native implementation and its mirrored
@@ -6,7 +6,7 @@
 > contracts.
 > Authority: the design repository owns the mathematical model; this directory
 > owns the step-by-step mapping to the active Python/Warp/CuPy source.
-> Last synchronized: 2026-11-05.
+> Last synchronized: 2026-11-06; inherited A0 step IDs remain stable.
 
 ## File mapping
 
@@ -19,20 +19,28 @@ documents, not fictitious modules. The active entry point is
 
 | Mainline responsibility | Mirrored pseudocode |
 |---|---|
+| A1 T0 fixed-tangent microsteps and fixed wall-system reuse | [predictor](src/fomhd/time_predictor.py.md), [wall cache](src/fomhd/wall_cache.py.md) |
 | CLI, strict configuration, run products and restart | [entry](src/fomhd/__main__.py.md), [I/O](src/fomhd/io.py.md) |
 | Physical records, layout and state operations | [types](src/fomhd/types.py.md), [core](src/fomhd/core.py.md) |
 | Device ownership, Warp kernels and CuPy FFT/LU/SVD | [backend](src/fomhd/backend.py.md) |
 | Closed geometry and compatible RZ/Fourier operators | [geometry](src/fomhd/geometry.py.md), [operators](src/fomhd/operators.py.md) |
 | Fluid equations, walls and finite-mass Darwin fields | [fluid](src/fomhd/fluid.py.md), [wall](src/fomhd/wall.py.md), [fields](src/fomhd/fields.py.md) |
 | Explicit RK4 default, explicit midpoint, stage evaluation and guards | [time](src/fomhd/time.py.md), [stage](src/fomhd/stage.py.md), [stability](src/fomhd/stability.py.md) |
+| A1 T0 fixed-tangent predictor micro-RK4 scheduler | [time predictor](src/fomhd/time_predictor.py.md) |
 | Diagnostics and source/interval accounting | [diagnostics](src/fomhd/diagnostics.py.md) |
 | Coupled manufactured solutions and independent spatial checks | [MMS fixture](tests/warp/mms_fixture.py.md), [MMS CLI](tools/warp_mms.py.md) |
 | Quasineutral massless equations, constraints and diagnostics | [massless stage](src/fomhd/massless.py.md), [massless checks](src/fomhd/massless_checks.py.md) |
 | Hall response, closed-wall reconstruction and evidence output | [massless fixture](tests/warp/massless_verification_fixture.py.md), [verification CLI](tools/warp_massless_verify.py.md) |
+| T0 equal-horizon comparisons, per-field errors and retained failures | [T0 evidence CLI](tools/warp_t0_verify.py.md) |
 | Python case generation, equal-horizon scans, scales and plots | [benchmark](tools/warp_benchmark.py.md), [frequency table](tools/frequency_table.py.md), [plots](tools/plots/plot_warp_benchmarks.py.md) |
 | Documented massless case template | [case config](tools/case_config.py.md) |
 | Offline analysis and accepted-run figures | [analyze.py](tools/analyze.py.md), [plot run](tools/plots/plot_run.py.md) |
 | User-owned Slurm launcher | [a0.slurm](jobs/a0.slurm.md) |
+
+A1-T0 is the only implemented time-decoupling layer: a fixed start-of-macro
+tangent path, RK4 electron-field microsteps, full ion RHS quadrature over all
+micro stages, and one accepted macro-endpoint transaction. T1 waveform
+iteration and later layers are not placeholders in this source tree.
 
 The native implementation-level pseudocode, CMake contracts, native tests and
 native case generator live on `reference/a0-native`. They are not retained here
@@ -84,9 +92,10 @@ flowchart TD
     cli --> runio[io: snapshots, checkpoints, restart, failures]
 ```
 
-A0 covers the fixed closed staircase domain, strict input loading, the complete
-finite-mass workflow, and the optional quasineutral massless branch. A1 changes
-time scheduling after its algorithm is selected; A2 and A3 remain separate.
+A1 inherits the fixed closed staircase domain, strict input loading, and the
+default quasineutral massless model with the historical finite-mass comparison.
+It adds the selected T0 predictor and fixed wall-system reuse; A2 and A3 remain
+separate. Later time algorithms require their own report and user decision.
 Periodic Cartesian fixtures are tests, not a substitute for the fixed-boundary
 production model.
 
