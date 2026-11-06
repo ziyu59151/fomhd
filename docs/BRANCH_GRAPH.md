@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "main": "dc651a514299f1e0fd5e858364d605f3f603602c", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "b227f253d80227fa25e137486391f9afdea90d68"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "main": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8"} -->
 
 ```mermaid
 flowchart LR
@@ -133,6 +133,9 @@ flowchart LR
   c26829849839c15ff72bc75e881dcb3dd46e18a9e --> cdc651a514299f1e0fd5e858364d605f3f603602c
   c0ff316a7ac35d7508b426fac3b268d99713dd1cb --> cdc651a514299f1e0fd5e858364d605f3f603602c
   click cdc651a514299f1e0fd5e858364d605f3f603602c "https://github.com/ziyu59151/fomhd/commit/dc651a514299f1e0fd5e858364d605f3f603602c"
+  c9a38bf41e7bc1fc50186c81967312a7ec5f028e8["9a38bf41 · docs: update branch graph [skip ci]"]
+  cdc651a514299f1e0fd5e858364d605f3f603602c --> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
+  click c9a38bf41e7bc1fc50186c81967312a7ec5f028e8 "https://github.com/ziyu59151/fomhd/commit/9a38bf41e7bc1fc50186c81967312a7ec5f028e8"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-grid-convergence"]) -.-> c81e89dbb9f58e36ff73be89e2e1912e7354920c4
   b2(["codex/a0-nl-cellplots"]) -.-> c0ff316a7ac35d7508b426fac3b268d99713dd1cb
@@ -140,9 +143,9 @@ flowchart LR
   b4(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
   b5(["codex/a0-tokamak-cae"]) -.-> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
   b6(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
-  b7(["main"]) -.-> cdc651a514299f1e0fd5e858364d605f3f603602c
+  b7(["main"]) -.-> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
   b8(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
-  b9(["release/a0"]) -.-> cb227f253d80227fa25e137486391f9afdea90d68
+  b9(["release/a0"]) -.-> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
 ```
 
 Regenerate after fetching:
