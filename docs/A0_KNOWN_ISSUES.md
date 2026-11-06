@@ -21,8 +21,14 @@ imbalance approaches perturbation energy, or a run becomes unstable.
 | A0-10 | Archived EAST12 eight-cycle seed-subspace coherence falls to0.940963/0.917186 for n0/n1; circle12/16 stays at least0.99999975. | EAST response departs from its baseline linear seed. Track evolving structure and relaxing controls; do not present a single fitted frequency as proof of a stationary global eigenmode. |
 | A0-11 | EAST12-to16 individual branch continuation is weak: best classified overlaps0.21136/0.27410; all853 positive-imaginary n0 raw eigenpairs still give only0.21136 forward maximum. The old parallel fraction0.52794 was near the0.5 classifier cutoff. | No strong converged EAST branch is established. Preserve nearby excluded modes, reverse-interpolation sensitivity and pending finer grids; do not change the classifier or silently connect different candidates. |
 | A0-12 | Dense32-grid full spectra are estimated at19-28 wall-clock hours per sector in the measured4-CPU configuration; a K1 storage plan exceeds the RTX5090 memory cap. | This is a current implementation/analysis scaling limit. Retain32-grid setup/step probes; no32-grid frequency or actual-mode acceptance. It does not imply a Warp-versus-native speed claim. |
+| A0-13 | The newly resolved EAST20 n_phi=1 two-lobe magnetic candidate has only0.27986 maximum compression overlap among classified24-grid candidates, on91.27% common support; the corresponding joint B/velocity overlap is0.09440. | A recognizable image supports further mode research but is not a same-branch convergence certificate. Follow28/32 from the20-grid seed, retain component metrics and excluded raw spectra. Do not require inheritance from an underresolved coarse seed. |
 
 Nonfinite state, nonpositive density/pressure, failed numerical solves, broken
 ownership/restart identity, and necessary model constraints still stop runs.
 No energy residual is removed by adding a numerical wall reaction to physical
 boundary power. All cumulative energy uses the actual accepted RK4 ledger.
+
+The user confirmed that A0-01/02/07 remain recorded debugging leads rather
+than automatic A1 prerequisites. Background cancellation supports a common
+contribution and does not replace the raw budget. The development policy is
+[RESEARCH_PROTOTYPE_WORKFLOW.md](RESEARCH_PROTOTYPE_WORKFLOW.md).

@@ -28,6 +28,40 @@ from tools.grid_mode_analysis import (
     validate_comparable,
 )
 
+LINEAR_IDENTITY = "LIN | FOMHD discrete Jacobian"
+LINEAR_ACCENT = "#6A3D9A"
+NONLINEAR_IDENTITY = "NL | FOMHD time evolution"
+NONLINEAR_ACCENT = "#00796B"
+
+
+def _identity_banner(fig, text: str, color: str, gid: str) -> None:
+    banner = fig.text(
+        0.012, 0.995, text,
+        ha="left", va="top", fontsize=9, fontweight="bold", color=color,
+        bbox={
+            "boxstyle": "round,pad=0.3",
+            "facecolor": "white",
+            "edgecolor": color,
+            "linewidth": 1.2,
+        },
+        zorder=100,
+    )
+    banner.set_gid(gid)
+
+
+def _time_evolution_banner(fig, *, device=None, solver_status=None) -> None:
+    lines = [NONLINEAR_IDENTITY]
+    if device is not None or solver_status is not None:
+        lines.append(
+            f"device={device or 'unavailable'} | "
+            f"solver status={solver_status or 'unavailable'}"
+        )
+        if solver_status != "completed":
+            lines[-1] += " | no claim of completed evolution"
+    _identity_banner(
+        fig, "\n".join(lines), NONLINEAR_ACCENT, "fomhd-nonlinear-banner"
+    )
+
 
 def read_npz(path: Path,
              names: tuple[str, ...] | None = None) -> dict[str, np.ndarray]:
@@ -83,7 +117,7 @@ def load_branch(report_path: Path, selected_path: Path) -> dict:
 
 
 def structural_real(field: np.ndarray) -> np.ndarray:
-    """Return the unencoded eigenvector real amplitude for n0 or n1."""
+    """Return the unencoded eigenvector real amplitude for either harmonic."""
     return np.real(np.asarray(field))
 
 
@@ -294,15 +328,25 @@ def render_convergence(branches: list[dict], output: Path) -> dict:
     mode = branches[0]["mode"]
     validate_comparable([item["report"] for item in branches])
     fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.5))
+    _identity_banner(fig, LINEAR_IDENTITY, LINEAR_ACCENT, "fomhd-linear-banner")
     nodes = np.asarray([item["nodes"] for item in branches])
     frequencies = np.asarray([item["frequency_hz"] / 1e6 for item in branches])
     axes[0].plot(nodes, frequencies, marker="o", color="0.15")
+    frequency_span = float(np.max(frequencies) - np.min(frequencies))
     for x, y in zip(nodes, frequencies):
-        axes[0].annotate(f"n={int(x)}", (x, y), xytext=(0, 7),
-                         textcoords="offset points", ha="center", fontsize=7)
-    axes[0].set_xlabel("numerical grid n (cells across)")
+        near_top = frequency_span > 0 and y > np.min(frequencies) + 0.8 * frequency_span
+        axes[0].annotate(
+            f"grid {int(x)} x {int(x)}", (x, y),
+            xytext=(0, -13 if near_top else 8),
+            textcoords="offset points",
+            ha="center", va="top" if near_top else "bottom",
+            fontsize=7,
+            bbox={"boxstyle": "round,pad=0.15", "facecolor": "white",
+                  "edgecolor": "none", "alpha": 0.85},
+        )
+    axes[0].set_xlabel("N_R x N_Z grid resolution (cells)")
     axes[0].set_ylabel("selected frequency [MHz]")
-    axes[0].set_title(f"Linear branch frequency, nphi={mode}")
+    axes[0].set_title(f"Linear branch frequency, n_phi={mode}")
     axes[0].grid(alpha=0.25)
     pair_nodes = []
     overlaps = []
@@ -343,18 +387,18 @@ def render_convergence(branches: list[dict], output: Path) -> dict:
         axes[2].text(0.5, 0.5, "needs at least two grids", ha="center",
                      va="center", transform=axes[2].transAxes)
     axes[1].set_ylim(0, 1.05)
-    axes[1].set_xlabel("numerical grid n")
+    axes[1].set_xlabel("N_R x N_Z grid resolution (cells)")
     axes[1].set_ylabel("common-support normalized overlap")
     axes[1].set_title("Continuation overlap")
     axes[2].set_ylim(0, 1.05)
-    axes[2].set_xlabel("numerical grid n")
+    axes[2].set_xlabel("N_R x N_Z grid resolution (cells)")
     axes[2].set_ylabel("covered M0 fraction")
     axes[2].set_title("Common finite support")
     fig.suptitle(
-        "Selected grid branches; no convergence order inferred from these points",
-        fontsize=11,
+        "Selected linear branches | not time evolved | no convergence order inferred",
+        fontsize=11, y=0.94,
     )
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.90))
     return {"files": _save_figure(fig, output, "grid_mode_convergence")}
 
 
@@ -452,60 +496,59 @@ def render_selected_structure(branches: list[dict], output: Path) -> dict:
     fig, axes = plt.subplots(
         len(branches), 3, figsize=(11.5, 3.5 * len(branches)), squeeze=False
     )
+    _identity_banner(fig, LINEAR_IDENTITY, LINEAR_ACCENT, "fomhd-linear-banner")
     for row, (branch, item) in enumerate(zip(branches, fields)):
         for column, key in enumerate(keys):
             scale = scales[key]
             normalized = item[key] / scale if scale > 0 else item[key] * 0.0
             if key == "speed":
-                phase_title = (
-                    f", vphase={item['velocity_phase_rad']:.4g} rad"
-                    if branch["mode"] == 0 else f", aligned phase={item['compression_phase_rad']:.4g} rad"
+                phase_label = (
+                    f"velocity phase={item['velocity_phase_rad']:.4g} rad"
+                    if branch["mode"] == 0
+                    else f"aligned phase={item['compression_phase_rad']:.4g} rad"
                 )
                 _flat_panel(
                     axes[row, column], branch["selected"]["R"],
                     branch["selected"]["Z"], normalized,
                     branch["selected"],
-                    f"absolute selected n={branch['nodes']}: |v|{phase_title}",
-                    "normalized |v| at declared velocity phase",
+                    f"grid {branch['nodes']} x {branch['nodes']} | "
+                    f"n_phi={branch['mode']} | selected |v|",
+                    f"normalized |v|, {phase_label}",
                     velocity=item["velocity"], signed=False, cmap="viridis",
                 )
             else:
                 if branch["mode"] == 0:
-                    phase_title = (
-                        f", comp_phase={item['compression_phase_rad']:.4g} rad"
+                    phase_label = (
+                        f"compression phase={item['compression_phase_rad']:.4g} rad"
                     )
                     label = (
-                        "normalized B_parallel at compression phase"
+                        "normalized B_parallel"
                         if key == "B_parallel"
-                        else "normalized density at compression phase"
+                        else "normalized delta n_i"
                     )
                 else:
-                    phase_title = f", aligned phase={item['compression_phase_rad']:.4g} rad"
+                    phase_label = (
+                        f"aligned phase={item['compression_phase_rad']:.4g} rad"
+                    )
                     label = (
-                        "normalized phase-aligned B_parallel"
-                        if key == "B_parallel" else "normalized phase-aligned density"
+                        "normalized B_parallel"
+                        if key == "B_parallel"
+                        else "normalized delta n_i"
                     )
                 _flat_panel(
                     axes[row, column], branch["selected"]["R"],
                     branch["selected"]["Z"], normalized,
                     branch["selected"],
-                    f"absolute selected n={branch['nodes']}: {key}{phase_title}",
-                    label,
+                    f"grid {branch['nodes']} x {branch['nodes']} | "
+                    f"n_phi={branch['mode']} | selected "
+                    f"{'delta n_i' if key == 'density' else key}",
+                    f"{label}, {phase_label}",
                 )
-    if branches[0]["mode"] == 0:
-        phase_note = (
-            "n0 per-grid compression and global velocity quadrature phases "
-            "are declared in panel labels and manifest"
-        )
-    else:
-        phase_note = "n1 one shared compression phase per mode; relative B/v phase preserved"
     fig.suptitle(
-        "Absolute selected linear discrete eigenmode; not time evolved\n"
-        f"{phase_note}; flat actual cells\n"
-        "Unit MB+ion-kinetic quadratic norm (not total wave energy); common color scales",
-        fontsize=11,
+        "Selected linear eigenmode maps | not time evolved | flat actual cells",
+        fontsize=11, y=0.94,
     )
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.90))
     return {
         "files": _save_figure(fig, output, "grid_mode_selected_structure"),
         "phases": [
@@ -565,9 +608,10 @@ def render_structure(branches: list[dict], output: Path) -> dict:
     fig, axes = plt.subplots(
         len(deltas), 4, figsize=(14.5, 3.6 * len(deltas)), squeeze=False
     )
+    _identity_banner(fig, LINEAR_IDENTITY, LINEAR_ACCENT, "fomhd-linear-banner")
     labels = {
         "delta_B_parallel": "normalized delta B_parallel",
-        "delta_n": "normalized delta n",
+        "delta_n": "normalized delta n_i",
         "delta_vR": "normalized delta vR",
         "delta_vZ": "normalized delta vZ",
     }
@@ -585,7 +629,9 @@ def render_structure(branches: list[dict], output: Path) -> dict:
             _flat_panel(
                 axes[row, column], selected["R"], selected["Z"], normalized,
                 selected,
-                f"{current['nodes']} grid: {key}",
+                f"grid {current['nodes']} x {current['nodes']} | "
+                f"n_phi={current['mode']} | aligned "
+                f"{'delta n_i' if key == 'delta_n' else key}",
                 labels[key],
                 velocity=delta["delta_velocity"] if column >= 2 else None,
             )
@@ -596,11 +642,10 @@ def render_structure(branches: list[dict], output: Path) -> dict:
             ha="left", va="bottom", color="0.15",
         )
     fig.suptitle(
-        "Jointly aligned linear discrete eigenmode: signed common-support delta\n"
-        "unit current quadratic norm/phase; one joint B/v alignment; flat actual cells",
-        fontsize=11,
+        "Aligned linear eigenmode differences | not time evolved | common support only",
+        fontsize=11, y=0.94,
     )
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.90))
     return {
         "selected_files": selected_render["files"],
         "selected_structure_phases": selected_render["phases"],
@@ -766,7 +811,7 @@ def _weighted_vector(B: np.ndarray, velocity: np.ndarray,
 
 def _projection(coherence_values: np.ndarray, seed: np.ndarray,
                 mode: int) -> tuple[np.ndarray, np.ndarray, int]:
-    """Project weighted actual vectors onto a real n0 span or complex n1 line."""
+    """Project onto the real n_phi=0 span or complex n_phi=1 line."""
     coherence = np.full(coherence_values.shape[0], np.nan)
     residual = np.full(coherence_values.shape[0], np.nan)
     if mode == 0:
@@ -897,8 +942,17 @@ def response_seed_coherence(response: dict, branch: dict) -> dict:
     }
 
 
-def render_seed_coherence(result: dict, output: Path) -> dict:
+def render_seed_coherence(
+    result: dict,
+    output: Path,
+    *,
+    device=None,
+    solver_status=None,
+) -> dict:
     fig, axes = plt.subplots(2, 1, figsize=(8.2, 5.6), sharex=True)
+    _time_evolution_banner(
+        fig, device=device, solver_status=solver_status
+    )
     axes[0].plot(result["time_s"], result["coherence"], color="#1f77b4")
     axes[0].set_ylabel("seed-span coherence")
     axes[0].set_ylim(0, 1.02)
@@ -925,8 +979,10 @@ def render_seed_coherence(result: dict, output: Path) -> dict:
     )
     axes[0].text(0.01, 0.02, note, transform=axes[0].transAxes,
                  fontsize=7.5, va="bottom", ha="left")
-    fig.suptitle("Actual evolved seed-subspace coherence", fontsize=11)
-    fig.tight_layout()
+    fig.suptitle(
+        "Actual evolved seed-subspace coherence", fontsize=11, y=0.95
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.91))
     files = _save_figure(fig, output, "response_seed_coherence")
     data_path = output / "response_seed_coherence.npz"
     np.savez_compressed(
@@ -996,6 +1052,10 @@ def render_response(response: dict | None, branches: list[dict], output: Path,
         raise ValueError("response grid must identify exactly one selected branch")
     branch = choices[0]
     validate_response_provenance(response, branch)
+    evolution_report = response.get("provenance", {}).get("report")
+    evolution_report = evolution_report if isinstance(evolution_report, dict) else {}
+    device = str(evolution_report.get("device", "unavailable"))
+    solver_status = str(evolution_report.get("status", "unavailable"))
     fields = response_fields(response, branch, time_index)
     keys = ("delta_B_parallel", "delta_n", "delta_vR", "delta_vZ")
     scales = {
@@ -1003,11 +1063,14 @@ def render_response(response: dict | None, branches: list[dict], output: Path,
         for key in keys
     }
     fig, axes = plt.subplots(1, 4, figsize=(14.5, 3.7))
+    _time_evolution_banner(
+        fig, device=device, solver_status=solver_status
+    )
     labels = {
         "delta_B_parallel": "normalized physical delta B_parallel",
-        "delta_n": "normalized physical delta n",
-        "delta_vR": "normalized physical delta vR",
-        "delta_vZ": "normalized physical delta vZ",
+        "delta_n": "normalized physical delta n_i",
+        "delta_vR": "normalized physical delta v_i,R",
+        "delta_vZ": "normalized physical delta v_i,Z",
     }
     for column, key in enumerate(keys):
         scale = scales[key]
@@ -1015,21 +1078,24 @@ def render_response(response: dict | None, branches: list[dict], output: Path,
         _flat_panel(
             axes[column], branch["selected"]["R"], branch["selected"]["Z"],
             normalized, branch["selected"],
-            f"response: {key}", labels[key],
+            f"grid {branch['nodes']} x {branch['nodes']} | "
+            f"n_phi={branch['mode']} | evolved "
+            f"{'delta n_i' if key == 'delta_n' else key}",
+            labels[key],
             velocity=fields["delta_velocity"] if column >= 2 else None,
         )
     fig.suptitle(
-        f"Matched-control time-evolved response at t={fields['time_s']:.6g} s, "
-        f"physical phi=0, nphi={branch['mode']}\n"
-        "encoded state convention: n0=Re(A), n1 physical=2Re(A_retained); "
-        "piecewise-constant actual cells",
-        fontsize=11,
+        f"Matched-control time-evolved response | t={fields['time_s']:.6g} s | "
+        f"phi=0 | n_phi={branch['mode']} | flat actual cells",
+        fontsize=11, y=0.94,
     )
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.88))
     coherence = response_seed_coherence(response, branch)
     return {
         "files": _save_figure(fig, output, "matched_response_structure"),
-        "seed_coherence": render_seed_coherence(coherence, output),
+        "seed_coherence": render_seed_coherence(
+            coherence, output, device=device, solver_status=solver_status
+        ),
     }
 
 
@@ -1063,6 +1129,32 @@ def render(branch_pairs: list[tuple[Path, Path]], output: Path,
             "selected linear discrete eigenmodes; piecewise-constant actual-cell "
             "maps; no smoothing and no convergence-order inference"
         ),
+        "figure_identity": {
+            "linear": LINEAR_IDENTITY,
+            "nonlinear": NONLINEAR_IDENTITY,
+        },
+        "limitations": {
+            "convergence": (
+                "selected linear branches are not time evolved; no convergence "
+                "order is inferred"
+            ),
+            "normalization": (
+                "selected maps use sqrt(MB_magnetic_norm + "
+                "M0_ion_kinetic_norm); this is not total wave energy"
+            ),
+            "phases": (
+                "n_phi=0 uses compression phases with a separate global velocity "
+                "quadrature phase; n_phi=1 uses one shared compression phase"
+            ),
+            "aligned_delta": (
+                "signed deltas use common support only and one joint B/velocity "
+                "alignment factor; coverage is not a convergence-order claim"
+            ),
+            "response": (
+                "matched-control response maps are nonlinear time-evolved data; "
+                "matched subtraction and numerical filtering remain separate caveats"
+            ),
+        },
         "mode": branches[0]["mode"],
         "comparison_identity": identities[0],
         "field_convention": (
@@ -1095,6 +1187,16 @@ def render(branch_pairs: list[tuple[Path, Path]], output: Path,
             "sha256": response["sha256"],
             "time_index": int(response_time_index),
             "grid": response_grid,
+            "device": str(
+                response["provenance"]["report"].get("device", "unavailable")
+                if isinstance(response["provenance"]["report"], dict) else
+                "unavailable"
+            ),
+            "solver_status": str(
+                response["provenance"]["report"].get("status", "unavailable")
+                if isinstance(response["provenance"]["report"], dict) else
+                "unavailable"
+            ),
             "provenance": {
                 "paths": response["provenance"]["paths"],
                 "hashes": response["provenance"]["hashes"],

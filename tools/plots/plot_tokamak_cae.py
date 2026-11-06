@@ -21,6 +21,8 @@ import numpy as np
 
 
 GALLERY_ID = "cae-20261106"
+EVOLUTION_IDENTITY = "NL | FOMHD time evolution"
+EVOLUTION_ACCENT = "#00796B"
 PHASES = 2 * np.pi * np.arange(5) / 5
 CASE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 SEMANTIC_RE = re.compile(
@@ -108,19 +110,22 @@ def select_default_cases(run_root: Path) -> list[str]:
 
 
 def mode_history(values, mode: int):
-    """Return a retained toroidal coefficient without dropping n=0."""
+    """Return a retained toroidal coefficient without dropping n_phi=0."""
     array = np.asarray(values)
     if array.ndim < 2 or array.shape[1] != 5:
         raise ValueError("Signal must have exactly five toroidal samples")
     if mode not in (0, 1):
-        raise ValueError("Only retained harmonics n=0 or n=1 are supported")
+        raise ValueError(
+            "Only retained harmonics n_phi=0 or n_phi=1 are supported"
+        )
     if mode == 0:
         zero = np.mean(array, axis=1)
         if np.iscomplexobj(zero):
             scale = max(float(np.max(np.abs(zero), initial=0.0)), 1.0)
             if float(np.max(np.abs(zero.imag), initial=0.0)) > 1e-10 * scale:
                 raise ValueError(
-                    "n=0 zero-Fourier mean has a non-negligible imaginary part"
+                    "n_phi=0 zero-Fourier mean has a non-negligible "
+                    "imaginary part"
                 )
             return zero.real
         return zero
@@ -132,7 +137,9 @@ def mode_history(values, mode: int):
 def physical_at_phi(coefficient, mode: int, phi: float = 0.0):
     """Reconstruct the real physical field from its retained coefficient."""
     if mode not in (0, 1):
-        raise ValueError("Only retained harmonics n=0 or n=1 are supported")
+        raise ValueError(
+            "Only retained harmonics n_phi=0 or n_phi=1 are supported"
+        )
     if not math.isfinite(float(phi)):
         raise ValueError("phi must be finite")
     coefficient = np.asarray(coefficient)
@@ -370,21 +377,21 @@ def _compression_selection(arrays: dict, signals: dict) -> dict:
             if signal is None or "density" not in signal:
                 return {
                     "available": False,
-                    "reason": "control or perturbed density signal is unavailable",
+                    "reason": "control or perturbed ion-density signal is unavailable",
                 }
         coefficient = mode_history(matched["delta_n"], int(mode))
         control_density = np.asarray(control["density"])
         if control_density.shape[0] == 0:
             return {
                 "available": False,
-                "reason": "control density has no initial sample",
+                "reason": "control ion density has no initial sample",
             }
         baseline = np.abs(mode_history(control_density, 0)[0, :])
         baseline = baseline[np.isfinite(baseline) & (baseline > 0)]
         if not baseline.size:
             return {
                 "available": False,
-                "reason": "initial control-density scale is zero or nonfinite",
+                "reason": "initial control ion-density scale is zero or nonfinite",
             }
         scale = float(np.median(baseline))
         probe_cells = np.asarray(matched["probe_cells"], dtype=int)
@@ -402,7 +409,7 @@ def _compression_selection(arrays: dict, signals: dict) -> dict:
         if coefficient.shape[-1] != cells:
             return {
                 "available": False,
-                "reason": "density coefficient and probe count disagree",
+                "reason": "ion-density coefficient and probe count disagree",
             }
         probe_values = coefficient[:, probe_cells]
         magnitude = np.abs(probe_values)
@@ -689,15 +696,38 @@ def _legend_if_present(axis, **kwargs) -> None:
 
 
 def _case_title(data: dict) -> str:
+    nodes = data.get("nodes")
+    grid = f"{nodes} x {nodes}" if nodes is not None else "unavailable"
+    device = data.get("backend") or "unavailable"
     parts = [
         data["name"],
-        f"backend={data.get('backend')}",
-        f"nodes={data.get('nodes')}",
+        f"device={device}",
+        f"grid {grid}",
         f"K={data.get('K')}",
-        f"n={data.get('mode')}",
-        f"status={data['solver_status']}",
+        f"n_phi={data.get('mode')}",
     ]
     return " | ".join(str(part) for part in parts)
+
+
+def _evolution_banner(fig, data: dict) -> None:
+    status = str(data.get("solver_status", "unavailable"))
+    device = str(data.get("backend") or "unavailable")
+    detail = f"device={device} | solver status={status}"
+    if status != "completed":
+        detail += " | no claim of completed evolution"
+    banner = fig.text(
+        0.008, 0.995, f"{EVOLUTION_IDENTITY}\n{detail}",
+        ha="left", va="top", fontsize=8.5, fontweight="bold",
+        color=EVOLUTION_ACCENT,
+        bbox={
+            "boxstyle": "round,pad=0.3",
+            "facecolor": "white",
+            "edgecolor": EVOLUTION_ACCENT,
+            "linewidth": 1.2,
+        },
+        zorder=100,
+    )
+    banner.set_gid("fomhd-nonlinear-banner")
 
 
 def _figure_heading(
@@ -707,10 +737,11 @@ def _figure_heading(
     *,
     width: int = 145,
 ) -> None:
+    _evolution_banner(fig, data)
     fig.suptitle(
         _case_title(data) + "\n" + textwrap.fill(subtitle, width=width),
-        fontsize=12,
-        y=0.995,
+        fontsize=11.5,
+        y=0.955,
     )
     status = f"Solver status: {data['solver_status']}"
     if data.get("failure"):
@@ -765,7 +796,7 @@ def _plot_mode_probe(axis, data: dict, component: str) -> None:
         or "density" not in signals
         or "density" not in control_signals
     ):
-        axis.text(0.5, 0.5, "density signal arrays are unavailable",
+        axis.text(0.5, 0.5, "ion-density signal arrays are unavailable",
                   transform=axis.transAxes, ha="center", va="center")
         axis.set_axis_off()
         return
@@ -816,25 +847,37 @@ def _plot_mode_probe(axis, data: dict, component: str) -> None:
             )
     if mode != 0 or component != "real":axis.axhline(0, color="0.7", linewidth=0.7)
     axis.set_xlabel("Time [ns]")
+    if mode == 1:
+        density_axis_label = (
+            "retained ion-density coefficient (A/2) / initial n_i"
+        )
+    else:
+        density_axis_label = {
+            "real": "ion density n_i / initial n_i",
+            "changed": "ion-density change delta n_i / initial n_i",
+            "matched": "matched-control delta n_i / initial n_i",
+        }[component]
     axis.set_ylabel(
         ("Imaginary " if component == "imag" else "Real ")
-        + (
-            "retained density coefficient (A/2) / initial number density"
-            if mode == 1 else
-            "density / initial number density"
-        )
+        + density_axis_label
     )
     axis.set_title(
-        (f"n=1 retained complex coefficient (A/2): {component}" if mode == 1
-         else "n=0 original density (background retained)" if component == "real"
-         else "n=0 change from perturbed initial" if component == "changed"
-         else "n=0 matched-control wave (separate signal scale)"),
+        (f"n_phi=1 retained ion-density coefficient (A/2): {component}"
+         if mode == 1
+         else "n_phi=0 original ion density n_i (background retained)"
+         if component == "real"
+         else "n_phi=0 change delta n_i from perturbed initial"
+         if component == "changed"
+         else "n_phi=0 matched-control delta n_i (separate signal scale)"),
         fontsize=9,
     )
     if component != "imag":
-        if component == "real":axis.plot([], [], "k-", label="Original perturbed field")
-        if mode == 1 or component == "changed":axis.plot([], [], "k--", label="Change from perturbed initial")
-        if mode == 1 or component == "matched":axis.plot([], [], "k:", label="Matched-control difference")
+        if component == "real":
+            axis.plot([], [], "k-", label="Original perturbed ion density")
+        if mode == 1 or component == "changed":
+            axis.plot([], [], "k--", label="Change delta n_i from perturbed initial")
+        if mode == 1 or component == "matched":
+            axis.plot([], [], "k:", label="Matched-control delta n_i")
         axis.legend(fontsize=7, loc="best")
     _style_axis(axis)
 
@@ -1031,7 +1074,7 @@ def _render_overview(data: dict, output: Path) -> None:
     if compression.get("available"):
         lines.extend([
             "",
-            "Strong compressional density signal:",
+            "Strong compressional ion-density signal:",
             f"  t = {compression['time_s']:.12g} s",
             f"  probe = {compression['probe_cell']}",
             f"  scale = {compression['scale_m-3']:.12g} m^-3",
@@ -1058,12 +1101,12 @@ def _render_overview(data: dict, output: Path) -> None:
     axes[1, 3].text(
         0.02, 0.98,
         "Field meanings\n\n"
-        "Solid: perturbed original field\n"
-        "Dashed: change from perturbed initial\n"
-        "Dotted: difference from matched control\n\n"
-        "n=0 uses the five-phase zero-Fourier mean.\n"
-        "n=1 real/imaginary use the retained\n"
-        "five-phase Fourier coefficient (A/2).\n\n"
+        "Solid: perturbed original ion density\n"
+        "Dashed: delta n_i from perturbed initial\n"
+        "Dotted: matched-control delta n_i\n\n"
+        "n_phi=0 uses the five-phase zero-Fourier mean.\n"
+        "n_phi=1 real/imaginary use the retained\n"
+        "toroidal Fourier coefficient (A/2).\n\n"
         "Histories remain separate; no interpolation\n"
         "or planned-period frequency is introduced.",
         va="top", ha="left", fontsize=8.5, transform=axes[1, 3].transAxes,
@@ -1218,14 +1261,17 @@ def _render_structure(data: dict, output: Path) -> None:
             )
             _plot_cells(
                 axes[0, 1], R, Z, polygon, n_values,
-                r"Signed physical $\delta n(\phi=0)$ [m$^{-3}$]",
+                r"Signed physical ion density $\delta n_i(\phi=0)$ [m$^{-3}$]",
                 "RdBu_r", signed=True,
             )
             _plot_cells(
                 axes[1, 0], R, Z, polygon, v_values,
-                r"Physical $|\delta v(\phi=0)|$ [m/s]", "magma",
+                r"Physical ion velocity $|\delta v_i(\phi=0)|$ [m/s]", "magma",
             )
-            axes[1, 0].set_title(f"Velocity snapshot t={velocity_time_ns:.5g} ns")
+            axes[1, 0].set_title(
+                rf"Ion velocity magnitude $|\delta v_i(\phi=0)|$, "
+                f"t={velocity_time_ns:.5g} ns"
+            )
             axis = axes[1, 1]
             vectors = np.asarray(shape["delta_velocity"][velocity_index])
             vr = vectors[0]
@@ -1247,7 +1293,7 @@ def _render_structure(data: dict, output: Path) -> None:
                     color="#111111", width=0.004,
                 )
                 fig.colorbar(image, ax=axis, shrink=0.78,
-                             label=r"$|\delta v|$ [m/s]")
+                             label=r"$|\delta v_i|$ [m/s]")
                 axis.text(
                     0.01, 0.01,
                     "Directions normalized; color is amplitude.",
@@ -1263,7 +1309,10 @@ def _render_structure(data: dict, output: Path) -> None:
             axis.set_aspect("equal", adjustable="box")
             axis.set(
                 xlabel="R [m]", ylabel="Z [m]",
-                title=rf"Velocity polarization at $\phi=0$, t={velocity_time_ns:.5g} ns",
+                title=(
+                    rf"Ion velocity polarization at $\phi=0$, "
+                    f"t={velocity_time_ns:.5g} ns"
+                ),
             )
             axis.legend(fontsize=7, loc="best")
 
@@ -1282,22 +1331,9 @@ def _render_structure(data: dict, output: Path) -> None:
                       ha="center", va="center", fontsize=10, wrap=True)
             axis.set_axis_off()
     if compression.get("available"):
-        detail = (
-            f"Strong density compression: t={compression['time_s']:.12g} s, "
-            f"probe={compression['probe_cell']}, "
-            f"scale={compression['scale_m-3']:.12g} m^-3, "
-            f"retained coefficient fraction="
-            f"{compression['compressional_fraction']:.6g}, "
-            f"delta_n(phi=0)={compression['delta_n_phi0_m-3']:.6g} m^-3. "
-            "Physical phi=0 fields use Re(c) for n=0 and "
-            "2 Re(c exp(i*n*phi)) for n=1; staggered seed B is not plotted."
-        )
+        detail = "Signed field and ion-velocity structure at phi=0"
     else:
-        detail = (
-            "Compressional time unavailable: "
-            + str(compression.get("reason"))
-            + ". Staggered seed B is not plotted."
-        )
+        detail = "Unavailable compressional structure evidence"
     _figure_heading(fig, data, detail, width=86)
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output.with_suffix(".png"), dpi=170, facecolor="white")
@@ -1343,10 +1379,36 @@ def _case_public(data: dict) -> dict:
         "change_from_initial": "perturbed field minus its initial value",
         "matched_control_difference": "perturbed field minus control",
         "physical_structure": (
-            "physical_at_phi: Re(c) for n=0; "
-            "2 Re(c exp(i*n*phi)) for n=1"
+            "physical_at_phi: Re(c) for n_phi=0; "
+            "2 Re(c exp(i*n_phi*phi)) for n_phi=1"
         ),
         "physical_structure_phi_rad": 0.0,
+        "density_species": "ion",
+        "velocity_species": "ion",
+        "retained_amplitude": (
+            "the retained n_phi=1 toroidal coefficient is A/2; "
+            "the phi=0 physical field applies the factor 2"
+        ),
+    }
+    result["figure_identity"] = {
+        "label": EVOLUTION_IDENTITY,
+        "accent": EVOLUTION_ACCENT,
+        "device": data.get("backend", "unavailable"),
+        "solver_status": data["solver_status"],
+        "completed_evolution_claim": data["solver_status"] == "completed",
+    }
+    result["figure_captions"] = {
+        "overview": (
+            "Energy, balance, and ion-density probe histories; unavailable "
+            "frequency evidence remains explicit."
+        ),
+        "structure": (
+            "Signed physical delta B_parallel, signed ion density delta n_i, "
+            "ion velocity magnitude, and ion velocity polarization at phi=0. "
+            "Maps use node-aligned cell centers; the solver boundary is a "
+            "staircase and no interpolation is applied. Staggered seed B is "
+            "not plotted."
+        ),
     }
     result["input_hashes"] = {
         item["path"]: item["sha256"]
@@ -1375,19 +1437,19 @@ def _fragment(cases: list[dict]) -> str:
         compression = data.get("compression", {})
         if compression.get("available"):
             compression_text = (
-                f"Strong density compression at t={compression['time_s']:.12g} s, "
+                f"Strong ion-density compression at t={compression['time_s']:.12g} s, "
                 f"probe cell {compression['probe_cell']} "
                 f"(R={compression.get('probe_R_m')}, "
                 f"Z={compression.get('probe_Z_m')} m), "
                 f"scale {compression['scale_m-3']:.12g} m^-3, "
                 f"retained coefficient fraction "
                 f"{compression['compressional_fraction']:.6g}, "
-                f"delta n(phi=0) "
+                f"delta n_i(phi=0) "
                 f"{compression['delta_n_phi0_m-3']:.6g} m^-3."
             )
         else:
             compression_text = (
-                "Strong compressional time unavailable: "
+                "Strong ion-density compressional time unavailable: "
                 + html.escape(str(compression.get("reason")))
             )
         frequency = data.get("frequency", {})
@@ -1417,7 +1479,8 @@ def _fragment(cases: list[dict]) -> str:
   <h3>{name}</h3>
   <p class="cae-status"><strong>Status:</strong> {html.escape(data['solver_status'])}
      | <strong>Backend:</strong> {html.escape(str(data.get('backend')))}
-     | <strong>nodes/K/mode:</strong> {html.escape(str(data.get('nodes')))} /
+     | <strong>N_R x N_Z / K / n_phi:</strong>
+     {html.escape(str(data.get('nodes')))} x {html.escape(str(data.get('nodes')))} /
      {html.escape(str(data.get('K')))} / {html.escape(str(data.get('mode')))}
      | <strong>source bundle:</strong>
      <code>{html.escape(str(data.get('source_bundle_sha256'))[:16])}</code></p>
@@ -1432,12 +1495,16 @@ def _fragment(cases: list[dict]) -> str:
   <div class="cae-figures">
     <figure><a href="{overview_svg}"><img src="{overview_png}"
       alt="Energy, balance, and mode-probe histories for {name}"></a>
-      <figcaption>Overview: energy, balance, probe histories, fit availability.</figcaption></figure>
+      <figcaption>Overview: energy, balance, ion-density probe histories, and
+      fit availability.</figcaption></figure>
     <figure><a href="{structure_svg}"><img src="{structure_png}"
-      alt="Matched perturbation magnetic, density, velocity, and polarization for {name}"></a>
-      <figcaption>Structure: signed physical delta B-parallel and number density,
-      physical velocity magnitude, and velocity polarization at phi=0.
-      Compression and velocity use their separately labeled strongest times.</figcaption></figure>
+      alt="Matched perturbation magnetic field, ion density, ion velocity,
+      and polarization for {name}"></a>
+      <figcaption>Structure: signed physical delta B-parallel and ion number
+      density delta n_i, physical ion velocity magnitude, and ion velocity
+      polarization at phi=0.
+      Ion-density compression and ion-velocity panels use their separately
+      labeled strongest times.</figcaption></figure>
   </div>
 </article>""")
     return f"""<section id="{GALLERY_ID}" class="cae-gallery">
@@ -1451,13 +1518,14 @@ def _fragment(cases: list[dict]) -> str:
 #{GALLERY_ID} figcaption {{ font-size:.9rem; }}
 </style>
 <h2>Tokamak CAE response cases</h2>
-<p>Offline plots from supplied histories and node-aligned response arrays. Solid is the
-perturbed original field, dashed is change from perturbed initial, and dotted is
-difference from the matched control. The n=0 history retains the five-phase
+<p>NL | FOMHD time evolution. Offline plots from supplied histories and
+node-aligned response arrays. Solid is the
+perturbed original ion-density field, dashed is delta n_i from perturbed
+initial, and dotted is matched-control delta n_i. The n_phi=0 history retains the five-phase
 zero-Fourier mean. Spatial structure reconstructs physical fields at phi=0:
-Re(c) for n=0 and 2 Re(c exp(i*n*phi)) for n=1, where the retained n=1
-coefficient is A/2.
-Density compression selects the structure time. Frequencies appear only when the
+Re(c) for n_phi=0 and 2 Re(c exp(i*n_phi*phi)) for n_phi=1, where the retained
+n_phi=1 coefficient is A/2.
+Ion-density compression selects the structure time. Frequencies appear only when the
 source report marks a mode fit available; planned periods are never used as
 measurements. Figures are not final scientific acceptance.</p>
 {''.join(sections)}
@@ -1565,7 +1633,7 @@ def main(argv=None) -> int:
             "cases": names,
             "default_policy": (
                 "greatest -rN revision for each circle/east, grid-size, "
-                "and n=0/1 key; generic smoke names and superseded revisions "
+                "and n_phi=0/1 key; generic smoke names and superseded revisions "
                 "are excluded"
             ),
         },

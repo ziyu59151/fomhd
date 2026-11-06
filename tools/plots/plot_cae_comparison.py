@@ -171,10 +171,10 @@ def generate(root,case_names,output):
                 b=arrays[comparison['other']]
                 ax.plot(b['time_s']*1e9,np.asarray(b['parallel_B'])[:,cell].real/max(scale,1e-300),
                         '--',label='CUDA: accepted window',alpha=.7)
-        ax.set(title=f'{family}, n={mode}, cell {cell}: matched magnetic compression',
+        ax.set(title=f'{family}, n_phi={mode}, grid 12 x 12, cell {cell}: matched magnetic compression',
                xlabel='Time [ns]',ylabel='Re(delta B parallel) / peak magnitude')
         ax.grid(alpha=.25);ax.legend(fontsize=8)
-    fig.suptitle('Production responses after matched-control subtraction; n1 uses retained A/2 coefficient')
+    fig.suptitle('FOMHD time-evolved responses after matched-control subtraction; n_phi=1 retains A/2')
     for ext in ('png','svg'):fig.savefig(output/('matched-waves.'+ext),dpi=160)
     plt.close(fig)
     result=dict(cases=rows,comparisons=comparisons,input_sha256=hashes,
