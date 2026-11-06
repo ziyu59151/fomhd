@@ -1134,6 +1134,9 @@ def _matched_shape(data: dict):
     try:
         density_coefficient = mode_history(matched["delta_n"], mode)
         velocity_coefficient = mode_history(matched["delta_velocity"], mode)
+        delta_velocity = physical_at_phi(
+            velocity_coefficient, mode, phi=0.0
+        )
         return {
             "delta_B_parallel": physical_at_phi(
                 matched["parallel_B"], mode, phi=0.0
@@ -1141,63 +1144,168 @@ def _matched_shape(data: dict):
             "delta_n": physical_at_phi(
                 density_coefficient, mode, phi=0.0
             ),
-            "delta_velocity": physical_at_phi(
-                velocity_coefficient, mode, phi=0.0
-            ),
+            "delta_velocity": delta_velocity,
             "time_s": np.asarray(matched["time_s"], dtype=float),
             "probe_cells": np.asarray(matched["probe_cells"], dtype=int),
             "time_index": int(compression["time_index"]),
+            "velocity_time_index": int(
+                np.argmax(
+                    np.max(
+                        np.linalg.norm(delta_velocity, axis=1),
+                        axis=1,
+                    )
+                )
+            ),
         }
     except (KeyError, TypeError, ValueError):
         return None
 
 
-def _plot_cells(
-    axis,
-    R,
-    Z,
-    polygon,
-    values,
-    label,
-    cmap="viridis",
-    *,
-    signed=False,
-):
-    values = np.asarray(values)
-    if values.shape != R.shape:
-        raise ValueError("cell values and coordinates disagree")
-    finite = np.isfinite(values)
-    if not np.any(finite):
-        axis.text(0.5, 0.5, "No finite nodal values",
-                  transform=axis.transAxes, ha="center", va="center")
-        return
-    vmax = float(np.max(np.abs(values[finite])))
-    if not math.isfinite(vmax) or vmax <= 0:
-        image = axis.scatter(R, Z, c="0.7", marker="s", s=55,
-                             edgecolor="0.2", linewidth=0.35)
-        axis.text(0.5, 0.05, "Exact zero field",
-                  transform=axis.transAxes, ha="center", va="bottom")
-    else:
-        image = axis.scatter(
-            R, Z, c=values, cmap=cmap,
-            vmin=-vmax if signed else 0,
-            vmax=vmax,
-            marker="s", s=55, edgecolor="0.25", linewidth=0.35,
-        )
-    closed = np.vstack([polygon, polygon[0]]) if polygon.shape[0] else polygon
-    axis.plot(closed[:, 0], closed[:, 1], "--", color="#D55E00",
-              linewidth=1.3, label="Input wall polygon")
-    axis.scatter(R, Z, s=8, color="white", edgecolor="0.2", linewidth=0.25)
-    axis.set_aspect("equal", adjustable="box")
-    axis.set(xlabel="R [m]", ylabel="Z [m]", title=label)
-    axis.legend(fontsize=7, loc="best")
-    axis.text(
-        0.01, 0.01,
-        "Cell-center scatter; solver boundary is a staircase. No interpolation.",
-        transform=axis.transAxes, fontsize=6.8, color="0.35", va="bottom",
+def _structure_heading(fig, data: dict) -> None:
+    nodes = data.get("nodes")
+    grid = f"{nodes} x {nodes}" if nodes is not None else "unavailable"
+    fig.suptitle(
+        f"{data['name']} | grid {grid} | "
+        f"n_phi={data.get('mode')} | phi=0",
+        fontsize=12,
+        y=0.925,
     )
-    if vmax > 0:
-        axis.figure.colorbar(image, ax=axis, shrink=0.78, label=label)
+
+
+def _structure_arrow_selection(
+    R: np.ndarray,
+    Z: np.ndarray,
+    valid: np.ndarray,
+    capacity: int = 144,
+) -> np.ndarray:
+    selected = np.asarray(valid, dtype=bool).copy()
+    count = int(np.count_nonzero(selected))
+    if count <= capacity:
+        return selected
+    stride = max(1, int(math.ceil(math.sqrt(count / capacity))))
+    unique_R = np.unique(R)
+    unique_Z = np.unique(Z)
+    r_rank = np.searchsorted(unique_R, R)
+    z_rank = np.searchsorted(unique_Z, Z)
+    return selected & (r_rank % stride == 0) & (z_rank % stride == 0)
+
+
+def _flat_structure_panel(
+    axis,
+    R: np.ndarray,
+    Z: np.ndarray,
+    polygon: np.ndarray,
+    values: np.ndarray,
+    title: str,
+    colorbar_label: str,
+    *,
+    signed: bool,
+    cmap: str,
+    velocity: tuple[np.ndarray, np.ndarray, np.ndarray] | None = None,
+) -> None:
+    from matplotlib.colors import Normalize, TwoSlopeNorm
+    from tools.plots.plot_grid_convergence import flat_cell_grid
+
+    values = np.asarray(values, dtype=float)
+    edge_R, edge_Z, grid = flat_cell_grid(R, Z, values)
+    finite = values[np.isfinite(values)]
+    if signed:
+        bound = (
+            float(np.max(np.abs(finite)))
+            if finite.size else 0.0
+        )
+        bound = bound if math.isfinite(bound) and bound > 0 else 1.0
+        norm = TwoSlopeNorm(vmin=-bound, vcenter=0.0, vmax=bound)
+    else:
+        upper = float(np.max(finite)) if finite.size else 0.0
+        upper = upper if math.isfinite(upper) and upper > 0 else 1.0
+        norm = Normalize(vmin=0.0, vmax=upper)
+    mesh = axis.pcolormesh(
+        edge_R,
+        edge_Z,
+        np.ma.masked_invalid(grid),
+        cmap=cmap,
+        norm=norm,
+        shading="flat",
+        rasterized=False,
+    )
+    if polygon.size:
+        closed = np.vstack([polygon, polygon[0]])
+        axis.plot(
+            closed[:, 0], closed[:, 1],
+            color="black", linewidth=1.3, zorder=6,
+        )
+    if velocity is not None:
+        vR, vZ, speed = velocity
+        valid = (
+            np.isfinite(values)
+            & np.isfinite(vR)
+            & np.isfinite(vZ)
+            & (speed > 0)
+        )
+        selected = _structure_arrow_selection(R, Z, valid)
+        direction_length = np.hypot(vR[selected], vZ[selected])
+        nonzero = direction_length > 0
+        if np.any(nonzero):
+            unique_R = np.unique(R)
+            unique_Z = np.unique(Z)
+            spacings = []
+            for coordinates in (unique_R, unique_Z):
+                differences = np.diff(coordinates)
+                spacings.extend(differences[differences > 0])
+            spacing = float(np.min(spacings))
+            arrow_fraction = 0.36
+            axis.quiver(
+                R[selected][nonzero],
+                Z[selected][nonzero],
+                vR[selected][nonzero] / direction_length[nonzero],
+                vZ[selected][nonzero] / direction_length[nonzero],
+                angles="xy",
+                scale_units="xy",
+                scale=1.0 / (arrow_fraction * spacing),
+                pivot="middle",
+                color="#202020",
+                width=0.0035,
+                headwidth=3.2,
+                headlength=4.2,
+                zorder=7,
+            )
+    axis.set_aspect("equal", adjustable="box")
+    axis.set_xlabel("R [m]")
+    axis.set_ylabel("Z [m]")
+    axis.set_title(title, fontsize=9)
+    colorbar = axis.figure.colorbar(
+        mesh, ax=axis, fraction=0.046, pad=0.035
+    )
+    colorbar.set_label(colorbar_label, fontsize=7.5)
+    colorbar.ax.tick_params(labelsize=6.5)
+
+
+def _spatial_unavailable_reason(data: dict, shape: dict | None) -> str | None:
+    mapping = data.get("_arrays", {}).get("input_mapping.npz")
+    if mapping is None or any(key not in mapping for key in ("R", "Z", "polygon")):
+        return "input_mapping.npz lacks R, Z, or polygon"
+    if shape is None:
+        return data.get("compression", {}).get("reason") or (
+            "matched node-aligned perturbation arrays are unavailable"
+        )
+    try:
+        R = np.asarray(mapping["R"], dtype=float)
+        Z = np.asarray(mapping["Z"], dtype=float)
+        polygon = np.asarray(mapping["polygon"], dtype=float)
+    except (TypeError, ValueError):
+        return "input_mapping.npz contains invalid spatial coordinates"
+    if (
+        R.ndim != 1
+        or Z.shape != R.shape
+        or polygon.ndim != 2
+        or polygon.shape[1:] != (2,)
+        or shape["delta_B_parallel"].shape[-1] != R.size
+        or shape["delta_n"].shape[-1] != R.size
+        or shape["delta_velocity"].shape[-1] != R.size
+    ):
+        return "matched arrays are not aligned to the stored cell count"
+    return None
 
 
 def _render_structure(data: dict, output: Path) -> None:
@@ -1212,133 +1320,122 @@ def _render_structure(data: dict, output: Path) -> None:
         "pdf.fonttype": 42,
         "svg.fonttype": "none",
     })
-    fig, axes = plt.subplots(2, 2, figsize=(13, 10))
+    fig, axes = plt.subplots(1, 3, figsize=(14.5, 5.1))
     fig.subplots_adjust(
-        left=0.065, right=0.96, bottom=0.065, top=0.85,
-        wspace=0.20, hspace=0.22,
+        left=0.05, right=0.94, bottom=0.14, top=0.79,
+        wspace=0.28,
     )
-    compression = data.get("compression", {})
-    arrays = data.get("_arrays", {})
-    mapping = arrays.get("input_mapping.npz")
+    mapping = data.get("_arrays", {}).get("input_mapping.npz")
     shape = _matched_shape(data)
-    if (
-        mapping is None
-        or "R" not in mapping
-        or "Z" not in mapping
-        or "polygon" not in mapping
-    ):
-        reason = "input_mapping.npz lacks R, Z, or polygon"
-    elif shape is None:
-        reason = compression.get(
-            "reason", "matched node-aligned perturbation arrays are unavailable"
-        )
-    else:
+    reason = _spatial_unavailable_reason(data, shape)
+    if reason is None:
         R = np.asarray(mapping["R"], dtype=float)
         Z = np.asarray(mapping["Z"], dtype=float)
         polygon = np.asarray(mapping["polygon"], dtype=float)
         index = shape["time_index"]
-        if (
-            R.ndim != 1
-            or Z.shape != R.shape
-            or polygon.ndim != 2
-            or polygon.shape[1:] != (2,)
-            or shape["delta_B_parallel"].shape[-1] != R.size
-        ):
-            reason = "matched arrays are not aligned to the stored cell count"
-        else:
-            reason = None
-            b_values = shape["delta_B_parallel"][index]
-            n_values = shape["delta_n"][index]
-            velocity_index = int(np.argmax(np.max(np.linalg.norm(shape["delta_velocity"], axis=1), axis=1)))
-            velocity_time_ns = float(shape["time_s"][velocity_index] * 1e9)
-            v_values = np.sqrt(
-                np.sum(np.abs(shape["delta_velocity"][velocity_index]) ** 2, axis=0)
-            )
-            _plot_cells(
-                axes[0, 0], R, Z, polygon, b_values,
-                r"Signed physical $\delta B_\parallel(\phi=0)$ [T]",
-                "RdBu_r", signed=True,
-            )
-            _plot_cells(
-                axes[0, 1], R, Z, polygon, n_values,
-                r"Signed physical ion density $\delta n_i(\phi=0)$ [m$^{-3}$]",
-                "RdBu_r", signed=True,
-            )
-            _plot_cells(
-                axes[1, 0], R, Z, polygon, v_values,
-                r"Physical ion velocity $|\delta v_i(\phi=0)|$ [m/s]", "magma",
-            )
-            axes[1, 0].set_title(
-                rf"Ion velocity magnitude $|\delta v_i(\phi=0)|$, "
-                f"t={velocity_time_ns:.5g} ns"
-            )
-            axis = axes[1, 1]
-            vectors = np.asarray(shape["delta_velocity"][velocity_index])
-            vr = vectors[0]
-            vz = vectors[2]
-            lengths = np.hypot(vr, vz)
-            keep = np.isfinite(vr) & np.isfinite(vz) & (lengths > 0)
-            if np.any(keep):
-                normalized_r = np.zeros_like(vr)
-                normalized_z = np.zeros_like(vz)
-                normalized_r[keep] = vr[keep] / lengths[keep]
-                normalized_z[keep] = vz[keep] / lengths[keep]
-                image = axis.scatter(
-                    R, Z, c=lengths, cmap="plasma", marker="s", s=55,
-                    edgecolor="0.25", linewidth=0.3,
-                )
-                axis.quiver(
-                    R[keep], Z[keep], normalized_r[keep], normalized_z[keep],
-                    angles="xy", scale_units="xy", scale=8.0,
-                    color="#111111", width=0.004,
-                )
-                fig.colorbar(image, ax=axis, shrink=0.78,
-                             label=r"$|\delta v_i|$ [m/s]")
-                axis.text(
-                    0.01, 0.01,
-                    "Directions normalized; color is amplitude.",
-                    transform=axis.transAxes, fontsize=6.8,
-                    color="0.35", va="bottom",
-                )
-            else:
-                axis.text(0.5, 0.5, "Zero poloidal velocity polarization",
-                          transform=axis.transAxes, ha="center", va="center")
-            closed = np.vstack([polygon, polygon[0]])
-            axis.plot(closed[:, 0], closed[:, 1], "--", color="#D55E00",
-                      linewidth=1.3, label="Input wall polygon")
-            axis.set_aspect("equal", adjustable="box")
-            axis.set(
-                xlabel="R [m]", ylabel="Z [m]",
-                title=(
-                    rf"Ion velocity polarization at $\phi=0$, "
-                    f"t={velocity_time_ns:.5g} ns"
-                ),
-            )
-            axis.legend(fontsize=7, loc="best")
-
-            evidence_axis = axes.flat
-            for axis in evidence_axis:
-                probe = int(compression["probe_cell"])
-                axis.scatter(
-                    [R[probe]], [Z[probe]], s=180,
-                    facecolors="none", edgecolors="#D55E00",
-                    linewidths=2.0,
-                )
+        b_values = shape["delta_B_parallel"][index]
+        n_values = shape["delta_n"][index]
+        velocity_index = shape["velocity_time_index"]
+        velocity_time_ns = float(shape["time_s"][velocity_index] * 1e9)
+        vectors = np.asarray(shape["delta_velocity"][velocity_index])
+        vR = vectors[0]
+        vZ = vectors[2]
+        v_values = np.linalg.norm(vectors, axis=0)
+        density_time_ns = float(shape["time_s"][index] * 1e9)
+        _flat_structure_panel(
+            axes[0], R, Z, polygon, b_values,
+            rf"Signed physical $\delta B_\parallel(\phi=0)$"
+            f"\nt={density_time_ns:.6g} ns",
+            r"$\delta B_\parallel$ [T]",
+            signed=True, cmap="RdBu_r",
+        )
+        _flat_structure_panel(
+            axes[1], R, Z, polygon, n_values,
+            rf"Signed physical $\delta n_i(\phi=0)$"
+            f"\nt={density_time_ns:.6g} ns",
+            r"$\delta n_i$ [m$^{-3}$]",
+            signed=True, cmap="RdBu_r",
+        )
+        _flat_structure_panel(
+            axes[2], R, Z, polygon, v_values,
+            rf"Total 3D ion speed $|\delta v_i(\phi=0)|$"
+            f"\nnormalized R/Z arrows; t={velocity_time_ns:.6g} ns",
+            r"$|\delta v_i|$ [m/s]",
+            signed=False, cmap="viridis",
+            velocity=(vR, vZ, v_values),
+        )
 
     if reason is not None:
-        for axis in axes.flat:
-            axis.text(0.5, 0.5, reason, transform=axis.transAxes,
-                      ha="center", va="center", fontsize=10, wrap=True)
+        for axis in axes:
+            axis.text(
+                0.5, 0.5, "Spatial maps unavailable",
+                transform=axis.transAxes, ha="center", va="center",
+                fontsize=10,
+            )
             axis.set_axis_off()
-    if compression.get("available"):
-        detail = "Signed field and ion-velocity structure at phi=0"
-    else:
-        detail = "Unavailable compressional structure evidence"
-    _figure_heading(fig, data, detail, width=86)
+    _evolution_banner(fig, data)
+    _structure_heading(fig, data)
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output.with_suffix(".png"), dpi=170, facecolor="white")
     fig.savefig(output.with_suffix(".svg"), facecolor="white")
     plt.close(fig)
+
+
+def _spatial_provenance(data: dict) -> dict:
+    shape = _matched_shape(data)
+    reason = _spatial_unavailable_reason(data, shape)
+    if reason is not None:
+        return {
+            "available": False,
+            "reason": reason,
+            "rendering": {
+                "geometry": "flat actual cells",
+                "inactive_cells": "masked",
+                "interpolation": False,
+            },
+        }
+    density_index = int(shape["time_index"])
+    velocity_index = int(shape["velocity_time_index"])
+    return {
+        "available": True,
+        "rendering": {
+            "geometry": "flat actual cells",
+            "inactive_cells": "masked",
+            "interpolation": False,
+            "wall": "solid black input-wall outline",
+        },
+        "phase_rad": 0.0,
+        "density_time_s": float(shape["time_s"][density_index]),
+        "velocity_time_s": float(shape["time_s"][velocity_index]),
+        "fields": {
+            "delta_B_parallel": {
+                "unit": "T",
+                "color_limits": "physical symmetric about zero",
+                "cmap": "RdBu_r",
+            },
+            "delta_n_i": {
+                "unit": "m^-3",
+                "color_limits": "physical symmetric about zero",
+                "cmap": "RdBu_r",
+            },
+            "ion_speed": {
+                "unit": "m/s",
+                "definition": (
+                    "sqrt(|delta v_R|^2 + |delta v_phi|^2 + "
+                    "|delta v_Z|^2) over three velocity components"
+                ),
+                "color_limits": "physical nonnegative from zero",
+                "cmap": "viridis",
+            },
+        },
+        "arrows": (
+            "normalized reconstructed R/Z ion velocity direction only"
+        ),
+        "arrow_thinning": (
+            "bounded spatial thinning on high-count grids; "
+            "length is a fraction of cell spacing"
+        ),
+    }
 
 
 def _case_public(data: dict) -> dict:
@@ -1404,12 +1501,15 @@ def _case_public(data: dict) -> dict:
         ),
         "structure": (
             "Signed physical delta B_parallel, signed ion density delta n_i, "
-            "ion velocity magnitude, and ion velocity polarization at phi=0. "
-            "Maps use node-aligned cell centers; the solver boundary is a "
-            "staircase and no interpolation is applied. Staggered seed B is "
-            "not plotted."
+            "and total ion speed with normalized R/Z direction arrows at "
+            "phi=0. Maps use flat actual cells with inactive cells masked; "
+            "the solver boundary is a solid black input-wall outline and no "
+            "interpolation, smoothing, or physical-field normalization is "
+            "applied. Density and velocity panels carry their independent "
+            "selected times. Staggered seed B is not plotted."
         ),
     }
+    result["spatial_structure"] = _spatial_provenance(data)
     result["input_hashes"] = {
         item["path"]: item["sha256"]
         for item in data.get("inputs", [])

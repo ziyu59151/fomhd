@@ -101,12 +101,15 @@ def _fixture(
     delta_n[0, :, 0] = 2.0
     delta_n[1, :, 0] = 3.0
     delta_n[2, :, 2] = 5.0
+    matched_velocity = np.ones((3, 5, 3, 3), dtype=np.complex128)
+    matched_velocity[0] *= 0.1
+    matched_velocity[1] *= 0.2
     np.savez(
         case / "matched-response.npz",
         time_s=times,
         delta_B=np.ones((3, 3, 3), dtype=np.complex128),
         delta_n=delta_n,
-        delta_velocity=np.ones((3, 5, 3, 3), dtype=np.complex128),
+        delta_velocity=matched_velocity,
         parallel_B=np.ones((3, 3)),
         probe_cells=np.array([0, 2]),
         perturbation_magnetic_J=np.array([1.0, 2.0, 4.0]),
@@ -154,6 +157,93 @@ def _fixture(
         }],
     })
     return case
+
+
+def _structure_data(*, grid: int = 3, zero_parallel_b: bool = False) -> dict:
+    coordinates = 1.0 + np.arange(grid, dtype=float)
+    rr, zz = np.meshgrid(coordinates, coordinates)
+    R = rr.ravel()
+    Z = zz.ravel()
+    active = np.ones(R.size, dtype=bool)
+    if grid == 3:
+        active[(R == 2.0) & (Z == 2.0)] = False
+    times = np.array([0.0, 1.0e-9, 2.0e-9])
+    parallel_b = np.zeros((times.size, R.size))
+    if not zero_parallel_b:
+        parallel_b[-1] = R - 2.0 * Z
+    delta_n = np.zeros((times.size, 5, R.size))
+    for phase in range(5):
+        delta_n[-1, phase] = R + 2.0 * Z
+    delta_velocity = np.zeros((times.size, 5, 3, R.size))
+    delta_velocity[1, :, 0, :] = 0.3
+    delta_velocity[1, :, 1, :] = 0.4
+    delta_velocity[1, :, 2, :] = 1.2
+    return {
+        "name": f"structure-grid{grid}-n0-test-r1",
+        "backend": "cpu",
+        "nodes": grid,
+        "K": 0,
+        "mode": 0,
+        "solver_status": "completed",
+        "compression": {
+            "available": True,
+            "time_index": 2,
+            "time_s": 2.0e-9,
+            "probe_cell": 0,
+            "reason": None,
+        },
+        "_arrays": {
+            "input_mapping.npz": {
+                "R": R[active],
+                "Z": Z[active],
+                "polygon": np.array([
+                    [0.5, 0.5],
+                    [grid + 0.5, 0.5],
+                    [grid + 0.5, grid + 0.5],
+                    [0.5, grid + 0.5],
+                ]),
+            },
+            "matched-response.npz": {
+                "time_s": times,
+                "parallel_B": parallel_b[:, active],
+                "delta_n": delta_n[:, :, active],
+                "delta_velocity": delta_velocity[:, :, :, active],
+                "probe_cells": np.array([0, R.size - 1]),
+            },
+        },
+    }
+
+
+def _retained_structure_figure(data: dict, tmp_path: Path, monkeypatch):
+    import matplotlib.pyplot as plt
+
+    plt.close("all")
+    retained = {}
+
+    def retain(figure):
+        retained["figure"] = figure
+
+    monkeypatch.setattr(plt, "close", retain)
+    cae_plots._render_structure(data, tmp_path / "structure")
+    return retained["figure"]
+
+
+def _map_axes(figure) -> list:
+    return [
+        axis
+        for axis in figure.axes
+        if axis.get_xlabel() == "R [m]"
+        and axis.get_ylabel() == "Z [m]"
+    ]
+
+
+def _quad_meshes(figure) -> list:
+    return [
+        item
+        for axis in _map_axes(figure)
+        for item in axis.collections
+        if type(item).__name__ == "QuadMesh"
+    ]
 
 
 def test_default_selection_uses_latest_semantic_revision(tmp_path):
@@ -269,6 +359,21 @@ def test_synthetic_cli_preserves_stop_and_hashes_every_input(tmp_path):
     assert "scale_kg_m-3" not in receipt["cases"][0]["compression"]
     assert receipt["cases"][0]["compression"]["delta_n_phi0_m-3"] == 5.0
     assert receipt["cases"][0]["frequency"]["available"] is False
+    spatial = receipt["cases"][0]["spatial_structure"]
+    assert spatial["rendering"]["geometry"] == "flat actual cells"
+    assert spatial["rendering"]["inactive_cells"] == "masked"
+    assert spatial["rendering"]["interpolation"] is False
+    assert spatial["density_time_s"] == pytest.approx(2.0e-9)
+    assert spatial["velocity_time_s"] == pytest.approx(2.0e-9)
+    assert spatial["fields"]["delta_B_parallel"]["unit"] == "T"
+    assert spatial["fields"]["delta_n_i"]["unit"] == "m^-3"
+    assert spatial["fields"]["ion_speed"]["unit"] == "m/s"
+    assert "three velocity components" in (
+        spatial["fields"]["ion_speed"]["definition"]
+    )
+    assert spatial["arrows"] == (
+        "normalized reconstructed R/Z ion velocity direction only"
+    )
     assert {
         item["role"] for item in receipt["inputs"]
         if item["path"].endswith("report.json")
@@ -358,3 +463,187 @@ def test_real_short_case_smoke(tmp_path):
     assert case["compression"]["scale_m-3"] == pytest.approx(2e19)
     assert case["frequency"]["available"] is False
     assert receipt["input_count"] == 9
+
+
+def test_structure_has_three_flat_physical_maps_and_arrow_directions(
+    tmp_path, monkeypatch
+):
+    data = _structure_data()
+    figure = _retained_structure_figure(data, tmp_path, monkeypatch)
+    axes = _map_axes(figure)
+
+    assert len(axes) == 3
+    meshes = _quad_meshes(figure)
+    assert len(meshes) == 3
+    assert {mesh.cmap.name for mesh in meshes} == {"RdBu_r", "viridis"}
+    b_mesh = next(
+        mesh for mesh in meshes
+        if mesh.cmap.name == "RdBu_r"
+        and "parallel" in mesh.axes.get_title().lower()
+    )
+    n_mesh = next(
+        mesh for mesh in meshes
+        if mesh.cmap.name == "RdBu_r" and mesh is not b_mesh
+    )
+    speed_mesh = next(mesh for mesh in meshes if mesh.cmap.name == "viridis")
+
+    expected_mask = np.zeros((3, 3), dtype=bool)
+    expected_mask[1, 1] = True
+    for mesh in meshes:
+        assert np.array_equal(
+            np.ma.getmaskarray(mesh.get_array()), expected_mask
+        )
+    expected_b = np.array([
+        [-1.0, 0.0, 1.0],
+        [-3.0, np.nan, -1.0],
+        [-5.0, -4.0, -3.0],
+    ])
+    expected_n = np.array([
+        [3.0, 4.0, 5.0],
+        [5.0, np.nan, 7.0],
+        [7.0, 8.0, 9.0],
+    ])
+    expected_speed = np.full((3, 3), 1.3)
+    expected_speed[1, 1] = np.nan
+    np.testing.assert_allclose(
+        np.ma.array(np.ma.getdata(b_mesh.get_array()), mask=expected_mask),
+        np.ma.array(expected_b, mask=expected_mask),
+    )
+    np.testing.assert_allclose(
+        np.ma.array(np.ma.getdata(n_mesh.get_array()), mask=expected_mask),
+        np.ma.array(expected_n, mask=expected_mask),
+    )
+    np.testing.assert_allclose(
+        np.ma.array(np.ma.getdata(speed_mesh.get_array()), mask=expected_mask),
+        np.ma.array(expected_speed, mask=expected_mask),
+    )
+    assert (b_mesh.norm.vmin, b_mesh.norm.vmax) == (-5.0, 5.0)
+    assert (n_mesh.norm.vmin, n_mesh.norm.vmax) == (-9.0, 9.0)
+    assert (speed_mesh.norm.vmin, speed_mesh.norm.vmax) == (0.0, 1.3)
+    for mesh in meshes:
+        assert mesh.get_clim()[1] > 1.0
+
+    titles = [axis.get_title() for axis in axes]
+    assert any(
+        "parallel" in title.lower() and "t=2 ns" in title
+        for title in titles
+    )
+    assert any(
+        "delta n_i" in title and "t=2 ns" in title for title in titles
+    )
+    speed_title = speed_mesh.axes.get_title()
+    assert "total 3d ion speed" in speed_title.lower()
+    assert "normalized r/z" in speed_title.lower()
+    assert "t=1 ns" in speed_title
+
+    quiver = next(
+        item
+        for axis in axes
+        for item in axis.collections
+        if type(item).__name__ == "Quiver"
+    )
+    assert quiver.pivot == "middle"
+    np.testing.assert_allclose(
+        np.hypot(quiver.U, quiver.V), np.ones_like(quiver.U)
+    )
+    assert 0 < 1.0 / quiver.scale <= 0.4
+    facecolor = np.asarray(quiver.get_facecolor())[:, :3]
+    assert np.max(facecolor) <= 0.3
+
+    for axis in axes:
+        assert axis.get_legend() is None
+        assert list(axis.texts) == []
+        assert all(
+            type(item).__name__ in {"QuadMesh", "Quiver"}
+            for item in axis.collections
+        )
+        outlined = [
+            line for line in axis.lines
+            if line.get_linestyle() == "-"
+            and line.get_color() in {
+                "black", "#000000", (0.0, 0.0, 0.0)
+            }
+        ]
+        assert outlined
+
+    figure_text = "\n".join(text.get_text() for text in figure.texts)
+    assert "NL | FOMHD time evolution" in figure_text
+    assert figure_text.count("NL | FOMHD time evolution") == 1
+    assert "grid 3 x 3" in figure_text
+    assert "n_phi=0" in figure_text
+    assert "phi=0" in figure_text
+    assert "Offline response figure" not in figure_text
+    assert "Solver status:" not in figure_text
+    assert "Input wall polygon" not in figure_text
+
+
+def test_zero_signed_field_remains_a_finite_physical_mesh(
+    tmp_path, monkeypatch
+):
+    data = _structure_data(zero_parallel_b=True)
+    figure = _retained_structure_figure(data, tmp_path, monkeypatch)
+    b_mesh = next(
+        mesh for mesh in _quad_meshes(figure)
+        if "parallel" in mesh.axes.get_title().lower()
+    )
+
+    mask = np.ma.getmaskarray(b_mesh.get_array())
+    values = np.ma.getdata(b_mesh.get_array())[~mask]
+    assert np.all(np.isfinite(values))
+    assert np.all(values == 0.0)
+    assert np.count_nonzero(mask) == 1
+    assert (b_mesh.norm.vmin, b_mesh.norm.vmax) == (-1.0, 1.0)
+    assert all(
+        type(item).__name__ != "PathCollection"
+        for item in b_mesh.axes.collections
+    )
+
+
+def test_structure_colorbars_and_labels_fit_export_canvas(tmp_path, monkeypatch):
+    figure = _retained_structure_figure(_structure_data(), tmp_path, monkeypatch)
+    figure.canvas.draw()
+    renderer = figure.canvas.get_renderer()
+    for axis in figure.axes:
+        bounds = axis.get_tightbbox(renderer)
+        assert bounds.x0 >= -1
+        assert bounds.x1 <= figure.bbox.width + 1
+        assert bounds.y0 >= -1
+        assert bounds.y1 <= figure.bbox.height + 1
+
+
+@pytest.mark.parametrize("mapping_error", ["missing", "misaligned"])
+def test_structure_receipt_matches_unavailable_mapping(
+    tmp_path, monkeypatch, mapping_error
+):
+    data = _structure_data()
+    if mapping_error == "missing":
+        del data["_arrays"]["input_mapping.npz"]
+    else:
+        mapping = data["_arrays"]["input_mapping.npz"]
+        mapping["Z"] = mapping["Z"][:-1]
+    figure = _retained_structure_figure(data, tmp_path, monkeypatch)
+    assert not _quad_meshes(figure)
+    spatial = cae_plots._case_public(data)["spatial_structure"]
+    assert spatial["available"] is False
+    assert spatial["reason"]
+    assert "mapping" in spatial["reason"] or "aligned" in spatial["reason"]
+
+
+def test_structure_thins_and_bounds_arrows_on_a_large_grid(
+    tmp_path, monkeypatch
+):
+    data = _structure_data(grid=20)
+    figure = _retained_structure_figure(data, tmp_path, monkeypatch)
+    quiver = next(
+        item
+        for axis in _map_axes(figure)
+        for item in axis.collections
+        if type(item).__name__ == "Quiver"
+    )
+
+    count = len(quiver.get_offsets())
+    assert 0 < count < 400
+    np.testing.assert_allclose(
+        np.hypot(quiver.U, quiver.V), np.ones_like(quiver.U)
+    )
+    assert 0 < 1.0 / quiver.scale <= 0.4
