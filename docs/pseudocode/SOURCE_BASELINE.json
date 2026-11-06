@@ -23,8 +23,8 @@
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 151294,
-      "sha256": "55aea9a845580176c7ae0e342b02529d81d1517f5e82f4a1d77f3d29ad21d218"
+      "bytes": 152653,
+      "sha256": "746bf5e8bc98defb410363f03a7458207c5ea7f222ca7cb9b55bdf79b07ef765"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -68,8 +68,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 11820,
-      "sha256": "dfb05f8aa8f751fa64297b3ae4715d2ea4c30bf9b838041a0d2642e8b28e4633"
+      "bytes": 12783,
+      "sha256": "818fe1cd069a40c0467cccb00a9763ae47c0946458769a183844faae90d0a8ba"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
@@ -88,11 +88,11 @@
     },
     {
       "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
-      "bytes": 17951,
-      "sha256": "9d6031d1f5af7f2b1b479cb278cf807cdc988a57ede874db56fa21e682a93fc3"
+      "bytes": 16995,
+      "sha256": "0888bc6df131a7e01bcc3e0b6f4446d3166206d51cf6073b35c657941afef1bb"
     }
   ],
-  "captured_utc": "2026-11-06T12:17:11.918723+00:00",
+  "captured_utc": "2026-11-06T13:50:43.074773+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -137,6 +137,10 @@
     "cpu_tests_passed": 770,
     "gpu_regression_passed": 12,
     "global_physical_validation": false,
-    "equal_accuracy_speedup": false
+    "equal_accuracy_speedup": false,
+    "report_presentation": "Plain-language issue assessment and offline HTML gallery; numerical solver unchanged",
+    "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T130923Z/a1-benchmark.html",
+    "next_tier": "T1 awaits user judgment; known scoped limitations do not automatically block prototype development",
+    "gallery_format": "Existing A0 report renderer, English labels/captions, numbered pages/figures and matching plot conventions"
   }
 }
