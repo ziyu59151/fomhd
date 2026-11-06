@@ -43,9 +43,13 @@
    stated explicitly.
 4. Use only `R`, `Z`, and `polygon` from `input_mapping.npz` for cell maps.
    Do not place staggered `background_raw_B`, `background_mapped_B`, `raw_B`,
-   or `mapped_B` values on those centers. Plot node-aligned matched values with
-   scatter markers at cell centers and show the input polygon separately. State
-   that the solver boundary is a staircase and no interpolation crosses it.
+   or `mapped_B` values on those centers. Reuse `flat_cell_grid` from
+   `plot_grid_convergence` to give every active cell its rectangular tile and
+   mask inactive cells. Draw with `pcolormesh(..., shading="flat")`; do not
+   normalize, smooth, or interpolate the physical fields. Show the input wall
+   as one solid black outline. Record the flat-cell and no-interpolation
+   geometry, physical units, selected frame times, speed definition, and
+   direction-only arrow meaning in the existing public receipt metadata.
 5. Determine the compressional time only from matched ion-density perturbation at
    the supplied probe cells. Report the maximizing time, probe cell and exact
    initial control ion-density scale in `m^-3`. Report the physical `phi=0`
@@ -73,17 +77,32 @@
    `report.mode_fits[*].fit.available`. If none is available, display the
    recorded reasons and no numeric frequency. Never infer a frequency from a
    planned duration, guessed cycle count, target period count or pilot horizon.
-4. The structure figure scatters signed physical `delta_B_parallel` from stored
-   `parallel_B`, signed physical ion density `delta n_i`, and reconstructed ion
-   velocity magnitude on active cell centers at the selected compressional time.
-   A fourth panel shows reconstructed poloidal ion velocity vectors at phase
-   `phi=0`. Highlight the selected probe and show the wall polygon. Name the
-   numerical grid as `N_R x N_Z` (`grid 20 x 20`) and the harmonic as `n_phi`.
-5. Put a teal corner banner `NL | FOMHD time evolution` on every overview and
-   structure figure. Include the device and exact solver status, preserving
-   `completed`, `budget_stopped`, `failed`, `unavailable`, and `initializing`.
-   Do not describe an initial mapping, missing report, or unavailable response
-   as completed evolution. Keep the main nonlinear panel style otherwise
+4. The structure figure is one compact 1 x 3 row. Show signed physical
+   `delta_B_parallel` from stored `parallel_B`, signed physical ion density
+   `delta n_i`, and total reconstructed ion speed
+   `sqrt(|delta v_R|^2 + |delta v_phi|^2 + |delta v_Z|^2)` at phase `phi=0`.
+   Use `RdBu_r` for each signed map and `viridis` for speed. Keep each panel's
+   zero-centered or nonnegative physical color limits; a zero field is still a
+   finite physical extent and uses a readable default extent. Add short dark
+   arrows at the tile centers for the normalized reconstructed R/Z velocity
+   direction only. Thin arrows on large grids and bound arrow length to a
+   fraction of the cell spacing. The density maps use the selected
+   compressional time; speed and arrows use the independently selected strongest
+   velocity time. Label every panel's timestamp. Name the numerical grid as
+   `N_R x N_Z` (`grid 20 x 20`), the harmonic as `n_phi`, and the phase as
+   `phi=0`. Show the solid black wall outline, with no repeated wall legend,
+   probe ring, center-dot overlay, in-axis footnote, or data-area prose.
+   Reserve canvas margins for all three colorbars and their SI labels; verify
+   rendered axis decorations stay inside the exported image.
+   Use the same mapping/alignment availability reason in the renderer and
+   spatial receipt. A missing or misaligned mapping produces unavailable maps
+   and preserves its concrete reason in metadata.
+5. Put one teal corner banner `NL | FOMHD time evolution` on every overview and
+   structure figure. Include the device and exact solver status in that banner,
+   preserving `completed`, `budget_stopped`, `failed`, `unavailable`, and
+   `initializing`. Put a concise case/grid/`n_phi`/`phi` heading on the structure
+   figure. Do not describe an initial mapping, missing report, or unavailable
+   response as completed evolution. Keep the nonspatial overview style
    unchanged.
 
 ## A0-PY-PLOT-CAE-04 Write bounded gallery products
@@ -100,14 +119,17 @@
    limitations recorded even when explanatory text is moved out of the figure
    header. Report figure generation success separately from physical or
    scientific acceptance.
-3. Do not edit a combined gallery, rerun a solver, access a GPU, install
-   dependencies, or make a final physical-frequency claim.
+3. Keep solver status and scientific limitations in the existing receipt and
+   captions rather than a structure-figure footer. Preserve source identity in
+   the standalone PNG/SVG banner and heading. Do not edit a combined gallery,
+   rerun a solver, access a GPU, install dependencies, or make a final
+   physical-frequency claim.
 
 The `n_phi=0` original ion density has a separate zoomed axis from
-initial/matched differences so the background cannot hide the wave. Ion-velocity
-spatial panels use the strongest velocity snapshot with its own timestamp,
-distinct from the density-compression snapshot; arrows are normalized
-directions, and color carries physical amplitude.
+initial/matched differences so the background cannot hide the wave. The spatial
+speed panel uses the strongest velocity snapshot with its own timestamp,
+distinct from the density-compression snapshot. Its color is the total physical
+3D speed; arrows show only the normalized R/Z direction.
 
 For zero mode, use three separate axes for original, initial-subtracted and
 matched signals so neither the background nor startup drift hides the wave. Compression maps

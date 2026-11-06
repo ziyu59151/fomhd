@@ -58,3 +58,26 @@ When the known archive exists, collect the one-step
 Require its status and source hash to be retained, all present inputs to be
 hashed, the unavailable mode-fit reason to remain explicit, and no frequency
 to be invented.
+
+## A0-PY-TEST-CAE-PLOTS-04 Compact nonlinear spatial map
+
+1. Render a synthetic structure figure and inspect the actual plotted
+   `QuadMesh` arrays. Require signed physical `delta B_parallel` and `delta n_i`
+   values, total 3D speed, inactive-cell masks, and equal physical SI color
+   limits without normalization.
+2. Exercise an exactly zero signed field and require a finite masked mesh with
+   a readable symmetric physical extent, not a scatter fallback.
+3. Require exactly three map axes carrying timestamps, finite real colorbars
+   with units, a solid black wall outline, a teal NL banner, and a concise
+   case/grid/`n_phi`/`phi` heading. Reject repeated wall legends, probe rings,
+   center dots, in-axis footnotes, and structure-figure status footers.
+4. Inspect the real `Quiver` artist. Require normalized R/Z directions, a
+   short dark style, arrow length bounded by a fraction of the cell spacing,
+   and thinning on a high-count grid while retaining nonzero directions.
+5. Require public receipt metadata to record the flat actual-cell rendering,
+   no interpolation, physical field units, total-speed definition,
+   direction-only arrows, and the separate density/velocity frame times.
+6. Draw the figure and check tight bounds of every map and colorbar axis against
+   the canvas, including its labels and visible ticks, to catch export clipping.
+7. Remove or misalign an otherwise valid mapping; require both unavailable
+   figure panels and `spatial_structure.available=false` with a concrete reason.
