@@ -1,4 +1,4 @@
-"""A0 synchronous explicit RK4 and explicit midpoint transactions."""
+"""A0 synchronous and A1-T0 predictor time transactions."""
 
 from __future__ import annotations
 
@@ -15,6 +15,45 @@ from .types import Failure, StageTag
 
 MAX_STEPS = 1 << 52
 UINT64_MAX = (1 << 64) - 1
+
+
+def validate_time_controls(parameters):
+    """Validate coupling controls before any scheduler state is mutated."""
+    coupling = getattr(parameters, "coupling", "synchronous")
+    if type(coupling) is not str or coupling not in (
+        "synchronous",
+        "predictor",
+    ):
+        raise Failure("Config", f"unknown time coupling: {coupling}")
+    micro_steps = getattr(parameters, "micro_steps", 1)
+    if type(micro_steps) is not int or micro_steps <= 0:
+        raise Failure(
+            "Config",
+            "micro_steps must be a positive non-boolean integer",
+        )
+    inertia = int(getattr(parameters, "electron_inertia", 0))
+    if inertia not in (0, 1):
+        raise Failure("Config", f"unknown electron_inertia: {inertia}")
+    integrator = getattr(parameters, "integrator", "rk4")
+    if integrator not in ("midpoint", "rk4"):
+        raise Failure("Config", f"unknown time integrator: {integrator}")
+    if coupling == "synchronous" and micro_steps != 1:
+        raise Failure(
+            "Config",
+            "synchronous coupling requires micro_steps=1",
+        )
+    if coupling == "predictor":
+        if inertia != 0:
+            raise Failure(
+                "Config",
+                "predictor coupling requires massless electron_inertia=0",
+            )
+        if integrator != "rk4":
+            raise Failure(
+                "Config",
+                "predictor coupling requires integrator='rk4'",
+            )
+    return coupling, micro_steps
 
 
 def _check_dt(stage, context):
@@ -48,7 +87,17 @@ def _check_dt(stage, context):
         raise failure
 
 
-def _tag(context, step, generation, trial, time, stage):
+def _tag(
+    context,
+    step,
+    generation,
+    trial,
+    time,
+    stage,
+    micro_step=-1,
+    iteration=0,
+    slab=0,
+):
     return StageTag(
         step,
         generation,
@@ -56,6 +105,9 @@ def _tag(context, step, generation, trial, time, stage):
         getattr(context, "spectral_id", 0),
         time,
         stage,
+        micro_step,
+        iteration,
+        slab,
     )
 
 
@@ -171,6 +223,9 @@ def _append_missing(target, source):
             record.tag.spectral_context,
             float(record.tag.time).hex(),
             record.tag.stage,
+            int(getattr(record.tag, "micro_step", -1)),
+            int(getattr(record.tag, "iteration", 0)),
+            int(getattr(record.tag, "slab", 0)),
         )
 
     seen = {identity(record) for record in target}
@@ -483,6 +538,9 @@ def _advance(committed, cumulative, context, source, integrator):
                     tag.spectral_context,
                     tag.time,
                     tag.stage,
+                    tag.micro_step,
+                    tag.iteration,
+                    tag.slab,
                 ): payload
                 for tag, payload in sources
             }
@@ -495,6 +553,9 @@ def _advance(committed, cumulative, context, source, integrator):
                         stage.tag.spectral_context,
                         stage.tag.time,
                         stage.tag.stage,
+                        stage.tag.micro_step,
+                        stage.tag.iteration,
+                        stage.tag.slab,
                     )
                 ]
                 for _, stage, _ in quadrature
@@ -565,11 +626,16 @@ def _advance(committed, cumulative, context, source, integrator):
 
 
 def advance(committed, cumulative, context, source=None):
-    """Advance one accepted step; the default and production path is RK4."""
-    inertia = int(getattr(context.p, "electron_inertia", 0))
-    if inertia not in (0, 1):
-        raise Failure("Config", f"unknown electron_inertia: {inertia}")
+    """Advance one accepted macro interval through the selected coupling."""
+    coupling, _ = validate_time_controls(context.p)
     integrator = getattr(context.p, "integrator", "rk4")
-    if integrator not in ("midpoint", "rk4"):
-        raise Failure("Config", f"unknown time integrator: {integrator}")
+    if coupling == "predictor":
+        if source is not None:
+            raise Failure(
+                "ManufacturedSource",
+                "predictor massless source callbacks are unsupported",
+            )
+        from . import time_predictor
+
+        return time_predictor.advance(committed, cumulative, context)
     return _advance(committed, cumulative, context, source, integrator)

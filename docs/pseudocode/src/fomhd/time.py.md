@@ -97,3 +97,29 @@ retain_failure(failure,...):
 `time.dt_guard` values and the three guard limits are parsed by runtime I/O, but
 frequency assessment and the guard hook are parent-owned in
 `src/fomhd/stability.py`.
+
+## A1-PY-TIME-01 - Coupling dispatch and direct-call validation
+
+```text
+advance(committed,cumulative,context,source=None):
+  coupling,micro_steps=validate_time_controls(context.p)
+  if coupling == "synchronous":
+    require micro_steps == 1
+    run the unchanged A0 midpoint/RK4 transaction
+  else:
+    require electron_inertia == 0 and integrator == "rk4"
+    reject source is not None before base evaluation, counter mutation,
+      trial allocation, or callback invocation
+    locally import time_predictor.advance and run the T0 transaction
+```
+
+Validation happens before `_check_clock`, `_fresh`, stage evaluation, or source
+invocation. Invalid direct calls do not mutate accepted state, cumulative
+ledgers, or scheduler counters.
+
+## A1-PY-TIME-02 - A0 evidence identity
+
+Extend A0 stage/check identities with the appended `micro_step`, `iteration`,
+and `slab` fields. A0 and synchronous stages use `micro_step=-1`,
+`iteration=0`, and `slab=0`. Serialization, deduplication, and failure records
+must include all three fields.

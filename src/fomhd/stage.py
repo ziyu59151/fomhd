@@ -263,6 +263,9 @@ def _alias_probe(state, tag, context, result):
         spectral_context=alternate_context.spectral_id,
         time=tag.time,
         stage="alias",
+        micro_step=tag.micro_step,
+        iteration=tag.iteration,
+        slab=tag.slab,
     )
     alternate = evaluate_stage(state, alternate_tag, alternate_context, False)
     context.next_source = alternate_context.next_source
@@ -407,6 +410,9 @@ def _retain_common_failure_evidence(
             check.tag.trial,
             check.tag.spectral_context,
             float(check.tag.time).hex(),
+            int(getattr(check.tag, "micro_step", -1)),
+            int(getattr(check.tag, "iteration", 0)),
+            int(getattr(check.tag, "slab", 0)),
         )
 
     try:

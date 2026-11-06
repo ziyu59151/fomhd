@@ -166,8 +166,12 @@ def test_wrong_sign_hall_control_fails_time_oracle() -> None:
         oracle_hall_sign=-1,
     )
     assert result.initial_mode_error < 2.0e-12
-    assert result.failure_code is not None
-    assert result.failure_message
+    assert result.failure_code is None
+    assert result.finite and result.hard_checks_available
+    assert result.accepted_steps == result.requested_steps
+    # The injected defect is in the independent oracle, not the production RHS.
+    assert result.relative_error > 0.5
+    assert result.continuum_relative_error > 0.5
 
 
 def test_initial_eigenmode_is_a_real_finite_state() -> None:

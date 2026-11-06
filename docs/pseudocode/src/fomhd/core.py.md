@@ -58,3 +58,66 @@ explicit `1` selects finite-fluid combination.
    matrices, per-mode workspaces, and resident operator matrices.
 2. Multiply entries by 16 bytes and use checked sums/products. This is a
    rejection estimate, not a measured allocator result.
+
+## A1-PY-CORE-01 - Predictor state assembly and clocks
+
+```text
+assemble_predictor_state(P,Z,tag,context):
+  require each independent P and Z member has the existing retained extent
+  copy ion n/mom/perp from P
+  copy electron perp/parallel and B from Z
+  use harmless compatibility placeholders for electron n/mom
+  canonicalize through the existing massless state path
+  stamp step, generation, and time from tag
+  do not mutate or alias P, Z, or the committed state
+
+microstage_time(p,macro_step,micro_index,rk_stage_index):
+  validate integer indices and 0<=rk_stage_index<4
+  numerator=4*micro_index+rk_stage_offset[rk_stage_index]
+  denominator=4*M
+  offset: k1=0, k2=2, k3=2, k4=4
+  t0=time_at_step(macro_step); t1=time_at_step(macro_step+1)
+  H=p.dt
+  t=t0+H*(numerator/denominator) using checked FMA
+  require finite t and t0<=t<=t1
+  require representable midpoints strictly ordered within each microstep
+  do not form micro times by repeatedly adding h
+```
+
+The tangent displacement uses the same integer fraction, not a repeatedly
+accumulated clock. The separate offset helper evaluates `H*numerator/denominator`
+for the tangent rather than multiplying a repeatedly used `h`. A predictor
+stage state has the tangent ion value and the corresponding RK4
+electron-pressure/field state.
+
+## A1-PY-CORE-02 - Predictor preflight and memory
+
+```text
+predictor_history_entries(c):
+  if coupling == synchronous: return 0
+  require micro_steps is positive non-boolean integer
+  full_state = checked(11*Nc+MB_size)
+  return checked(4*M*full_state, plus conservative cache/rhs/stage counts)
+
+preflight_memory(c):
+  reject missing/zero host cap; require positive CUDA cap on CUDA
+  estimate peak including the predictor O(M) retained stage/quadrature history
+  for massless contexts add the independent fixed-wall cache bound:
+    q*(64*Ne*w + 128*w*w + 64*w + 32*Nb*w) bytes
+    q=2K+1; w=len(geometry.walls); q and w are checked integers
+    missing/None wall lists use w=0; finite inertia contributes zero
+  for predictor massless contexts add per retained stage:
+    16*N*w*w + 32*N*(w+3*Nc) complex128-entry allowance
+    multiply by 4*M with checked products; this covers stage wall.samples S,
+    CPU dense LU original/factors, and dense vector work per phi sample
+  apply checked peak and state/workspace caps before any trial allocation
+```
+
+The predictor retains all `4M` evaluated full stages for the existing
+read-only interval diagnostics. It is not constant-memory or sparse.
+
+The wall-cache term is a conservative static storage bound, not a measured
+allocator pool, resident-set size, or performance claim. It never constructs a
+wall matrix during estimation. The shared fixed wall-cache bound is counted once;
+the per-stage wall-sample term is separate because every retained predictor
+stage owns its own density-scaled matrices and factors.

@@ -100,3 +100,22 @@
 
 Release the full-rank probe workspace before entering an unsuccessful-gate
 fallback so it does not remain live alongside sequential SVD candidates.
+
+## A0-PY-BACK-06 Prepared scaled solve
+
+1. `prepare_linear(A,row_scale,column_scale,rank_rtol,residual_rtol)` performs
+   the A0-PY-BACK-04 validation, forms the fixed scaled matrix, computes its
+   singular spectrum, and factors it once with the selected library. It stores
+   the original/scaled matrices, scales, tolerances, spectrum, LU factors,
+   pivots, and factor validity for later right-hand sides.
+2. `linear_prepared(prepared,rhs)` validates the right-hand side, forms only
+   `rhs/row_scale`, and applies the same LU solve, componentwise backward-error
+   test, and at-most-five residual corrections used by `linear`.
+3. It returns a fresh `linear_record` with that right-hand side's `x`,
+   residual, scaled residual, backward error, and refinement count. The cached
+   spectrum, scales, and factorization replace every fixed-system
+   reconstruction without changing any existing field or tolerance.
+4. `linear` is the compatibility composition
+   `linear_prepared(prepare_linear(...),rhs)`. Bad check input,
+   ill-conditioning, singular LU, nonfinite solves, and stalled refinement
+   remain explicit `Failure` paths; no fallback backend is attempted.

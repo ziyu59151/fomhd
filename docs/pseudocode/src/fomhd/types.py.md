@@ -36,3 +36,22 @@ selects finite electron inertia.
    or a backend numerical failure with a stable diagnostic message.
 3. A failure object is retained by the caller; no exception triggers a CPU
    fallback or an automatic retry.
+
+## A1-PY-TYPE-01 - Predictor scheduling identity
+
+1. Append `Parameters.coupling="synchronous"` and
+   `Parameters.micro_steps=1`. The macro interval remains `Parameters.dt`;
+   `nsteps` continues to count accepted macro intervals.
+2. Append `StageTag.micro_step=-1`, `iteration=0`, and `slab=0` after the A0
+   fields. Existing six-positional-argument construction therefore retains its
+   synchronous semantics.
+3. A predictor micro-RK4 stage uses `micro_step` in `[0, M)`, `iteration=0`,
+   and `slab=0`. The macro endpoint uses `micro_step=-1`. Synchronous A0
+   stages retain `micro_step=-1`.
+4. `time.coupling` accepts only `synchronous` and `predictor`. A synchronous
+   request requires `micro_steps=1`; predictor requires massless electrons and
+   RK4. Values must be actual non-boolean types and `micro_steps` must be a
+   positive integer.
+5. Stage-generation identity remains unique per RHS evaluation. Equal
+   predictor stage times do not collapse `midpoint` and `midpoint_2`; their
+   generation, micro index, and stage string remain distinct.

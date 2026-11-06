@@ -1,10 +1,16 @@
-# FOMHD A0 Python/Warp mainline
+# FOMHD A1 Python/Warp mainline
 
 [Visual branch history](docs/BRANCH_GRAPH.md) · [Development policy](docs/development.md)
 
 [Physical simulation prototype workflow](docs/RESEARCH_PROTOTYPE_WORKFLOW.md)
 records how verification, independent physical comparisons, and retained known
 issues determine prototype development priorities.
+
+[A1 implementation](docs/A1_IMPLEMENTATION.md) records the inherited solver,
+fixed wall-system reuse, and the experimental T0 predictor. A0 is maintained
+on `release/a0` at `9a38bf4`; each checkout contains one solver source tree.
+The default time coupling remains synchronous RK4. T0 is selected explicitly
+and does not imply waveform iteration or multi-GPU acceptance.
 
 The active `main` implementation is the FP64/complex128 Python solver under
 [`src/fomhd/`](src/fomhd), using NVIDIA Warp 1.19.0, CuPy CUDA13x 14.2.0, and

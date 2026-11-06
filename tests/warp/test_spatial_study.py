@@ -9,6 +9,7 @@ import pytest
 
 import fomhd
 from fomhd import massless
+from fomhd import massless_checks
 from fomhd.types import Failure
 
 
@@ -285,11 +286,74 @@ def test_exact_ohm_reference_does_not_use_production_projection(
     def wrong_projection(nodal, density, context):
         return context.compute.array(
             np.zeros(context.N * 3 * context.op.Nc, dtype=np.complex128)
-        )
+    )
 
     monkeypatch.setattr(massless, "_constraint_project", wrong_projection)
-    with pytest.raises(Failure, match="electron_pressure_adjoint"):
+    with pytest.raises(Failure) as failure:
         study.spatial_case(small_context, "rectangle", "compact")
+    assert failure.value.code == "HardGate"
+
+    original_gate = massless_checks.diagnostics.gate
+    recorded = []
+
+    def record_and_continue(records, required=None):
+        try:
+            return original_gate(records, required)
+        except Failure as error:
+            recorded.append(error)
+            return None
+
+    monkeypatch.setattr(
+        massless_checks.diagnostics,
+        "gate",
+        record_and_continue,
+    )
+    corrupted = study.spatial_case(small_context, "rectangle", "compact")
+
+    np.testing.assert_array_equal(
+        corrupted.arrays["force_exact_Pa_per_m"],
+        baseline.arrays["force_exact_Pa_per_m"],
+    )
+    np.testing.assert_array_equal(
+        corrupted.arrays["E_exact_V_per_m"],
+        baseline.arrays["E_exact_V_per_m"],
+    )
+    assert np.max(np.abs(baseline.arrays["force_exact_Pa_per_m"])) > 0.0
+    assert np.max(np.abs(baseline.arrays["E_exact_V_per_m"])) > 0.0
+    np.testing.assert_array_equal(
+        corrupted.arrays["projected_full_force_Pa_per_m"],
+        0.0,
+    )
+    e0_change = (
+        corrupted.arrays["E0_V_per_m"]
+        - baseline.arrays["E0_V_per_m"]
+    )
+    assert np.max(np.abs(e0_change)) > 0.0
+    assert np.max(np.abs(corrupted.arrays["E0_V_per_m"])) == 0.0
+    np.testing.assert_array_equal(
+        corrupted.arrays["E0_error_V_per_m"],
+        -baseline.arrays["E_exact_V_per_m"],
+    )
+
+    baseline_force = baseline.metadata["force"]["projected_full_force"]["all"]
+    corrupted_force = corrupted.metadata["force"]["projected_full_force"]["all"]
+    assert corrupted_force["relative_weighted_l2"] == pytest.approx(1.0)
+    assert baseline_force["relative_weighted_l2"] < (
+        corrupted_force["relative_weighted_l2"]
+    )
+    baseline_e0 = baseline.metadata["ohm"]["E0"]["all"]
+    corrupted_e0 = corrupted.metadata["ohm"]["E0"]["all"]
+    assert corrupted_e0["relative_weighted_l2"] == pytest.approx(1.0)
+    assert corrupted_e0["reference_weighted_l2"] > 0.0
+    assert baseline_e0["difference_weighted_l2"] > 0.0
+    assert recorded
+    assert corrupted.metadata["full_stage_hard_checks_pass"] is False
+    assert any(
+        not check.passed
+        for error in recorded
+        for check in error.checks
+        if check.hard and check.available
+    )
     assert baseline.metadata["ohm"]["reference_path"] == (
         "direct analytic evaluation at production sample locations; "
         "no I/Q/H/G/C application"

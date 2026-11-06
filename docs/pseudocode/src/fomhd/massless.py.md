@@ -100,22 +100,75 @@ E0=I*(Q*node_source reshaped[N,3,Nc]/ne reshaped[N,1,Nc])
 
 ## A0-PY-MASSLESS-04: Closed-wall electric-field correction
 
-For each retained Fourier mode:
+Before the first massless wall solve, request the context-private fixed wall
+system cache. Cache construction and all per-stage lookups are inside the
+stage failure boundary so a new setup error retains model evidence.
+
+For each retained Fourier mode, with fixed operators
 
 ```text
-S = signed wall-normal edge extraction, all original wall rows
-Cin=C[mode]; Cin_adj=Cdag[mode]
-Aw=S*Cin_adj*Cin*M1^-1*S^H
-rhs=-S*Cin_adj*Cin*E0[mode]
-rows=IndependentRows(Aw,rank_rtol)  # deterministic increasing indices
-if rows is empty:
-  lambda=0
-else:
-  lambda_selected=CheckedDenseSolve(Aw[rows,rows],rhs[rows],
-                                    physical row/column scales)
-  lambda[omitted]=0               # explicit principal-row gauge
-require Aw*lambda-rhs=0 on every original row
-E[mode]=E0[mode]+M1^-1*S^H*lambda
+W=M1^-1 S^H
+T=C W
+Qw=Cdag T
+Aw=S Qw
+```
+
+The implementation forms only the thin products `C@W` (`Nb x walls`),
+`Cdag@T` (`Ne x walls`), and `S@Qw` (`walls x walls`). It never materializes
+`Cdag@C` (`Ne x Ne`) merely to form `Aw`.
+
+```text
+prepare-once, reuse:
+  S = signed wall-normal edge extraction, all original wall rows
+  W = M1^-1 S^H
+  Aw = S*Cdag*C*W
+  check Aw is Hermitian at the retained roundoff scale
+  rows=IndependentRows(Aw,rank_rtol)  # deterministic increasing indices
+  gauge_rows=all rows not selected
+  if rows:
+    prepared=PrepareLinear(Aw[rows,rows],rhs-independent physical scales)
+  else:
+    prepared=none
+
+per nonzero electric-field spectrum:
+  rhs=-S*Cdag*C*E0[mode]
+  if rows:
+    lambda_selected=SolvePrepared(prepared,rhs[rows])
+  else:
+    lambda=0
+  lambda[gauge_rows]=0           # explicit principal-row gauge
+  require Aw*lambda-rhs=0 on every original row
+  E[mode]=E0[mode]+W*lambda
+```
+
+The cache stores `S`, `Aw`, selected/gauge rows, the principal scaled system,
+its singular spectrum and LU, metadata, and exact persistent-array byte
+accounting. Repeated right-hand sides reuse these fixed objects and perform
+only thin right-hand-side products, prepared solves, full-row checks, and the
+final `W` product.
+
+The cache key is scoped to fixed operators, not content-scanned every stage:
+
+```text
+(operator object identity, geometry object identity, backend object identity,
+ backend name/device, parameter-set/reference identities and reference
+ length/electric values, rank_rtol, operator K/Ne/Nb/Nc,
+ precomputed operator/rule/geometry hashes when present)
+```
+
+Physical sample count `N` and `spectral_id` are absent because the wall factors
+operate only on retained Fourier-mode blocks. A shallow-copied alias context
+therefore safely shares the same fixed factors, including counters on the
+sequential host path. Operator matrices must be immutable after construction.
+Any operator/geometry/backend/reference/rank/parameter-set change or
+stale/replaced identity hash invalidates the cache. `_constraint_project`
+remains density-dependent and is not memoized.
+
+The former per-mode formulation remains the algebraic oracle:
+
+```text
+Aw_dense=S*Cdag*C*M1^-1*S^H
+rhs_dense=-S*Cdag*C*E0[mode]
 ```
 
 The solve reports rank, selected rows, omitted gauge coordinates, scaled
@@ -194,3 +247,20 @@ under the `candidate` evidence prefix when canonicalization raises a `Failure`.
 The preserved evidence includes the candidate stage identity, B, both densities,
 momenta, and pressures. The original exception is re-raised without changing
 the accepted state or ledger.
+
+### A1-PY-MASSLESS-ALIAS-01 - Alias identity adaptation
+
+```text
+alias_probe(state,tag,context,result):
+  copy context with alternate padded sample count and spectral id
+  alternate_tag.step,generation,trial,time = tag values
+  alternate_tag.stage = "alias"
+  alternate_tag.micro_step = tag.micro_step
+  alternate_tag.iteration = tag.iteration
+  alternate_tag.slab = tag.slab
+  evaluate and append alias diagnostics with the preserved identity
+```
+
+The alternate spectral context remains distinct, but the macrostep, microstep,
+iteration, and slab ownership of the stage being probed must not be reset to
+synchronous defaults.

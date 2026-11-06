@@ -473,6 +473,7 @@ def _operator_fingerprint(operators, backend):
         return str(existing)
     digest = hashlib.sha256()
     digest.update(RULE_HASH_TEXT.encode("ascii"))
+    digest.update(b"fixed-wall:thin-composition/prepared-principal-v1")
     groups = (
         "G",
         "C",
@@ -1019,6 +1020,8 @@ def _build_parameters(species, solver, grid, time, budgets, diagnostics):
         ),
         max_amplitude_error=time.get("max_amplitude_error", 0.01),
         max_phase_error_rad=time.get("max_phase_error_rad", 0.1),
+        coupling=time.get("coupling", "synchronous"),
+        micro_steps=time.get("micro_steps", 1),
     )
     return parameters_value
 
@@ -1147,6 +1150,8 @@ def load_case(path, overrides=None, backend=None):
         "minimum_samples_per_cycle",
         "max_amplitude_error",
         "max_phase_error_rad",
+        "coupling",
+        "micro_steps",
     ):
         if optional in time:
             allowed_time.add(optional)
@@ -1167,6 +1172,27 @@ def load_case(path, overrides=None, backend=None):
         raise ValueError("unknown time integrator")
     if time.get("dt_guard", "error") not in ("error", "warn"):
         raise ValueError("unknown dt_guard policy")
+    coupling = time.get("coupling", "synchronous")
+    if type(coupling) is not str:
+        raise ValueError("coupling must be a string")
+    if coupling not in ("synchronous", "predictor"):
+        raise ValueError(f"unknown time coupling: {coupling}")
+    micro_steps = time.get("micro_steps", 1)
+    if type(micro_steps) is not int or micro_steps <= 0:
+        raise ValueError(
+            "micro_steps must be a positive non-boolean integer"
+        )
+    if coupling == "synchronous" and micro_steps != 1:
+        raise ValueError(
+            "synchronous coupling requires micro_steps=1"
+        )
+    if coupling == "predictor":
+        if inertia != 0:
+            raise ValueError(
+                "predictor coupling requires massless electron_inertia=0"
+            )
+        if time.get("integrator", "rk4") != "rk4":
+            raise ValueError("predictor coupling requires integrator='rk4'")
     for name, positive in (
         ("minimum_samples_per_cycle", True),
         ("max_amplitude_error", True),
@@ -1434,6 +1460,8 @@ def load_case(path, overrides=None, backend=None):
     # midpoint choice must not silently become RK4 after a default change.
     semantic["species"]["electron_inertia"] = parameters.electron_inertia
     semantic["time"]["integrator"] = parameters.integrator
+    semantic["time"]["coupling"] = parameters.coupling
+    semantic["time"]["micro_steps"] = parameters.micro_steps
     semantic["time"].pop("nsteps", None)
     for name in (
         "output_dir",
@@ -1518,6 +1546,12 @@ def _identity(arrays, committed, case, run_id, k, compute):
     arrays["time"] = np.asarray(committed.state.time, dtype=np.float64)
     arrays["dt"] = np.asarray(case.parameters.dt, dtype=np.float64)
     arrays["start_time"] = np.asarray(case.parameters.start_time, dtype=np.float64)
+    arrays["time_coupling"] = np.asarray(
+        getattr(case.parameters, "coupling", "synchronous")
+    )
+    arrays["micro_steps"] = np.asarray(
+        getattr(case.parameters, "micro_steps", 1), dtype=np.uint64
+    )
     arrays["accepted"] = np.asarray(True, dtype=np.bool_)
     arrays["schema_version"] = np.asarray(SCHEMA_VERSION, dtype=np.uint64)
     arrays["layout_version"] = np.asarray(LAYOUT_VERSION, dtype=np.uint64)
@@ -1575,6 +1609,9 @@ def _check_json(check):
         "spectral_context": check.tag.spectral_context,
         "time": typed_value(check.tag.time),
         "stage": check.tag.stage,
+        "micro_step": int(getattr(check.tag, "micro_step", -1)),
+        "iteration": int(getattr(check.tag, "iteration", 0)),
+        "slab": int(getattr(check.tag, "slab", 0)),
         "raw": typed_value(check.raw),
         "reference": typed_value(check.reference),
         "threshold": typed_value(check.threshold),
@@ -1765,6 +1802,10 @@ class Run:
                 "integrator": getattr(
                     case.parameters, "integrator", "rk4"
                 ),
+                "coupling": getattr(
+                    case.parameters, "coupling", "synchronous"
+                ),
+                "micro_steps": getattr(case.parameters, "micro_steps", 1),
                 "time_guard": {
                     "policy": getattr(case.parameters, "dt_guard", "error"),
                     "minimum_samples_per_cycle": getattr(
@@ -1851,6 +1892,11 @@ class Run:
         ) as handle:
             handle.write(json.dumps(_json_value(report), allow_nan=False) + "\n")
             handle.flush()
+
+    def time_coupling_evidence(self, metadata):
+        """Publish accepted T0 stage-count, weight and memory evidence."""
+        self.manifest["time_coupling_evidence"] = _json_value(metadata)
+        self._publish_manifest()
 
     def diagnostics(self, state, checks, totals, momentum, elapsed):
         if self.last_history is not None and state.step != self.last_history + 1:
@@ -2459,6 +2505,8 @@ def read_restart(path, case):
         "baseline_divB",
         "last_source_id",
         "last_trial_id",
+        "time_coupling",
+        "micro_steps",
     }
     arrays = read_npz(path, case.limits, allowed)
     if not _array_scalar(arrays["accepted"], np.bool_):
@@ -2496,6 +2544,30 @@ def read_restart(path, case):
         != case.parameters.start_time
     ):
         raise ValueError("restart time configuration mismatch")
+    for name in ("time_coupling", "micro_steps"):
+        if name not in arrays:
+            raise ValueError(
+                f"restart {name} metadata missing; legacy checkpoint "
+                "cannot establish time coupling identity"
+            )
+    saved_coupling = _array_text(arrays["time_coupling"])
+    saved_micro_steps = _array_scalar(arrays["micro_steps"], np.uint64)
+    configured_coupling = getattr(
+        case.parameters, "coupling", "synchronous"
+    )
+    configured_micro_steps = getattr(case.parameters, "micro_steps", 1)
+    if saved_coupling != configured_coupling:
+        raise ValueError(
+            "restart time coupling mismatch: "
+            f"checkpoint={saved_coupling}, "
+            f"configured={configured_coupling}"
+        )
+    if saved_micro_steps != configured_micro_steps:
+        raise ValueError(
+            "restart micro_steps mismatch: "
+            f"checkpoint={saved_micro_steps}, "
+            f"configured={configured_micro_steps}"
+        )
     cumulative = _cumulative_from_json(
         parse_json(_array_text(arrays["cumulative_json"]))
     )

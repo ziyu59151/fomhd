@@ -1,8 +1,14 @@
 # FOMHD development and release policy
 
-> Status: active A0 Python/Warp implementation record. The implementation is
+> Status: active A1 Python/Warp implementation record. The implementation is
 > runnable with bounded CPU/GPU evidence; it has not received production-scale
 > scientific validation.
+
+A1 inherits A0 in the same source tree. `release/a0` at `9a38bf4` is the
+independent A0 maintenance baseline; the retained local checkout is
+`/home/lxzeng/.codex/worktrees/fomhd-a0-maintenance/fomhd`. Compare exact commits
+with identical inputs and dependencies. A1's first delivery stops at a T0
+report and user decision before T1. See [A1_IMPLEMENTATION.md](A1_IMPLEMENTATION.md).
 
 The mathematical authority is the sibling design repository:
 `DECISIONS`, `A0_IMPLEMENTATION_SPEC`, and `A0_GLOBAL_DISCRETIZATION`. Design

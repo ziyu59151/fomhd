@@ -47,6 +47,8 @@ load_case(path,overrides):
     continuous residual status; manifest hashes equal actual file bytes
   load geometry NPZ with safe-key/dtype/zip limits
   build host geometry and selected-backend operators
+  operator fingerprint includes the fixed-wall thin/prepared algorithm version;
+    hash existing matrices only, never materialize curl-curl for a hash
   compute config_hash over canonical resolved config
   compute semantic_hash excluding only stop step, paths and display timing;
     include model, physics, effective electron_inertia, integrator,
@@ -173,3 +175,49 @@ finite-electron default therefore cannot match or resume as the new massless
 default. Ambiguous legacy omitted-integrator checkpoints are rejected for the
 same reason. run.json anchors the exact resolved.json bytes with
 resolved_config_sha256, independent of JSON serialization ordering.
+
+## A1-PY-IO-01 - Coupling configuration and semantic identity
+
+```text
+time allowed additions:
+  coupling in {"synchronous","predictor"}, default "synchronous"
+  micro_steps actual positive integer, default 1
+
+cross-field validation:
+  synchronous requires micro_steps==1
+  predictor requires electron_inertia==0 and integrator=="rk4"
+  reject bool, fractional, zero, negative, or noninteger micro_steps
+  reject unsupported combinations before Run directory or trial mutation
+
+semantic time normalization:
+  time.coupling=effective Parameters.coupling
+  time.micro_steps=effective Parameters.micro_steps
+```
+
+Omitted defaults and explicit defaults produce the same resolved semantic
+identity. `nsteps` remains the accepted macro-interval count and `dt` remains
+the macro interval.
+
+## A1-PY-IO-02 - Coupling manifest and restart compatibility
+
+```text
+run manifest:
+  coupling=effective time coupling
+  micro_steps=effective positive integer
+  accepted predictor result evidence remains JSON-finite
+
+checkpoint identity:
+  write time_coupling and micro_steps scalar metadata
+  keep the existing semantic_hash check as the complete compatibility gate
+
+read_restart:
+  require time_coupling and micro_steps metadata
+  compare them with the configured effective values before state decode/upload
+  report the exact checkpoint/configured scheme or M mismatch
+  legacy checkpoints without the added metadata are rejected explicitly
+  synchronous scheme/M continues to resume; predictor resumes only under the
+    same scheme, M, model, integrator, and semantic identity
+```
+
+Only complete accepted macro endpoints are encoded. The mid-microstage states
+held for interval quadrature are never written as restart candidates.

@@ -8,6 +8,7 @@ Source: `tests/warp/test_diagnostic_evidence_io.py`.
 Create ordinary and extended wall-work diagnostic records.
 Publish them through normal and failure I/O paths and load the JSONL.
 Require the fixed base keys plus only the allowed optional bound/work keys;
+the fixed identity set includes A1 `micro_step`, `iteration`, and `slab`;
 retain SI W units, signed work, separate direct/compatibility/arithmetic bounds,
 modal/sample work and transform difference.
 Encode each nonfinite scalar using the documented typed JSON representation.

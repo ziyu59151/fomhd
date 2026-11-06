@@ -38,7 +38,7 @@ from .types import (
     stage_result_record,
 )
 from .wall import build_wall
-
+from .wall_cache import apply_wall_cache, get_wall_cache
 
 UINT64_MAX = (1 << 64) - 1
 MODEL_NAME = "massless_quasineutral_cgl_b"
@@ -114,10 +114,7 @@ def _signed_wall_extraction(context, mode_index):
 
 
 def _wall_extractions(context):
-    return [
-        _signed_wall_extraction(context, stored)
-        for stored in range(_modes(context))
-    ]
+    return get_wall_cache(context).extraction
 
 
 def _constraint_project(nodal, density, context):
@@ -569,80 +566,7 @@ def _massless_e0(fluid, derived, context):
 
 
 def _wall_correction(e0, context):
-    xp = _xp(context)
-    ne = context.op.Ne
-    m1 = xp.real(xp.asarray(context.op.M1)).astype(xp.float64)
-    extraction = _wall_extractions(context)
-    records = []
-    correction = xp.zeros_like(e0)
-    length = float(context.p.ref.length)
-    electric = float(context.p.ref.electric)
-    for stored in range(_modes(context)):
-        source = e0[stored * ne : (stored + 1) * ne]
-        S = extraction[stored]
-        C = xp.asarray(context.op.C[stored], dtype=xp.complex128)
-        Cdag = xp.asarray(context.op.Cdag[stored], dtype=xp.complex128)
-        curl = Cdag @ C
-        Aw = S @ curl @ (S.T.conj() / m1[:, None])
-        rhs = -(S @ (curl @ source))
-        hermitian_scale = max(_max_abs(Aw, context), 1.0e-300)
-        if _max_abs(Aw - Aw.T.conj(), context) > (
-            4096.0 * sys.float_info.epsilon * hermitian_scale
-        ):
-            raise Failure("WallField", "wall correction matrix is not Hermitian")
-        rows = context.compute.independent_rows(Aw, context.p.rank_rtol)
-        multiplier = xp.zeros(Aw.shape[0], dtype=xp.complex128)
-        linear = None
-        if rows:
-            selected = xp.asarray(rows, dtype=xp.int64)
-            principal = Aw[xp.ix_(selected, selected)]
-            selected_rhs = rhs[selected]
-            row_scale = xp.full(
-                (len(rows),), electric / length**3, dtype=xp.float64
-            )
-            column_scale = xp.full(
-                (len(rows),), electric * length**2, dtype=xp.float64
-            )
-            linear = context.compute.linear(
-                principal,
-                selected_rhs,
-                row_scale,
-                column_scale,
-                context.p.rank_rtol,
-                128.0 * max(len(rows), 1) * xp.finfo(xp.float64).eps,
-            )
-            values = xp.zeros_like(multiplier)
-            values[selected] = linear.x
-            multiplier = values
-        full_residual = Aw @ multiplier - rhs
-        scale = max(_max_abs(rhs, context), 1.0e-300)
-        if _max_abs(full_residual, context) > 1.0e-8 * scale:
-            raise Failure(
-                "WallField",
-                "constrained electric-field correction fails an original wall row",
-            )
-        correction[
-            stored * ne : (stored + 1) * ne
-        ] = (S.T.conj() @ multiplier) / m1
-        omitted = sorted(set(range(rhs.size)) - set(rows))
-        records.append(
-            SimpleNamespace(
-                mode=stored - context.p.K,
-                rank=len(rows),
-                selected_rows=list(rows),
-                gauge_rows=omitted,
-                gauge="omitted principal multipliers fixed to zero",
-                rhs=rhs,
-                multiplier=multiplier,
-                full_residual=full_residual,
-                linear=linear,
-            )
-        )
-    return correction, SimpleNamespace(
-        modes=records,
-        rank=sum(record.rank for record in records),
-        extraction=extraction,
-    )
+    return apply_wall_cache(get_wall_cache(context), e0)
 
 
 def _initial_constraints(derived, context):
@@ -731,6 +655,7 @@ def evaluate_stage(state, tag, context, alias=False):
     _require_model(context)
     result = _new_result(tag)
     try:
+        get_wall_cache(context)
         if (
             tag.step != state.step
             or tag.generation != state.generation
@@ -841,6 +766,9 @@ def _alias_probe(canonical, tag, context, result):
         spectral_context=updated.spectral_id,
         time=tag.time,
         stage="alias",
+        micro_step=tag.micro_step,
+        iteration=tag.iteration,
+        slab=tag.slab,
     )
     alternate = evaluate_stage(canonical, alternate_tag, updated, False)
     context.next_source = updated.next_source
@@ -1128,6 +1056,9 @@ def retain_failure_evidence(
             check.tag.trial,
             check.tag.spectral_context,
             float(check.tag.time).hex(),
+            int(getattr(check.tag, "micro_step", -1)),
+            int(getattr(check.tag, "iteration", 0)),
+            int(getattr(check.tag, "slab", 0)),
         )
         for check in failure.checks
     }
@@ -1145,6 +1076,9 @@ def retain_failure_evidence(
             required.tag.trial,
             required.tag.spectral_context,
             float(required.tag.time).hex(),
+            int(getattr(required.tag, "micro_step", -1)),
+            int(getattr(required.tag, "iteration", 0)),
+            int(getattr(required.tag, "slab", 0)),
         )
         if key in present:
             continue

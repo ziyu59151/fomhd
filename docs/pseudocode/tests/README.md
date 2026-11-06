@@ -69,6 +69,7 @@ return nonzero if any test fails
 | IO-06 | 原始矩阵系数或哈希被改、原初始漂移基线存在 | restart 指纹不匹配拒绝；累计账与原 baseline 保留，不以恢复点重置 |
 | AUX-01 | 人工快照 f_h=f_exact+h^4*g、3档h，同物理权与时间 | 离线分析恢复四阶；零差/错时刻/混模型拒绝或 UNAVAILABLE |
 | AUX-02 | 解析复观测 `A0 exp((gamma-i*omega)t)`，采样满足 `abs(omega*dt)<pi` | 拟合恢复 omega/gamma 及符号；零幅度/不够样本/未登记时窗不作有效拟合 |
+| A1-T0 | 快振荡净冲量、固定切线二变量反馈、M 变化、真实小无质量算例 | 全离子 RHS 与 Z RK4 权一致；k2/k3 同钟不同身份；守卫只覆盖 micro-RK4；失败单次提交回滚 |
 
 ## A0-TEST-02 — ManufacturedSolutionsAndIntegration
 
@@ -106,6 +107,14 @@ evidence and remaining scientific scope are recorded in
 [A0 verification](../../A0_VERIFICATION.md) and
 [Warp implementation](../../WARP_IMPLEMENTATION.md).
 
+A1 scheduler tests are mirrored in
+[`tests/warp/test_time_predictor.py.md`](warp/test_time_predictor.py.md).
+Toy ODE checks are algorithmic scheduling evidence, not physical validation.
+
 AUX tests use the project uv environment and controlled offline snapshots. The
 missing optional oracle directory makes only oracle-only comparisons
 unavailable; required Python solver tests must still run.
+
+Pressure arithmetic and independent projection controls are mirrored in
+[pressure scale](warp/test_massless_pressure_scale.py.md) and
+[spatial study](warp/test_spatial_study.py.md).

@@ -58,10 +58,11 @@ def runtime(tmp_path_factory):
 
     class StageTag(SimpleNamespace):
         def __init__(self, step, generation, trial, spectral_context, time,
-                     stage):
+                     stage, micro_step=-1, iteration=0, slab=0):
             super().__init__(
                 step=step, generation=generation, trial=trial,
-                spectral_context=spectral_context, time=time, stage=stage)
+                spectral_context=spectral_context, time=time, stage=stage,
+                micro_step=micro_step, iteration=iteration, slab=slab)
 
     type_module.StageTag = StageTag
 

@@ -179,3 +179,57 @@ def assess_runtime(estimate: dict, context, *, step: int) -> dict:
     report.update(estimate=estimate, step=step,
                   action='continue' if report['accepted'] else p.dt_guard)
     return report
+
+
+def assess_predictor_runtime(estimate: dict, context, *, step: int) -> dict:
+    """Assess only the explicit RK4 microsteps over the same physical horizon."""
+    p = context.p
+    micro_steps = getattr(p, "micro_steps", None)
+    if (
+        getattr(p, "coupling", None) != "predictor"
+        or getattr(p, "electron_inertia", None) != 0
+        or getattr(p, "integrator", None) != "rk4"
+    ):
+        raise ValueError(
+            "predictor guard requires coupling=predictor, massless electrons, "
+            "and rk4"
+        )
+    if (
+        isinstance(micro_steps, bool)
+        or type(micro_steps) is not int
+        or micro_steps <= 0
+    ):
+        raise ValueError("micro_steps must be a positive non-boolean integer")
+    if (
+        not math.isfinite(p.dt)
+        or p.dt <= 0.0
+        or type(step) is not int
+        or step < 0
+        or step > p.nsteps
+    ):
+        raise ValueError("invalid predictor step/horizon")
+    micro_dt = p.dt / micro_steps
+    remaining_micro_steps = (p.nsteps - step) * micro_steps
+    report = assess_dt(
+        "rk4",
+        estimate["omega_estimate"],
+        micro_dt,
+        remaining_micro_steps,
+        minimum_samples=p.minimum_samples_per_cycle,
+        amplitude_budget=p.max_amplitude_error,
+        phase_budget=p.max_phase_error_rad,
+    )
+    report.update(
+        estimate=estimate,
+        step=step,
+        action="continue" if report["accepted"] else p.dt_guard,
+        coupling="predictor",
+        micro_steps=micro_steps,
+        micro_dt=micro_dt,
+        micro_horizon_steps=remaining_micro_steps,
+        macro_remaining_horizon_s=p.dt * (p.nsteps - step),
+        scope=(
+            "micro-RK4 only; does not prove macro-coupling stability"
+        ),
+    )
+    return report
