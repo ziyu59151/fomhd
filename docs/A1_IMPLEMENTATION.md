@@ -64,7 +64,8 @@ has been verified.
 At a fixed total of N microsteps, actual complete model evaluations are
 6N+N/M for T0 and 7N for synchronous RK4, including midpoint alias probes.
 Both remain O(N); assembly and diagnostics are additional work. Failure
-evidence still inherits potentially quadratic Python record merging. Success
+evidence uses cached diagnostic/tag buckets while preserving full record
+equality and order, avoiding quadratic scans of complete microstage history. Success
 history storage includes each stage's density-dependent wall matrices and
 factors, not only independent state vectors.
 

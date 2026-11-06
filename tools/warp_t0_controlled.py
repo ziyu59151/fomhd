@@ -2704,9 +2704,9 @@ def run_frozen_micro_control(
         context.p.device_memory_limit = MEMORY_CAP_BYTES
         context.p.integrator = "rk4"
         context.p.coupling = "predictor"
-        context.p.micro_steps = steps
-        context.p.dt = steps * micro_dt
-        context.p.nsteps = 1
+        context.p.micro_steps = 1
+        context.p.dt = micro_dt
+        context.p.nsteps = steps
         context.p.dt_guard = "error"
         equilibrium = uniform_state(context, case)
         micro_matrix, _ = production_jacobian(
@@ -2808,12 +2808,12 @@ def run_frozen_micro_control(
                     )
                     generation = int(context.next_generation)
                     context.next_generation = generation + 1
-                    stage_time = core.microstage_offset(
-                        context.p, micro, stage_index
+                    stage_time = core.microstage_time(
+                        context.p, micro, 0, stage_index
                     )
                     tag = time_predictor._tag(
                         context,
-                        0,
+                        micro,
                         generation,
                         1,
                         stage_time,
@@ -2848,10 +2848,10 @@ def run_frozen_micro_control(
             )
             generation = int(context.next_generation)
             context.next_generation = generation + 1
-            end_time = core.microstage_offset(context.p, micro, 3)
+            end_time = core.microstage_time(context.p, micro, 0, 3)
             tag = time_predictor._tag(
                 context,
-                0,
+                micro + 1,
                 generation,
                 1,
                 end_time,

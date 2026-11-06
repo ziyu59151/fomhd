@@ -249,6 +249,10 @@ For m=mmax=(points-1)//2:
   micro_per_period=2048 ->1024 steps at h*=T/2048.
   micro_per_period=4096 ->2048 steps at h*/2.
 
+The manual diagnostic declares one microstep of retained workspace:
+  p.micro_steps=1, p.dt=h, p.nsteps=number of microsteps.
+  Obtain absolute stage clocks with core.microstage_time(p,micro,0,rkstage).
+  Do not declare the entire diagnostic as a retained predictor window.
 For each microstep use the production massless stage at reconstructed states
 and the existing predictor RK4 helpers. Consume only Z RHS; never accumulate P.
 Keep hard stage diagnostics and dt_guard=error active.

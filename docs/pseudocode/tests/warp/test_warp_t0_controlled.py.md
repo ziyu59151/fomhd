@@ -50,6 +50,7 @@ Matched and whole-map evidence:
 
 Frozen-ion micro control:
   calls no time.advance; P remains exactly fixed;
+  workspace declares micro_steps=1 and dt=h, nsteps=observed microsteps;
   only m4 Z is seeded; production stage hard checks stay active;
   final Z agrees with frozen-block exponential and RK4 references.
 

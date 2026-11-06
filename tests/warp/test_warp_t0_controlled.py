@@ -713,6 +713,15 @@ def test_frozen_ion_micro_control_keeps_p_fixed_and_matches_reference(
         raise AssertionError("frozen micro control must not call time.advance")
 
     monkeypatch.setattr(tool, "advance", forbidden_advance)
+    original_context = tool.build_periodic_context
+    captured_context = {}
+
+    def capture_context(*args, **kwargs):
+        context = original_context(*args, **kwargs)
+        captured_context["context"] = context
+        return context
+
+    monkeypatch.setattr(tool, "build_periodic_context", capture_context)
     output = tmp_path / "frozen"
     summary = tool.run_frozen_micro_control(
         output,
@@ -721,6 +730,10 @@ def test_frozen_ion_micro_control_keeps_p_fixed_and_matches_reference(
         points=9,
     )
 
+    parameters = captured_context["context"].p
+    assert parameters.micro_steps == 1
+    assert parameters.nsteps == 2
+    assert parameters.dt == summary["controls"]["micro_dt_s"]
     assert summary["kind"] == "frozen_ion_micro_control"
     assert summary["status"].startswith("COMPLETED")
     assert summary["accepted_micro_steps"] == 2
