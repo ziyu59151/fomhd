@@ -98,3 +98,35 @@ complex scale using one shared staggered-magnetic plus ion-kinetic quadratic
 normalization. The compression phase is declared and the same factor applies
 to all physical components. This display-only normalization preserves relative
 polarization and never changes physical response histories or raw spectra.
+
+## Interim spectrum evidence
+
+The24-grid spectra and actual fine-grid response windows are still pending.
+Do not interpret this table as completed spatial validation.
+
+| Circle enclosing grid | nphi=0 working frequency [MHz] | nphi=1 working frequency [MHz] |
+|---|---:|---:|
+|12|16.217947|16.476521|
+|16|15.873736|16.059240|
+|20|15.680648|16.287291|
+
+The16-to20 changes are -1.2164%/+1.4201%. The corresponding continuation
+overlaps are0.59423/0.70117; independent cold-reference overlaps are
+0.60233/0.75880. Both rankings identify the same working candidates, but
+frequency changes alone do not establish structural or spatial convergence.
+
+EAST16 has no strong individual continuation of the archived EAST12 seeds.
+The highest classified-candidate overlaps are0.21136/0.27410 at
+8.405215/8.594070MHz (n0/n1). An independent audit of all853 positive-imaginary
+n0 raw eigenpairs still finds maximum forward overlap0.21136. Nearby raw
+mode5.625852MHz scores0.20842 and has parallel magnetic fraction0.16713,
+below the unchanged0.5 classifier cutoff; the old selected fraction was
+0.52794. Reversing interpolation changes the ranking but leaves all overlaps
+low (maximum0.24250). These are unresolved spatial/polarization changes,
+not an export/unit/layout or saved-eigendecomposition defect. Do not connect
+the newly selected diagnostic probes into an accepted EAST branch curve.
+
+EAST16 n0 K0/K1 fast-candidate frequencies agree to a maximum nearest relative
+difference1.9241e-14, so that particular retained-sector check does not explain
+the spatial discrepancy. All original spectra, excluded modes and failed
+continuation evidence remain archived.
