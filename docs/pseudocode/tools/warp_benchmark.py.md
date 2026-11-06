@@ -1,5 +1,9 @@
 # `tools/warp_benchmark.py` implementation pseudocode
 
+This benchmark is explicitly a historical finite-electron workload. It keeps
+`electron_inertia=1` in its generated cases and provenance; changing the
+solver-wide default to massless does not silently change the benchmark model.
+
 ## A0-PY-BENCHMARK-01 - Contract
 
 ```text

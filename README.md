@@ -4,10 +4,12 @@
 
 The active `main` implementation is the FP64/complex128 Python solver under
 [`src/fomhd/`](src/fomhd), using NVIDIA Warp 1.19.0, CuPy CUDA13x 14.2.0, and
-an explicit NumPy/SciPy CPU reference. The fully explicit RK4 two-fluid path is
+an explicit NumPy/SciPy CPU reference. The fully explicit RK4 fluid path is
 the default; `time.integrator = "midpoint"` remains available when a test or
-study explicitly requests midpoint. The electron-inertia switch and massless
-quasineutral branch remain available.
+study explicitly requests midpoint. The massless quasineutral branch is the
+default: omitted `species.electron_inertia` resolves to `0`, while finite
+electron inertia requires explicit `1`. The benchmark harness explicitly
+retains `1` as a historical finite-electron local workload.
 
 The C++20/CUDA solver baseline is `48beca7` on `reference/a0-native`. It is a
 separate implementation branch and is not duplicated in this source tree. The
@@ -21,6 +23,10 @@ The mathematical authority is the sibling repository
 dependency. The implementation-level pseudocode under
 [`docs/pseudocode/src/fomhd`](docs/pseudocode/src/fomhd) is synchronized with
 the active source and tests.
+
+The scoped global fast-branch prototype evidence and limits are in
+[A0_TOKAMAK_CAE_EVIDENCE.md](docs/A0_TOKAMAK_CAE_EVIDENCE.md); retained debugging
+leads are in [A0_KNOWN_ISSUES.md](docs/A0_KNOWN_ISSUES.md).
 
 ## Environment and execution
 

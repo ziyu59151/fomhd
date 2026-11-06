@@ -13,8 +13,8 @@ Fail K3 or a source payload, retain completed stage/raw source evidence and
 preserve the old commit. Massless routes through the same transaction checks.
 Reject unknown TOML, unsafe NPZ/object arrays, duplicate/missing/unavailable
 hard diagnostics and inconsistent configuration. Verify default physical mass,
-RK4 integrator and dt budgets; retain explicit midpoint coverage through an
-actual CLI run.
+massless electron inertia, RK4 integrator and dt budgets; retain explicit
+midpoint and explicit finite-electron coverage through actual CLI runs.
 Use weighted device reductions, physical-real inverse defaults, correct
 energy/time power units, signed wall trace weights and dimensional source
 bounds; test failure of deliberate work/source errors.

@@ -78,6 +78,7 @@ def parameters(k=1):
         inner_distance=0.02,
         ref=ref,
         budgets={},
+        electron_inertia=1,
     )
     response = sum(s.charge * s.charge * ref.ni / s.mass for s in species)
     p.ref.current = ref.time * ref.electric * (

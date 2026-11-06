@@ -1,0 +1,1035 @@
+# Default A0 massless quasineutral CGL-B case.
+# Scope: bounded local numerical fixture; no global Tokamak validation.
+
+schema_version = 1  # Unit: 1; allowed: integer 1; purpose: select the strict A0 configuration schema; validation: local template, global scope pending
+model = "A0"  # Unit: 1; allowed: A0; purpose: select the A0 solver contract; validation: local template, global scope pending
+units = "SI"  # Unit: 1; allowed: SI; purpose: require SI input and output units; validation: local template, global scope pending
+layout_version = 1  # Unit: 1; allowed: integer 1; purpose: select the A0 state and operator layout; validation: local template, global scope pending
+case_name = "massless-example"  # Unit: 1; allowed: safe name using letters, digits, underscore, or hyphen; purpose: identify this local numerical case; validation: local template, global scope pending
+
+[species]
+ion_id = "ion"  # Unit: 1; allowed: unique safe species identifier; purpose: name the ion population; validation: local template, global scope pending
+electron_id = "electron"  # Unit: 1; allowed: unique safe species identifier different from ion_id; purpose: name the electron population; validation: local template, global scope pending
+qi = 1.602176634e-19  # Unit: C; allowed: finite positive ion charge; purpose: set the ion charge; validation: local template, global scope pending
+mi = 1.67262192595e-27  # Unit: kg; allowed: finite positive ion mass; purpose: set the ion inertial mass; validation: local template, global scope pending
+qe = -1.602176634e-19  # Unit: C; allowed: finite negative electron charge; purpose: set the electron charge; validation: local template, global scope pending
+me = 9.1093837139e-31  # Unit: kg; allowed: finite positive physical electron mass; purpose: retain physical electron metadata in the massless model; validation: local template, global scope pending
+gamma_i = 1.6666666666666667  # Unit: 1; allowed: finite adiabatic index greater than 1; purpose: set ion pressure closure; validation: local template, global scope pending
+electron_inertia = 0  # Unit: 1; allowed: 0 for default massless or 1 for explicit local finite mass; purpose: select quasineutral massless electron dynamics; validation: local template, global scope pending
+
+[grid]
+R0 = 1.0  # Unit: m; allowed: finite radial origin; purpose: place the fixture in major-radius coordinates; validation: local template, global scope pending
+Z0 = 0.0  # Unit: m; allowed: finite axial origin; purpose: place the fixture in vertical coordinates; validation: local template, global scope pending
+hR = 0.2  # Unit: m; allowed: finite positive radial spacing; purpose: set radial grid spacing; validation: local template, global scope pending
+hZ = 0.2  # Unit: m; allowed: finite positive axial spacing; purpose: set axial grid spacing; validation: local template, global scope pending
+NR = 4  # Unit: 1; allowed: integer at least 2; purpose: set radial node count; validation: local template, global scope pending
+NZ = 4  # Unit: 1; allowed: integer at least 2; purpose: set axial node count; validation: local template, global scope pending
+K = 1  # Unit: 1; allowed: nonnegative integer; purpose: set maximum retained toroidal mode number; validation: local template, global scope pending
+Nphi = 5  # Unit: 1; allowed: positive odd integer at least 4*K+1; purpose: set physical toroidal sample count; validation: local template, global scope pending
+
+[time]
+start_time = 0.0  # Unit: s; allowed: finite nonnegative start time; purpose: set the initial scheduler time; validation: local template, global scope pending
+dt = 2e-13  # Unit: s; allowed: finite positive explicit step; purpose: resolve the local massless Hall scale; validation: local template, global scope pending
+nsteps = 1  # Unit: 1; allowed: nonnegative integer no greater than 2^52; purpose: request one local explicit step; validation: local template, global scope pending
+initial_kind = "non_equilibrium"  # Unit: 1; allowed: equilibrium or non_equilibrium; purpose: load the supplied state without an equilibrium solve; validation: local template, global scope pending
+integrator = "rk4"  # Unit: 1; allowed: rk4 default or midpoint for an explicit comparison; purpose: select the explicit time integrator; validation: local template, global scope pending
+dt_guard = "warn"  # Unit: 1; allowed: error or warn; purpose: record guard exceedance for this demonstration; validation: local template, global scope pending
+minimum_samples_per_cycle = 32.0  # Unit: 1; allowed: finite positive sample count; purpose: require time resolution of the fastest estimate; validation: local template, global scope pending
+max_amplitude_error = 0.01  # Unit: 1; allowed: finite positive relative error; purpose: bound finite-horizon amplitude error; validation: local template, global scope pending
+max_phase_error_rad = 0.1  # Unit: rad; allowed: finite positive phase error; purpose: bound finite-horizon phase error; validation: local template, global scope pending
+
+[boundary]
+kind = "fixed_lcfs_static"  # Unit: 1; allowed: fixed_lcfs_static; purpose: select the supported static wall boundary; validation: local template, global scope pending
+potential = 0.0  # Unit: V; allowed: 0.0 for this boundary version; purpose: fix the wall potential; validation: local template, global scope pending
+version = "staircase_relative_v1"  # Unit: 1; allowed: staircase_relative_v1; purpose: select the supported staircase boundary contract; validation: local template, global scope pending
+
+[solver]
+backend = "cpu"  # Unit: 1; allowed: cpu or cuda; purpose: select the execution backend explicitly; validation: local template, global scope pending
+precision = "fp64"  # Unit: 1; allowed: fp64; purpose: retain double-precision real storage; validation: local template, global scope pending
+complex_precision = "complex128"  # Unit: 1; allowed: complex128; purpose: retain double-precision complex storage; validation: local template, global scope pending
+memory_limit_bytes = 536870912  # Unit: B; allowed: positive bounded integer; purpose: cap host solver allocation; validation: local template, global scope pending
+device_memory_limit_bytes = 536870912  # Unit: B; allowed: positive bounded integer; purpose: cap selected-device allocation; validation: local template, global scope pending
+rank_rtol = 1e-12  # Unit: 1; allowed: finite positive value below 1; purpose: set numerical rank detection; validation: local template, global scope pending
+device_ordinal = 0  # Unit: 1; allowed: 0 for CPU or a valid CUDA ordinal; purpose: select CPU or one explicit CUDA device; validation: local template, global scope pending
+cpu_threads = 1  # Unit: 1; allowed: integer 1; purpose: require deterministic one-thread reference reductions; validation: local template, global scope pending
+
+[solver.constants]
+epsilon0_Fpm = 8.8541878188e-12  # Unit: F/m; allowed: finite positive permittivity; purpose: set the electrostatic constant; validation: local template, global scope pending
+mu0_Hpm = 1.25663706127e-06  # Unit: H/m; allowed: finite positive permeability; purpose: set the magnetic constant; validation: local template, global scope pending
+version = "A0-SI-v1"  # Unit: 1; allowed: nonempty provenance label; purpose: identify the SI constant set; validation: local template, global scope pending
+
+[solver.references]
+L_m = 0.2  # Unit: m; allowed: finite positive length; purpose: set the nondimensionalization length; validation: local template, global scope pending
+t_s = 1e-06  # Unit: s; allowed: finite positive time; purpose: set the nondimensionalization time; validation: local template, global scope pending
+n_i_m3 = 1000000000000.0  # Unit: 1/m^3; allowed: finite positive ion density; purpose: set the ion density scale; validation: local template, global scope pending
+n_e_m3 = 1000000000000.0  # Unit: 1/m^3; allowed: finite positive electron density; purpose: set the electron density scale; validation: local template, global scope pending
+u_mps = 1.0  # Unit: m/s; allowed: finite positive velocity; purpose: set the velocity scale; validation: local template, global scope pending
+E_Vpm = 1.0  # Unit: V/m; allowed: finite positive electric field; purpose: set the electric-field scale; validation: local template, global scope pending
+B_T = 1e-05  # Unit: T; allowed: finite positive magnetic field; purpose: set the magnetic-field scale; validation: local template, global scope pending
+J_Apm2 = 1000.0  # Unit: A/m^2; allowed: finite positive current density; purpose: set the current-density scale; validation: local template, global scope pending
+rho_Cpm3 = 1e-07  # Unit: C/m^3; allowed: finite positive charge density; purpose: set the charge-density scale; validation: local template, global scope pending
+p_Pa = 1e-09  # Unit: Pa; allowed: finite positive pressure; purpose: set the pressure scale; validation: local template, global scope pending
+
+[budgets.domain]
+n_min_i = 0.0  # Unit: 1/m^3; allowed: finite nonnegative floor; purpose: set the ion density positivity floor; validation: local template, global scope pending
+n_min_e = 0.0  # Unit: 1/m^3; allowed: finite nonnegative floor; purpose: set the electron density positivity floor; validation: local template, global scope pending
+n_face_min_i = 0.0  # Unit: 1/m^3; allowed: finite nonnegative floor; purpose: set the ion face-density positivity floor; validation: local template, global scope pending
+n_face_min_e = 0.0  # Unit: 1/m^3; allowed: finite nonnegative floor; purpose: set the electron face-density positivity floor; validation: local template, global scope pending
+p_min_i = 0.0  # Unit: Pa; allowed: finite nonnegative floor; purpose: set the ion pressure positivity floor; validation: local template, global scope pending
+p_min_perp_e = 0.0  # Unit: Pa; allowed: finite nonnegative floor; purpose: set the perpendicular electron pressure floor; validation: local template, global scope pending
+p_min_parallel_e = 0.0  # Unit: Pa; allowed: finite nonnegative floor; purpose: set the parallel electron pressure floor; validation: local template, global scope pending
+B_min = 1e-12  # Unit: T; allowed: finite nonnegative floor; purpose: retain a nonzero magnetic field for quasineutral closure; validation: local template, global scope pending
+
+# Exact massless registry; each key's unit, norm, and gate are strict.
+
+[budgets.checks."quasineutrality.linf"]
+atol = 0.0  # Unit: C/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-07  # Unit: C/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "C/m^3"  # Unit: C/m^3; allowed: exact SI unit "C/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."quasineutrality.weighted_L2"]
+atol = 0.0  # Unit: C/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-07  # Unit: C/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "C/m^3"  # Unit: C/m^3; allowed: exact SI unit "C/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_density_compatibility.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_density_compatibility.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_momentum_compatibility.linf"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_momentum_compatibility.weighted_L2"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."current_definition.linf"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."current_definition.weighted_L2"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_flux_definition.linf"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_flux_definition.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_flux_continuity.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_flux_continuity.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."djj.linf"]
+atol = 0.0  # Unit: A/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5000.0  # Unit: A/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^3"  # Unit: A/m^3; allowed: exact SI unit "A/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."djj.weighted_L2"]
+atol = 0.0  # Unit: A/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5000.0  # Unit: A/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^3"  # Unit: A/m^3; allowed: exact SI unit "A/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."djj_interval.linf"]
+atol = 0.0  # Unit: A/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5000.0  # Unit: A/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^3"  # Unit: A/m^3; allowed: exact SI unit "A/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."djj_interval.weighted_L2"]
+atol = 0.0  # Unit: A/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5000.0  # Unit: A/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^3"  # Unit: A/m^3; allowed: exact SI unit "A/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."ct_divergence.linf"]
+atol = 0.0  # Unit: T/(m*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/(m*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/(m*s)"  # Unit: T/(m*s); allowed: exact SI unit "T/(m*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."ct_divergence.weighted_L2"]
+atol = 0.0  # Unit: T/(m*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/(m*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/(m*s)"  # Unit: T/(m*s); allowed: exact SI unit "T/(m*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."ct_update.linf"]
+atol = 0.0  # Unit: T/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/s"  # Unit: T/s; allowed: exact SI unit "T/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."ct_update.weighted_L2"]
+atol = 0.0  # Unit: T/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/s"  # Unit: T/s; allowed: exact SI unit "T/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."divB_update.linf"]
+atol = 0.0  # Unit: T/m; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5e-05  # Unit: T/m; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/m"  # Unit: T/m; allowed: exact SI unit "T/m"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."divB_update.weighted_L2"]
+atol = 0.0  # Unit: T/m; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5e-05  # Unit: T/m; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/m"  # Unit: T/m; allowed: exact SI unit "T/m"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_current.linf"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_current.weighted_L2"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_current_interval.linf"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_current_interval.weighted_L2"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_ion_flux.linf"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_ion_flux.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_electron_flux.linf"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_electron_flux.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_ion_flux_interval.ion.linf"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_ion_flux_interval.ion.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_electron_flux_interval.electron.linf"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_electron_flux_interval.electron.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^2*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1/(m^2*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^2*s)"  # Unit: 1/(m^2*s); allowed: exact SI unit "1/(m^2*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_field_original_rows.linf"]
+atol = 0.0  # Unit: V/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 25.0  # Unit: V/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "V/m^3"  # Unit: V/m^3; allowed: exact SI unit "V/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_field_original_rows.weighted_L2"]
+atol = 0.0  # Unit: V/m^3; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 25.0  # Unit: V/m^3; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "V/m^3"  # Unit: V/m^3; allowed: exact SI unit "V/m^3"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."drift_ohm_residual.linf"]
+atol = 0.0  # Unit: V/m; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1.0  # Unit: V/m; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "V/m"  # Unit: V/m; allowed: exact SI unit "V/m"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."drift_ohm_residual.weighted_L2"]
+atol = 0.0  # Unit: V/m; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1.0  # Unit: V/m; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "V/m"  # Unit: V/m; allowed: exact SI unit "V/m"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_cgl_perp.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_cgl_perp.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_cgl_parallel.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_cgl_parallel.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."theta_consistency.linf"]
+atol = 0.0  # Unit: 1/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000.0  # Unit: 1/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/s"  # Unit: 1/s; allowed: exact SI unit "1/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "observe"  # Unit: 1; allowed: hard or observe; purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."theta_consistency.weighted_L2"]
+atol = 0.0  # Unit: 1/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000.0  # Unit: 1/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/s"  # Unit: 1/s; allowed: exact SI unit "1/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "observe"  # Unit: 1; allowed: hard or observe; purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_pressure_adjoint.linf"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_pressure_adjoint.weighted_L2"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_electric_pairing.linf"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_electric_pairing.weighted_L2"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."initial_divB.linf"]
+atol = 0.0  # Unit: T/m; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5e-05  # Unit: T/m; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/m"  # Unit: T/m; allowed: exact SI unit "T/m"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."initial_divB.weighted_L2"]
+atol = 0.0  # Unit: T/m; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 5e-05  # Unit: T/m; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/m"  # Unit: T/m; allowed: exact SI unit "T/m"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_initial_current.linf"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_initial_current.weighted_L2"]
+atol = 0.0  # Unit: A/m^2; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000.0  # Unit: A/m^2; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "A/m^2"  # Unit: A/m^2; allowed: exact SI unit "A/m^2"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."species_continuity.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."species_continuity.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."species_continuity.ion.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."species_continuity.ion.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."species_continuity.electron.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."species_continuity.electron.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."quasineutrality_interval.linf"]
+atol = 0.0  # Unit: C/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.1  # Unit: C/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "C/(m^3*s)"  # Unit: C/(m^3*s); allowed: exact SI unit "C/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."quasineutrality_interval.weighted_L2"]
+atol = 0.0  # Unit: C/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.1  # Unit: C/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "C/(m^3*s)"  # Unit: C/(m^3*s); allowed: exact SI unit "C/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_n.ion.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_n.ion.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_n.electron.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_n.electron.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_mom.ion.linf"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_mom.ion.weighted_L2"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_mom.electron.linf"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_mom.electron.weighted_L2"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_perp.ion.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_perp.ion.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_perp.electron.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_perp.electron.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_parallel.electron.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_parallel.electron.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_B.linf"]
+atol = 0.0  # Unit: T/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/s"  # Unit: T/s; allowed: exact SI unit "T/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."alias_B.weighted_L2"]
+atol = 0.0  # Unit: T/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/s"  # Unit: T/s; allowed: exact SI unit "T/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_n.ion.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_n.ion.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_n.electron.linf"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_n.electron.weighted_L2"]
+atol = 0.0  # Unit: 1/(m^3*s); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e+18  # Unit: 1/(m^3*s); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1/(m^3*s)"  # Unit: 1/(m^3*s); allowed: exact SI unit "1/(m^3*s)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_mom.ion.linf"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_mom.ion.weighted_L2"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_mom.electron.linf"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_mom.electron.weighted_L2"]
+atol = 0.0  # Unit: kg/(m^2*s^2); allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-12  # Unit: kg/(m^2*s^2); allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg/(m^2*s^2)"  # Unit: kg/(m^2*s^2); allowed: exact SI unit "kg/(m^2*s^2)"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_perp.ion.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_perp.ion.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_perp.electron.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_perp.electron.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_parallel.electron.linf"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_parallel.electron.weighted_L2"]
+atol = 0.0  # Unit: Pa/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 0.001  # Unit: Pa/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "Pa/s"  # Unit: Pa/s; allowed: exact SI unit "Pa/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_B.linf"]
+atol = 0.0  # Unit: T/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/s"  # Unit: T/s; allowed: exact SI unit "T/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "linf"  # Unit: 1; allowed: exact norm "linf"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."equilibrium_B.weighted_L2"]
+atol = 0.0  # Unit: T/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 10.0  # Unit: T/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "T/s"  # Unit: T/s; allowed: exact SI unit "T/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "weighted_L2"  # Unit: 1; allowed: exact norm "weighted_L2"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_pressure_adjoint.electron.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_electric_pairing.electron.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_magnetic_work.electron.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."pressure_pairing.electron.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electric_pairing.electron.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_pressure_only_pairing.electron.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_field_reaction_work.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_field_reaction_work_ion.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_field_reaction_work_electron.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."wall_field_reaction_work_current.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."kinetic_energy.ion.value"]
+atol = 0.0  # Unit: J; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-09  # Unit: J; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "J"  # Unit: J; allowed: exact SI unit "J"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."ion_internal.value"]
+atol = 0.0  # Unit: J; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-09  # Unit: J; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "J"  # Unit: J; allowed: exact SI unit "J"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_perp.value"]
+atol = 0.0  # Unit: J; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-09  # Unit: J; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "J"  # Unit: J; allowed: exact SI unit "J"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."electron_parallel.value"]
+atol = 0.0  # Unit: J; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-09  # Unit: J; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "J"  # Unit: J; allowed: exact SI unit "J"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."field_energy_B_interval.value"]
+atol = 0.0  # Unit: J; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-09  # Unit: J; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "J"  # Unit: J; allowed: exact SI unit "J"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."field_exchange_interval.value"]
+atol = 0.0  # Unit: W; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-06  # Unit: W; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "W"  # Unit: W; allowed: exact SI unit "W"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."total_energy_interval.value"]
+atol = 0.0  # Unit: J; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-09  # Unit: J; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "J"  # Unit: J; allowed: exact SI unit "J"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."total_charge_balance_interval.value"]
+atol = 0.0  # Unit: C; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1.0  # Unit: C; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "C"  # Unit: C; allowed: exact SI unit "C"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."total_number_balance.ion.value"]
+atol = 0.0  # Unit: 1; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1"  # Unit: 1; allowed: exact SI unit "1"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."total_number_balance.electron.value"]
+atol = 0.0  # Unit: 1; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1000000000000.0  # Unit: 1; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "1"  # Unit: 1; allowed: exact SI unit "1"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."momentum_balance_interval_x.value"]
+atol = 0.0  # Unit: kg*m/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-27  # Unit: kg*m/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg*m/s"  # Unit: kg*m/s; allowed: exact SI unit "kg*m/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."momentum_balance_interval_y.value"]
+atol = 0.0  # Unit: kg*m/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-27  # Unit: kg*m/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg*m/s"  # Unit: kg*m/s; allowed: exact SI unit "kg*m/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."momentum_balance_interval_z.value"]
+atol = 0.0  # Unit: kg*m/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-27  # Unit: kg*m/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg*m/s"  # Unit: kg*m/s; allowed: exact SI unit "kg*m/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[budgets.checks."angular_momentum_interval.value"]
+atol = 0.0  # Unit: kg*m^2/s; allowed: finite nonnegative value; purpose: set the absolute acceptance tolerance; validation: local template, global scope pending
+rtol = 2e-06  # Unit: 1; allowed: finite nonnegative dimensionless value; purpose: set the relative acceptance tolerance; validation: local template, global scope pending
+reference = 1e-28  # Unit: kg*m^2/s; allowed: finite positive scale; purpose: set the dimensional residual scale; validation: local template, global scope pending
+unit = "kg*m^2/s"  # Unit: kg*m^2/s; allowed: exact SI unit "kg*m^2/s"; purpose: bind this residual to its physical dimension; validation: local template, global scope pending
+norm = "value"  # Unit: 1; allowed: exact norm "value"; purpose: select the residual reduction; validation: local template, global scope pending
+gate = "hard"  # Unit: 1; allowed: hard (required for this key); purpose: control whether failure rejects a candidate; validation: local template, global scope pending
+
+[diagnostics]
+inner_distance_m = 0.05  # Unit: m; allowed: finite positive distance; purpose: set the wall-proximity diagnostic radius; validation: local template, global scope pending
+alias_policy = "initial_midpoint_restart"  # Unit: 1; allowed: initial_midpoint_restart; purpose: select the supported alias audit policy; validation: local template, global scope pending
+timing_repetitions = 1  # Unit: 1; allowed: positive integer; purpose: set optional timing repetitions; validation: local template, global scope pending
+timing_warmup = 0  # Unit: 1; allowed: nonnegative integer; purpose: set optional timing warmup count; validation: local template, global scope pending
+mode_observations = []  # Unit: 1; allowed: array of valid observation tables; purpose: select optional Fourier observations; validation: local template, global scope pending
+
+[io]
+geometry_file = "geometry.npz"  # Unit: 1; allowed: relative or absolute regular NPZ path; purpose: identify the local geometry input; validation: local template, global scope pending
+initial_file = "initial.npz"  # Unit: 1; allowed: relative or absolute regular NPZ path; purpose: identify the accepted initial-state input; validation: local template, global scope pending
+output_dir = "run"  # Unit: 1; allowed: new output directory path; purpose: select the local run directory; validation: local template, global scope pending
+snapshot_stride = 1  # Unit: 1; allowed: positive integer; purpose: set accepted-state snapshot cadence; validation: local template, global scope pending
+checkpoint_stride = 1  # Unit: 1; allowed: positive integer; purpose: set accepted-state checkpoint cadence; validation: local template, global scope pending
+max_input_bytes = 16777216  # Unit: B; allowed: positive bounded integer; purpose: cap each input file; validation: local template, global scope pending
+max_uncompressed_bytes = 33554432  # Unit: B; allowed: positive bounded integer; purpose: cap NPZ expansion; validation: local template, global scope pending
+max_entries = 4096  # Unit: 1; allowed: positive bounded integer; purpose: cap NPZ entry count; validation: local template, global scope pending
+max_header_bytes = 1048576  # Unit: B; allowed: positive bounded integer; purpose: cap NPZ header size; validation: local template, global scope pending
+source_manifest_file = "source_manifest.json"  # Unit: 1; allowed: relative or absolute regular JSON path; purpose: identify input provenance and hashes; validation: local template, global scope pending
+write_residual_arrays = false  # Unit: 1; allowed: true or false; purpose: control optional residual-array output; validation: local template, global scope pending
+
+# Finite electron inertia requires electron_inertia = 1 and the
+# finite budget registry. That historical local option is not the
+# default and does not establish global Tokamak validation.

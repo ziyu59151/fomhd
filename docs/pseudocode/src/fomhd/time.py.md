@@ -9,7 +9,7 @@ checks to `massless_checks.check_step`. A non-null source callback on the
 massless branch raises `ManufacturedSource` before the callback or trial is
 consumed. `_check_dt` remains at the finite runtime hook point before any
 candidate allocation, and `time_step_report` remains attached to accepted and
-rejected results.
+rejected results. An absent `electron_inertia` is the massless default `0`.
 
 ## A0-PY-TIME-01 - Midpoint
 

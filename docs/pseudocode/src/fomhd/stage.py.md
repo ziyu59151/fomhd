@@ -5,7 +5,8 @@
 `electron_inertia=0` dispatches `evaluate_stage` and `initialize` to
 `massless.py`. It dispatches `retain_failure_evidence` to the massless wrapper,
 which reuses `_retain_common_failure_evidence` without recursive public
-dispatch. The `electron_inertia=1` path below is unchanged.
+dispatch. An absent value is read as `0`. The explicit `electron_inertia=1`
+path below is unchanged.
 
 ## A0-PY-STAGE-01: StageResult ownership
 

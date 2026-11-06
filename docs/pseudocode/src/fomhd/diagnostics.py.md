@@ -6,7 +6,8 @@ For `electron_inertia=0`, the public `check_stage`, `check_step`,
 `state_totals`, `boundary_ledger`, `momentum` and `stage_requirements` entry
 points dispatch to `massless_checks.py`. Those records explicitly mark omitted
 finite-charge, electron-inertia, electron-kinetic and longitudinal-electric
-concepts unavailable and observe-only. The finite path below is unchanged.
+concepts unavailable and observe-only. An absent `electron_inertia` is read as
+the massless default `0`. The explicit finite path below is unchanged.
 
 If a massless stage result already carries `totals`, `boundary`, or `momentum`,
 the common entry point returns that object unchanged. Only an uncached request

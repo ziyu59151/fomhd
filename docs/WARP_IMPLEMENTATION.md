@@ -110,8 +110,12 @@ implementation record are English.
 
 ## Acceptance and dt policy
 
-`species.electron_inertia=1|0` defaults to 1. `time.integrator` selects rk4
-(default) or midpoint; omitted configuration and the pilot CLI default to RK4.
+`species.electron_inertia=0|1` defaults to 0, selecting the massless
+quasineutral model. Explicit `1` selects finite electron inertia.
+`time.integrator` selects rk4 (default) or midpoint; omitted configuration and
+the pilot CLI default to RK4. Effective inertia and integrator are both
+materialized in the restart semantic identity, so a historical checkpoint
+created under the former omitted-finite default cannot resume as massless.
 `time.dt_guard=error|warn` defaults to error. A warn override
 is for controlled instability scans; finite/positive/linear-solver failures
 remain fatal. Frequency checks use physical parameters and operator-resolution

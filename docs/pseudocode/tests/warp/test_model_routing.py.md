@@ -9,6 +9,11 @@ Build finite or massless parameters with configured species IDs and actual
 closed-wall-compatible nonzero current; create safe TOML/NPZ inputs.
 Check canonical massless production ignores stored compatibility momentum.
 Run actual CPU midpoint/RK4 transactions and commit state/ledger exactly once.
+Load omitted-inertia configuration as massless, explicit `1` as finite, and
+prove effective inertia changes the semantic identity. Check that the supplied
+massless example has the exact strict budget registry and a unit/choice/purpose
+comment on every assignment. Load the public generator helper by path and
+require its rendered text to equal the checked-in example byte-for-byte.
 Run the real CLI with omitted and explicit midpoint configuration; require
 omitted configuration to select RK4 and explicit midpoint to remain midpoint.
 Reject invalid candidates and unsupported source hooks without modifying any
@@ -35,6 +40,10 @@ Covered top-level functions and fixture classes:
 - `_copy_state`
 - `test_nonzero_compatible_current_fixture_and_untrusted_compatibility_momentum`
 - `test_actual_cpu_midpoint_and_rk4_commit_once`
+- `test_cli_electron_inertia_default_and_explicit_finite`
+- `test_effective_electron_inertia_joins_semantic_restart_identity`
+- `test_massless_example_is_strict_complete_and_fully_documented`
+- `test_massless_example_matches_public_generator`
 - `test_cli_integrator_default_and_explicit_midpoint`
 - `test_guard_error_preserves_commit_and_warn_publishes_report`
 - `test_massless_source_hook_is_rejected_without_commit`

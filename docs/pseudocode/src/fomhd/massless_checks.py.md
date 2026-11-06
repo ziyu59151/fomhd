@@ -1,5 +1,8 @@
 # Massless diagnostics implementation pseudocode
 
+An absent `electron_inertia` is treated as `0`; an explicit value must resolve
+to the selected model before massless diagnostic applicability is reported.
+
 ## A0-PY-MASSLESS-CHECK-01: Applicability and totals
 
 Stage and interval records use the runtime's existing

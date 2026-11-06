@@ -6,7 +6,7 @@
    `FluidState`, `State`, and `Context` as dataclasses in the native field order.
 2. Preserve native numeric defaults (zero, empty, or stated native default).
    Append only the approved migration controls, each with a default:
-   `electron_inertia=1`, `integrator="rk4"`, `dt_guard="error"`,
+   `electron_inertia=0`, `integrator="rk4"`, `dt_guard="error"`,
    `minimum_samples_per_cycle=32`, `max_amplitude_error=0.01`, and
    `max_phase_error_rad=0.1`.
 3. Keep `Norm` values identical to native: `linf`, `weighted_l2`, `value`.
@@ -15,6 +15,10 @@
 5. Native result structures are constructed through `types.SimpleNamespace`.
    Export factory functions that initialize every consumed field; no factory
    silently omits a record member.
+
+The default electron model is the massless quasineutral branch. Its physical
+electron mass remains positive metadata; `electron_inertia=1` explicitly
+selects finite electron inertia.
 
 ## A0-PY-TYPE-02 Layout and ownership
 

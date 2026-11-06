@@ -70,7 +70,8 @@ def test_native_field_order_and_defaults() -> None:
         "max_amplitude_error",
         "max_phase_error_rad",
     ]
-    assert Parameters().electron_inertia == 1
+    assert Parameters().electron_inertia == 0
+    assert Parameters(electron_inertia=1).electron_inertia == 1
     assert Parameters().integrator == "rk4"
     assert Parameters().dt_guard == "error"
     assert Parameters().minimum_samples_per_cycle == 32

@@ -97,7 +97,7 @@ def _checked_tag(state, tag):
 def _add_source(rhs, state, tag, source, context, sources):
     if source is None:
         return rhs, None, False
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         raise Failure(
             "ManufacturedSource",
             "massless independent electron density/momentum sources are "
@@ -566,7 +566,7 @@ def _advance(committed, cumulative, context, source, integrator):
 
 def advance(committed, cumulative, context, source=None):
     """Advance one accepted step; the default and production path is RK4."""
-    inertia = int(getattr(context.p, "electron_inertia", 1))
+    inertia = int(getattr(context.p, "electron_inertia", 0))
     if inertia not in (0, 1):
         raise Failure("Config", f"unknown electron_inertia: {inertia}")
     integrator = getattr(context.p, "integrator", "rk4")

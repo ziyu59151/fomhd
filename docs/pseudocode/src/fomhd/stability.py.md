@@ -1,5 +1,8 @@
 # Explicit time-step evidence and policy
 
+The model-specific rate estimate reads an absent `electron_inertia` as the
+massless default `0`; explicit `1` selects finite plasma/cyclotron saturation.
+
 ## A0-PY-STABILITY-01 - Frequencies and horizon budgets
 
 1. Validate finite positive SI masses/densities/epsilon0/mu0 and nonnegative

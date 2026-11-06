@@ -120,7 +120,7 @@ def _diagnostics():
 
 def evaluate_stage(state, tag, context, alias=False):
     """Evaluate one complete physical stage without changing the input state."""
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         from .massless import evaluate_stage as evaluate_massless_stage
 
         return evaluate_massless_stage(state, tag, context, alias)
@@ -425,7 +425,7 @@ def _retain_common_failure_evidence(
 
 def retain_failure_evidence(failure, tag, context, state, result, prefix):
     """Retain model-specific evidence without changing the failure path."""
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         from .massless import retain_failure_evidence as retain_massless
 
         return retain_massless(failure, tag, context, state, result, prefix)
@@ -436,7 +436,7 @@ def retain_failure_evidence(failure, tag, context, state, result, prefix):
 
 def initialize(state, context, cumulative, equilibrium, captured=None):
     """Validate and commit the supplied initial state."""
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         from .massless import initialize as initialize_massless
 
         return initialize_massless(

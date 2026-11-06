@@ -72,6 +72,14 @@ def test_pilot_cli_default_integrator_is_rk4(harness, tmp_path):
     assert arguments.integrator == "rk4"
 
 
+def test_benchmark_provenance_declares_historical_finite_scope(harness):
+    provenance = harness._base_provenance("scan", [], PROPOSAL_ROOT)
+    assert provenance["model"]["electron_inertia"] == 1
+    assert provenance["model"]["scope"].startswith(
+        "historical finite-electron"
+    )
+
+
 def test_scan_plan_preserves_equal_final_time(harness):
     plan = harness.build_scan_plan(
         grid=4,

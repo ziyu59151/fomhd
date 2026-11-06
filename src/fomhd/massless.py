@@ -92,7 +92,7 @@ def _electroweak_parameters(context):
 
 
 def _require_model(context):
-    if int(getattr(context.p, "electron_inertia", 1)) != 0:
+    if int(getattr(context.p, "electron_inertia", 0)) != 0:
         raise Failure("Model", "massless branch requires electron_inertia=0")
     _electroweak_parameters(context)
 

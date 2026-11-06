@@ -146,16 +146,17 @@ def stage_frequency_estimate(stage, context) -> dict:
     ce = math.sqrt(max(3*pp, 2*pe)/(electron.mass*n_min[1]))
     va = B/math.sqrt(p.mu0*ion.mass*n_min[0])
     cb = math.sqrt((ion.gamma*pi+max(3*pp, 2*pe))/(ion.mass*n_min[0]))
-    if p.electron_inertia == 1:
+    inertia = int(getattr(p, "electron_inertia", 0))
+    if inertia == 1:
         omega = math.sqrt(scales['omega_plasma']**2+scales['omega_ce']**2
                           + scales['omega_ci']**2) + k*(ci+ce+u)
         active = ['plasma_upper_hybrid', 'ion_cyclotron', 'species_pressure', 'advection']
-    elif p.electron_inertia == 0:
+    elif inertia == 0:
         omega = hall + scales['omega_ci'] + k*(va+cb+u)
         active = ['hall', 'ion_cyclotron', 'alfven', 'bulk_pressure', 'advection']
     else:
         raise ValueError('electron_inertia must be 0 or 1')
-    return dict(scales, omega_estimate=omega, electron_inertia=p.electron_inertia,
+    return dict(scales, omega_estimate=omega, electron_inertia=inertia,
                 active_limits=active, k_estimate_per_m=k, density_min=n_min,
                 density_max=n_max, magnetic_max_T=B, speed_max_m_per_s=u,
                 omega_whistler_massless=hall, ion_pressure_rate=k*ci,

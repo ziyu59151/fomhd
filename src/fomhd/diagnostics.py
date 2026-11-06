@@ -399,7 +399,7 @@ def gate_records(records, required):
 
 
 def stage_requirements(context, tag):
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         from .massless_checks import stage_requirements as massless_requirements
 
         return massless_requirements(context, tag)
@@ -532,7 +532,7 @@ def _forward(context, values, entities):
 
 
 def state_totals(state, result, context):
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         cached = getattr(result, "totals", None)
         if cached is not None:
             return cached
@@ -976,7 +976,7 @@ def source_rates(source, midpoint, stage, context):
 
 
 def boundary_ledger(state, result, context):
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         cached = getattr(result, "boundary", None)
         if cached is not None:
             return cached
@@ -1205,7 +1205,7 @@ def boundary_ledger(state, result, context):
 
 
 def momentum(state, result, context):
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         cached = getattr(result, "momentum", None)
         if cached is not None:
             return cached
@@ -1429,7 +1429,7 @@ def _physical(
 
 
 def check_stage(state, result, context):
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         from .massless_checks import check_stage as massless_check
 
         return massless_check(state, result, context)
@@ -1925,7 +1925,7 @@ def check_step(
     quadrature=None,
 ):
     """Build and hard-gate all accepted-interval identities."""
-    if int(getattr(context.p, "electron_inertia", 1)) == 0:
+    if int(getattr(context.p, "electron_inertia", 0)) == 0:
         from .massless_checks import check_step as massless_check_step
 
         return massless_check_step(

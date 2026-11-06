@@ -38,7 +38,7 @@ def _identity(error, committed=None):
 
 
 def _context(case):
-    if getattr(case.parameters, "electron_inertia", 1) not in (0, 1):
+    if getattr(case.parameters, "electron_inertia", 0) not in (0, 1):
         raise Failure("Config", "electron_inertia must be 0 or 1")
     backend = case.compute
     return Context(

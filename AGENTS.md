@@ -6,6 +6,8 @@
   All source code, comments, test descriptions, runtime logs, diagnostics, and
   implementation records must be English. The pseudocode directory is excluded
   because its bilingual edition is maintained separately.
+- Through 1.0 the development priority is massless quasineutral electrons
+  (`electron_inertia=0`, default); historical finite-inertia cases opt in with 1.
 - The design authority is the sibling repository
   `/home/lxzeng/fomhd-design`: DECISIONS, A0_IMPLEMENTATION_SPEC, and
   A0_GLOBAL_DISCRETIZATION. It is navigation and review context, not a build

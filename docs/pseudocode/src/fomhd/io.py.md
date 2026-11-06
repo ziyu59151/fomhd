@@ -31,7 +31,7 @@ load_case(path,overrides):
   reject duplicate/unknown keys, wrong scalar types, nonfinite floats
   require schema/model/units/layout A0/SI/1
   species: distinct safe IDs, mass>0, ion charge/gamma valid,
-    electron charge<0, electron_inertia in {0,1}, default 1
+    electron charge<0, electron_inertia in {0,1}, default 0
   time: dt>0, finite start, nsteps<=2^52, known initial_kind,
     integrator in {midpoint,rk4} default rk4,
     dt_guard in {error,warn} default error, optional
@@ -49,7 +49,8 @@ load_case(path,overrides):
   build host geometry and selected-backend operators
   compute config_hash over canonical resolved config
   compute semantic_hash excluding only stop step, paths and display timing;
-    include model, physics, integrator, geometry/source hashes, budgets
+    include model, physics, effective electron_inertia, integrator,
+    geometry/source hashes, budgets
   expose the three guard values on Parameters; frequency assessment and the
     runtime guard hook remain parent-owned in stability.py
 ```
@@ -166,4 +167,9 @@ inspect(run_dir):
   report interrupted temp/trailing lines without repairing files
 ```
 
-The effective integrator is materialized in the restart semantic identity. Ambiguous legacy omitted-integrator checkpoints are rejected after the default change. run.json anchors the exact resolved.json bytes with resolved_config_sha256, independent of JSON serialization ordering.
+The effective integrator and electron inertia are materialized in the restart
+semantic identity. A historical checkpoint created with the former omitted
+finite-electron default therefore cannot match or resume as the new massless
+default. Ambiguous legacy omitted-integrator checkpoints are rejected for the
+same reason. run.json anchors the exact resolved.json bytes with
+resolved_config_sha256, independent of JSON serialization ordering.

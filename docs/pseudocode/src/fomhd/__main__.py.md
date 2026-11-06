@@ -17,7 +17,8 @@ main(argv):
   runtime_phase=pre_commit_input
   load strict case
   construct explicit Backend(device), Context and Run writer for either
-    electron_inertia=1 or the reviewed massless branch
+    omitted electron_inertia=0 uses the reviewed massless branch;
+    explicit electron_inertia=1 uses the finite branch
   runtime_phase=numerical_trial during advance
   runtime_phase=post_commit_output after accepted advance
   validate/check writes accepted initial diagnostics, snapshot, checkpoint,
