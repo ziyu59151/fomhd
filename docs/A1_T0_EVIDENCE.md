@@ -1,8 +1,11 @@
 # A1 T0 evidence and limits
 
-T0 is implemented and ready for the user's next-tier decision. Default
-coupling remains synchronous RK4. T1--T4, full sparse conversion and multi-GPU
-execution remain separate work.
+T0 provides a working one-prediction baseline in the tested periodic cases.
+Its observed coupling error is a limitation of the selected approximation,
+not by itself evidence of an implementation bug. Retain failed parameters
+and inherited initialization cases while continuing prototype development.
+Default coupling remains synchronous RK4. T1--T4, full sparse conversion and
+multi-GPU execution remain separate work; T1 still awaits the user's decision.
 
 Numerical benchmark: `93219d2f85c5185cefaa97fd3e8125cef632f4cb`.
 Closed-fixture explicit-upload repair: `581f20d050df50718e028d7550e9e65d57cc2ea7`;
@@ -45,9 +48,17 @@ perturbation, initialization and numerical stages use the requested GPU.
 ## Failures, costs and scope
 
 - M=8,h=period/64 rejects the first macro on both backends: ion kinetic-energy
-  check 2.2046e-8 J exceeds 8e-9 J. No macro or cumulative ledger is accepted.
+  balance defect 2.2046e-8 J exceeds 8e-9 J. The total-energy balance also
+  fails at 2.2032e-8 J. These are balance residuals, not kinetic energy itself.
+  The former is about 1.77% of initial perturbation kinetic plus magnetic
+  energy in this adapter. No macro or cumulative ledger is accepted.
+  M=8,h=period/128 completes; do not label all M=8 runs unusable.
 - The closed nonzero perturbation fails before T0: wall electron flux 44007.1
   on CPU and 33656.6 on GPU versus 20000. A0 reproduces the CPU failure.
+  Both backends also retain pressure/electric-work pairing failures at the
+  initial state. The unresolved initialization/boundary case blocks that
+  strict fixture, not all T0 development. Its small flux alone does not prove
+  that the other residuals are harmless.
   The earlier GPU fixture TypeError is retained separately from its repair.
 - Model counts are 6N+N/M versus 7N for synchronous RK4; both are O(N).
   T0 keeps O(M) stage history, including density-dependent constraint factors.
@@ -69,6 +80,18 @@ is in `gpu-closed-repaired/`. The interrupted initial GPU scan is incomplete
 and excluded. Earlier failures and audits remain in the preparation/worker
 records. RSS/HWM and CuPy pool statistics are process-wide observations,
 not isolated live peaks.
+
+The plain-language report and offline visual gallery separate immediate
+implementation repairs, approximation limits, failed parameters, inherited
+initialization problems and scale-dependent costs. The gallery is at
+`/home/lxzeng/runs/fomhd/a1-benchmark__20261106T130923Z/a1-benchmark.html`.
+It reuses frozen arrays and does not rerun the solver or change thresholds.
+Its English text, numbered pages/figures, captions and source badges reuse the
+existing A0 report renderer; plot typography and palette follow A0 as requested.
+Larger physical benchmarks should determine the impact and repair priority of
+recorded limitations; they cannot automatically remove macro-step truncation
+error. Reopen an issue when it prevents the required case, materially changes
+the target response, or becomes a measured resource bottleneck.
 
 Use `tools/warp_t0_verify.py --help` with a fresh output directory. A scan
 returns nonzero for retained failed cases. GPU execution requires an owned
