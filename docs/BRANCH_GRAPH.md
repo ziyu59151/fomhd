@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "main": "242f721c3d08cad3ebe28339ceced1ddeae177ca", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "main": "b227f253d80227fa25e137486391f9afdea90d68", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1"} -->
 
 ```mermaid
 flowchart LR
@@ -52,17 +52,24 @@ flowchart LR
   cad7173810ff59367d1bab807269b6866835b3e69["ad717381 · docs: update branch graph [skip ci]"]
   c69efcac0dbf83fc8fe8092ec878e88656ef13ff7 --> cad7173810ff59367d1bab807269b6866835b3e69
   click cad7173810ff59367d1bab807269b6866835b3e69 "https://github.com/ziyu59151/fomhd/commit/ad7173810ff59367d1bab807269b6866835b3e69"
-  cf487d8c5fecb54fc26dfe5600a72cf0b1933b844["f487d8c5 · feat: establish massless A0 global fast-mode prototype"]
-  cad7173810ff59367d1bab807269b6866835b3e69 --> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
-  click cf487d8c5fecb54fc26dfe5600a72cf0b1933b844 "https://github.com/ziyu59151/fomhd/commit/f487d8c5fecb54fc26dfe5600a72cf0b1933b844"
   c242f721c3d08cad3ebe28339ceced1ddeae177ca["242f721c · docs: update branch graph [skip ci]"]
   cad7173810ff59367d1bab807269b6866835b3e69 --> c242f721c3d08cad3ebe28339ceced1ddeae177ca
   click c242f721c3d08cad3ebe28339ceced1ddeae177ca "https://github.com/ziyu59151/fomhd/commit/242f721c3d08cad3ebe28339ceced1ddeae177ca"
+  ccba996c68f8c92f607d4a1da6acd3e2ee383785c["cba996c6 · docs: update branch graph [skip ci]"]
+  c242f721c3d08cad3ebe28339ceced1ddeae177ca --> ccba996c68f8c92f607d4a1da6acd3e2ee383785c
+  click ccba996c68f8c92f607d4a1da6acd3e2ee383785c "https://github.com/ziyu59151/fomhd/commit/cba996c68f8c92f607d4a1da6acd3e2ee383785c"
+  cf487d8c5fecb54fc26dfe5600a72cf0b1933b844["f487d8c5 · feat: establish massless A0 global fast-mode prototype"]
+  cad7173810ff59367d1bab807269b6866835b3e69 --> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
+  click cf487d8c5fecb54fc26dfe5600a72cf0b1933b844 "https://github.com/ziyu59151/fomhd/commit/f487d8c5fecb54fc26dfe5600a72cf0b1933b844"
+  cb227f253d80227fa25e137486391f9afdea90d68["b227f253 · Merge reviewed massless A0 global fast-branch prototype"]
+  ccba996c68f8c92f607d4a1da6acd3e2ee383785c --> cb227f253d80227fa25e137486391f9afdea90d68
+  cf487d8c5fecb54fc26dfe5600a72cf0b1933b844 --> cb227f253d80227fa25e137486391f9afdea90d68
+  click cb227f253d80227fa25e137486391f9afdea90d68 "https://github.com/ziyu59151/fomhd/commit/b227f253d80227fa25e137486391f9afdea90d68"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
   b2(["codex/a0-tokamak-cae"]) -.-> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
   b3(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
-  b4(["main"]) -.-> c242f721c3d08cad3ebe28339ceced1ddeae177ca
+  b4(["main"]) -.-> cb227f253d80227fa25e137486391f9afdea90d68
   b5(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
 ```
 
