@@ -5,6 +5,10 @@ massless/RK4 stage and all stage arrays stay on the explicitly selected backend.
 CPU is allowed for tests/input preparation. CUDA requires an owned Slurm job.
 
 1. Validate kind, nphi=0/1, K>=nphi, Nphi=5, grid, amplitude and budget.
+   Enclosing grid sizes 4..32 are supported by this bounded dense reference.
+   Accept an explicit positive memory limit in bytes (CLI GiB, default 24).
+   Apply it to operator construction and the unchanged state peak-memory gate;
+   it does not imply that larger grids fit the reserved CPU/GPU allocation.
    Build fixed circular or psiN=.8 EFIT contour and equal enclosing RZ cells.
    Record exact source hashes, input hash, density/profile assumptions and units.
 2. Create physical SI references and the production massless diagnostic registry.

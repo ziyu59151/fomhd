@@ -100,8 +100,9 @@ def project_B(value,context,stored,flux=None):
     return corrected,record
 
 
-def make_context(kind,nodes,K,device,eq_path=None):
-    if not 4<=nodes<=24 or K not in (0,1):raise ValueError('nodes in [4,24] and K=0/1 required')
+def make_context(kind,nodes,K,device,eq_path=None,*,memory_limit_bytes=24<<30):
+    if not 4<=nodes<=32 or K not in (0,1):raise ValueError('nodes in [4,32] and K=0/1 required')
+    if type(memory_limit_bytes) is not int or memory_limit_bytes<=0:raise ValueError('positive integer memory_limit_bytes required')
     meta={'kind':kind,'nodes':nodes,'K':K,'Nphi':5,'electron_inertia':0,
           'wall':'fixed closed conductor with constrained weak-wall reactions',
           'diagnostic_policy':'prototype_observe_power_energy_momentum'}
@@ -127,8 +128,9 @@ def make_context(kind,nodes,K,device,eq_path=None):
     geometry=build_geometry(lo[0]+(np.arange(nodes)+.5)*h[0],lo[1]+(np.arange(nodes)+.5)*h[1],
                             [Point2(*a) for a in polygon])
     p=physical_parameters(K,n,B,L,pressure)
+    p.memory_limit=p.device_memory_limit=memory_limit_bytes
     backend=Backend("cuda:0" if device=="cuda" else device)
-    op=build_operators(geometry,K,{'memory_cap_bytes':24<<30,'rank_rtol':p.rank_rtol},backend)
+    op=build_operators(geometry,K,{'memory_cap_bytes':memory_limit_bytes,'rank_rtol':p.rank_rtol},backend)
     context=Context(p,geometry,op,backend,5)
     meta.update(active_cells=op.Nc,h_R_m=float(h[0]),h_Z_m=float(h[1]),
                 area_h_m2=float(np.sum(geometry.M0/geometry.cells.R)),
@@ -336,7 +338,8 @@ def run(args):
     all_runs={};context=None
     try:
         K=args.mode if args.K is None else args.K
-        context,meta,eq=make_context(args.kind,args.nodes,K,args.device,args.equilibrium)
+        context,meta,eq=make_context(args.kind,args.nodes,K,args.device,args.equilibrium,
+                                    memory_limit_bytes=getattr(args,'memory_gib',24)<<30)
         reference=solve_reference(ReferenceCase(mode=args.mode,order=args.reference_order)) if args.kind=='circle' else None
         if reference is not None:
             meta['cold_reference']={k:v for k,v in reference.items() if isinstance(v,(str,int,float))}
@@ -386,6 +389,7 @@ def run(args):
         # A harness configuration, distinct from the stricter verification loader.
         config={'kind':args.kind,'nodes':args.nodes,'nphi':args.mode,'K':K,'Nphi':5,
                 'electron_inertia':0,'integrator':'rk4','amplitude':args.amplitude,
+                'memory_gib':getattr(args,'memory_gib',24),
                 'horizon_s':horizon,'steps':steps,'dt_s':context.p.dt,'diagnostic_policy':'prototype_observe'}
         comments={'kind':'Geometry family; circle or east; prototype response experiment.',
                   'nodes':'Number of enclosing cell centers per R/Z direction; staircase wall.',
@@ -395,6 +399,7 @@ def run(args):
                   'electron_inertia':'Dimensionless model switch; 0 massless/quasineutral, 1 finite; this harness requires 0.',
                   'integrator':'Time method; RK4; bounded local verification, global validation in progress.',
                   'amplitude':'Dimensionless physical field amplitude; n0 A once, n1 conjugate A/2.',
+                  'memory_gib':'Positive GiB cap for unchanged dense operator/state memory gates; reserve sufficient allocation memory.',
                   'horizon_s':'Common physical endpoint in seconds for control and perturbation.',
                   'steps':'Accepted RK4 intervals requested; guard remains hard.',
                   'dt_s':'Time step in seconds, from actual stage rate estimate and RK4 budgets.',
@@ -509,6 +514,7 @@ def main():
     p.add_argument('--mode',type=int,choices=(0,1),default=0)
     p.add_argument('--K',type=int,choices=(0,1))
     p.add_argument('--nodes',type=int,default=12)
+    p.add_argument('--memory-gib',type=int,default=24)
     p.add_argument('--device',choices=('cpu','cuda'),default='cpu')
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--equilibrium',type=Path)
@@ -524,7 +530,7 @@ def main():
     p.add_argument('--seed-frequency',type=float)
     args=p.parse_args()
     if args.mode>(args.K if args.K is not None else args.mode):p.error('K must retain the requested mode')
-    if not 0<=args.amplitude<=.01 or args.cycles<=0 or args.wall_seconds<=0:p.error('invalid amplitude, cycles, or wall budget')
+    if not 0<=args.amplitude<=.01 or args.cycles<=0 or args.wall_seconds<=0 or args.memory_gib<=0:p.error('invalid amplitude, cycles, memory, or wall budget')
     raise SystemExit(run(args))
 
 

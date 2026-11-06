@@ -10,3 +10,6 @@ must survive; a deliberately excessive dt must stop before advancement even
 when the conservative operator estimator is observe.
 
 An explicit short horizon overrides a longer cycles argument in target_periods.
+
+Larger enclosing grids up to32 retain the same memory failure gate; reject
+nonpositive caps and grids above the bounded supported range before execution.
