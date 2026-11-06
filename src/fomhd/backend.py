@@ -509,6 +509,31 @@ class Backend:
         if not (0.0 < rank_rtol < 1.0):
             raise Failure("Linear", "independent row input is invalid")
         self._require_finite(matrix, "independent row input is invalid")
+        nonzero_rows: list[tuple[int, float]] = []
+        for row in range(matrix.shape[0]):
+            magnitude = float(self.xp.linalg.norm(matrix[row]).item())
+            if magnitude == 0.0:
+                continue
+            nonzero_rows.append((row, magnitude))
+            if len(nonzero_rows) > matrix.shape[1]:
+                break
+        if 0 < len(nonzero_rows) <= matrix.shape[1]:
+            normalized = self.xp.empty(
+                (len(nonzero_rows), matrix.shape[1]),
+                dtype=self.xp.complex128,
+            )
+            for offset, (row, magnitude) in enumerate(nonzero_rows):
+                normalized[offset] = matrix[row] / magnitude
+            values = self.singular_values(normalized)
+            if values.size and bool(
+                self.xp.all(
+                    values > rank_rtol * float(values[0].item())
+                ).item()
+            ):
+                # A0-PY-BACK-05: singular-value interlacing proves that every
+                # normalized prefix passes the same strict rank test.
+                return [row for row, _ in nonzero_rows]
+            del normalized, values
         selected: list[int] = []
         current_rank = 0
         for row in range(matrix.shape[0]):

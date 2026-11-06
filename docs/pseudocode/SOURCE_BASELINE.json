@@ -62,8 +62,8 @@
     },
     {
       "path": "mainline_design/implementation/A0/A0_TOKAMAK_CAE.md",
-      "bytes": 9440,
-      "sha256": "0e00ebc8f83ab43aa04a8117be6b4b50f20f68cdfdefd9f2f9fdfab3ec8e0875"
+      "bytes": 11367,
+      "sha256": "4a45aa9731ee762cfb6d0b28a8f358e9b808883b8d1d19e663769b31946839a8"
     }
   ],
   "captured_utc": "2026-11-06T00:43:05.494858+00:00",

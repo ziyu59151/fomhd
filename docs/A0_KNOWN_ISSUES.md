@@ -17,6 +17,8 @@ imbalance approaches perturbation energy, or a run becomes unstable.
 
 | A0-07 | EAST12 raw energy imbalance reaches 16.6%/24.1% of the base mode signal; common-background subtraction reduces this to 1.47e-5/2.71e-6, and half dt reduces the raw gap by about 32x. | Keep both scales visible. Real-geometry response frequencies are supported; long-time nonlinear energy accuracy is not established. |
 | A0-08 | Circle fast-branch reference overlaps at grid16 are 0.604/0.652; frequency differences from order-8 cold reference are +5.86%/-4.37%. Slow candidates remain archived. | Two grids and a qualified weak-wall reference do not prove global convergence or identify every branch. User prioritized fast modes; slow classification is deferred. |
+| A0-09 | The fixed-circle mask area and fixed-flux mapped B amplitude change nonmonotonically with grid. At12/16/20/24, fitted amplitude errors are +0.923%/-3.479%/-0.631%/+0.986%. | Raw frequency refinement includes geometry and input-mapping changes. Preserve raw frequencies and report both errors; no causal split or rescaled-frequency acceptance follows from this audit. |
+| A0-10 | Archived EAST12 eight-cycle seed-subspace coherence falls to0.940963/0.917186 for n0/n1; circle12/16 stays at least0.99999975. | EAST response departs from its baseline linear seed. Track evolving structure and relaxing controls; do not present a single fitted frequency as proof of a stationary global eigenmode. |
 
 Nonfinite state, nonpositive density/pressure, failed numerical solves, broken
 ownership/restart identity, and necessary model constraints still stop runs.

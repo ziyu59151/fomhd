@@ -75,3 +75,14 @@ def test_paired_run_preserves_initial_checks_and_raw_energies(discrete_case):
     failed=json.loads((args.output/'report.json').read_text())
     assert failed['control']['accepted_steps']==0
     assert 'stability guard' in failed['control']['failures'][0]['message']
+
+
+def test_larger_grid_keeps_memory_gate_and_validates_cap():
+    from tools.warp_tokamak_cae import make_context
+    from fomhd.types import Failure
+    with pytest.raises(ValueError,match='positive integer'):
+        make_context('circle',32,0,'cpu',memory_limit_bytes=0)
+    with pytest.raises(ValueError,match='nodes in'):
+        make_context('circle',33,0,'cpu')
+    with pytest.raises(Failure,match='memory'):
+        make_context('circle',32,0,'cpu',memory_limit_bytes=1)

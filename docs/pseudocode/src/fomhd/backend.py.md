@@ -66,11 +66,37 @@
 
 ## A0-PY-BACK-05 Independent rows
 
-1. Process rows in index order. Ignore exactly zero rows.
-2. Normalize each candidate set by its independently computed `hypot` row norm.
-3. Compute singular values of the normalized candidates on the selected
-   backend. Increase rank only when one singular value exceeds
-   `rank_rtol*largest`. Count the rank with a device reduction and read only
-   that scalar result.
-4. Reject a rank jump other than zero or one, and return the deterministic
-   selected row indices.
+1. Validate the selected backend array, finite contents, and
+   `0<rank_rtol<1`.
+2. Scan rows in index order and retain the indices of rows whose existing
+   per-row `linalg.norm` is nonzero.
+3. If there are no nonzero rows, return an empty index list without allocating
+   a normalized matrix or calling SVD. If the number of nonzero rows exceeds
+   the number of columns, skip the full-rank probe and go directly to the
+   sequential fallback because full row rank is impossible.
+4. Otherwise allocate one normalized matrix on the selected backend with
+   `complex128` storage. For each retained row, compute the same per-row
+   `linalg.norm` and division used by the sequential path, and place the
+   normalized row in its original order.
+5. Compute one SVD of the entire normalized matrix. The set is proved to have
+   full row rank when every singular value is strictly greater than
+   `rank_rtol*sigma_max`.
+6. If proved, return all nonzero original row indices in order. For every
+   prefix of those normalized rows, singular-value interlacing gives
+   `sigma_min(prefix)>=sigma_min(full)` and
+   `sigma_max(prefix)<=sigma_max(full)`. The full-rank result therefore implies
+   that every prefix passes the existing strict test, so the old sequential
+   algorithm would select every nonzero row.
+7. If the probe does not prove full rank, process rows in original index order
+   with the existing sequential algorithm unchanged. Recompute each per-row
+   normalization, skip exactly zero rows, compute each prefix spectrum, increase
+   rank only for a singular value strictly greater than
+   `rank_rtol*largest`, reject a rank jump other than zero or one, and return
+   the deterministic selected indices.
+8. Keep validation and library failures visible. A failed probe is not treated
+   as a negative result, and the fallback does not relax tolerances, reorder
+   rows, pivot, or cache a result for another matrix. CUDA arrays and spectra
+   remain device-resident while host code reads only the scalar decision.
+
+Release the full-rank probe workspace before entering an unsuccessful-gate
+fallback so it does not remain live alongside sequential SVD candidates.
