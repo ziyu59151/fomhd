@@ -80,3 +80,6 @@ sizes and physical horizons. It retains per-field SI errors, dimensionless
 P/Z errors, phase, actual stage counts and failed arrays. Its timed trajectory
 includes check aggregation and modal history projection. RSS/HWM and CuPy pool
 statistics are process-wide observations, not isolated per-case live peaks.
+
+Measured scope and retained failures are recorded in
+[A1_T0_EVIDENCE.md](A1_T0_EVIDENCE.md). T1 requires the user's next decision.

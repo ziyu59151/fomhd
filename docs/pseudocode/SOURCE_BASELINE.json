@@ -23,8 +23,8 @@
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 150596,
-      "sha256": "37e918dcb66453d20d98df596ade6bdc9859cd187d04b1776bfa1ebb6f410123"
+      "bytes": 151294,
+      "sha256": "55aea9a845580176c7ae0e342b02529d81d1517f5e82f4a1d77f3d29ad21d218"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -68,8 +68,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 11625,
-      "sha256": "6c12693414517b4be19f0e50b9f92bf0f2e3d3d433a959bcac00337cdcbd4f3a"
+      "bytes": 11820,
+      "sha256": "dfb05f8aa8f751fa64297b3ae4715d2ea4c30bf9b838041a0d2642e8b28e4633"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
@@ -85,9 +85,14 @@
       "path": "references/A1_PARALLEL_SOURCES.md",
       "bytes": 3366,
       "sha256": "1655165856c083d8e8a316c3592eb0452f948eecfae3abdfad3b66166b0c68ac"
+    },
+    {
+      "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
+      "bytes": 17951,
+      "sha256": "9d6031d1f5af7f2b1b479cb278cf807cdc988a57ede874db56fa21e682a93fc3"
     }
   ],
-  "captured_utc": "2026-11-06T10:58:40.217387+00:00",
+  "captured_utc": "2026-11-06T12:17:11.918723+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -120,12 +125,18 @@
     "global_fast_branch_prototype": "Circle grid12 CUDA/grid16 CPU and EAST grid12 matched responses; see docs/A0_TOKAMAK_CAE_EVIDENCE.md; not experimental validation"
   },
   "a1_scope": {
-    "record": "docs/A1_IMPLEMENTATION.md",
+    "record": "docs/A1_T0_EVIDENCE.md",
     "baseline_branch": "release/a0",
     "baseline_commit": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8",
     "implemented": "T0 predictor and fixed-wall factor reuse",
-    "acceptance": "pending independent integrated CPU/GPU evidence and report",
+    "acceptance": "T0 report delivered: bounded periodic CPU/RTX5090 evidence; large-macro and closed-perturbation failures retained; T1 awaits user",
     "later_tiers": "T1-T4 require user decision at each algorithm tier",
-    "multi_gpu": "reference and interface planning only"
+    "multi_gpu": "reference and interface planning only",
+    "numerical_commit": "93219d2f85c5185cefaa97fd3e8125cef632f4cb",
+    "closed_fixture_repair": "581f20d050df50718e028d7550e9e65d57cc2ea7",
+    "cpu_tests_passed": 770,
+    "gpu_regression_passed": 12,
+    "global_physical_validation": false,
+    "equal_accuracy_speedup": false
   }
 }
