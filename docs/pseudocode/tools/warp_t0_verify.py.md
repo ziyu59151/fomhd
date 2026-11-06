@@ -130,6 +130,21 @@ Build the existing small closed-rectangle massless context with
 hard_diagnostics=True on the explicitly requested backend and use the existing
 equilibrium fixture. Construct geometry and operators with Backend(device);
 do not call a CPU-hardcoded fixture helper.
+Construct the initial raw state through a bounded `_closed_initial_state` seam:
+  if the selected context is CPU:
+    return existing closed_equilibrium_state(context) directly
+  otherwise:
+    build a CPU-only closed setup context with identical fixture parameters
+    form its state using the existing CPU-only nullspace fixture helpers
+    upload every species n,mom,perp,parallel array and B explicitly to the
+    already-selected target backend with dtype=complex128
+    construct State/FluidState with unchanged step,generation,time,shape
+    verify the target backend identity and all uploaded shapes
+This is one explicit HOST SETUP transfer before numerical timing. The target
+GPU context is never passed to a NumPy nullspace helper. All stage evaluation,
+canonicalization, diagnostics and time advances after upload use the target
+context. There is no stage or numerical CPU fallback.
+
 Add only a nonzero smooth boundary-shaped density and pressure perturbation.
 Do not change hard flags or budgets.
 Set fixed H, M and horizon, run the actual T0 transaction, and recanonicalize
@@ -146,6 +161,8 @@ Report requested/actual backend identity and failure evidence. Verify
 context.compute.device before measurement. A mismatch is an error; there is
 no CPU or other backend fallback. An unchanged hard diagnostic failure remains
 a failed case; it is not clipped or relaxed.
+Record in metadata that non-CPU initialization used CPU host setup followed by
+explicit complex128 upload, while CPU initialization used the direct fixture.
 
 Use the same `resources` key in closed and periodic successful summaries so
 the common artifact writer can serialize both. A successful closed trajectory

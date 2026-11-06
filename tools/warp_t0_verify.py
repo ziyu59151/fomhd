@@ -40,7 +40,13 @@ from fomhd.geometry import build_rectangle  # noqa: E402
 from fomhd.operators import build_operators  # noqa: E402
 from fomhd.stage import initialize  # noqa: E402
 from fomhd.time import advance  # noqa: E402
-from fomhd.types import Context, Failure, cumulative_record  # noqa: E402
+from fomhd.types import (  # noqa: E402
+    Context,
+    Failure,
+    FluidState,
+    State,
+    cumulative_record,
+)
 from massless_verification_fixture import (  # noqa: E402
     HallCase,
     build_periodic_context,
@@ -67,7 +73,9 @@ PERIODIC_SCOPE = (
 CLOSED_SCOPE = (
     "Small closed-rectangle equilibrium with a smooth nonzero perturbation, "
     "using the existing real production stage and hard physical diagnostics. "
-    "This is bounded fixture evidence, not a full equilibrium or wall study."
+    "On non-CPU targets, CPU-only fixture setup is followed by one explicit "
+    "complex128 upload before numerical stages. This is bounded fixture "
+    "evidence, not a full equilibrium or wall study."
 )
 PHASE_CONVENTION = (
     "signed residual phase is atan2(Im(projection), Re(projection)) in the "
@@ -1699,6 +1707,59 @@ def build_closed_context(device: str) -> Context:
     return context
 
 
+def _closed_initial_state(context: Context) -> State:
+    """Build closed setup on CPU when needed, then upload to the target."""
+    requested_device = getattr(context.compute, "device", None)
+    _verify_backend_identity(context, requested_device)
+    if requested_device == "cpu":
+        return closed_equilibrium_state(context)
+
+    host_context = build_closed_context("cpu")
+    _verify_backend_identity(host_context, "cpu")
+    host_state = closed_equilibrium_state(host_context)
+
+    def upload(name, value):
+        host_array = np.asarray(value, dtype=np.complex128)
+        uploaded = context.compute.array(
+            host_array,
+            dtype=np.complex128,
+        )
+        if tuple(uploaded.shape) != tuple(host_array.shape):
+            raise Failure(
+                "BackendIdentity",
+                f"{name} upload shape mismatch: "
+                f"{uploaded.shape} != {host_array.shape}",
+            )
+        if np.dtype(uploaded.dtype) != np.dtype(np.complex128):
+            raise Failure(
+                "BackendIdentity",
+                f"{name} upload dtype is {uploaded.dtype}, expected complex128",
+            )
+        return uploaded
+
+    fluid = tuple(
+        FluidState(
+            n=upload(f"fluid[{species}].n", source.n),
+            mom=upload(f"fluid[{species}].mom", source.mom),
+            perp=upload(f"fluid[{species}].perp", source.perp),
+            parallel=upload(
+                f"fluid[{species}].parallel",
+                source.parallel,
+            ),
+        )
+        for species, source in enumerate(host_state.fluid)
+    )
+    uploaded = State(
+        fluid=fluid,
+        B=upload("B", host_state.B),
+        step=host_state.step,
+        generation=host_state.generation,
+        time=host_state.time,
+    )
+    _verify_backend_identity(context, requested_device)
+    return uploaded
+
+
 def _closed_shape(context: Any) -> np.ndarray:
     r_min = float(np.min(context.geometry.cells.R))
     r_max = float(np.max(context.geometry.cells.R))
@@ -1760,7 +1821,17 @@ def _build_closed_trajectory(
     p.dt = macro_dt
     p.nsteps = macro_count
     p.dt_guard = "warn"
-    raw = perturb_closed_state(closed_equilibrium_state(context), context)
+    initialization = {
+        "mode": (
+            "direct_cpu_fixture"
+            if device == "cpu"
+            else "cpu_host_setup_then_explicit_complex128_upload"
+        ),
+        "host_setup_device": "cpu",
+        "target_device": device,
+        "numerical_stages_device": device,
+    }
+    raw = perturb_closed_state(_closed_initial_state(context), context)
     captured: dict[str, Any] = {}
     cumulative = cumulative_record()
     committed = initialize(
@@ -1782,6 +1853,7 @@ def _build_closed_trajectory(
         macro_count=macro_count,
         hard_diagnostics_requested=True,
         requested_device=device,
+        closed_initialization=initialization,
     )
 
 
@@ -1891,6 +1963,7 @@ def run_closed_case(
             "horizon_s": float(endpoint.time),
             "hard_diagnostics_requested": True,
             "dt_guard": trajectory.context.p.dt_guard,
+            "closed_initialization": trajectory.closed_initialization,
             "check_summary": checks,
             "actual_coupling_metadata": metadata,
             "actual_stage_counts": {

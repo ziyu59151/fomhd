@@ -400,6 +400,129 @@ def test_closed_context_rejects_backend_fallback(monkeypatch):
         tool.build_closed_context("cuda:0")
 
 
+def test_closed_initial_state_cpu_uses_existing_fixture(monkeypatch):
+    tool = module()
+    context = SimpleNamespace(
+        compute=SimpleNamespace(device="cpu", name="cpu")
+    )
+    sentinel = object()
+    calls = []
+    monkeypatch.setattr(
+        tool,
+        "closed_equilibrium_state",
+        lambda seen_context: calls.append(seen_context) or sentinel,
+        raising=False,
+    )
+
+    result = tool._closed_initial_state(context)
+
+    assert result is sentinel
+    assert calls == [context]
+
+
+def test_closed_initial_state_uploads_cpu_setup_to_cuda_target(monkeypatch):
+    tool = module()
+
+    class FakeTargetArray:
+        def __init__(self, value, dtype):
+            self.value = np.array(value, dtype=dtype, copy=True)
+            self.shape = self.value.shape
+            self.dtype = self.value.dtype
+
+    class FakeTargetBackend:
+        device = "cuda:0"
+        name = "cuda"
+
+        def __init__(self):
+            self.calls = []
+
+        def array(self, value, dtype=None):
+            copied = np.array(value, copy=True)
+            self.calls.append((copied, dtype))
+            return FakeTargetArray(copied, dtype)
+
+    def host_fluid(offset):
+        return SimpleNamespace(
+            n=np.asarray([offset + 1.0, offset + 2.0], dtype=np.complex128),
+            mom=np.asarray(
+                [offset + 3.0, offset + 4.0, offset + 5.0],
+                dtype=np.complex128,
+            ),
+            perp=np.asarray([offset + 6.0], dtype=np.complex128),
+            parallel=(
+                np.asarray([], dtype=np.complex128)
+                if offset == 0
+                else np.asarray([offset + 7.0], dtype=np.complex128)
+            ),
+        )
+
+    host_state = SimpleNamespace(
+        fluid=(host_fluid(0), host_fluid(10)),
+        B=np.asarray([21.0, 22.0, 23.0], dtype=np.complex128),
+        step=2,
+        generation=3,
+        time=0.25,
+    )
+    host_context = SimpleNamespace(
+        compute=SimpleNamespace(device="cpu", name="cpu")
+    )
+    target_backend = FakeTargetBackend()
+    target_context = SimpleNamespace(compute=target_backend)
+    fixture_calls = []
+    monkeypatch.setattr(
+        tool,
+        "build_closed_context",
+        lambda device: host_context,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        tool,
+        "closed_equilibrium_state",
+        lambda context: fixture_calls.append(context) or host_state,
+        raising=False,
+    )
+
+    uploaded = tool._closed_initial_state(target_context)
+
+    assert fixture_calls == [host_context]
+    assert target_context not in fixture_calls
+    assert len(target_backend.calls) == 9
+    expected = (
+        host_state.fluid[0].n,
+        host_state.fluid[0].mom,
+        host_state.fluid[0].perp,
+        host_state.fluid[0].parallel,
+        host_state.fluid[1].n,
+        host_state.fluid[1].mom,
+        host_state.fluid[1].perp,
+        host_state.fluid[1].parallel,
+        host_state.B,
+    )
+    for (source, dtype), host_array in zip(target_backend.calls, expected):
+        np.testing.assert_array_equal(source, host_array)
+        assert dtype is np.complex128
+    uploaded_arrays = (
+        uploaded.fluid[0].n,
+        uploaded.fluid[0].mom,
+        uploaded.fluid[0].perp,
+        uploaded.fluid[0].parallel,
+        uploaded.fluid[1].n,
+        uploaded.fluid[1].mom,
+        uploaded.fluid[1].perp,
+        uploaded.fluid[1].parallel,
+        uploaded.B,
+    )
+    for uploaded_array, host_array in zip(uploaded_arrays, expected):
+        assert isinstance(uploaded_array, FakeTargetArray)
+        assert uploaded_array.shape == host_array.shape
+        assert uploaded_array.dtype == np.complex128
+        np.testing.assert_array_equal(uploaded_array.value, host_array)
+        assert uploaded_array is not host_array
+    assert uploaded.step == host_state.step
+    assert uploaded.generation == host_state.generation
+    assert uploaded.time == host_state.time
+
+
 def test_successful_closed_result_writes_artifacts(monkeypatch, tmp_path):
     tool = module()
     reference = SimpleNamespace(
@@ -424,6 +547,12 @@ def test_successful_closed_result_writes_artifacts(monkeypatch, tmp_path):
         context=context,
         committed=SimpleNamespace(state=SimpleNamespace(time=1.0e-10)),
         requested_device="cpu",
+        closed_initialization={
+            "mode": "synthetic_test_only",
+            "host_setup_device": "cpu",
+            "target_device": "cpu",
+            "numerical_stages_device": "cpu",
+        },
     )
     execution = {
         "accepted_macro_steps": 1,

@@ -66,6 +66,16 @@ Mock only the backend/operator construction boundary and request cuda:0.
 Require the constructed context to retain compute.device=cuda:0. Inject a
 backend that reports CPU and require BackendIdentity failure with no fallback.
 
+Test `_closed_initial_state` CPU identity by requiring the existing fixture
+helper to receive the requested CPU context unchanged.
+
+Test non-CPU setup routing with a mechanical fake target backend. Require the
+existing CPU-only uniform/nullspace helper to receive only a CPU setup context,
+never the target context. Require exactly one complex128 upload for each
+species n,mom,perp,parallel and B (nine arrays), preserving values, shapes,
+step, generation and time. This is routing/ownership evidence only, not GPU
+numerical parity.
+
 Use a bounded synthetic closed trajectory/execution record to exercise
 run_closed_case through _execute_case and _success_artifacts. Require NPZ and
 metadata artifacts, explicit `resources`, and before/after derived
