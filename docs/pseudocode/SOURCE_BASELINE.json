@@ -19,13 +19,14 @@
     "D061",
     "D062",
     "D063",
-    "D064"
+    "D064",
+    "D065"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 156899,
-      "sha256": "47ba7f108cd57af0924750153c60b0ca31773305e4c477522f42cd1d25cba0a8"
+      "bytes": 158406,
+      "sha256": "82838319095bab81d9925c25f5188ede30a90a05497c8db7a200030a11bed1e2"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -69,8 +70,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 13173,
-      "sha256": "bd833cad369421c73e4c83b1fe7e6c379458a266feae456dd86ded5128ffa228"
+      "bytes": 13366,
+      "sha256": "8217ff5f055c51c1485a03a850b8b4f438b5a4baaa3863e1b8a6d2c3164a0216"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
@@ -89,16 +90,26 @@
     },
     {
       "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
-      "bytes": 16242,
-      "sha256": "5cf15508efb4897aaf7b79f36f4872e9ae2da2e6597f02a95cd96130e185902d"
+      "bytes": 16829,
+      "sha256": "1dd1c0a335c005dfe10111c937cda75c4909f1df396ae57c8499d1c6914fefd9"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_T0_BENCHMARK.md",
       "bytes": 7279,
       "sha256": "53d8b02a1c36399b0a8849cbfafe0f1074d6340ab5130253882ad05ed5744d23"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_T0_LINEAR_GAIN.md",
+      "bytes": 4412,
+      "sha256": "d3832dea53256f2cae7d18fc5f2c67738472638e2b46534e33b931640c1150ce"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_T1_WAVEFORM.md",
+      "bytes": 6138,
+      "sha256": "76f7a2eaed50c9d3e336277c780725d6aa2c27d27645fe8ea2c3371a4ec9caff"
     }
   ],
-  "captured_utc": "2026-11-07T02:36:05.157397+00:00",
+  "captured_utc": "2026-11-07T05:01:25.129598+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -134,9 +145,9 @@
     "record": "docs/A1_T0_EVIDENCE.md",
     "baseline_branch": "release/a0",
     "baseline_commit": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8",
-    "implemented": "T0 predictor and fixed-wall factor reuse",
+    "implemented": "T0 predictor, T1 full ion stage-path waveform iteration and fixed-wall factor reuse",
     "acceptance": "Controlled periodic CPU baseline: M4/M8 satisfy joint criteria; M16/M32 show high-mode amplification; rejected full windows remain undetermined",
-    "later_tiers": "T1-T4 require user decision at each algorithm tier",
+    "later_tiers": "T2-T4 remain gated",
     "multi_gpu": "reference and interface planning only",
     "numerical_commit": "93219d2f85c5185cefaa97fd3e8125cef632f4cb",
     "closed_fixture_repair": "581f20d050df50718e028d7550e9e65d57cc2ea7",
@@ -146,11 +157,14 @@
     "equal_accuracy_speedup": false,
     "report_presentation": "A0-style English seven-figure/eight-page HTML plus Chinese controlled T0 report",
     "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T163530Z/a1-benchmark.html",
-    "next_tier": "T1 recommended for user judgment; no T1 implementation",
+    "next_tier": "User authorized T1; T2 requires independent T1 report and user decision",
     "gallery_format": "Existing A0 report renderer, English labels/captions, numbered pages/figures and matching plot conventions",
     "controlled_temporal_protocol": "D064; fixed h=T/2048, 2T; 24 final cases complete with retained rejections",
     "controlled_benchmark_commit": "206e850c3220c021b03932e262e8e52c307f4a7e",
     "controlled_cpu_tests_passed": 169,
-    "failure_evidence_repair": "206e850; exact record equality/order and accepted trajectory preserved"
+    "failure_evidence_repair": "206e850; exact record equality/order and accepted trajectory preserved",
+    "t1_verification": "148 core/source checks and71 integrated focused checks; scientific matrix and bounded GPU pending",
+    "t0_maintenance_branch": "release/a1-t0",
+    "t0_maintenance_commit": "fc9a19e26fc2fb6d601c39e18a11a095386e3038"
   }
 }

@@ -1022,6 +1022,10 @@ def _build_parameters(species, solver, grid, time, budgets, diagnostics):
         max_phase_error_rad=time.get("max_phase_error_rad", 0.1),
         coupling=time.get("coupling", "synchronous"),
         micro_steps=time.get("micro_steps", 1),
+        waveform_rtol=time.get("waveform_rtol", 1.0e-10),
+        waveform_max_iterations=time.get(
+            "waveform_max_iterations", 12
+        ),
     )
     return parameters_value
 
@@ -1152,6 +1156,8 @@ def load_case(path, overrides=None, backend=None):
         "max_phase_error_rad",
         "coupling",
         "micro_steps",
+        "waveform_rtol",
+        "waveform_max_iterations",
     ):
         if optional in time:
             allowed_time.add(optional)
@@ -1175,8 +1181,16 @@ def load_case(path, overrides=None, backend=None):
     coupling = time.get("coupling", "synchronous")
     if type(coupling) is not str:
         raise ValueError("coupling must be a string")
-    if coupling not in ("synchronous", "predictor"):
+    if coupling not in ("synchronous", "predictor", "waveform"):
         raise ValueError(f"unknown time coupling: {coupling}")
+    has_waveform_controls = (
+        "waveform_rtol" in time
+        or "waveform_max_iterations" in time
+    )
+    if has_waveform_controls and coupling != "waveform":
+        raise ValueError(
+            "waveform controls require waveform coupling"
+        )
     micro_steps = time.get("micro_steps", 1)
     if type(micro_steps) is not int or micro_steps <= 0:
         raise ValueError(
@@ -1186,13 +1200,20 @@ def load_case(path, overrides=None, backend=None):
         raise ValueError(
             "synchronous coupling requires micro_steps=1"
         )
-    if coupling == "predictor":
+    if coupling in ("predictor", "waveform"):
         if inertia != 0:
             raise ValueError(
-                "predictor coupling requires massless electron_inertia=0"
+                f"{coupling} coupling requires massless electron_inertia=0"
             )
         if time.get("integrator", "rk4") != "rk4":
-            raise ValueError("predictor coupling requires integrator='rk4'")
+            raise ValueError(
+                f"{coupling} coupling requires integrator='rk4'"
+            )
+    if coupling == "waveform":
+        if "waveform_rtol" in time:
+            _real(time, "waveform_rtol", True)
+        if "waveform_max_iterations" in time:
+            _integer(time, "waveform_max_iterations", True)
     for name, positive in (
         ("minimum_samples_per_cycle", True),
         ("max_amplitude_error", True),
@@ -1462,6 +1483,11 @@ def load_case(path, overrides=None, backend=None):
     semantic["time"]["integrator"] = parameters.integrator
     semantic["time"]["coupling"] = parameters.coupling
     semantic["time"]["micro_steps"] = parameters.micro_steps
+    if parameters.coupling == "waveform":
+        semantic["time"]["waveform_rtol"] = parameters.waveform_rtol
+        semantic["time"][
+            "waveform_max_iterations"
+        ] = parameters.waveform_max_iterations
     semantic["time"].pop("nsteps", None)
     for name in (
         "output_dir",
@@ -1552,6 +1578,13 @@ def _identity(arrays, committed, case, run_id, k, compute):
     arrays["micro_steps"] = np.asarray(
         getattr(case.parameters, "micro_steps", 1), dtype=np.uint64
     )
+    if getattr(case.parameters, "coupling", "synchronous") == "waveform":
+        arrays["waveform_rtol"] = np.asarray(
+            case.parameters.waveform_rtol, dtype=np.float64
+        )
+        arrays["waveform_max_iterations"] = np.asarray(
+            case.parameters.waveform_max_iterations, dtype=np.uint64
+        )
     arrays["accepted"] = np.asarray(True, dtype=np.bool_)
     arrays["schema_version"] = np.asarray(SCHEMA_VERSION, dtype=np.uint64)
     arrays["layout_version"] = np.asarray(LAYOUT_VERSION, dtype=np.uint64)
@@ -1806,6 +1839,19 @@ class Run:
                     case.parameters, "coupling", "synchronous"
                 ),
                 "micro_steps": getattr(case.parameters, "micro_steps", 1),
+                **(
+                    {
+                        "waveform_rtol": case.parameters.waveform_rtol,
+                        "waveform_max_iterations": (
+                            case.parameters.waveform_max_iterations
+                        ),
+                    }
+                    if getattr(
+                        case.parameters, "coupling", "synchronous"
+                    )
+                    == "waveform"
+                    else {}
+                ),
                 "time_guard": {
                     "policy": getattr(case.parameters, "dt_guard", "error"),
                     "minimum_samples_per_cycle": getattr(
@@ -1894,7 +1940,7 @@ class Run:
             handle.flush()
 
     def time_coupling_evidence(self, metadata):
-        """Publish accepted T0 stage-count, weight and memory evidence."""
+        """Publish accepted coupling stage-count, weight and memory evidence."""
         self.manifest["time_coupling_evidence"] = _json_value(metadata)
         self._publish_manifest()
 
@@ -2508,6 +2554,13 @@ def read_restart(path, case):
         "time_coupling",
         "micro_steps",
     }
+    if getattr(case.parameters, "coupling", "synchronous") == "waveform":
+        allowed.update(
+            {
+                "waveform_rtol",
+                "waveform_max_iterations",
+            }
+        )
     arrays = read_npz(path, case.limits, allowed)
     if not _array_scalar(arrays["accepted"], np.bool_):
         raise ValueError("checkpoint was not an accepted A0 state")
@@ -2529,15 +2582,6 @@ def read_restart(path, case):
             f"checkpoint={_array_text(arrays['physics_model'])}, "
             f"configured={expected_applicability['model']}"
         )
-    expected = {
-        "semantic_hash": case.semantic_hash,
-        "geometry_hash": case.geometry_hash,
-        "matrix_fingerprint": case.operator_hash,
-        "operator_rule_hash": _sha256_bytes(RULE_HASH_TEXT.encode()),
-    }
-    for name, value in expected.items():
-        if _array_text(arrays[name]) != value:
-            raise ValueError(f"restart {name} mismatch")
     if (
         _array_scalar(arrays["dt"], np.float64) != case.parameters.dt
         or _array_scalar(arrays["start_time"], np.float64)
@@ -2568,6 +2612,39 @@ def read_restart(path, case):
             f"checkpoint={saved_micro_steps}, "
             f"configured={configured_micro_steps}"
         )
+    if configured_coupling == "waveform":
+        for name in ("waveform_rtol", "waveform_max_iterations"):
+            if name not in arrays:
+                raise ValueError(
+                    f"restart {name} metadata missing; "
+                    "waveform checkpoint cannot establish control identity"
+                )
+        saved_rtol = _array_scalar(arrays["waveform_rtol"], np.float64)
+        saved_maximum = _array_scalar(
+            arrays["waveform_max_iterations"], np.uint64
+        )
+        configured_rtol = case.parameters.waveform_rtol
+        if saved_rtol != configured_rtol:
+            raise ValueError(
+                "restart waveform_rtol mismatch: "
+                f"checkpoint={saved_rtol}, "
+                f"configured={configured_rtol}"
+            )
+        if saved_maximum != case.parameters.waveform_max_iterations:
+            raise ValueError(
+                "restart waveform_max_iterations mismatch: "
+                f"checkpoint={saved_maximum}, "
+                f"configured={case.parameters.waveform_max_iterations}"
+            )
+    expected = {
+        "semantic_hash": case.semantic_hash,
+        "geometry_hash": case.geometry_hash,
+        "matrix_fingerprint": case.operator_hash,
+        "operator_rule_hash": _sha256_bytes(RULE_HASH_TEXT.encode()),
+    }
+    for name, value in expected.items():
+        if _array_text(arrays[name]) != value:
+            raise ValueError(f"restart {name} mismatch")
     cumulative = _cumulative_from_json(
         parse_json(_array_text(arrays["cumulative_json"]))
     )
