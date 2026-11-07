@@ -24,8 +24,8 @@
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 154862,
-      "sha256": "019c3c94eff2cc9a4da2e95636b0cd45bcadee5881d9c620533ade245763d986"
+      "bytes": 156899,
+      "sha256": "47ba7f108cd57af0924750153c60b0ca31773305e4c477522f42cd1d25cba0a8"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -69,8 +69,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 13205,
-      "sha256": "58ca7450c9592e568b2cf6f3834ab713808d3957433afb7d90a2d3dfd3c3176f"
+      "bytes": 13173,
+      "sha256": "bd833cad369421c73e4c83b1fe7e6c379458a266feae456dd86ded5128ffa228"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
@@ -89,8 +89,8 @@
     },
     {
       "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
-      "bytes": 16995,
-      "sha256": "0888bc6df131a7e01bcc3e0b6f4446d3166206d51cf6073b35c657941afef1bb"
+      "bytes": 16242,
+      "sha256": "5cf15508efb4897aaf7b79f36f4872e9ae2da2e6597f02a95cd96130e185902d"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_T0_BENCHMARK.md",
@@ -98,7 +98,7 @@
       "sha256": "53d8b02a1c36399b0a8849cbfafe0f1074d6340ab5130253882ad05ed5744d23"
     }
   ],
-  "captured_utc": "2026-11-06T18:39:01.712888+00:00",
+  "captured_utc": "2026-11-07T02:36:05.157397+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -135,7 +135,7 @@
     "baseline_branch": "release/a0",
     "baseline_commit": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8",
     "implemented": "T0 predictor and fixed-wall factor reuse",
-    "acceptance": "T0 report delivered: bounded periodic CPU/RTX5090 evidence; large-macro and closed-perturbation failures retained; T1 awaits user",
+    "acceptance": "Controlled periodic CPU baseline: M4/M8 satisfy joint criteria; M16/M32 show high-mode amplification; rejected full windows remain undetermined",
     "later_tiers": "T1-T4 require user decision at each algorithm tier",
     "multi_gpu": "reference and interface planning only",
     "numerical_commit": "93219d2f85c5185cefaa97fd3e8125cef632f4cb",
@@ -144,10 +144,13 @@
     "gpu_regression_passed": 12,
     "global_physical_validation": false,
     "equal_accuracy_speedup": false,
-    "report_presentation": "Plain-language issue assessment and offline HTML gallery; numerical solver unchanged",
-    "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T130923Z/a1-benchmark.html",
-    "next_tier": "T1 awaits user judgment; known scoped limitations do not automatically block prototype development",
+    "report_presentation": "A0-style English seven-figure/eight-page HTML plus Chinese controlled T0 report",
+    "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T163530Z/a1-benchmark.html",
+    "next_tier": "T1 recommended for user judgment; no T1 implementation",
     "gallery_format": "Existing A0 report renderer, English labels/captions, numbered pages/figures and matching plot conventions",
-    "controlled_temporal_protocol": "D064; fixed h=T/2048, 2T; main matrix pending"
+    "controlled_temporal_protocol": "D064; fixed h=T/2048, 2T; 24 final cases complete with retained rejections",
+    "controlled_benchmark_commit": "206e850c3220c021b03932e262e8e52c307f4a7e",
+    "controlled_cpu_tests_passed": 169,
+    "failure_evidence_repair": "206e850; exact record equality/order and accepted trajectory preserved"
   }
 }
