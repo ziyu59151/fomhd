@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "main": "02b895b07785ece33c2c782f69a66882cd724447", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a1-benchmark-report": "ece24d48046895abc48985b2a9515be6f5311e20", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "main": "91602ee825bb14943840449f473184a0edcd6b78", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8"} -->
 
 ```mermaid
 flowchart LR
@@ -152,6 +152,16 @@ flowchart LR
   c34ebff8678dd63feece2a5fde30c595872eb3df1 --> c02b895b07785ece33c2c782f69a66882cd724447
   cb9af715ab2cb75f661b2254a2ea05d2179334599 --> c02b895b07785ece33c2c782f69a66882cd724447
   click c02b895b07785ece33c2c782f69a66882cd724447 "https://github.com/ziyu59151/fomhd/commit/02b895b07785ece33c2c782f69a66882cd724447"
+  ca82df6e48c35f4522ed8091b1ba97392e40a406a["a82df6e4 · docs: update branch graph [skip ci]"]
+  c02b895b07785ece33c2c782f69a66882cd724447 --> ca82df6e48c35f4522ed8091b1ba97392e40a406a
+  click ca82df6e48c35f4522ed8091b1ba97392e40a406a "https://github.com/ziyu59151/fomhd/commit/a82df6e48c35f4522ed8091b1ba97392e40a406a"
+  cece24d48046895abc48985b2a9515be6f5311e20["ece24d48 · docs: clarify T0 issues and benchmark interpretation"]
+  ca82df6e48c35f4522ed8091b1ba97392e40a406a --> cece24d48046895abc48985b2a9515be6f5311e20
+  click cece24d48046895abc48985b2a9515be6f5311e20 "https://github.com/ziyu59151/fomhd/commit/ece24d48046895abc48985b2a9515be6f5311e20"
+  c91602ee825bb14943840449f473184a0edcd6b78["91602ee8 · Merge A1 benchmark presentation and T0 issue clarification"]
+  ca82df6e48c35f4522ed8091b1ba97392e40a406a --> c91602ee825bb14943840449f473184a0edcd6b78
+  cece24d48046895abc48985b2a9515be6f5311e20 --> c91602ee825bb14943840449f473184a0edcd6b78
+  click c91602ee825bb14943840449f473184a0edcd6b78 "https://github.com/ziyu59151/fomhd/commit/91602ee825bb14943840449f473184a0edcd6b78"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-grid-convergence"]) -.-> c81e89dbb9f58e36ff73be89e2e1912e7354920c4
   b2(["codex/a0-nl-cellplots"]) -.-> c0ff316a7ac35d7508b426fac3b268d99713dd1cb
@@ -159,10 +169,11 @@ flowchart LR
   b4(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
   b5(["codex/a0-tokamak-cae"]) -.-> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
   b6(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
-  b7(["codex/a1-t0"]) -.-> cb9af715ab2cb75f661b2254a2ea05d2179334599
-  b8(["main"]) -.-> c02b895b07785ece33c2c782f69a66882cd724447
-  b9(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
-  b10(["release/a0"]) -.-> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
+  b7(["codex/a1-benchmark-report"]) -.-> cece24d48046895abc48985b2a9515be6f5311e20
+  b8(["codex/a1-t0"]) -.-> cb9af715ab2cb75f661b2254a2ea05d2179334599
+  b9(["main"]) -.-> c91602ee825bb14943840449f473184a0edcd6b78
+  b10(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
+  b11(["release/a0"]) -.-> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
 ```
 
 Regenerate after fetching:
