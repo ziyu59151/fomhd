@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a1-benchmark-report": "ece24d48046895abc48985b2a9515be6f5311e20", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "main": "439eff62dd7e7e42bc211b4019f5799ffd99e8f3", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8", "release/a1-t0": "fc9a19e26fc2fb6d601c39e18a11a095386e3038"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a1-benchmark-report": "ece24d48046895abc48985b2a9515be6f5311e20", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "codex/a1-t1-waveform": "4c75394ec2f540cf224b91b0cb08766c34d0a506", "main": "efa1f05b666c171f73fea67303e41beb88a09a46", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8", "release/a1-t0": "fc9a19e26fc2fb6d601c39e18a11a095386e3038"} -->
 
 ```mermaid
 flowchart LR
@@ -182,6 +182,12 @@ flowchart LR
   cfc9a19e26fc2fb6d601c39e18a11a095386e3038 --> c439eff62dd7e7e42bc211b4019f5799ffd99e8f3
   c3bd295608440af87850cb4b814b4c85ce1f1abff --> c439eff62dd7e7e42bc211b4019f5799ffd99e8f3
   click c439eff62dd7e7e42bc211b4019f5799ffd99e8f3 "https://github.com/ziyu59151/fomhd/commit/439eff62dd7e7e42bc211b4019f5799ffd99e8f3"
+  cefa1f05b666c171f73fea67303e41beb88a09a46["efa1f05b · docs: update branch graph [skip ci]"]
+  c439eff62dd7e7e42bc211b4019f5799ffd99e8f3 --> cefa1f05b666c171f73fea67303e41beb88a09a46
+  click cefa1f05b666c171f73fea67303e41beb88a09a46 "https://github.com/ziyu59151/fomhd/commit/efa1f05b666c171f73fea67303e41beb88a09a46"
+  c4c75394ec2f540cf224b91b0cb08766c34d0a506["4c75394e · Implement complete ion stage-path waveform iteration and controlled T1 evidence"]
+  c439eff62dd7e7e42bc211b4019f5799ffd99e8f3 --> c4c75394ec2f540cf224b91b0cb08766c34d0a506
+  click c4c75394ec2f540cf224b91b0cb08766c34d0a506 "https://github.com/ziyu59151/fomhd/commit/4c75394ec2f540cf224b91b0cb08766c34d0a506"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-grid-convergence"]) -.-> c81e89dbb9f58e36ff73be89e2e1912e7354920c4
   b2(["codex/a0-nl-cellplots"]) -.-> c0ff316a7ac35d7508b426fac3b268d99713dd1cb
@@ -191,10 +197,11 @@ flowchart LR
   b6(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
   b7(["codex/a1-benchmark-report"]) -.-> cece24d48046895abc48985b2a9515be6f5311e20
   b8(["codex/a1-t0"]) -.-> cb9af715ab2cb75f661b2254a2ea05d2179334599
-  b9(["main"]) -.-> c439eff62dd7e7e42bc211b4019f5799ffd99e8f3
-  b10(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
-  b11(["release/a0"]) -.-> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
-  b12(["release/a1-t0"]) -.-> cfc9a19e26fc2fb6d601c39e18a11a095386e3038
+  b9(["codex/a1-t1-waveform"]) -.-> c4c75394ec2f540cf224b91b0cb08766c34d0a506
+  b10(["main"]) -.-> cefa1f05b666c171f73fea67303e41beb88a09a46
+  b11(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
+  b12(["release/a0"]) -.-> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
+  b13(["release/a1-t0"]) -.-> cfc9a19e26fc2fb6d601c39e18a11a095386e3038
 ```
 
 Regenerate after fetching:
