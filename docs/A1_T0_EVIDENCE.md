@@ -1,98 +1,119 @@
-# A1 T0 evidence and limits
+# Controlled T0 temporal evidence
 
-T0 provides a working one-prediction baseline in the tested periodic cases.
-Its observed coupling error is a limitation of the selected approximation,
-not by itself evidence of an implementation bug. Retain failed parameters
-and inherited initialization cases while continuing prototype development.
-Default coupling remains synchronous RK4. T1--T4, full sparse conversion and
-multi-GPU execution remain separate work; T1 still awaits the user's decision.
+Status: controlled CPU baseline delivered; T1 awaits the user's decision.
+Scientific protocol: design decision D064 and `A1/A1_T0_BENCHMARK.md`.
+Numerical benchmark commit: `206e850c3220c021b03932e262e8e52c307f4a7e`.
+The T0 accepted update is inherited from `93219d2`; the current commit changes
+failure-record collection and the separate prescribed-ion control workspace.
 
-Numerical benchmark: `93219d2f85c5185cefaa97fd3e8125cef632f4cb`.
-Closed-fixture explicit-upload repair: `581f20d050df50718e028d7550e9e65d57cc2ea7`;
-solver modules are unchanged. A0 maintenance: `release/a0` at
-`9a38bf41e7bc1fc50186c81967312a7ec5f028e8`.
+## Result and scope
 
-## Verification and temporal observations
+The fixed tangent ion predictor and complete microstage ion quadrature have a
+reproducible positive baseline. At h=T/2048 over two target periods, mixed-seed
+M4 and M8 satisfy the declared target-accuracy, high-mode-growth and hard-check
+criteria. M8 is close to the 1% growth flag. M16/M32 still satisfy target vector
+accuracy while amplifying the seeded high harmonic. Microstep refinement at
+fixed H does not remove the principal macro coupling effects.
 
-The final delivery passed 770 CPU tests, with 9 conditional skips and 3
-subtests. The final setup repair also passed 33 focused verifier tests.
-Independent review found no blocking issue. The frozen RTX 5090 run passed
-all 12 GPU regression checks. Development-stage A100 checks also passed 12
-cases; the frozen temporal scan used RTX 5090 because both A100s were occupied.
+This is a periodic temporal-isolation fixture: nine spatial samples, target
+spatial harmonic 1, high harmonic 4, toroidal K=0 and Nphi=1. It is not general
+CAW-CFL, closed-wall, production-scale, multi-GPU or speedup validation.
+CAW denotes the fast magnetosonic/compressional Alfven branch. Micro CFL refers
+to the electron/field fast subsystem; ion macro CFL and complete coupled-map
+amplification remain separate questions.
 
-The periodic adapter uses 9 points, K=0, k*di=1, amplitude 2e-6, one physical
-period, independent complex-exponential and synchronous h/h/2 references.
-It is not closed-wall or global physical validation. Hard checks are retained;
-empty-boundary and convergence observations are separate. The operator-
-frequency guard runs in documented warn mode: h=period/64 is not certified
-stable for the full spectrum.
+| M | H/T | Target-only maximum relative vector error | Mixed maximum high-mode norm gain | Mixed observation |
+|---|---|---|---|---|
+| 4 | 1/512 | 8.7278343e-05 | 1.00122823 | completed 2T |
+| 8 | 1/256 | 0.00034911217 | 1.00984122 | completed 2T |
+| 16 | 1/128 | 0.0013964397 | 1.08055114 | completed 2T |
+| 32 | 1/64 | 0.0055859409 | 1.80499679 | completed 2T |
+| 64 | 1/32 | 0.022356812 | 26.3430661 | accepted to 1.75T; rejected at 1.78125T |
+| 128 | 1/16 | 0.089944291 | 9.38113364 | accepted to 0.4375T; rejected at 0.5T |
+| 256 | 1/8 | initial state only; rejected | 1 | accepted to 0T; rejected at 0.125T |
 
-| Micro h | Method | Relative modal error | Signed phase, rad |
-|---|---|---:|---:|
-| period/64 | synchronous RK4 | 4.864e-6 | -4.847e-6 |
-| period/64 | T0 M=1 | 2.813e-3 | +2.785e-3 |
-| period/64 | T0 M=4 | 4.515e-2 | +4.368e-2 |
-| period/128 | T0 M=1 | 7.034e-4 | +6.971e-4 |
-| period/128 | T0 M=8 | 4.515e-2 | +4.368e-2 |
+A rejected requested window has undetermined full-window stability. Its
+accepted prefix is retained and any observed prefix amplification remains
+evidence. An initial-state gain of 1 after first-window rejection is not a
+completed-step result. Target-only high modes use absolute norms because their
+initial relative gain is undefined.
 
-These data support second-order behavior of this coupling in this case.
-Fixed-path quadrature has a separate fourth-order control. First-window ion
-path error is much larger than corrected endpoint error; refining h at fixed H
-leaves the dominant coupling error nearly unchanged.
+## Controls and references
 
-CPU/GPU endpoint modal coefficients agree within 7.674e-16 relative. A0/A1
-synchronous coefficients differ by 2.335e-15 on CPU and 2.479e-15 on GPU.
-Closed GPU initial data are explicitly constructed on the host and uploaded;
-perturbation, initialization and numerical stages use the requested GPU.
+All 24 final controls/trajectories use the same clean numerical commit,
+unchanged budgets and dt_guard=error. Main M=4,8,16,32,64,128,256 uses both
+seeds. Four synchronous references use h=T/2048 and T/4096 over 2T. Four T0
+cross-controls preserve H=T/16 or T/8 while halving h. Two prescribed-ion
+controls observe T/2 without advancing P or creating a coupled energy ledger.
 
-## Failures, costs and scope
+The actual nonzero-harmonic production 9x9 Jacobian includes pressure/acoustic
+coordinates. The fastest full/frozen frequencies are 1.62306353356e8 and
+1.53261330288e8 rad/s. At h* their omega*h values are 0.03213/0.03034, well
+inside the RK4 imaginary-axis interval. The generic estimate is separately
+recorded. Old T/64 and T/128 warnings are not demonstrated micro instability.
 
-- M=8,h=period/64 rejects the first macro on both backends: ion kinetic-energy
-  balance defect 2.2046e-8 J exceeds 8e-9 J. The total-energy balance also
-  fails at 2.2032e-8 J. These are balance residuals, not kinetic energy itself.
-  The former is about 1.77% of initial perturbation kinetic plus magnetic
-  energy in this adapter. No macro or cumulative ledger is accepted.
-  M=8,h=period/128 completes; do not label all M=8 runs unusable.
-- The closed nonzero perturbation fails before T0: wall electron flux 44007.1
-  on CPU and 33656.6 on GPU versus 20000. A0 reproduces the CPU failure.
-  Both backends also retain pressure/electric-work pairing failures at the
-  initial state. The unresolved initialization/boundary case blocks that
-  strict fixture, not all T0 development. Its small flux alone does not prove
-  that the other residuals are harmless.
-  The earlier GPU fixture TypeError is retained separately from its repair.
-- Model counts are 6N+N/M versus 7N for synchronous RK4; both are O(N).
-  T0 keeps O(M) stage history, including density-dependent constraint factors.
-  Failure-record merging still has potentially quadratic Python work.
-- For this small case, synchronous h=period/64 takes 20.95s on RTX 5090 versus
-  2.33s on CPU; T0 M=4 takes 18.94s versus 2.10s. CPU uses a median of 3 measured
-  samples, GPU 1, after independent warmup. Timings include checks, modal
-  history and synchronization. There is no equal-accuracy speedup claim.
-- Fixed-wall reuse separately removes repeated curl-curl materialization and
-  factorization, with dense-reference E/Bdot differences near roundoff.
-  Other dense operators and density-dependent solves remain.
+The two Jacobian perturbation scales differ by at most 2.08263e-8 s^-1 in
+absolute matrix-entry norm; this is not a relative matrix error. The incomplete
+m=0 longitudinal probe is retained and masked. Independent cold Hall vectors
+and eigenvalues define the analytic reference. Production Jacobians and the
+complete T0 macro maps are local linear evidence, not independent references
+or nonlinear trajectories. Map powers and actual seed transients are reported
+separately from spectral radii.
 
-The full report is in the design repository:
-`mainline_design/implementation/A1/A1_T0_REPORT.md`. Raw products, commands,
-source hashes and failures are under
-`/home/lxzeng/runs/fomhd/a1-t0-acceptance__20261106T110000Z/`.
-Final periodic GPU products are in `gpu-bounded/`; repaired closed evidence
-is in `gpu-closed-repaired/`. The interrupted initial GPU scan is incomplete
-and excluded. Earlier failures and audits remain in the preparation/worker
-records. RSS/HWM and CuPy pool statistics are process-wide observations,
-not isolated live peaks.
+Full synchronous high-mode maximum vector errors over 2T are 1.16841e-6 at h*
+and 7.30139e-8 at h*/2. Frozen-ion errors over T/2 are 2.19294e-7 and1.37060e-8;
+P stays exactly fixed. Only the waveform view is cropped to 0.3T.
 
-The plain-language report and offline visual gallery separate immediate
-implementation repairs, approximation limits, failed parameters, inherited
-initialization problems and scale-dependent costs. The gallery is at
-`/home/lxzeng/runs/fomhd/a1-benchmark__20261106T130923Z/a1-benchmark.html`.
-It reuses frozen arrays and does not rerun the solver or change thresholds.
-Its English text, numbered pages/figures, captions and source badges reuse the
-existing A0 report renderer; plot typography and palette follow A0 as requested.
-Larger physical benchmarks should determine the impact and repair priority of
-recorded limitations; they cannot automatically remove macro-step truncation
-error. Reopen an issue when it prevents the required case, materially changes
-the target response, or becomes a measured resource bottleneck.
+## Preserved failures and engineering repairs
 
-Use `tools/warp_t0_verify.py --help` with a fresh output directory. A scan
-returns nonzero for retained failed cases. GPU execution requires an owned
-Slurm allocation. Enter T1 waveform correction only after the user's judgment.
+Large macro energy/ion kinetic balance rejections retain the original 8e-9 J
+budget, candidate arrays, checks, accepted state and cumulative ledger. At
+H=T/8 the first candidate's ion kinetic balance defect is about2.2046e-8 J.
+This is a balance defect, not the kinetic energy itself.
+
+The first attempted matrix is retained separately. Its frozen h*/2 diagnostic
+incorrectly requested storage for a fictitious whole retained predictor
+window and stopped before stepping. The corrected manual diagnostic declares
+one-step workspace with deterministic absolute clocks. Long failed-window
+exports also exposed repeated full-record list membership; cached identity
+buckets preserve exact record equality/order. Outer bookkeeping can still
+rescan history; whole-export linear scaling is not claimed.
+
+The final matrix reruns every case at one reviewed commit. Sixteen comparable
+T0 cases preserve bitwise-identical accepted histories across the record-merge
+repair; retained rejection checks match in content/order. Necessary gates,
+physical RHS, quadrature, budgets and transaction rollback are unchanged.
+
+Completed files retain the explicit COMPLETED_WITH_SOFT_FAILURES label,
+including nonapplicable massless channels, empty periodic wall regions and
+momentum/divergence convergence observations. These are not relabeled as
+universal diagnostic passes. Legacy closed-initialization and m=0 issues are
+retained separately; they do not automatically block T1.
+
+## Artifacts, cost and next layer
+
+- [Offline A0-style HTML gallery](/home/lxzeng/runs/fomhd/a1-benchmark__20261106T163530Z/a1-benchmark.html)
+- [Chinese report](/home/lxzeng/fomhd-design/mainline_design/implementation/A1/A1_T0_REPORT.md)
+- [Exact matrix commands and results](/home/lxzeng/runs/fomhd/a1-t0-controlled__20261106T163530Z/matrix-final/MATRIX_STATUS.json)
+- [Compact plot input](/home/lxzeng/runs/fomhd/a1-t0-controlled__20261106T163530Z/matrix-final/plot-data.json)
+- [Accepted-trajectory and failure-record equivalence](/home/lxzeng/runs/fomhd/a1-t0-controlled__20261106T163530Z/matrix-final/REPAIR_EQUIVALENCE.json)
+- [Prior exploratory gallery](/home/lxzeng/runs/fomhd/a1-benchmark__20261106T130923Z/a1-benchmark.html)
+
+The gallery reuses the unchanged A0 renderer/CSS and English plot conventions.
+It keeps seven figures across eight pages, including full-horizon micro error,
+macro accuracy, complete-map high-mode evolution, fixed-H refinements, raw
+energy checks, linear maps, qualification and diagnostic-inclusive costs.
+The old 1T warning points are separate from the new 2T baseline.
+
+At N microsteps T0 uses 6N+N/M complete model evaluations versus 7N for
+synchronous RK4; both remain O(N). T0 retains 4M quadrature stages per window.
+Elapsed observations include diagnostics and recording, with concurrent CPU
+runs and unequal accepted horizons for rejected cases. No equal-accuracy
+speedup or isolated measured memory peak is claimed. This round did not rerun
+GPU scientific scope; earlier GPU evidence remains historical.
+
+Verification: 169 targeted CPU tests plus independent changed-path review;
+actual gallery/provenance and delivery checks are recorded in the run index.
+T1 is recommended for user review: preserve this input/horizon/criteria matrix,
+first measure improvement at the same H, then test whether the usable H range
+expands. T1-T4 each require their own report and user decision.

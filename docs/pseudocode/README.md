@@ -6,7 +6,7 @@
 > contracts.
 > Authority: the design repository owns the mathematical model; this directory
 > owns the step-by-step mapping to the active Python/Warp/CuPy source.
-> Last synchronized: 2026-11-06; inherited A0 step IDs remain stable.
+> Last synchronized: 2026-11-07; inherited A0 step IDs remain stable.
 
 ## File mapping
 
@@ -32,8 +32,10 @@ documents, not fictitious modules. The active entry point is
 | Quasineutral massless equations, constraints and diagnostics | [massless stage](src/fomhd/massless.py.md), [massless checks](src/fomhd/massless_checks.py.md) |
 | Hall response, closed-wall reconstruction and evidence output | [massless fixture](tests/warp/massless_verification_fixture.py.md), [verification CLI](tools/warp_massless_verify.py.md) |
 | T0 equal-horizon comparisons, per-field errors and retained failures | [T0 evidence CLI](tools/warp_t0_verify.py.md) |
+| Controlled micro CFL, complete T0 macro scans and fixed-H refinement | [controlled T0 CLI](tools/warp_t0_controlled.py.md), [tests](tests/warp/test_warp_t0_controlled.py.md) |
 | Python case generation, equal-horizon scans, scales and plots | [benchmark](tools/warp_benchmark.py.md), [frequency table](tools/frequency_table.py.md), [plots](tools/plots/plot_warp_benchmarks.py.md) |
 | Documented massless case template | [case config](tools/case_config.py.md) |
+| Controlled T0 A0-style gallery and provenance checks | [builder](tools/plots/build_a1_t0_report.py.md), [checker](tools/plots/check_a1_t0_report.py.md) |
 | Offline analysis and accepted-run figures | [analyze.py](tools/analyze.py.md), [plot run](tools/plots/plot_run.py.md) |
 | User-owned Slurm launcher | [a0.slurm](jobs/a0.slurm.md) |
 

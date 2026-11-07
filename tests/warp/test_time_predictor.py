@@ -1361,3 +1361,44 @@ def test_predictor_restart_identity_accepts_same_and_rejects_changed(
     changed_case = io.load_case(changed)
     with pytest.raises(ValueError, match="coupling|micro_steps|semantic"):
         io.read_restart(checkpoint, changed_case)
+
+
+def test_failure_history_merge_preserves_records_without_quadratic_scan(monkeypatch):
+    from types import SimpleNamespace
+    from fomhd import stage
+    from fomhd.types import Failure, StageTag, check_record
+
+    comparisons = 0
+
+    class CountedRecord(SimpleNamespace):
+        def __eq__(self, other):
+            nonlocal comparisons
+            comparisons += 1
+            return super().__eq__(other)
+
+    original = [
+        CountedRecord(**vars(check_record(name="probe", tag=StageTag(generation=i))))
+        for i in range(400)
+    ]
+    failure = Failure("HardGate", "retained diagnostic history")
+    failure.checks = list(original)
+    monkeypatch.setattr(stage._diagnostics(), "stage_requirements", lambda *_: [])
+    context = SimpleNamespace()
+    for record in original:
+        copied = CountedRecord(**vars(record))
+        result = SimpleNamespace(checks=[copied], residuals={}, cache=None)
+        stage._retain_common_failure_evidence(
+            failure, record.tag, context, None, result, "probe"
+        )
+    assert comparisons <= 2 * len(original)
+    assert [id(record) for record in failure.checks] == [id(record) for record in original]
+
+    changed = CountedRecord(**{**vars(original[0]), "raw": 2.0})
+    external = check_record(name="external", tag=StageTag(generation=1000))
+    failure.checks.append(external)
+    result = SimpleNamespace(checks=[changed], residuals={}, cache=None)
+    stage._retain_common_failure_evidence(
+        failure, changed.tag, context, None, result, "changed"
+    )
+    assert failure.checks[-2] is external
+    assert failure.checks[-1] is changed

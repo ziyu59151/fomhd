@@ -57,3 +57,11 @@ require interval species continuity and CT hard checks to pass with 4M
 Passing these checks is evidence for the stated tiny CPU fixture only. It does
 not establish macro-coupling stability, global Tokamak accuracy, GPU behavior,
 or performance.
+
+## A1-PY-TEST-PREDICTOR-04 - Failure history collection
+
+For many distinct microstage identities, retain equal copied records without
+re-appending them. Retain a same-identity record with different measured value.
+Preserve original ordering and rebuild the cache after external appends. Count
+equality comparisons to reject quadratic full-history membership scans; do not
+use a timing assertion. Existing failure tests continue to verify rollback.

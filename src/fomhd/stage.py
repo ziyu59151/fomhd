@@ -375,27 +375,7 @@ def _retain_common_failure_evidence(
         failure.checks = []
     if not hasattr(failure, "partial_arrays"):
         failure.partial_arrays = {}
-    if result is not None:
-        for check in getattr(result, "checks", []):
-            if check not in failure.checks:
-                failure.checks.append(check)
-        for key, value in getattr(result, "residuals", {}).items():
-            failure.partial_arrays.setdefault(f"{prefix}.{key}", value)
-        if result.cache is not None and result.cache.E is not None:
-            failure.partial_arrays.setdefault(f"{prefix}_E", result.cache.E)
-    if state is not None:
-        failure.partial_arrays.setdefault(f"{prefix}_B", state.B)
-        for species, ident in enumerate(("i", "e")):
-            fluid = state.fluid[species]
-            failure.partial_arrays.setdefault(f"{prefix}_n_{ident}", fluid.n)
-            failure.partial_arrays.setdefault(
-                f"{prefix}_momentum_{ident}", fluid.mom
-            )
-            failure.partial_arrays.setdefault(f"{prefix}_p_{ident}", fluid.perp)
-            if species == 1:
-                failure.partial_arrays.setdefault(
-                    f"{prefix}_p_parallel_e", fluid.parallel
-                )
+
     def identity(check):
         return (
             check.name,
@@ -415,18 +395,52 @@ def _retain_common_failure_evidence(
             int(getattr(check.tag, "slab", 0)),
         )
 
+    buckets = getattr(failure, "_retained_check_buckets", None)
+    if (
+        buckets is None
+        or getattr(failure, "_retained_check_count", -1) != len(failure.checks)
+    ):
+        buckets = {}
+        for check in failure.checks:
+            buckets.setdefault(identity(check), []).append(check)
+        failure._retained_check_buckets = buckets
+    if result is not None:
+        for check in getattr(result, "checks", []):
+            bucket = buckets.setdefault(identity(check), [])
+            if check not in bucket:
+                failure.checks.append(check)
+                bucket.append(check)
+        for key, value in getattr(result, "residuals", {}).items():
+            failure.partial_arrays.setdefault(f"{prefix}.{key}", value)
+        if result.cache is not None and result.cache.E is not None:
+            failure.partial_arrays.setdefault(f"{prefix}_E", result.cache.E)
+    if state is not None:
+        failure.partial_arrays.setdefault(f"{prefix}_B", state.B)
+        for species, ident in enumerate(("i", "e")):
+            fluid = state.fluid[species]
+            failure.partial_arrays.setdefault(f"{prefix}_n_{ident}", fluid.n)
+            failure.partial_arrays.setdefault(
+                f"{prefix}_momentum_{ident}", fluid.mom
+            )
+            failure.partial_arrays.setdefault(f"{prefix}_p_{ident}", fluid.perp)
+            if species == 1:
+                failure.partial_arrays.setdefault(
+                    f"{prefix}_p_parallel_e", fluid.parallel
+                )
+
     try:
         required = _diagnostics().stage_requirements(context, tag)
     except Exception:
         required = []
-    present = {identity(check) for check in failure.checks}
     for check in required:
-        if identity(check) not in present:
+        if identity(check) not in buckets:
             check.available = False
             check.passed = False
             check.reason = f"not run: {failure.code}"
             failure.checks.append(check)
-            present.add(identity(check))
+            buckets[identity(check)] = [check]
+
+    failure._retained_check_count = len(failure.checks)
 
 
 def retain_failure_evidence(failure, tag, context, state, result, prefix):

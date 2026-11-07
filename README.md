@@ -11,7 +11,7 @@ fixed wall-system reuse, and the experimental T0 predictor. A0 is maintained
 on `release/a0` at `9a38bf4`; each checkout contains one solver source tree.
 The default time coupling remains synchronous RK4. T0 is selected explicitly
 and does not imply waveform iteration or multi-GPU acceptance.
-[T0 evidence and limits](docs/A1_T0_EVIDENCE.md) records the first delivery.
+[T0 evidence and limits](docs/A1_T0_EVIDENCE.md) records the controlled two-period baseline, retained failures and current limits.
 
 The active `main` implementation is the FP64/complex128 Python solver under
 [`src/fomhd/`](src/fomhd), using NVIDIA Warp 1.19.0, CuPy CUDA13x 14.2.0, and

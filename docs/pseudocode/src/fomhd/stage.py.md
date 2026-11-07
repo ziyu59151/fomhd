@@ -151,3 +151,11 @@ as required by the evaluator, time, and alternate spectral context. Common
 failure deduplication compares those three fields with the existing record
 identity. Alias evaluation therefore cannot collapse a predictor k2 and k3 that
 share a clock.
+
+### Bounded failure-record merging
+
+Completed checks keep the same equality and order as list membership. Build a
+failure-owned index by diagnostic/tag identity; compare full records only in
+the matching bucket. Cache this index across retained microstages and rebuild
+if another producer appended checks. Required unavailable checks use the same
+index. This changes evidence collection cost, never gates, arrays or commits.
