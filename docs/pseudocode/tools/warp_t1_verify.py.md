@@ -126,6 +126,15 @@ amplitude or relative ratios against T0-predictor or synchronous noise at any
 nesting level. Retain absolute vector/norm differences and explicitly mark all
 high ratios undefined.
 
+Archived T0 initial State fields retain one leading singleton time axis:
+  initial_ion_n             (1,9)
+  initial_ion_momentum      (1,27)
+  initial_B                 (1,27)
+while T1's diagnostic capture is unbatched as (9,) or (27,).
+For INITIAL fields only, remove exactly one leading axis iff it has length one
+and the remaining shape exactly equals the T1 field. Do not squeeze arbitrary
+axes or permit any other layout mismatch.
+
 Before calling time.advance, create a fresh output directory and write
 input.json containing:
   validated controls and schedule
@@ -206,6 +215,11 @@ coupling_metadata, including all iteration/sweep residual records, then stop.
 Do not depend on a particular residual key layout.
 
 At the end write:
+  accepted-history-raw.npz
+    immediately after raw initial/accepted modal, State and totals histories,
+    cumulative ledger, seed arrays and failure partial arrays are assembled
+    before independent REF, T0-predictor or synchronous comparison/postprocess
+    so a later exporter bug cannot discard the completed accepted history
   history.npz
     initial and every accepted modal/state history
     every accepted totals history
@@ -259,6 +273,9 @@ separately implemented T1 core:
   fake CUDA seed construction never receives the CUDA context
   all nine uploaded state fields are selected-backend complex128 arrays
   CPU seed state and coefficients remain identical with zero uploads
+  actual archived T0 initial (1,9)/(1,27) fields compare to unbatched T1
+  different initial layouts still fail strictly
+  injected postprocess failure leaves accepted-history-raw.npz intact
   unknown nested residual metadata is preserved in iterations.jsonl
   success writes checks/history/case without failure artifacts
   failure retains traceback, stage/checks, partial arrays, accepted/cumulative

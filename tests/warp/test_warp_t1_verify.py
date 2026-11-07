@@ -738,7 +738,18 @@ def test_success_writes_history_iterations_and_case(tmp_path, monkeypatch):
     assert summary["memory"]["reported_estimates"]["peak_memory_bytes"] == 4096
     assert (output / "case.json").is_file()
     assert (output / "history.npz").is_file()
+    assert (output / "accepted-history-raw.npz").is_file()
     assert not (output / "failure.json").exists()
+    with np.load(
+        output / "accepted-history-raw.npz",
+        allow_pickle=False,
+    ) as raw_history:
+        assert raw_history["accepted_time_s"].size == 3
+        assert raw_history["target_coeff_history"].shape == (3, 4)
+        np.testing.assert_array_equal(
+            raw_history["totals_total_energy_J_history"],
+            np.ones(3),
+        )
     with np.load(output / "history.npz", allow_pickle=False) as history:
         assert history["accepted_time_s"].size == 3
         assert history["target_coeff_history"].shape == (3, 4)
@@ -759,6 +770,39 @@ def test_success_writes_history_iterations_and_case(tmp_path, monkeypatch):
     )
     assert summary["synchronous_reference"]["matched_time_count"] == 3
     assert "t0_predictor_baseline" in summary
+
+
+def test_postprocess_failure_retains_raw_accepted_history(
+    tmp_path, monkeypatch
+):
+    tool = module()
+    baseline = _baseline_fixture(tmp_path / "baseline", tool)
+    _install_fake_pipeline(monkeypatch, tool)
+    output = tmp_path / "raw-before-postprocess"
+
+    def reject_postprocess(*args, **kwargs):
+        raise RuntimeError("injected postprocess failure")
+
+    monkeypatch.setattr(
+        tool,
+        "_synchronous_comparisons",
+        reject_postprocess,
+    )
+    with pytest.raises(RuntimeError, match="injected postprocess"):
+        tool.run_case(
+            output,
+            M=2,
+            micro_per_period=2048,
+            t0_baseline=baseline,
+        )
+
+    raw_path = output / "accepted-history-raw.npz"
+    assert raw_path.is_file()
+    with np.load(raw_path, allow_pickle=False) as history:
+        assert history["accepted_time_s"].size == 3
+        assert history["target_coeff_history"].shape == (3, 4)
+        assert history["accepted_ion_n"].shape == (2, 1)
+        assert "cumulative_accepted_intervals" in history.files
 
 
 def test_target_only_high_has_no_ratios_against_noise(tmp_path, monkeypatch):
@@ -940,6 +984,78 @@ def test_baseline_clock_mismatch_is_detected(tmp_path):
 
     with pytest.raises(ValueError, match="clock"):
         tool._load_t0_baseline(baseline, controls)
+
+
+def test_archived_t0_initial_singleton_axis_matches_unbatched_capture():
+    tool = module()
+    controls = tool.normalize_controls(
+        device="cpu",
+        M=4,
+        micro_per_period=2048,
+        cycles=2,
+        seed="target",
+        rtol=1.0e-10,
+        max_iterations=12,
+    )
+    baseline = tool._load_t0_baseline(
+        Path(
+            "/home/lxzeng/runs/fomhd/"
+            "a1-t0-controlled__20261106T163530Z/"
+            "matrix-final/cases/t0-h2048-M4-target"
+        ),
+        controls,
+    )
+    arrays = baseline["arrays"]
+    assert arrays["initial_ion_n"].shape == (1, 9)
+    assert arrays["initial_ion_momentum"].shape == (1, 27)
+    initial = {
+        name.removeprefix("initial_"): np.asarray(value[0])
+        for name, value in arrays.items()
+        if name.startswith("initial_")
+    }
+    accepted = {
+        name.removeprefix("accepted_"): np.asarray(value)
+        for name, value in arrays.items()
+        if name.startswith("accepted_") and name != "accepted_time_s"
+    }
+    totals = {
+        name.removeprefix("totals_").removesuffix("_history"): np.asarray(value)
+        for name, value in arrays.items()
+        if name.startswith("totals_") and name.endswith("_history")
+    }
+
+    report, saved = tool._baseline_comparisons(
+        times=arrays["accepted_time_s"],
+        target=arrays["target_coeff_history"],
+        high=arrays["high_coeff_history"],
+        initial_state_arrays=initial,
+        state_arrays=accepted,
+        totals_by_name=totals,
+        baseline=baseline,
+    )
+
+    assert set(report["initial_state"]) == set(initial)
+    assert all(
+        item["maximum_absolute_error"] == 0.0
+        for item in report["initial_state"].values()
+    )
+    assert saved["t0_initial_ion_n"].shape == (1, 9)
+    assert saved["t0_initial_ion_momentum"].shape == (1, 27)
+
+
+def test_initial_singleton_axis_removal_is_strict():
+    tool = module()
+    actual = np.zeros(9)
+    expected_one_singleton = np.zeros((1, 9))
+    expected_different = np.zeros((1, 2, 9))
+
+    canonical_actual, canonical_expected = (
+        tool._canonicalize_initial_array(actual, expected_one_singleton)
+    )
+    assert canonical_actual.shape == (9,)
+    assert canonical_expected.shape == (9,)
+    with pytest.raises(ValueError, match="initial"):
+        tool._canonicalize_initial_array(actual, expected_different)
 
 
 def test_direct_cli_bootstraps_without_pythonpath(tmp_path):

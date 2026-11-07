@@ -51,6 +51,11 @@ time, seed vectors, coefficients and normalization remain unchanged.
 
 Run the same seed-boundary helper on CPU and require the original NumPy State
 object and all values to remain unchanged with zero upload calls.
+
+Load a real archived T0 history and verify its initial fields retain singleton
+time axes `(1,9)` and `(1,27)`. Compare unbatched T1 copies with the complete
+baseline and require all initial comparisons to pass. Add a strict negative
+control where removing a leading singleton would still leave a different shape.
 ```
 
 ## A1-PY-TEST-T1-VERIFY-03 - Production evidence with synthetic records
@@ -71,6 +76,12 @@ On success verify:
   history.npz initial/every-accepted modal/state/totals and T0-aligned arrays
   checks.jsonl.gz exists
   no failure artifacts
+  accepted-history-raw.npz matches the accepted modal/state/totals data
+
+Force _synchronous_comparisons to raise after advancement and before final
+export. Require accepted-history-raw.npz to remain readable with all 1025
+accepted clocks in production or the complete synthetic accepted prefix in the
+focused fixture.
   target/high synchronous arrays and matched clocks are retained
   mixed growth uses the synchronous high history under matched_synchronous
   T0-predictor high comparison has its own matched_t0_predictor key

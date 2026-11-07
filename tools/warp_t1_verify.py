@@ -1174,6 +1174,27 @@ def _array_comparison(
     }
 
 
+def _canonicalize_initial_array(
+    actual: np.ndarray,
+    reference: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Remove one archived singleton time axis, never any other axis."""
+    observed = np.asarray(actual, dtype=np.complex128)
+    expected = np.asarray(reference, dtype=np.complex128)
+    if observed.shape == expected.shape:
+        return observed, expected
+    if (
+        expected.ndim == observed.ndim + 1
+        and expected.shape[0] == 1
+        and expected.shape[1:] == observed.shape
+    ):
+        return observed, expected[0]
+    raise ValueError(
+        "initial comparison shape mismatch after singleton-axis check: "
+        f"{observed.shape} != {expected.shape}"
+    )
+
+
 def _vector_history_comparison(
     actual: np.ndarray,
     reference: np.ndarray,
@@ -1384,9 +1405,12 @@ def _baseline_comparisons(
             continue
         expected = np.asarray(baseline["arrays"][key]).copy()
         arrays_to_save[f"t0_{key}"] = expected
+        canonical_actual, canonical_expected = (
+            _canonicalize_initial_array(actual, expected)
+        )
         initial_comparison[name] = _array_comparison(
-            actual,
-            expected,
+            canonical_actual,
+            canonical_expected,
             unit=_STATE_UNITS.get(name, ""),
         )
     result["initial_state"] = initial_comparison
@@ -2027,6 +2051,9 @@ def run_case(
                 partial_arrays[str(name)] = array
                 arrays[f"partial_{name}"] = array
 
+    accepted_history_raw_path = output / "accepted-history-raw.npz"
+    t0._save_npz(accepted_history_raw_path, arrays)
+
     accuracy = None
     reference_specs: dict[int, dict[str, Any]] = {}
     if prepared is not None:
@@ -2412,6 +2439,7 @@ def run_case(
             "input_json": "input.json",
             "case_json": "case.json",
             "history_npz": "history.npz",
+            "accepted_history_raw_npz": accepted_history_raw_path.name,
             "checks_jsonl_gzip": checks_path.name,
             "iterations_jsonl": iterations_path.name,
             "provenance_json": "provenance.json",
@@ -2467,6 +2495,7 @@ def run_case(
     for name in (
         "input_json",
         "history_npz",
+        "accepted_history_raw_npz",
         "checks_jsonl_gzip",
         "iterations_jsonl",
         "provenance_json",
