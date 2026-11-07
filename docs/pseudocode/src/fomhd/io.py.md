@@ -180,23 +180,32 @@ resolved_config_sha256, independent of JSON serialization ordering.
 
 ```text
 time allowed additions:
-  coupling in {"synchronous","predictor"}, default "synchronous"
+  coupling in {"synchronous","predictor","waveform"}, default "synchronous"
   micro_steps actual positive integer, default 1
+  waveform_rtol positive finite non-boolean float, default 1e-10
+  waveform_max_iterations positive non-boolean integer, default 12
 
 cross-field validation:
   synchronous requires micro_steps==1
-  predictor requires electron_inertia==0 and integrator=="rk4"
+  predictor or waveform requires electron_inertia==0 and integrator=="rk4"
+  waveform controls are accepted only with coupling="waveform"
   reject bool, fractional, zero, negative, or noninteger micro_steps
+  reject nonfinite/nonpositive/bool waveform_rtol and invalid sweep limit
   reject unsupported combinations before Run directory or trial mutation
 
 semantic time normalization:
   time.coupling=effective Parameters.coupling
   time.micro_steps=effective Parameters.micro_steps
+  if waveform:
+    time.waveform_rtol=effective Parameters.waveform_rtol
+    time.waveform_max_iterations=effective Parameters.waveform_max_iterations
 ```
 
 Omitted defaults and explicit defaults produce the same resolved semantic
-identity. `nsteps` remains the accepted macro-interval count and `dt` remains
-the macro interval.
+identity. Waveform keys are inserted into semantic identity only for waveform
+coupling, so existing synchronous/predictor semantic hashes and checkpoints
+remain valid. `nsteps` remains the accepted macro-interval count and `dt`
+remains the macro interval.
 
 ## A1-PY-IO-02 - Coupling manifest and restart compatibility
 
@@ -204,20 +213,28 @@ the macro interval.
 run manifest:
   coupling=effective time coupling
   micro_steps=effective positive integer
+  if waveform: waveform_rtol and waveform_max_iterations
   accepted predictor result evidence remains JSON-finite
 
 checkpoint identity:
-  write time_coupling and micro_steps scalar metadata
-  keep the existing semantic_hash check as the complete compatibility gate
+  write time_coupling and micro_steps scalar metadata for all couplings
+  if waveform: write waveform_rtol and waveform_max_iterations
+  keep semantic_hash as the complete compatibility gate; waveform controls also
+    enter waveform semantic identity
 
 read_restart:
-  require time_coupling and micro_steps metadata
-  compare them with the configured effective values before state decode/upload
+  require the exact waveform key set only for waveform checkpoints
+  require time_coupling and micro_steps metadata for all couplings
+  compare scheme, M, and waveform controls before semantic identity
+    and before state decode/upload
   report the exact checkpoint/configured scheme or M mismatch
   legacy checkpoints without the added metadata are rejected explicitly
   synchronous scheme/M continues to resume; predictor resumes only under the
     same scheme, M, model, integrator, and semantic identity
+  waveform resumes only under the same scheme, M, tolerance, sweep limit,
+    model, integrator, and semantic identity
 ```
 
-Only complete accepted macro endpoints are encoded. The mid-microstage states
-held for interval quadrature are never written as restart candidates.
+Only complete accepted macro endpoints are encoded. No partially iterated
+waveform window is encoded; mid-microstage and old/new path states held for
+iteration or interval quadrature are never written as restart candidates.

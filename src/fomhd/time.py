@@ -1,4 +1,4 @@
-"""A0 synchronous and A1-T0 predictor time transactions."""
+"""A0 synchronous and A1 predictor/waveform time transactions."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ def validate_time_controls(parameters):
     if type(coupling) is not str or coupling not in (
         "synchronous",
         "predictor",
+        "waveform",
     ):
         raise Failure("Config", f"unknown time coupling: {coupling}")
     micro_steps = getattr(parameters, "micro_steps", 1)
@@ -42,16 +43,37 @@ def validate_time_controls(parameters):
             "Config",
             "synchronous coupling requires micro_steps=1",
         )
-    if coupling == "predictor":
+    if coupling in ("predictor", "waveform"):
         if inertia != 0:
             raise Failure(
                 "Config",
-                "predictor coupling requires massless electron_inertia=0",
+                f"{coupling} coupling requires massless electron_inertia=0",
             )
         if integrator != "rk4":
             raise Failure(
                 "Config",
-                "predictor coupling requires integrator='rk4'",
+                f"{coupling} coupling requires integrator='rk4'",
+            )
+    if coupling == "waveform":
+        rtol = getattr(parameters, "waveform_rtol", 1.0e-10)
+        if (
+            type(rtol) not in (int, float)
+            or isinstance(rtol, bool)
+            or not math.isfinite(float(rtol))
+            or float(rtol) <= 0.0
+        ):
+            raise Failure(
+                "Config",
+                "waveform_rtol must be a positive finite non-boolean real",
+            )
+        maximum = getattr(
+            parameters, "waveform_max_iterations", 12
+        )
+        if type(maximum) is not int or maximum <= 0:
+            raise Failure(
+                "Config",
+                "waveform_max_iterations must be a positive "
+                "non-boolean integer",
             )
     return coupling, micro_steps
 
@@ -638,4 +660,13 @@ def advance(committed, cumulative, context, source=None):
         from . import time_predictor
 
         return time_predictor.advance(committed, cumulative, context)
+    if coupling == "waveform":
+        if source is not None:
+            raise Failure(
+                "ManufacturedSource",
+                "waveform massless source callbacks are unsupported",
+            )
+        from . import time_waveform
+
+        return time_waveform.advance(committed, cumulative, context)
     return _advance(committed, cumulative, context, source, integrator)

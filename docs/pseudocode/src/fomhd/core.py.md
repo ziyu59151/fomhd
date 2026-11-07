@@ -90,14 +90,20 @@ for the tangent rather than multiplying a repeatedly used `h`. A predictor
 stage state has the tangent ion value and the corresponding RK4
 electron-pressure/field state.
 
-## A1-PY-CORE-02 - Predictor preflight and memory
+## A1-PY-CORE-02 - Predictor and waveform preflight memory
 
 ```text
 predictor_history_entries(c):
   if coupling == synchronous: return 0
+  require coupling in {predictor,waveform}
   require micro_steps is positive non-boolean integer
   full_state = checked(11*Nc+MB_size)
-  return checked(4*M*full_state, plus conservative cache/rhs/stage counts)
+  retained = checked(4*M*full_state, plus conservative cache/rhs/stage counts)
+  if waveform:
+    ion_stage = checked(Mmodes*5*Nc)
+    retained += checked(2*(4*M)*ion_stage)  # old/new complete ion paths
+    retained += checked(2*ion_stage)        # old/new ion endpoints
+  return retained
 
 preflight_memory(c):
   reject missing/zero host cap; require positive CUDA cap on CUDA
@@ -106,18 +112,25 @@ preflight_memory(c):
     q*(64*Ne*w + 128*w*w + 64*w + 32*Nb*w) bytes
     q=2K+1; w=len(geometry.walls); q and w are checked integers
     missing/None wall lists use w=0; finite inertia contributes zero
-  for predictor massless contexts add per retained stage:
+  for predictor or waveform massless contexts add per retained stage:
     16*N*w*w + 32*N*(w+3*Nc) complex128-entry allowance
     multiply by 4*M with checked products; this covers stage wall.samples S,
     CPU dense LU original/factors, and dense vector work per phi sample
   apply checked peak and state/workspace caps before any trial allocation
 ```
 
-The predictor retains all `4M` evaluated full stages for the existing
-read-only interval diagnostics. It is not constant-memory or sparse.
+The predictor and waveform scheduler retain one sweep of all `4M` evaluated
+full stages for the existing read-only interval diagnostics. Waveform adds the
+old/new `4M` ion stage paths and both ion endpoints. The estimate does not grow
+with `waveform_max_iterations`; prior sweeps retain scalar iteration metrics and
+failure checks, not all stage arrays. It is not constant-memory or sparse.
 
 The wall-cache term is a conservative static storage bound, not a measured
 allocator pool, resident-set size, or performance claim. It never constructs a
 wall matrix during estimation. The shared fixed wall-cache bound is counted once;
 the per-stage wall-sample term is separate because every retained predictor
 stage owns its own density-scaled matrices and factors.
+
+Internal ion endpoint q_j storage aliases the corresponding reconstructed r1
+stage; it is not an additional M+1-array history. Only the old/new final macro
+endpoints are extra arrays in the memory plan.

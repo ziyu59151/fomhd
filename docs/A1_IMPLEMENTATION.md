@@ -1,11 +1,11 @@
 # A1 implementation contracts
 
-Status: active, bounded implementation through T0. The design repository owns
+Status: active, bounded T0 and T1 implementations. The design repository owns
 the selected mathematics in
 `mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md`.
 Its `TIME_DECOUPLING_DESIGN.md` is the author's format-only converted reference;
 historical defaults in that body do not replace massless quasineutral CGL-B
-electrons, RK4, FP64/complex128, or the selected T0 contract.
+electrons, RK4, FP64/complex128, or the selected time contracts.
 
 A1 inherits A0 source and mirrored pseudocode. There is one solver package;
 `release/a0` at `9a38bf41e7bc1fc50186c81967312a7ec5f028e8` owns the separate
@@ -56,8 +56,9 @@ density. Local operators and shared setup remain largely dense; full sparse
 conversion, streaming history, spatial decomposition and multi-GPU execution
 are separate implementation units.
 
-T1 waveform iteration, T2 initial-history methods, T3 time slabs and T4 JVP
-correction require separate reports and the user's decision at each layer.
+T1 implements complete ion stage-path waveform iteration. T2 initial-history
+methods, T3 time slabs and T4 JVP correction still require separate reports and
+the user's decision at each layer.
 Installed NCCL/CuPy support is not evidence that multi-GPU solver execution
 has been verified.
 
@@ -83,7 +84,7 @@ includes check aggregation and modal history projection. RSS/HWM and CuPy pool
 statistics are process-wide observations, not isolated per-case live peaks.
 
 Measured scope and retained failures are recorded in
-[A1_T0_EVIDENCE.md](A1_T0_EVIDENCE.md). T1 requires the user's next decision.
+[A1_T0_EVIDENCE.md](A1_T0_EVIDENCE.md). The user authorized T1 on 7 November 2026.
 
 ## Controlled T0 temporal baseline
 
@@ -117,3 +118,50 @@ budgets remain active; only the retained-history resource cap is set to 4 GiB.
 Elapsed times from concurrent scientific cases are not a speedup benchmark.
 T1 must reuse the recorded inputs, horizon and criteria to distinguish better
 accuracy at the same H from expansion of the usable H range.
+
+
+## T1 complete stage-path waveform iteration
+
+The selected discrete equations and acceptance matrix are in the design
+repository's `A1/A1_T1_WAVEFORM.md`; the independent T0 gain derivation is
+`A1/A1_T0_LINEAR_GAIN.md`. Executable pseudocode precedes implementation in
+`docs/pseudocode/src/fomhd/time_waveform.py.md`.
+
+```toml
+[time]
+coupling = "waveform"
+micro_steps = 32
+integrator = "rk4"
+waveform_rtol = 1e-10
+waveform_max_iterations = 12
+```
+
+Each sweep resets electron/field state to the accepted left endpoint, scans
+causal RK4 microsteps along the current ion guess, and reconstructs every ion
+RK4 stage and prefix endpoint from the full stage RHS. The two midpoint stages
+are distinct. The converged algebraic equations equal synchronous fine RK4
+under the same canonicalization; finite-tolerance results still require an
+actual reference comparison. The explicit stage dependency makes this selected
+path map causal and nilpotent in exact arithmetic. Large windows can still
+produce transient growth, invalid trial states, or exhaust the sweep limit.
+
+Path and macro-endpoint updates for each of the three ion fields are normalized
+separately by physical references and actual field magnitudes. Intermediate
+energy residuals are observations with original thresholds; final converged
+intervals use unchanged hard gates. Failure leaves accepted state/cache and
+cumulative accounts unchanged and retains current residuals, calls and checks.
+Restart records/validates waveform controls; legacy scheme identities remain
+compatible. Two ion stage paths and one full diagnostic sweep are retained;
+internal prefix endpoints share r1 storage.
+
+For S completed sweeps of M microsteps, complete stage evaluations are
+S*(4M+1)+1, alias probes are 2MS, and total model calls are S*(6M+1)+1.
+Failure counts use actual attempted calls and completed quadrature entries.
+The single-device backend is inherited from Warp/CuPy; waveform sweeps and
+microsteps remain serial in time. Cross-slab time parallelism belongs to T3.
+The controlled runner is `tools/warp_t1_verify.py`; CPU walltime in this small
+fixture is a diagnostic, not a speedup qualification. T0 raw evidence and
+`release/a1-t0` at fc9a19e remain the comparison baseline.
+
+Controlled T1 results, known tolerance limits, GPU scope and reproducible
+artifacts are recorded in [A1_T1_EVIDENCE.md](A1_T1_EVIDENCE.md).

@@ -19,6 +19,8 @@ documents, not fictitious modules. The active entry point is
 
 | Mainline responsibility | Mirrored pseudocode |
 |---|---|
+| A1 T1 complete ion stage-path waveform iteration | [waveform scheduler](src/fomhd/time_waveform.py.md), [tests](tests/warp/test_time_waveform.py.md) |
+| A1 T1 controlled comparison and A0-style gallery | [runner](tools/warp_t1_verify.py.md), [gallery](tools/plots/build_a1_t1_report.py.md) |
 | A1 T0 fixed-tangent microsteps and fixed wall-system reuse | [predictor](src/fomhd/time_predictor.py.md), [wall cache](src/fomhd/wall_cache.py.md) |
 | CLI, strict configuration, run products and restart | [entry](src/fomhd/__main__.py.md), [I/O](src/fomhd/io.py.md) |
 | Physical records, layout and state operations | [types](src/fomhd/types.py.md), [core](src/fomhd/core.py.md) |
@@ -39,10 +41,11 @@ documents, not fictitious modules. The active entry point is
 | Offline analysis and accepted-run figures | [analyze.py](tools/analyze.py.md), [plot run](tools/plots/plot_run.py.md) |
 | User-owned Slurm launcher | [a0.slurm](jobs/a0.slurm.md) |
 
-A1-T0 is the only implemented time-decoupling layer: a fixed start-of-macro
-tangent path, RK4 electron-field microsteps, full ion RHS quadrature over all
-micro stages, and one accepted macro-endpoint transaction. T1 waveform
-iteration and later layers are not placeholders in this source tree.
+A1-T0 retains the fixed tangent path and complete microstage ion quadrature.
+A1-T1 reconstructs and iterates all ion stages, with separate midpoint states,
+path/endpoint residuals and one final accepted macro transaction. Its discrete
+fixed point is synchronous fine RK4. T2–T4 remain gated; no placeholder APIs
+implement those layers.
 
 The native implementation-level pseudocode, CMake contracts, native tests and
 native case generator live on `reference/a0-native`. They are not retained here

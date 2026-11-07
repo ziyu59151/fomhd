@@ -77,6 +77,8 @@ class Parameters:
     max_phase_error_rad: float = 0.1
     coupling: str = "synchronous"
     micro_steps: int = 1
+    waveform_rtol: float = 1.0e-10
+    waveform_max_iterations: int = 12
 
 
 @dataclass

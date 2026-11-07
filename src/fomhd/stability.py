@@ -185,14 +185,15 @@ def assess_predictor_runtime(estimate: dict, context, *, step: int) -> dict:
     """Assess only the explicit RK4 microsteps over the same physical horizon."""
     p = context.p
     micro_steps = getattr(p, "micro_steps", None)
+    coupling = getattr(p, "coupling", None)
     if (
-        getattr(p, "coupling", None) != "predictor"
+        coupling not in ("predictor", "waveform")
         or getattr(p, "electron_inertia", None) != 0
         or getattr(p, "integrator", None) != "rk4"
     ):
         raise ValueError(
-            "predictor guard requires coupling=predictor, massless electrons, "
-            "and rk4"
+            "microstep guard requires coupling=predictor|waveform, "
+            "massless electrons, and rk4"
         )
     if (
         isinstance(micro_steps, bool)
@@ -223,7 +224,7 @@ def assess_predictor_runtime(estimate: dict, context, *, step: int) -> dict:
         estimate=estimate,
         step=step,
         action="continue" if report["accepted"] else p.dt_guard,
-        coupling="predictor",
+        coupling=coupling,
         micro_steps=micro_steps,
         micro_dt=micro_dt,
         micro_horizon_steps=remaining_micro_steps,

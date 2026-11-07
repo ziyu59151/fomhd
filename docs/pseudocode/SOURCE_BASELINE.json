@@ -19,13 +19,14 @@
     "D061",
     "D062",
     "D063",
-    "D064"
+    "D064",
+    "D065"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 156899,
-      "sha256": "47ba7f108cd57af0924750153c60b0ca31773305e4c477522f42cd1d25cba0a8"
+      "bytes": 163307,
+      "sha256": "56ab2575590c68485efe35e736c8c40b0035fa19fa5dd289c55f3e451376890d"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -39,8 +40,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/integrated_contracts.md",
-      "bytes": 39763,
-      "sha256": "d98e756b2c320b88f894267af37d6d60b216c0504a550ff73e6f84ef342c6c1a"
+      "bytes": 40042,
+      "sha256": "6dd9402cbdb981f03a258a4bffec3e3fc52e70f754bb545d4f005a50e4e5c1be"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/08_constraints/constraints.md",
@@ -54,8 +55,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
-      "bytes": 6816,
-      "sha256": "7d314702fec4b124c5a03cb062fe7527c5d7979495e7d1600d9638cf53d1eb8b"
+      "bytes": 6956,
+      "sha256": "ccd9bbf3d703ff4db8c7666a8a261e9cf7204a7fe8c082c78354e0a9eef6dc1e"
     },
     {
       "path": "mainline_design/implementation/A0/A0_MASSLESS_ELECTRON.md",
@@ -69,8 +70,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 13173,
-      "sha256": "bd833cad369421c73e4c83b1fe7e6c379458a266feae456dd86ded5128ffa228"
+      "bytes": 13448,
+      "sha256": "c7fb0ca74e2bc4d2d357a7f6978180944e843e207f069141b48695f81bc165f0"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
@@ -89,16 +90,41 @@
     },
     {
       "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
-      "bytes": 16242,
-      "sha256": "5cf15508efb4897aaf7b79f36f4872e9ae2da2e6597f02a95cd96130e185902d"
+      "bytes": 16829,
+      "sha256": "1dd1c0a335c005dfe10111c937cda75c4909f1df396ae57c8499d1c6914fefd9"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_T0_BENCHMARK.md",
       "bytes": 7279,
       "sha256": "53d8b02a1c36399b0a8849cbfafe0f1074d6340ab5130253882ad05ed5744d23"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_T0_LINEAR_GAIN.md",
+      "bytes": 4810,
+      "sha256": "f16fae41dcfaa89ca02dcbca572ca63d23bc8de0334bd23f51359a23690ac71a"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_T1_WAVEFORM.md",
+      "bytes": 6602,
+      "sha256": "50c03d9e8449de8bc1c91bf3bc3adbdc4e55ede11295df2c7720fa9398a1ef57"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_T1_LINEAR_CHECK.md",
+      "bytes": 3724,
+      "sha256": "7fb295da8c74b4f510c2abb02970b84c1080165c5851ae1dec9f635cf45a2a1a"
+    },
+    {
+      "path": "mainline_design/implementation/A1/A1_T1_REPORT.md",
+      "bytes": 16743,
+      "sha256": "a4ac3df5f76f5c38ec94431381ac25a23e8427c66a2ab5855ebfedeb029d6ab5"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/07_time_integration/time_integration.md",
+      "bytes": 17845,
+      "sha256": "5d83da5e67944961ae7ee10eec99e0c3a4b5f23e1ef2aebde163cafdb0b8f4f2"
     }
   ],
-  "captured_utc": "2026-11-07T02:36:05.157397+00:00",
+  "captured_utc": "2026-11-07T06:07:17.049589+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -131,26 +157,37 @@
     "global_fast_branch_prototype": "Circle grid12 CUDA/grid16 CPU and EAST grid12 matched responses; see docs/A0_TOKAMAK_CAE_EVIDENCE.md; not experimental validation"
   },
   "a1_scope": {
-    "record": "docs/A1_T0_EVIDENCE.md",
+    "record": "docs/A1_T1_EVIDENCE.md",
     "baseline_branch": "release/a0",
     "baseline_commit": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8",
-    "implemented": "T0 predictor and fixed-wall factor reuse",
-    "acceptance": "Controlled periodic CPU baseline: M4/M8 satisfy joint criteria; M16/M32 show high-mode amplification; rejected full windows remain undetermined",
-    "later_tiers": "T1-T4 require user decision at each algorithm tier",
+    "implemented": "T0 predictor, T1 full ion stage-path waveform iteration and fixed-wall factor reuse",
+    "acceptance": "T1 periodic2T: target criteria and hard gates pass; M4/8/16/32/64 meet original joint sampled criteria; M128 high-gain failure retained; M256 isolated pass, not a contiguous range claim",
+    "later_tiers": "T2-T4 remain gated",
     "multi_gpu": "reference and interface planning only",
     "numerical_commit": "93219d2f85c5185cefaa97fd3e8125cef632f4cb",
     "closed_fixture_repair": "581f20d050df50718e028d7550e9e65d57cc2ea7",
-    "cpu_tests_passed": 770,
+    "cpu_tests_passed": 886,
     "gpu_regression_passed": 12,
     "global_physical_validation": false,
     "equal_accuracy_speedup": false,
-    "report_presentation": "A0-style English seven-figure/eight-page HTML plus Chinese controlled T0 report",
-    "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T163530Z/a1-benchmark.html",
-    "next_tier": "T1 recommended for user judgment; no T1 implementation",
+    "report_presentation": "A0-style English7figure/8page T1 HTML and Chinese T1 report, original T0 gallery unchanged",
+    "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261107T043500Z/a1-benchmark.html",
+    "next_tier": "T1 report delivered;T2 requires user decision perO31/D065",
     "gallery_format": "Existing A0 report renderer, English labels/captions, numbered pages/figures and matching plot conventions",
     "controlled_temporal_protocol": "D064; fixed h=T/2048, 2T; 24 final cases complete with retained rejections",
     "controlled_benchmark_commit": "206e850c3220c021b03932e262e8e52c307f4a7e",
     "controlled_cpu_tests_passed": 169,
-    "failure_evidence_repair": "206e850; exact record equality/order and accepted trajectory preserved"
+    "failure_evidence_repair": "206e850; exact record equality/order and accepted trajectory preserved",
+    "t1_verification": "20/20 CPU cases completed;886 CPU tests,9 skips,3 subtests; final gallery34 regression checks; bounded RTX5090 parity, independent mathematical/source/export/scientific review",
+    "t0_maintenance_branch": "release/a1-t0",
+    "t0_maintenance_commit": "fc9a19e26fc2fb6d601c39e18a11a095386e3038",
+    "t1_numerical_commit": "4c75394",
+    "t1_matrix_commit": "4e9794a3f4f3d146e4a2badc124ea3dcbe04e3c6",
+    "t1_cpu_matrix_cases": 20,
+    "t1_gpu_scope": "RTX5090, owned job11081,4 accepted macros each atM4/16/32,mixed seed; not full2T or speedup",
+    "t1_maintenance_branch": "release/a1-t1",
+    "t1_scientific_limits": "physical-reference residual tolerance is not small-signal accuracy; no generalCAW-CFL,walls,asymptotic stability,production-scale,multi-GPU or equal-accuracy speedup qualification",
+    "t0_evidence_record": "docs/A1_T0_EVIDENCE.md",
+    "t0_benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T163530Z/a1-benchmark.html"
   }
 }

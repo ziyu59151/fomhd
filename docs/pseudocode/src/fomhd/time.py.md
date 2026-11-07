@@ -106,11 +106,17 @@ advance(committed,cumulative,context,source=None):
   if coupling == "synchronous":
     require micro_steps == 1
     run the unchanged A0 midpoint/RK4 transaction
-  else:
+  elif coupling == "predictor":
     require electron_inertia == 0 and integrator == "rk4"
     reject source is not None before base evaluation, counter mutation,
       trial allocation, or callback invocation
     locally import time_predictor.advance and run the T0 transaction
+  elif coupling == "waveform":
+    require electron_inertia == 0 and integrator == "rk4"
+    reject source is not None before any mutation or model evaluation
+    locally import time_waveform.advance and run the complete ion-stage-path
+      fixed-point transaction
+  else: reject unknown coupling
 ```
 
 Validation happens before `_check_clock`, `_fresh`, stage evaluation, or source

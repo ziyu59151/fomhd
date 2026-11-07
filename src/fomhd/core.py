@@ -63,11 +63,11 @@ def repeat_weights(weights: Any, count: int, backend: Any) -> Any:
 
 
 def predictor_history_entries(c: Context) -> int:
-    """Conservatively count retained T0 predictor stage/quadrature state."""
+    """Conservatively count one retained A1 microstep sweep and path."""
     coupling = getattr(c.p, "coupling", "synchronous")
     if coupling == "synchronous":
         return 0
-    if coupling != "predictor":
+    if coupling not in ("predictor", "waveform"):
         raise Failure("Config", f"unknown time coupling: {coupling}")
     micro_steps = getattr(c.p, "micro_steps", None)
     if (
@@ -123,11 +123,46 @@ def predictor_history_entries(c: Context) -> int:
         per_stage,
         "memory predictor history",
     )
-    return _checked_sum(
+    history = _checked_sum(
         history,
         predictor_wall_history_entries(c),
         "memory predictor history",
     )
+    if coupling == "waveform":
+        ion_path = _checked_product(
+            modes,
+            _checked_product(
+                5,
+                c.op.Nc,
+                "waveform ion path",
+            ),
+            "waveform ion path",
+        )
+        # Old and new stage paths plus their endpoints are retained in
+        # addition to one complete evaluated sweep.
+        history = _checked_sum(
+            history,
+            _checked_product(
+                _checked_product(
+                    2,
+                    _checked_product(
+                        4,
+                        micro_steps,
+                        "waveform ion stage paths",
+                    ),
+                    "waveform ion stage paths",
+                ),
+                ion_path,
+                "waveform ion stage paths",
+            ),
+            "waveform ion stage paths",
+        )
+        history = _checked_sum(
+            history,
+            _checked_product(2, ion_path, "waveform ion endpoints"),
+            "waveform ion endpoints",
+        )
+    return history
 
 
 def predictor_wall_history_entries(c: Context) -> int:
@@ -137,7 +172,7 @@ def predictor_wall_history_entries(c: Context) -> int:
     coupling = getattr(c.p, "coupling", "synchronous")
     if coupling == "synchronous":
         return 0
-    if coupling != "predictor":
+    if coupling not in ("predictor", "waveform"):
         raise Failure("Config", f"unknown time coupling: {coupling}")
     micro_steps = getattr(c.p, "micro_steps", None)
     if (
