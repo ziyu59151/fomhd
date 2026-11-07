@@ -95,3 +95,19 @@ Each script checks the numerical transformations it uses, including reported
 orders, SI conversion, phase alignment, accepted step/time identity, and real
 Fourier synthesis. Review still includes opening the rendered images: valid
 numbers alone do not catch unreadable axis limits or overlapping annotations.
+
+## Controlled A1 T1 gallery
+
+`build_a1_t1_report.py` consumes derived compact T1 records and the preserved
+T0 gallery, using the original A0 renderer/CSS and plot conventions. It keeps
+completed gain-budget failures separate from rejected prefixes, and displays
+path residuals, raw energy, true fine-RK4 vector errors and GPU scope.
+
+```bash
+.venv/bin/python tools/plots/build_a1_t1_report.py \
+  --data /home/lxzeng/runs/fomhd/a1-t1-waveform__20261107T043500Z/t1-plot-data.json \
+  --output /home/lxzeng/runs/fomhd/a1-t1-gallery-rebuild-NEW
+```
+
+The output must be new. Numerical data and acceptance limits are never rewritten
+by the renderer. See `docs/A1_T1_EVIDENCE.md` for the demonstrated scope.

@@ -37,6 +37,8 @@ checkout containing the integrated script, or `FOMHD_SOURCE_ROOT`.
    - nondecreasing finite time and energy-time arrays;
    - exact lengths for target, optional high-ratio, high-absolute, total-energy,
      and kinetic-energy series;
+   - optional scalar `high_sync_vector_error`, finite and nonnegative when
+     supplied, treated as unavailable when absent or null;
    - explicit empty arrays or null are retained as unavailable;
    - no supplied negative error, gain, norm, residual magnitude, iteration
      residual, work, storage, or elapsed quantity;
@@ -66,16 +68,25 @@ checkout containing the integrated script, or `FOMHD_SOURCE_ROOT`.
       M=4, 8, 16, 32.
     - Figure 2: T0 predictor versus primary waveform-coupling T1 maximum target
       error and high-mode gain over the original M=4..256 matrix; rejected fields
-      remain distinct.
+      remain distinct. Completed primary T1 MIXED cases whose supplied maximum
+      gain exceeds `protocol.growth_limit` receive a separate annotation and
+      marker; they are not rejected-prefix crosses.
     - Figure 3: M=4, 16, 32 high-mode gain histories, T0 predictor dashed and
       primary T1 waveform solid, with a lower deviation row around 1.01.
-    - Figure 4: primary T1 waveform path and endpoint iteration residuals by
-      sweep for M=4, 16, 32; label the first and worst macro and draw `rtol`.
+    - Figure 4: primary T1 waveform MIXED-seed path and endpoint iteration
+      residuals by sweep for M=4, 16, 32; label the first and worst macro and
+      draw `rtol`. The two same-time RK4 midpoint stages are distinct from each
+      other; the converged discrete target is synchronous fine RK4.
     - Figure 5: primary T1 waveform raw total and ion-kinetic residual histories
       plus observed intermediate-sweep maxima; only completed final windows gate
       acceptance.
-    - Figure 6: fixed-H `h*` and `h*/2` controls at H=T/16 and T/8 versus
-      tolerance variants, with explicit rejected/incomplete annotations.
+    - Figure 6: four panels. The top row preserves fixed-H `h*` and `h*/2`
+      target-error and high-gain comparisons at H=T/16 and T/8. The lower row
+      uses M16/32 mixed `h*=T/2048` cases at rtol=1e-14 and 1e-10: supplied
+      high-mode relative vector error versus true synchronous fine RK4, and
+      abs(final high-mode gain-1). Missing vector references stay unavailable;
+      gain is never treated as vector accuracy. Fixed-H incomplete controls stay
+      visible in text and marks.
     - Figure 7: model calls and conservative storage estimates, plus bounded GPU
       parity rows or an explicit unavailable note.
 13. Close every Matplotlib figure and require each PNG/SVG artifact to be
@@ -115,6 +126,16 @@ checkout containing the integrated script, or `FOMHD_SOURCE_ROOT`.
   completed. Null unavailable values never become zero.
 - Wall time is diagnostic context, not a T1 performance verdict. Memory is an
   estimate, not a measured peak. Cross-slab time-parallel work is deferred T3.
+- Completed primary T1 MIXED high-gain-budget exceedances are derived from the
+  supplied cases and protocol threshold. Their M, gain, and threshold appear in
+  Figure 2, the matrix page, the report introduction, and conclusions.
+  Completion is execution status, not physical or accuracy qualification. A
+  larger passing M is not evidence of a contiguous usable range.
+
+## Figure readability
+
+- Keep right-edge prefix and completed-budget labels inside their axes.
+- Wrap full GPU device names inside their table cells; retain hardware text.
 
 ## Failure behavior
 

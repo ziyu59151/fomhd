@@ -1055,17 +1055,34 @@ def _iteration_summary(
     )
     path_values = _recursive_key_values(
         list(metadata_records),
-        re.compile(r"path.*relative|relative.*path"),
+        re.compile(
+            r"path.*(?:relative|normalized)|(?:relative|normalized).*path"
+        ),
     )
     endpoint_values = _recursive_key_values(
         list(metadata_records),
-        re.compile(r"endpoint.*relative|relative.*endpoint"),
+        re.compile(
+            r"endpoint.*(?:relative|normalized)|"
+            r"(?:relative|normalized).*endpoint"
+        ),
+    )
+    normalization_semantics = (
+        "normalized fixed-point update using the per-field scale "
+        "max(background/physical reference, max|old|, max|new|); "
+        "this uses actual-field scaling and is not a small-signal response "
+        "or relative-error threshold"
     )
 
     def value_range(values: Mapping[str, list[float]]) -> dict[str, Any]:
         flat = [item for group in values.values() for item in group]
         if not flat:
-            return {"available": False, "minimum": None, "maximum": None}
+            return {
+                "available": False,
+                "minimum": None,
+                "maximum": None,
+                "by_key": {},
+                "semantics": normalization_semantics,
+            }
         return {
             "available": True,
             "minimum": float(min(flat)),
@@ -1077,6 +1094,7 @@ def _iteration_summary(
                 }
                 for key, group in sorted(values.items())
             },
+            "semantics": normalization_semantics,
         }
 
     return {

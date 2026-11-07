@@ -7,11 +7,13 @@ records how verification, independent physical comparisons, and retained known
 issues determine prototype development priorities.
 
 [A1 implementation](docs/A1_IMPLEMENTATION.md) records the inherited solver,
-fixed wall-system reuse, and the experimental T0 predictor. A0 is maintained
+fixed wall-system reuse, and the experimental T0/T1 time couplings. A0 is maintained
 on `release/a0` at `9a38bf4`; each checkout contains one solver source tree.
 The default time coupling remains synchronous RK4. T0 is selected explicitly
 and does not imply waveform iteration or multi-GPU acceptance.
-[T0 evidence and limits](docs/A1_T0_EVIDENCE.md) records the controlled two-period baseline, retained failures and current limits.
+[T0 evidence and limits](docs/A1_T0_EVIDENCE.md) retains the comparison baseline.
+[T1 waveform evidence](docs/A1_T1_EVIDENCE.md) records the complete path repair,
+controlled two-period comparisons, retained failures and bounded GPU checks.
 
 The active `main` implementation is the FP64/complex128 Python solver under
 [`src/fomhd/`](src/fomhd), using NVIDIA Warp 1.19.0, CuPy CUDA13x 14.2.0, and

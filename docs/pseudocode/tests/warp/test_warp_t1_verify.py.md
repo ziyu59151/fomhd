@@ -91,6 +91,12 @@ focused fixture.
 Test vector-history error with vectors that produce different maximum-component
 and Euclidean values, and require the Euclidean definition.
 
+Build real-shaped core iteration metadata containing top-level
+path_max_normalized/endpoint_max_normalized plus per-field raw/scale/
+normalized observations. Require exact min/max aggregates and retained legacy
+relative-key support. Require the summary to state that normalization uses
+background/physical and actual-field scales, not a small-signal relative error.
+
 On a synthetic WaveformConvergence failure verify:
   case remains undetermined
   traceback, stage, checks and scheduled rejected time are retained

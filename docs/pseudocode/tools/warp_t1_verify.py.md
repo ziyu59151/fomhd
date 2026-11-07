@@ -240,6 +240,16 @@ At the end write:
     iteration count/range, actual model-call metadata and memory estimates
     backend, T0 comparison, provenance and explicit limitations
 
+Iteration-summary extraction accepts both current core keys
+  path_max_normalized
+  endpoint_max_normalized
+and legacy key names containing path/endpoint plus relative.
+Its minimum/maximum/grouped ranges must therefore be available for real core
+metadata. Label the metric semantics explicitly:
+  normalized fixed-point update using the per-field scale
+  max(physical/background reference, max|old|, max|new|)
+This is not a small-signal response or relative-error threshold.
+
 On any failure also write:
   failure.json
     full traceback

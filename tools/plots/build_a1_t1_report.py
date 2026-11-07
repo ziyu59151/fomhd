@@ -429,6 +429,12 @@ def _validate_cases(data: dict[str, Any]) -> list[dict[str, Any]]:
             "elapsed_s",
         ):
             _nullable_number(case, key, where, minimum=0.0)
+        _nullable_number(
+            case,
+            "high_sync_vector_error",
+            where,
+            minimum=0.0,
+        )
         _nullable_text(case, "failure_message", where)
         rejected_time = _nullable_number(
             case,
@@ -751,6 +757,54 @@ def primary_cases(
     ]
 
 
+def primary_high_gain_exceedances(
+    data: dict[str, Any],
+) -> list[dict[str, Any]]:
+    threshold = float(data["protocol"]["growth_limit"])
+    return sorted(
+        (
+            case
+            for case in primary_cases(data)
+            if case["seed"] == "mixed"
+            and case["micro_per_period"] == 2048
+            and case["completed"]
+            and case["max_high_gain"] is not None
+            and float(case["max_high_gain"]) > threshold
+        ),
+        key=lambda case: case["M"],
+    )
+
+
+def high_gain_exceedance_notes(data: dict[str, Any]) -> list[str]:
+    threshold = float(data["protocol"]["growth_limit"])
+    exceedances = primary_high_gain_exceedances(data)
+    notes = [
+        (
+            f"Completed T1 high-gain-budget exceedance at M={case['M']}: "
+            f"max_high_gain={float(case['max_high_gain']):.8g} > "
+            f"growth_limit={threshold:.6g}."
+        )
+        for case in exceedances
+    ]
+    if not notes:
+        notes.append(
+            "No completed primary T1 mixed case exceeds "
+            f"growth_limit={threshold:.6g}."
+        )
+    notes.extend(
+        [
+            (
+                "Completion is execution status, distinct from physical or "
+                "accuracy qualification."
+            ),
+            (
+                "A larger passing M does not establish a contiguous usable range."
+            ),
+        ]
+    )
+    return notes
+
+
 def select_case(
     cases: list[dict[str, Any]],
     M: int,
@@ -938,7 +992,8 @@ def render_figures(
                         f"M={M}: {horizon:.3g}T prefix",
                         (x_value[0], y_value[0]),
                         textcoords="offset points",
-                        xytext=(5, 5),
+                        xytext=(-6, 7) if M >= 128 else (5, 5),
+                        ha="right" if M >= 128 else "left",
                         fontsize=6.2,
                         color="#9A3412",
                     )
@@ -962,6 +1017,35 @@ def render_figures(
         style_axis(axis)
     panel_label(axes[0], "a")
     panel_label(axes[1], "b")
+    for index, case in enumerate(primary_high_gain_exceedances(data)):
+        gain = float(case["max_high_gain"])
+        threshold = float(protocol["growth_limit"])
+        axes[1].plot(
+            case_H_over_T(case),
+            gain,
+            marker="D",
+            markersize=7,
+            markerfacecolor="white",
+            markeredgecolor=ORANGE,
+            markeredgewidth=1.5,
+            linestyle="none",
+            zorder=5,
+            label="T1 completed, above growth limit" if index == 0 else None,
+        )
+        axes[1].annotate(
+            (
+                f"completed M={case['M']}\n"
+                f"{gain:.8g} > growth limit {threshold:.6g}"
+            ),
+            (case_H_over_T(case), gain),
+            textcoords="offset points",
+            xytext=(-6, 28),
+            ha="right",
+            arrowprops={"arrowstyle": "->", "linewidth": 0.6, "color": "#9A3412"},
+            fontsize=6.4,
+            color="#9A3412",
+        )
+    axes[1].legend(loc="best")
     fig.suptitle(
         "T0 predictor and T1 waveform over M=4..256; rejected crosses are prefixes",
         fontsize=10.5,
@@ -1068,7 +1152,7 @@ def render_figures(
         case = select_case(
             primary,
             M,
-            "target",
+            "mixed",
             2048,
             coupling=T1_PRIMARY_COUPLING,
         )
@@ -1143,12 +1227,15 @@ def render_figures(
             )
         axis.set_xlabel("Nonlinear sweep iteration")
         axis.set_ylabel("Residual maximum")
-        axis.set_title(f"T1 waveform M={M}; first and worst macro")
+        axis.set_title(f"T1 mixed M={M}; first and worst macro")
         axis.legend(loc="best")
         style_axis(axis)
         panel_label(axis, letter)
     fig.suptitle(
-        "Path and endpoint residuals by sweep; same-time RK4 midpoint targets are distinct",
+        (
+            "Path and endpoint residuals by sweep; two same-time RK4 midpoint "
+            "stages are distinct from each other"
+        ),
         fontsize=10.5,
     )
     save_figure(fig, output, FIGURE_NAMES[3])
@@ -1258,121 +1345,231 @@ def render_figures(
     save_figure(fig, output, FIGURE_NAMES[4])
     plt.close(fig)
 
-    controls = [
+    fixed_h_values = (1.0 / 16.0, 1.0 / 8.0)
+    fixed_controls = [
         case
         for case in data["cases"]
         if any(
             math.isclose(case_H_over_T(case), target, rel_tol=0.0, abs_tol=1.0e-15)
-            for target in (1.0 / 16.0, 1.0 / 8.0)
+            for target in fixed_h_values
         )
     ]
-    rtol_keys = sorted(
-        {case["rtol"] for case in controls},
-        key=lambda value: (value is not None, value if value is not None else -1.0),
-    )
-    x_positions = {key: index for index, key in enumerate(rtol_keys)}
-    fig = plt.figure(figsize=(12.6, 6.2), layout="constrained")
-    grid = fig.add_gridspec(2, 2, height_ratios=(4.0, 1.0))
-    axes = (fig.add_subplot(grid[0, 0]), fig.add_subplot(grid[0, 1]))
-    status_axis = fig.add_subplot(grid[1, :])
-    for axis, seed, metric, threshold in (
-        (axes[0], "target", "max_target_error", protocol["target_error_limit"]),
-        (axes[1], "mixed", "max_high_gain", protocol["growth_limit"]),
+    fixed_rtols = {case["rtol"] for case in fixed_controls}
+    fixed_incomplete: list[str] = []
+    fig, axes = plt.subplots(2, 2, figsize=(13.4, 8.2), layout="constrained")
+    for axis, seed, metric, threshold, title in (
+        (
+            axes[0, 0],
+            "target",
+            "max_target_error",
+            protocol["target_error_limit"],
+            "Fixed-H target maximum error",
+        ),
+        (
+            axes[0, 1],
+            "mixed",
+            "max_high_gain",
+            protocol["growth_limit"],
+            "Fixed-H mixed-seed maximum gain",
+        ),
     ):
-        grouped: dict[tuple[float, int, str], list[tuple[float, float]]] = {}
-        incomplete: list[str] = []
-        for case in (item for item in controls if item["seed"] == seed):
-            key = x_positions[case["rtol"]]
-            value = case[metric]
+        seen_labels: set[tuple[str, str, str, bool]] = set()
+        for case in (item for item in fixed_controls if item["seed"] == seed):
             h_value = case_H_over_T(case)
+            h_position = min(
+                range(len(fixed_h_values)),
+                key=lambda index: abs(fixed_h_values[index] - h_value),
+            )
+            offset = -0.08 if case["micro_per_period"] == 2048 else 0.08
+            x_value = h_position + offset
+            value = case[metric]
             color = TEAL if math.isclose(h_value, 1 / 16, abs_tol=1e-15) else BLUE
             marker = "o" if case["micro_per_period"] == 2048 else "s"
+            primary_rtol = case["rtol"] == protocol["rtol"]
             if value is None or not math.isfinite(float(value)) or float(value) <= 0.0:
                 if not case["completed"]:
-                    incomplete.append(
+                    fixed_incomplete.append(
                         f"M={case['M']}, {case['coupling']}, "
                         f"{'h*' if case['micro_per_period'] == 2048 else 'h*/2'}, "
-                        f"rtol={case['rtol']}: {case['status']} at "
-                        f"{accepted_horizon(case):.3g}T; metric unavailable"
+                        f"{case['status']} at {accepted_horizon(case):.3g}T; "
+                        f"{title} unavailable"
+                    )
+                    axis.plot(
+                        [x_value],
+                        [0.05],
+                        transform=axis.get_xaxis_transform(),
+                        color=ORANGE,
+                        marker="X",
+                        markersize=7,
+                        linestyle="none",
                     )
                 continue
             if case["completed"]:
-                grouped.setdefault(
-                    (h_value, case["micro_per_period"], case["coupling"]),
-                    [],
-                ).append((key, float(value)))
+                label_key = (
+                    case["coupling"],
+                    f"{h_value:.5g}",
+                    f"{case['micro_per_period']}",
+                    primary_rtol,
+                )
+                label = (
+                    f"H/T={h_value:.5g}, "
+                    f"{'h*' if case['micro_per_period'] == 2048 else 'h*/2'}, "
+                    f"{case['coupling']}"
+                )
+                if len(fixed_rtols) > 1 and not primary_rtol:
+                    label += f", rtol={case['rtol']:.3g}"
+                axis.plot(
+                    x_value,
+                    value,
+                    color=color,
+                    marker=marker,
+                    markerfacecolor="none" if not primary_rtol else color,
+                    linestyle="none",
+                    label=label if label_key not in seen_labels else None,
+                )
+                seen_labels.add(label_key)
             else:
                 axis.plot(
-                    key,
+                    x_value,
                     value,
                     color=ORANGE,
                     marker="X",
                     markersize=7,
                     linestyle="none",
                 )
-                incomplete.append(
+                fixed_incomplete.append(
                     f"M={case['M']}, {case['coupling']}, "
                     f"{'h*' if case['micro_per_period'] == 2048 else 'h*/2'}, "
-                    f"rtol={case['rtol']}: {case['status']} at "
+                    f"{case['status']} at "
                     f"{accepted_horizon(case):.3g}T; plotted metric is prefix-only"
                 )
-        for (h_value, micro, coupling), points in grouped.items():
-            points.sort()
-            color = TEAL if math.isclose(h_value, 1 / 16, abs_tol=1e-15) else BLUE
-            linestyle = {
-                "predictor": "-",
-                "waveform": ":",
-                "synchronous": "--",
-            }[coupling]
-            axis.plot(
-                [point[0] for point in points],
-                [point[1] for point in points],
-                color=color,
-                marker="o" if micro == 2048 else "s",
-                linestyle=linestyle,
-                label=(
-                    f"H/T={h_value:.5g}, "
-                    f"{'h*' if micro == 2048 else 'h*/2'}, {coupling}"
-                ),
-            )
         axis.axhline(threshold, color=ORANGE, linestyle="--", linewidth=1)
         axis.set_yscale("log")
-        axis.set_xticks(
-            list(x_positions.values()),
-            labels=[
-                "primary" if key == protocol["rtol"] else (
-                    "null" if key is None else f"{key:.2g}"
-                )
-                for key in rtol_keys
-            ],
-        )
-        axis.set_xlabel("Relative tolerance rtol")
+        axis.set_xticks([0, 1], labels=["H=T/16", "H=T/8"])
+        axis.set_xlim(-0.35, 1.35)
+        axis.set_xlabel("Fixed macro interval")
         axis.set_ylabel("Maximum relative error" if seed == "target" else "Maximum gain")
-        axis.set_title(
-            "Target error controls" if seed == "target" else "High-seed gain controls"
-        )
-        axis.legend(loc="best", fontsize=6.7)
+        axis.set_title(title)
+        if axis.get_legend_handles_labels()[0]:
+            axis.legend(loc="best", fontsize=6.7)
         style_axis(axis)
-    panel_label(axes[0], "a")
-    panel_label(axes[1], "b")
-    status_axis.axis("off")
-    incomplete_text = (
-        "\n".join(incomplete)
-        if incomplete
-        else "No fixed-H incomplete control is present in the supplied data."
+    panel_label(axes[0, 0], "a")
+    panel_label(axes[0, 1], "b")
+
+    tight_rtols = (1.0e-14, 1.0e-10)
+    tight_controls = [
+        case
+        for case in data["cases"]
+        if case["coupling"] == T1_PRIMARY_COUPLING
+        and case["seed"] == "mixed"
+        and case["micro_per_period"] == 2048
+        and case["M"] in {16, 32}
+        and case["rtol"] in tight_rtols
+    ]
+    tight_incomplete: list[str] = []
+    vector_unavailable = 0
+    gain_unavailable = 0
+    for M in (16, 32):
+        cases = sorted(
+            (case for case in tight_controls if case["M"] == M),
+            key=lambda case: case["rtol"],
+        )
+        vector_points = []
+        gain_points = []
+        for case in cases:
+            if not case["completed"]:
+                tight_incomplete.append(
+                    f"M={M}, rtol={case['rtol']:.3g}: {case['status']} at "
+                    f"{accepted_horizon(case):.3g}T"
+                )
+                continue
+            vector_error = case.get("high_sync_vector_error")
+            if vector_error is None or float(vector_error) <= 0.0:
+                vector_unavailable += 1
+            else:
+                vector_points.append((case["rtol"], float(vector_error)))
+            gain = case["final_high_gain"]
+            gain_deviation = None if gain is None else abs(float(gain) - 1.0)
+            if gain_deviation is None or gain_deviation <= 0.0:
+                gain_unavailable += 1
+            else:
+                gain_points.append((case["rtol"], gain_deviation))
+        color = _case_color(M)
+        marker = "o" if M == 16 else "s"
+        if vector_points:
+            axes[1, 0].plot(
+                [point[0] for point in vector_points],
+                [point[1] for point in vector_points],
+                color=color,
+                marker=marker,
+                linestyle="-",
+                label=f"M={M} vs fine RK4",
+            )
+        if gain_points:
+            axes[1, 1].plot(
+                [point[0] for point in gain_points],
+                [point[1] for point in gain_points],
+                color=color,
+                marker=marker,
+                linestyle="-",
+                label=f"M={M} final gain",
+            )
+
+    for axis in axes[1]:
+        axis.set_xscale("log")
+        axis.set_xticks(list(tight_rtols), labels=["1e-14", "1e-10"])
+        axis.minorticks_off()
+        axis.set_yscale("log")
+        axis.set_xlabel("Relative tolerance rtol (mixed, h*=T/2048)")
+        axis.legend(loc="best", fontsize=7)
+        style_axis(axis)
+    axes[1, 0].set_ylabel("High-mode relative vector error")
+    axes[1, 0].set_title("High-mode vector error vs true synchronous fine RK4")
+    axes[1, 1].set_ylabel("abs(final high-mode gain - 1)")
+    axes[1, 1].set_title("Final high-mode gain deviation")
+    if vector_unavailable:
+        axes[1, 0].text(
+            0.02,
+            0.04,
+            f"{vector_unavailable} supplied error(s) unavailable; not inferred from gain.",
+            transform=axes[1, 0].transAxes,
+            fontsize=6.8,
+            color="#9A3412",
+        )
+    if gain_unavailable:
+        axes[1, 1].text(
+            0.02,
+            0.04,
+            f"{gain_unavailable} final gain(s) unavailable or zero.",
+            transform=axes[1, 1].transAxes,
+            fontsize=6.8,
+            color="#9A3412",
+        )
+    axes[1, 1].text(
+        0.02,
+        0.12,
+        "Gain deviation is not a vector-accuracy measure.",
+        transform=axes[1, 1].transAxes,
+        fontsize=6.8,
+        bbox={"facecolor": "white", "edgecolor": PALE_GRAY, "pad": 2},
     )
-    status_axis.text(
-        0.0,
-        1.0,
-        textwrap.fill(incomplete_text, 155),
-        transform=status_axis.transAxes,
-        va="top",
+    panel_label(axes[1, 0], "c")
+    panel_label(axes[1, 1], "d")
+    control_notes = fixed_incomplete + tight_incomplete
+    fig.supxlabel(
+        textwrap.fill(
+            (
+                "Incomplete controls: " + "; ".join(control_notes)
+                if control_notes
+                else "No incomplete fixed-H or tight-tolerance control is supplied."
+            ),
+            165,
+        ),
         fontsize=6.8,
         color="#9A3412",
     )
-    panel_label(status_axis, "c")
     fig.suptitle(
-        "Fixed-H h* and h*/2 controls at H=T/16 and H=T/8; incomplete points stay explicit",
+        "Fixed-H refinement and M16/32 tight-tolerance controls; gain and vector error stay separate",
         fontsize=10.5,
     )
     save_figure(fig, output, FIGURE_NAMES[5])
@@ -1439,7 +1636,7 @@ def render_figures(
                     str(row["accepted_macros"]),
                     f"{row['relative_state_error']:.3g}",
                     f"{row['relative_mode_error']:.3g}",
-                    row["device"],
+                    textwrap.fill(row["device"], width=12),
                 ]
                 for row in parity
             ],
@@ -1512,6 +1709,18 @@ def _availability_notes(data: dict[str, Any]) -> list[str]:
         for case in cases
         for row in case["iterations"]
     )
+    tight_controls = [
+        case
+        for case in cases
+        if case["coupling"] == T1_PRIMARY_COUPLING
+        and case["seed"] == "mixed"
+        and case["micro_per_period"] == 2048
+        and case["M"] in {16, 32}
+        and case["rtol"] in {1.0e-14, 1.0e-10}
+    ]
+    sync_error_unavailable = sum(
+        case.get("high_sync_vector_error") is None for case in tight_controls
+    )
     rejected = [case["id"] for case in cases if not case["completed"]]
     return [
         (
@@ -1525,6 +1734,10 @@ def _availability_notes(data: dict[str, Any]) -> list[str]:
         (
             f"{energy_unavailable} case(s) have empty energy histories and "
             f"{iteration_energy_unavailable} intermediate residual entr(ies) are null."
+        ),
+        (
+            f"{sync_error_unavailable} M16/32 tight-tolerance case(s) have no "
+            "supplied high_sync_vector_error; no reference or accuracy is inferred."
         ),
         (
             "Rejected/incomplete case IDs: " + ", ".join(rejected)
@@ -1548,6 +1761,8 @@ def build_manifest(
     cases = data["cases"]
     completed = sum(case["completed"] for case in cases)
     rejected = len(cases) - completed
+    high_gain_notes = high_gain_exceedance_notes(data)
+    high_gain_summary = " ".join(high_gain_notes)
 
     fig1 = t0_module.figure_record(
         1,
@@ -1585,7 +1800,9 @@ def build_manifest(
             "value. "
             "Tolerance variants are reserved for Figure 6. A rejected cross is "
             "an accepted-prefix observation with its actual horizon; it is not a "
-            "full-window pass."
+            "full-window pass. A white-centered orange diamond marks a completed "
+            "primary T1 mixed case above the supplied growth limit; it is not a "
+            "rejected-prefix cross."
         ),
         "mixed_comparison",
         components=[
@@ -1633,17 +1850,17 @@ def build_manifest(
         "Iteration path and endpoint residuals",
         (
             "VER identifies iterative solver diagnostics from the primary T1 "
-            "waveform cases. For each M the first and worst macro are labeled and "
-            "the supplied rtol is drawn. Path and endpoint maxima remain separate. "
-            "Same-time RK4 midpoint targets are distinct from the converged "
-            "discrete target, which is synchronous fine RK4 under the same "
-            "canonicalization."
+            "waveform mixed-seed cases. For each M the first and worst macro are "
+            "labeled and the supplied rtol is drawn. Path and endpoint maxima "
+            "remain separate. Two same-time RK4 midpoint stages are distinct from "
+            "each other; the converged discrete target is synchronous fine RK4 "
+            "under the same canonicalization."
         ),
         "verification",
         panels=[
-            ("a", "M=4 first/worst macro path and endpoint residuals."),
-            ("b", "M=16 first/worst macro path and endpoint residuals."),
-            ("c", "M=32 first/worst macro path and endpoint residuals."),
+            ("a", "M=4 primary mixed first/worst macro residuals."),
+            ("b", "M=16 primary mixed first/worst macro residuals."),
+            ("c", "M=32 primary mixed first/worst macro residuals."),
         ],
         metadata={
             "device": "Supplied CPU FP64 diagnostics",
@@ -1681,19 +1898,27 @@ def build_manifest(
     fig6 = t0_module.figure_record(
         6,
         FIGURE_NAMES[5],
-        "Fixed-H half-step and tolerance controls",
+        "Fixed-H refinement and tight-tolerance controls",
         (
-            "VER denotes bounded numerical controls. The panels compare target "
-            "error and mixed-seed high gain at H=T/16 and H=T/8 for h* and h*/2 "
-            "and for supplied tolerance variants. Incomplete cases are named "
-            "below the panels; any prefix-only numeric value is an open cross and "
-            "never a completed point."
+            "VER denotes bounded numerical controls. The top row preserves target "
+            "error and mixed-seed high gain at H=T/16 and H=T/8 for h* and h*/2. "
+            "The lower left panel shows supplied high-mode relative vector error "
+            "against true synchronous fine RK4, and the lower right shows "
+            "abs(final high-mode gain - 1), for mixed M16/32 h*=T/2048 controls "
+            "at rtol=1e-10 and 1e-14. Missing vector references remain "
+            "unavailable; gain is not vector accuracy. Incomplete controls are "
+            "named below the panels, and prefix-only numeric values are open cross "
+            "marks rather than completed values."
         ),
         "verification",
         panels=[
-            ("a", "Target maximum error across supplied tolerance choices."),
-            ("b", "Mixed-seed maximum gain across supplied tolerance choices."),
-            ("c", "Incomplete control annotations with accepted horizons."),
+            ("a", "Fixed-H target maximum error."),
+            ("b", "Fixed-H mixed-seed maximum gain."),
+            (
+                "c",
+                "M16/32 high-mode relative vector error versus true fine RK4.",
+            ),
+            ("d", "M16/32 abs(final high-mode gain - 1)."),
         ],
         metadata={
             "device": "Supplied CPU FP64 records",
@@ -1794,6 +2019,7 @@ def build_manifest(
                 "fixed rtol, and the h* cadence; tolerance variants remain separate."
             ),
             "notes": [
+                *high_gain_notes,
                 (
                     "Rejected crosses annotate accepted prefix horizons. They do "
                     "not assert a full-window criterion pass."
@@ -1834,12 +2060,14 @@ def build_manifest(
             "title": "Iteration path and endpoint residuals",
             "introduction": (
                 "Primary T1 waveform sweep diagnostics show how path and endpoint "
-                "convergence maxima behave inside the first and worst supplied macros."
+                "mixed-seed convergence maxima behave inside the first and worst "
+                "supplied macros."
             ),
             "notes": [
                 (
                     "The converged discrete target is synchronous fine RK4 under "
-                    "the same canonicalization; same-time RK4 midpoints are distinct."
+                    "the same canonicalization; the two same-time RK4 midpoint "
+                    "stages are distinct from each other."
                 ),
                 (
                     "The supplied rtol is a reference, not a replacement for "
@@ -1873,7 +2101,10 @@ def build_manifest(
             "title": "Half-step and tolerance controls",
             "introduction": (
                 "The fixed H=T/16 and H=T/8 comparisons isolate h* versus h*/2 "
-                "and retain supplied tolerance variants and incomplete cases."
+                "in the top row. The lower row retains supplied M16/32 mixed "
+                "h*=T/2048 tolerance controls at rtol=1e-14 and 1e-10, showing "
+                "high-mode fine-RK4 vector error separately from final gain "
+                "deviation. Incomplete controls stay explicit."
             ),
             "notes": _availability_notes(data),
             "figures": [fig6],
@@ -1907,7 +2138,8 @@ def build_manifest(
             "matrix for a periodic "
             "nine-point controlled temporal fixture. The report does not run the "
             "solver or modify a tolerance. It makes no global-wall, CAW, "
-            "large-production, speedup, or asymptotic-stability claim."
+            "large-production, speedup, or asymptotic-stability claim. "
+            + high_gain_summary
         ),
         "notation": [
             {"symbol": "T", "meaning": "Supplied target temporal period."},
@@ -1930,7 +2162,8 @@ def build_manifest(
             "rejected/incomplete cases. No blanket acceptance statement is made: "
             "the gallery preserves rejected prefixes, null availability, the "
             "finite 2T observational scope, and the separation between T0 baseline "
-            "and primary-versus-tolerance T1 comparisons."
+            "and primary-versus-tolerance T1 comparisons. "
+            + high_gain_summary
         ),
         "known_issues": manifest_references(references, output),
     }

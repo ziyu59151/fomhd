@@ -1,6 +1,7 @@
 # Controlled T0 temporal evidence
 
-Status: controlled CPU baseline delivered; T1 awaits the user's decision.
+Status: preserved controlled CPU baseline; the authorized T1 follow-up is in
+[A1_T1_EVIDENCE.md](A1_T1_EVIDENCE.md).
 Scientific protocol: design decision D064 and `A1/A1_T0_BENCHMARK.md`.
 Numerical benchmark commit: `206e850c3220c021b03932e262e8e52c307f4a7e`.
 The T0 accepted update is inherited from `93219d2`; the current commit changes
@@ -114,6 +115,6 @@ GPU scientific scope; earlier GPU evidence remains historical.
 
 Verification: 169 targeted CPU tests plus independent changed-path review;
 actual gallery/provenance and delivery checks are recorded in the run index.
-T1 is recommended for user review: preserve this input/horizon/criteria matrix,
-first measure improvement at the same H, then test whether the usable H range
-expands. T1-T4 each require their own report and user decision.
+T1 preserves this input/horizon/criteria matrix and reports same-H improvement
+and changes in usable sampled windows separately. See its independent report;
+T2-T4 still require a report and user decision at each layer.

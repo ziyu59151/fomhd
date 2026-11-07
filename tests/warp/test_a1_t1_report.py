@@ -45,14 +45,24 @@ def _case(
     micro: int = 2048,
     rtol: float | None = 1.0e-6,
     completed: bool = True,
+    high_sync_vector_error: float | None = None,
+    final_high_gain: float | None = None,
+    max_high_gain: float | None = None,
 ) -> dict:
     rejection = None if completed else 0.5 * M / micro
     times = [0.0, 0.25 * M / micro, 0.5 * M / micro, 0.75 * M / micro]
-    ratios = (
-        None
-        if seed == "target"
-        else [1.0, 1.002, 1.006, 1.03]
+    mixed_max_gain = (
+        None if seed == "target" else 1.005 if max_high_gain is None else max_high_gain
     )
+    ratios = None
+    if mixed_max_gain is not None:
+        gain_delta = mixed_max_gain - 1.0
+        ratios = [
+            1.0,
+            1.0 + 0.2 * gain_delta,
+            1.0 + 0.6 * gain_delta,
+            mixed_max_gain,
+        ]
     iterations = [
         {
             "macro_index": macro,
@@ -65,7 +75,7 @@ def _case(
         for macro in (0, 1)
         for iteration in (0, 1, 2)
     ]
-    return {
+    result = {
         "id": case_id,
         "coupling": coupling,
         "M": M,
@@ -82,8 +92,12 @@ def _case(
         "kinetic_energy_residual_J": [0.0, 5.0e-13, 8.0e-13, 9.0e-13],
         "energy_time_over_T": times,
         "max_target_error": 4.0e-6,
-        "max_high_gain": None if seed == "target" else 1.03,
-        "final_high_gain": None if seed == "target" else 1.03,
+        "max_high_gain": mixed_max_gain,
+        "final_high_gain": (
+            None
+            if seed == "target"
+            else 1.005 if final_high_gain is None else final_high_gain
+        ),
         "sweeps_min": 2.0,
         "sweeps_max": 3.0,
         "model_calls": 1000 + M,
@@ -93,6 +107,9 @@ def _case(
         "failure_message": None if completed else "synthetic rejection",
         "rejected_time_over_T": rejection,
     }
+    if high_sync_vector_error is not None:
+        result["high_sync_vector_error"] = high_sync_vector_error
+    return result
 
 
 def _t0_case(M: int, seed: str) -> dict:
@@ -162,11 +179,28 @@ def _compact_data(root: Path) -> dict:
                     M,
                     seed,
                     completed=not (M == 256 and seed == "target"),
+                    max_high_gain=(
+                        1.0144201
+                        if M == 128 and seed == "mixed"
+                        else 1.009 if M == 256 and seed == "mixed" else None
+                    ),
                 )
             )
     for M, micro in ((128, 2048), (256, 4096), (256, 2048), (512, 4096)):
         for seed in ("target", "mixed"):
-            cases.append(_case(f"fixed-{M}-{micro}-{seed}", M, seed, micro=micro))
+            cases.append(
+                _case(
+                    f"fixed-{M}-{micro}-{seed}",
+                    M,
+                    seed,
+                    micro=micro,
+                    max_high_gain=(
+                        1.0144201
+                        if M == 128 and seed == "mixed"
+                        else 1.009 if M == 256 and seed == "mixed" else None
+                    ),
+                )
+            )
     cases.append(
         _case("tolerance-low-target", 128, "target", rtol=1.0e-8)
     )
@@ -179,6 +213,21 @@ def _compact_data(root: Path) -> dict:
             rtol=1.0e-8,
         )
     )
+    for M, sync_base in ((16, 2.0e-4), (32, 4.0e-4)):
+        for rtol, sync_scale, gain in (
+            (1.0e-10, 1.0, 1.02 + M * 1.0e-5),
+            (1.0e-14, 0.25, 1.01 + M * 1.0e-5),
+        ):
+            cases.append(
+                _case(
+                    f"tight-{M}-{rtol:.0e}-mixed",
+                    M,
+                    "mixed",
+                    rtol=rtol,
+                    high_sync_vector_error=sync_base * sync_scale,
+                    final_high_gain=gain,
+                )
+            )
 
     linear = []
     for M in (4, 8, 16, 32, 64, 128, 256):
@@ -368,10 +417,10 @@ def test_manifest_preserves_sources_matrix_and_artifacts(fixture):
             2048,
             coupling="waveform",
         )
-        t1_target = report.select_case(
+        t1_residual = report.select_case(
             primary,
             M,
-            "target",
+            "mixed",
             2048,
             coupling="waveform",
         )
@@ -384,8 +433,9 @@ def test_manifest_preserves_sources_matrix_and_artifacts(fixture):
         )
         assert t1_mixed is not None and t1_mixed["coupling"] == "waveform"
         assert report.case_gain_history(t1_mixed)[0]
-        assert t1_target is not None and t1_target["iterations"]
-        assert t1_target["energy_time_over_T"]
+        assert t1_residual is not None and t1_residual["seed"] == "mixed"
+        assert t1_residual["iterations"]
+        assert t1_residual["energy_time_over_T"]
         assert t0_mixed is not None and t0_mixed["coupling"] == "predictor"
         assert report.case_gain_history(t0_mixed)[0]
 
@@ -403,8 +453,131 @@ def test_manifest_preserves_sources_matrix_and_artifacts(fixture):
     )
     assert "T1 waveform primary rtol" in fig2_text
     assert "T0" in fig3_text and "T1" in fig3_text
-    assert "T1 waveform M=4" in fig4_text
+    assert "T1 mixed M=4" in fig4_text
     assert "T1 waveform accepted" in fig5_text
+
+
+def test_tight_tolerance_controls_and_mixed_residuals_render(fixture):
+    data = deepcopy(fixture["data"])
+    report.validate_data(data)
+    primary = report.primary_cases(data)
+    mixed_residual = report.select_case(
+        primary,
+        4,
+        "mixed",
+        2048,
+        coupling="waveform",
+    )
+    assert mixed_residual is not None and mixed_residual["seed"] == "mixed"
+
+    tight = [
+        case
+        for case in data["cases"]
+        if case["coupling"] == "waveform"
+        and case["seed"] == "mixed"
+        and case["micro_per_period"] == 2048
+        and case["M"] in {16, 32}
+        and case["rtol"] in {1.0e-10, 1.0e-14}
+    ]
+    assert {(case["M"], case["rtol"]) for case in tight} == {
+        (16, 1.0e-10),
+        (16, 1.0e-14),
+        (32, 1.0e-10),
+        (32, 1.0e-14),
+    }
+    assert all(case["high_sync_vector_error"] is not None for case in tight)
+
+    without_optional = deepcopy(data)
+    without_optional["cases"][0].pop("high_sync_vector_error", None)
+    report.validate_data(without_optional)
+    invalid = deepcopy(data)
+    invalid["cases"][0]["high_sync_vector_error"] = -1.0
+    with pytest.raises(report.InputError, match="high_sync_vector_error"):
+        report.validate_data(invalid)
+
+    _build(fixture)
+    fig4_text = (fixture["output"] / f"{report.FIGURE_NAMES[3]}.svg").read_text(
+        encoding="utf-8"
+    )
+    fig6_text = (fixture["output"] / f"{report.FIGURE_NAMES[5]}.svg").read_text(
+        encoding="utf-8"
+    )
+    assert "T1 mixed M=4" in fig4_text
+    assert "T1 mixed M=16" in fig4_text
+    assert "T1 mixed M=32" in fig4_text
+    assert "1e-14" in fig6_text and "1e-10" in fig6_text
+    assert "M=16 vs fine RK4" in fig6_text
+    assert "M=32 vs fine RK4" in fig6_text
+    assert "M=16 final gain" in fig6_text
+    assert "M=32 final gain" in fig6_text
+
+    manifest = json.loads(
+        (fixture["output"] / "manifest.json").read_text(encoding="utf-8")
+    )
+    figure6 = next(
+        figure
+        for page in manifest["pages"]
+        for figure in page.get("figures", [])
+        if figure["number"] == 6
+    )
+    assert len(figure6["panels"]) == 4
+    assert "true synchronous fine RK4" in figure6["caption"]
+    assert "gain is not vector accuracy" in figure6["caption"].casefold()
+
+
+def test_completed_high_gain_budget_exceedance_is_explicit(fixture):
+    data = deepcopy(fixture["data"])
+    report.validate_data(data)
+    exceedances = report.primary_high_gain_exceedances(data)
+    replaced = {(case["M"], case["max_high_gain"]) for case in exceedances}
+    assert (128, 1.0144201) in replaced
+    assert all(M != 256 for M, _ in replaced)
+
+    _build(fixture)
+    output = fixture["output"]
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    matrix_notes = "\n".join(
+        note
+        for page in manifest["pages"]
+        if page["id"] == "t0-t1-matrix"
+        for note in page["notes"]
+    )
+    for text in (
+        manifest["introduction"],
+        manifest["conclusions"],
+        matrix_notes,
+    ):
+        assert "M=128" in text
+        assert "1.0144201" in text
+        assert "growth_limit=1.01" in text
+        assert "completion is execution status" in text.casefold()
+        assert "contiguous usable range" in text.casefold()
+
+    fig2_text = (output / f"{report.FIGURE_NAMES[1]}.svg").read_text(
+        encoding="utf-8"
+    )
+    assert "completed M=128" in fig2_text
+    assert "1.0144201" in fig2_text
+    assert "growth limit 1.01" in fig2_text
+    assert "T1 completed, above growth limit" in fig2_text
+
+    figure4 = next(
+        figure
+        for page in manifest["pages"]
+        for figure in page.get("figures", [])
+        if figure["number"] == 4
+    )
+    assert "same-time RK4 midpoint stages are distinct from each other" in (
+        figure4["caption"]
+    )
+    assert "distinct from the converged discrete target" not in figure4["caption"]
+    fig4_text = (output / f"{report.FIGURE_NAMES[3]}.svg").read_text(
+        encoding="utf-8"
+    )
+    assert (
+        "two same-time RK4 midpoint stages are distinct from each other"
+        in fig4_text
+    )
 
 
 @pytest.mark.parametrize(

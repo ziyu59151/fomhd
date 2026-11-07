@@ -805,6 +805,72 @@ def test_postprocess_failure_retains_raw_accepted_history(
         assert "cumulative_accepted_intervals" in history.files
 
 
+def test_iteration_summary_reads_real_core_normalized_metadata():
+    tool = module()
+    records = [
+        {
+            "iterations": [
+                {
+                    "iteration": 0,
+                    "path_max_normalized": 4.0e-9,
+                    "endpoint_max_normalized": 5.0e-9,
+                    "path": {
+                        "mom_i": {
+                            "raw_max_abs": 1.4e-12,
+                            "scale": 3.648e-4,
+                            "normalized_max_abs": 4.0e-9,
+                        }
+                    },
+                    "endpoint": {
+                        "mom_i": {
+                            "raw_max_abs": 1.8e-12,
+                            "scale": 3.648e-4,
+                            "normalized_max_abs": 5.0e-9,
+                        }
+                    },
+                },
+                {
+                    "iteration": 1,
+                    "path_max_normalized": 1.0e-12,
+                    "endpoint_max_normalized": 2.0e-12,
+                },
+            ]
+        },
+        {
+            "iterations": [
+                {
+                    "iteration": 0,
+                    "path_relative_legacy": 3.0e-2,
+                    "endpoint_relative_legacy": 4.0e-2,
+                }
+            ]
+        },
+    ]
+
+    summary = tool._iteration_summary(records)
+
+    path = summary["path_relative"]
+    endpoint = summary["endpoint_relative"]
+    assert path["available"] is True
+    assert path["minimum"] == pytest.approx(1.0e-12)
+    assert path["maximum"] == pytest.approx(3.0e-2)
+    assert path["by_key"]["path_max_normalized"] == {
+        "minimum": pytest.approx(1.0e-12),
+        "maximum": pytest.approx(4.0e-9),
+    }
+    assert "path_relative_legacy" in path["by_key"]
+    assert endpoint["minimum"] == pytest.approx(2.0e-12)
+    assert endpoint["maximum"] == pytest.approx(4.0e-2)
+    assert endpoint["by_key"]["endpoint_max_normalized"] == {
+        "minimum": pytest.approx(2.0e-12),
+        "maximum": pytest.approx(5.0e-9),
+    }
+    assert "background/physical" in path["semantics"]
+    assert "actual-field" in path["semantics"]
+    assert "not a small-signal response" in path["semantics"]
+    assert endpoint["semantics"] == path["semantics"]
+
+
 def test_target_only_high_has_no_ratios_against_noise(tmp_path, monkeypatch):
     tool = module()
     baseline = _baseline_fixture(tmp_path / "baseline", tool)

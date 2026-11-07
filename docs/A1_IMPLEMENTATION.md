@@ -162,3 +162,6 @@ microsteps remain serial in time. Cross-slab time parallelism belongs to T3.
 The controlled runner is `tools/warp_t1_verify.py`; CPU walltime in this small
 fixture is a diagnostic, not a speedup qualification. T0 raw evidence and
 `release/a1-t0` at fc9a19e remain the comparison baseline.
+
+Controlled T1 results, known tolerance limits, GPU scope and reproducible
+artifacts are recorded in [A1_T1_EVIDENCE.md](A1_T1_EVIDENCE.md).
