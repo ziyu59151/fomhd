@@ -23,6 +23,7 @@ _EPS = np.finfo(np.float64).eps
 class OperatorOptions:
     rank_rtol: float = 1e-10
     memory_cap_bytes: int = 512 << 20
+    include_finite_mass: bool = True
 
 
 @dataclass
@@ -74,6 +75,10 @@ class Operators:
     setup_checks: list[SimpleNamespace] = field(default_factory=list)
     poisson_spectra: list[Any] = field(default_factory=list)
     compute: Any = None
+    finite_mass_available: bool = True
+    finite_mass_unavailable_reason: str | None = None
+    omitted_finite_mass: tuple[str, ...] = ()
+    finite_mass_omitted_bytes: int = 0
 
 
 @dataclass
@@ -548,7 +553,70 @@ def _estimate_spatial_bytes(geometry: Geometry) -> int:
     return _checked_product(elements, 16, "spatial estimate bytes")
 
 
-def _estimate_operator_bytes(geometry: Geometry, K: int) -> int:
+def _estimate_finite_mass_storage(geometry: Geometry, K: int) -> dict[str, int]:
+    nc = len(geometry.cells.keys)
+    ne = (
+        len(geometry.cells.keys)
+        + len(geometry.r_faces.keys)
+        + len(geometry.z_faces.keys)
+    )
+    modes = 2 * K + 1
+    lphi = _checked_product(
+        _checked_product(
+            modes,
+            _checked_product(nc, nc, "finite-mass storage"),
+            "finite-mass storage",
+        ),
+        16,
+        "finite-mass storage",
+    )
+    phi_factor = _checked_product(
+        modes,
+        _checked_sum(
+            _checked_product(
+                _checked_product(
+                    2,
+                    _checked_product(nc, nc, "finite-mass storage"),
+                    "finite-mass storage",
+                ),
+                16,
+                "finite-mass storage",
+            ),
+            _checked_product(nc, 4, "finite-mass storage"),
+            "finite-mass storage",
+        ),
+        "finite-mass storage",
+    )
+    spectra = _checked_product(
+        _checked_product(modes, nc, "finite-mass storage"),
+        8,
+        "finite-mass storage",
+    )
+    bc_entries = _checked_product(
+        _checked_product(modes, nc, "finite-mass storage"),
+        _checked_product(modes, ne, "finite-mass storage"),
+        "finite-mass storage",
+    )
+    bc_full = _checked_product(bc_entries, 16, "finite-mass storage")
+    # Independent-row selection cannot retain more rows than the full matrix.
+    selected_bc_upper_bound = bc_full
+    parts = {
+        "lphi": lphi,
+        "phi_factor": phi_factor,
+        "poisson_spectra": spectra,
+        "Bc_full": bc_full,
+        "Bc_selected_upper_bound": selected_bc_upper_bound,
+    }
+    total = 0
+    for value in parts.values():
+        total = _checked_sum(total, value, "finite-mass storage")
+    parts["total"] = total
+    return parts
+
+
+def _estimate_operator_bytes(
+    geometry: Geometry, K: int, include_finite_mass: bool = True
+) -> int:
     nc = len(geometry.cells.keys)
     nr = len(geometry.r_faces.keys)
     nz = len(geometry.z_faces.keys)
@@ -621,6 +689,19 @@ def _estimate_operator_bytes(geometry: Geometry, K: int) -> int:
     )
     elements = _checked_sum(elements, per_mode, "operator estimate")
     elements = _checked_sum(elements, constraint, "operator estimate")
+    finite_mass_elements = _checked_sum(
+        _checked_product(
+            2,
+            _checked_product(modes, square(nc), "operator estimate"),
+            "operator estimate",
+        ),
+        constraint,
+        "operator estimate",
+    )
+    if not include_finite_mass:
+        if finite_mass_elements > elements:
+            raise Failure("Memory", "finite-mass operator estimate is inconsistent")
+        elements -= finite_mass_elements
     byte_count = _checked_product(elements, 16, "operator estimate bytes")
     return _checked_sum(
         byte_count, byte_count // 2, "operator estimate with workspaces"
@@ -860,18 +941,40 @@ def build_operators(
     settings = _options(options)
     if K < 0 or not (0.0 < settings.rank_rtol < 1.0):
         raise Failure("Operators", "operator mode or rank tolerance is invalid")
+    if type(settings.include_finite_mass) is not bool:
+        raise Failure("Operators", "include_finite_mass must be boolean")
     backend = backend or Backend("cpu")
     _require_memory(
-        _estimate_operator_bytes(geometry, K),
+        _estimate_operator_bytes(
+            geometry, K, settings.include_finite_mass
+        ),
         settings.memory_cap_bytes,
         "operator_matrices",
     )
     operators, t1, t2, t3 = _make_fixed_spatial_state(geometry, backend)
+    operators.finite_mass_available = settings.include_finite_mass
+    if not settings.include_finite_mass:
+        operators.finite_mass_unavailable_reason = (
+            "massless electron storage omits finite Poisson/Darwin matrices"
+        )
+        operators.omitted_finite_mass = (
+            "Lphi",
+            "phi_factor",
+            "poisson_spectra",
+            "Bc_full",
+            "Bc",
+            "selected_constraint_rows",
+        )
+        operators.finite_mass_omitted_bytes = (
+            _estimate_finite_mass_storage(geometry, K)["total"]
+        )
     operators.K = K
     nc = operators.Nc
+    ne = operators.Ne
     nr = len(geometry.r_faces.keys)
     nz = len(geometry.z_faces.keys)
     nb = operators.Nb
+    modes = 2 * K + 1
     for mode in range(-K, K + 1):
         spatial = _assemble_spatial(
             geometry, mode, operators, t1, t2, t3, True, settings, backend
@@ -882,22 +985,25 @@ def build_operators(
                 _adjoint(spatial.C, backend), _diagonal(operators.MB, backend)
             ),
         )
-        lphi = backend.asarray(-backend.mm(spatial.DJ, spatial.G))
-        spectrum = backend.singular_values(lphi)
-        spectrum_host = backend.to_host(spectrum)
-        if (
-            spectrum_host.size == 0
-            or spectrum_host[-1] <= settings.rank_rtol * spectrum_host[0]
-        ):
-            raise Failure("Operators", "Poisson matrix is numerically rank deficient")
         operators.G.append(spatial.G)
         operators.C.append(spatial.C)
         operators.DB.append(spatial.DB)
         operators.DJ.append(spatial.DJ)
         operators.Cdag.append(cdag)
-        operators.Lphi.append(lphi)
-        operators.poisson_spectra.append(spectrum)
-        operators.phi_factor.append(backend.factor(lphi))
+        if settings.include_finite_mass:
+            lphi = backend.asarray(-backend.mm(spatial.DJ, spatial.G))
+            spectrum = backend.singular_values(lphi)
+            spectrum_host = backend.to_host(spectrum)
+            if (
+                spectrum_host.size == 0
+                or spectrum_host[-1] <= settings.rank_rtol * spectrum_host[0]
+            ):
+                raise Failure(
+                    "Operators", "Poisson matrix is numerically rank deficient"
+                )
+            operators.Lphi.append(lphi)
+            operators.poisson_spectra.append(spectrum)
+            operators.phi_factor.append(backend.factor(lphi))
 
     i_r_host, i_z_host = _host_interpolation(geometry)
     i_r = backend.asarray(i_r_host)
@@ -927,13 +1033,22 @@ def build_operators(
         operators.T_full, operators.selected_wall_rows, backend
     )
     operators.QB = backend.asarray(_host_qb(geometry))
-    operators.Bc_full = _block_diagonal(operators.DJ, backend)
-    operators.selected_constraint_rows = backend.independent_rows(
-        operators.Bc_full, settings.rank_rtol
-    )
-    operators.Bc = _select_rows(
-        operators.Bc_full, operators.selected_constraint_rows, backend
-    )
+    if settings.include_finite_mass:
+        operators.Bc_full = _block_diagonal(operators.DJ, backend)
+        operators.selected_constraint_rows = backend.independent_rows(
+            operators.Bc_full, settings.rank_rtol
+        )
+        operators.Bc = _select_rows(
+            operators.Bc_full, operators.selected_constraint_rows, backend
+        )
+    else:
+        empty_constraint = backend.asarray(
+            np.zeros((0, modes * ne), dtype=np.complex128)
+        )
+        # Zero-row placeholders keep the shared memory planner generic.  The
+        # availability flag, not an empty finite array, is the model contract.
+        operators.Bc_full = empty_constraint
+        operators.Bc = empty_constraint
 
     ell2 = backend.asarray(
         np.concatenate((np.zeros(nz), geometry.av, np.zeros(nr)))
@@ -943,9 +1058,23 @@ def build_operators(
     operators.topology_flux_row = backend.asarray(backend.xp.conj(ell_column)[None, :])
     if any(
         len(group) != 2 * K + 1
-        for group in (operators.G, operators.C, operators.DB, operators.Lphi)
+        for group in (
+            operators.G,
+            operators.C,
+            operators.DB,
+            operators.DJ,
+            operators.Cdag,
+        )
     ):
         raise Failure("Operators", "operator mode count is inconsistent")
+    if settings.include_finite_mass:
+        if len(operators.Lphi) != 2 * K + 1:
+            raise Failure("Operators", "finite-mass mode count is inconsistent")
+    elif operators.Lphi or operators.phi_factor or operators.poisson_spectra:
+        raise Failure(
+            "Operators",
+            "massless storage contains omitted finite matrices",
+        )
     operators.setup_checks = validate_operators(geometry, operators)
     return operators
 

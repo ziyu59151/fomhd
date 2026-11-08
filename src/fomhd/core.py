@@ -286,50 +286,305 @@ def fixed_wall_cache_bytes(c: Context) -> int:
     )
 
 
+def _require_model_storage(c: Context) -> None:
+    """Reject operator storage that the selected electron model cannot use."""
+    finite_mass_available = getattr(c.op, "finite_mass_available", True)
+    if type(finite_mass_available) is not bool:
+        raise Failure("Model", "operator finite-mass availability is invalid")
+    if int(getattr(c.p, "electron_inertia", 0)) != 0 and not finite_mass_available:
+        raise Failure(
+            "Model",
+            "finite-mass electron model requires complete finite-mass "
+            "operator storage",
+        )
+
+
+def _array_storage_bytes(value: Any) -> int:
+    if value is None:
+        return 0
+    entries = 1
+    for extent in getattr(value, "shape", ()):
+        entries = _checked_product(
+            entries,
+            int(extent),
+            "operator resident storage",
+        )
+    return _checked_product(
+        entries,
+        int(getattr(value, "itemsize", 0)),
+        "operator resident storage bytes",
+    )
+
+
+def _factor_storage_bytes(factor: Any) -> int:
+    if factor is None:
+        return 0
+    total = 0
+    # An original can alias its source matrix; counting both is a safe bound.
+    for value in (factor.original, factor.factors, factor.pivots):
+        total = _checked_sum(
+            total,
+            _array_storage_bytes(value),
+            "operator factor storage",
+        )
+    return total
+
+
+def massless_matrix_storage(c: Context) -> dict[str, int]:
+    """Return the massless resident inventory and bounded live temporaries."""
+    storage: dict[str, int] = {}
+    modes = 2 * c.p.K + 1
+    if any(
+        len(getattr(c.op, name, ())) != modes
+        for name in ("G", "C", "DB", "DJ", "Cdag")
+    ):
+        raise Failure("Shape", "massless resident operator mode count is inconsistent")
+
+    def group(name: str, values: Any) -> None:
+        total = 0
+        for value in values:
+            total = _checked_sum(
+                total,
+                _array_storage_bytes(value),
+                f"{name} storage",
+            )
+        storage[name] = total
+
+    group(
+        "mode_matrices",
+        (
+            matrix
+            for name in ("G", "C", "DB", "DJ", "Cdag")
+            for matrix in getattr(c.op, name)
+        ),
+    )
+    group(
+        "fixed_matrices",
+        (
+            getattr(c.op, name, None)
+            for name in (
+                "I",
+                "H",
+                "QB",
+                "T_full",
+                "T",
+                "DR",
+                "DZ",
+                "topology_flux_row",
+                "b1r",
+                "b1z",
+                "b2r",
+                "b2z",
+            )
+        ),
+    )
+    group(
+        "filter_matrices",
+        (
+            getattr(c.op, name, None)
+            for name in ("PR_r", "PZ_r", "PR_z", "PZ_z", "PR_v", "PZ_v")
+        ),
+    )
+    group(
+        "metric_vectors",
+        (
+            getattr(c.op, name, None)
+            for name in ("M0", "M1", "MB", "Rbar_r", "Rbar_v")
+        ),
+    )
+    filter_factors = 0
+    for name in ("PR_r", "PZ_r", "PR_z", "PZ_z", "PR_v", "PZ_v"):
+        filter_factors = _checked_sum(
+            filter_factors,
+            _factor_storage_bytes(getattr(c.op, f"{name}_factor", None)),
+            "filter factor storage",
+        )
+    storage["filter_factors"] = filter_factors
+
+    # A massless context with the complete operator set remains a valid oracle.
+    finite_oracle = 0
+    for name in ("Lphi", "poisson_spectra"):
+        for value in getattr(c.op, name, ()):
+            finite_oracle = _checked_sum(
+                finite_oracle,
+                _array_storage_bytes(value),
+                "finite oracle storage",
+            )
+    for value in (getattr(c.op, "Bc_full", None), getattr(c.op, "Bc", None)):
+        finite_oracle = _checked_sum(
+            finite_oracle,
+            _array_storage_bytes(value),
+            "finite oracle storage",
+        )
+    for factor in getattr(c.op, "phi_factor", ()):
+        finite_oracle = _checked_sum(
+            finite_oracle,
+            _factor_storage_bytes(factor),
+            "finite oracle factor storage",
+        )
+    storage["finite_storage_oracle"] = finite_oracle
+
+    persistent = 0
+    for name in (
+        "mode_matrices",
+        "fixed_matrices",
+        "filter_matrices",
+        "metric_vectors",
+        "filter_factors",
+        "finite_storage_oracle",
+    ):
+        persistent = _checked_sum(
+            persistent,
+            storage[name],
+            "persistent operator storage",
+        )
+    storage["persistent"] = persistent
+
+    walls = len(getattr(c.geometry, "walls", ()))
+    # Wall setup simultaneously retains curl(Nb x W), thin-curl(Ne x W), and
+    # five W x W scaling/principal/LU buffers before the cache publishes them.
+    wall_temporaries = _checked_sum(
+        _checked_product(
+            c.op.Nb,
+            walls,
+            "wall-cache boundary temporaries",
+        ),
+        _checked_product(
+            c.op.Ne,
+            walls,
+            "wall-cache edge temporaries",
+        ),
+        "wall-cache matrix temporaries",
+    )
+    wall_temporaries = _checked_sum(
+        wall_temporaries,
+        _checked_product(
+            5,
+            _checked_product(
+                walls,
+                walls,
+                "wall-cache principal temporaries",
+            ),
+            "wall-cache principal temporaries",
+        ),
+        "wall-cache matrix temporaries",
+    )
+    selected = getattr(c.op, "T", None)
+    selected_rows = (
+        int(selected.shape[0])
+        if selected is not None and len(selected.shape) > 0
+        else 0
+    )
+    projection_temporaries = _checked_sum(
+        _checked_product(
+            2,
+            _checked_product(
+                selected_rows,
+                3 * c.op.Nc,
+                "constraint-projection temporaries",
+            ),
+            "constraint-projection temporaries",
+        ),
+        _checked_product(
+            selected_rows,
+            selected_rows,
+            "constraint-projection normal",
+        ),
+        "constraint-projection temporaries",
+    )
+    spatial_temporaries = _checked_product(
+        max(wall_temporaries, projection_temporaries),
+        16,
+        "matrix temporary bytes",
+    )
+    interpolation_entries = int(getattr(c.op.I, "size", 0))
+    cdag_entries = 0
+    for matrix in c.op.Cdag:
+        cdag_entries = _checked_sum(cdag_entries, int(matrix.size), "Cdag stack")
+    # massless_checks holds abs(I) while constructing the complex Cdag stack
+    # and its real absolute-value output. Borrowing Cdag does not avoid this.
+    storage["diagnostic_assembly_bytes"] = _checked_sum(
+        _checked_product(8, interpolation_entries, "absolute interpolation"),
+        _checked_product(24, cdag_entries, "diagnostic Cdag stack and absolute"),
+        "diagnostic assembly",
+    )
+    absolute_entries = _checked_sum(
+        _checked_sum(interpolation_entries, cdag_entries, "diagnostic arrays"),
+        int(getattr(c.op.T_full, "size", 0)),
+        "diagnostic arrays",
+    )
+    storage["diagnostic_retained_bytes"] = _checked_product(
+        8, absolute_entries, "diagnostic absolute arrays"
+    )
+    adjoint_entries = interpolation_entries
+    for name in ("DR", "DZ"):
+        adjoint_entries = _checked_sum(
+            adjoint_entries,
+            int(getattr(getattr(c.op, name, None), "size", 0)),
+            "gradient adjoint temporaries",
+        )
+    storage["adjoint_temporary_bytes"] = _checked_product(
+        16, adjoint_entries, "gradient conjugate-transpose arrays"
+    )
+    storage["temporary_matrices"] = max(
+        spatial_temporaries,
+        storage["diagnostic_assembly_bytes"],
+        storage["diagnostic_retained_bytes"],
+        storage["adjoint_temporary_bytes"],
+    )
+    return storage
+
+
 def estimated_peak_bytes(c: Context) -> int:
     product = lambda left, right: _checked_product(left, right, "host memory plan")
     add = lambda left, right: _checked_sum(left, right, "host memory plan")
     modes = 2 * c.p.K + 1
     edges = product(modes, c.op.Ne)
-    system = add(edges, c.op.Bc.shape[0])
-    entries = product(32, product(system, system))
-    entries = add(entries, product(4, c.op.Bc_full.size))
+    entries = 0
+    if int(getattr(c.p, "electron_inertia", 0)) != 0:
+        system = add(edges, c.op.Bc.shape[0])
+        entries = product(32, product(system, system))
+        entries = add(entries, product(4, c.op.Bc_full.size))
     entries = add(
         entries,
         product(256, product(c.N, add(add(3 * c.op.Nc, c.op.Ne), c.op.Nb))),
     )
     entries = add(entries, product(32, product(modes, add(11 * c.op.Nc, c.op.Nb))))
     entries = add(entries, predictor_history_entries(c))
-    resident = 0
-    for group in (
-        c.op.G,
-        c.op.C,
-        c.op.DB,
-        c.op.DJ,
-        c.op.Cdag,
-        c.op.Lphi,
-    ):
-        for matrix in group:
+    if int(getattr(c.p, "electron_inertia", 0)) != 0:
+        resident = 0
+        for group in (
+            c.op.G,
+            c.op.C,
+            c.op.DB,
+            c.op.DJ,
+            c.op.Cdag,
+            c.op.Lphi,
+        ):
+            for matrix in group:
+                resident = add(resident, matrix.size)
+        for matrix in (
+            c.op.I,
+            c.op.H,
+            c.op.QB,
+            c.op.T,
+            c.op.T_full,
+            c.op.PR_r,
+            c.op.PZ_r,
+            c.op.PR_z,
+            c.op.PZ_z,
+            c.op.PR_v,
+            c.op.PZ_v,
+        ):
             resident = add(resident, matrix.size)
-    for matrix in (
-        c.op.I,
-        c.op.H,
-        c.op.QB,
-        c.op.T,
-        c.op.T_full,
-        c.op.PR_r,
-        c.op.PZ_r,
-        c.op.PR_z,
-        c.op.PZ_z,
-        c.op.PR_v,
-        c.op.PZ_v,
-    ):
-        resident = add(resident, matrix.size)
-    entries = add(entries, product(8, resident))
-    return add(
-        product(entries, 16),
-        fixed_wall_cache_bytes(c),
-    )
+        entries = add(entries, product(8, resident))
+        return add(product(entries, 16), fixed_wall_cache_bytes(c))
+
+    storage = massless_matrix_storage(c)
+    total = product(entries, 16)
+    total = add(total, storage["persistent"])
+    total = add(total, storage["temporary_matrices"])
+    return add(total, fixed_wall_cache_bytes(c))
 
 
 def _workspace_bytes(c: Context) -> int:
@@ -353,6 +608,7 @@ def _workspace_bytes(c: Context) -> int:
 
 def preflight_memory(c: Context) -> int:
     """Apply complete allocation caps before any trial state is allocated."""
+    _require_model_storage(c)
     if c.p.memory_limit == 0:
         raise Failure("Memory", "a positive host memory cap is required")
     peak_bytes = estimated_peak_bytes(c)
@@ -428,6 +684,7 @@ def _hermitian_check(values: Any, entities: int, c: Context, name: str) -> None:
 
 
 def check_retained(state: State, c: Context) -> None:
+    _require_model_storage(c)
     for species in range(2):
         fluid = state.fluid[species]
         _hermitian_check(fluid.n, c.op.Nc, c, "density")

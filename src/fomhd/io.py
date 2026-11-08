@@ -471,6 +471,11 @@ def _operator_fingerprint(operators, backend):
     existing = getattr(operators, "matrix_fingerprint", None)
     if existing:
         return str(existing)
+    finite_mass_available = getattr(
+        operators, "finite_mass_available", True
+    )
+    if type(finite_mass_available) is not bool:
+        raise ValueError("operator finite-mass availability must be boolean")
     digest = hashlib.sha256()
     digest.update(RULE_HASH_TEXT.encode("ascii"))
     digest.update(b"fixed-wall:thin-composition/prepared-principal-v1")
@@ -483,6 +488,8 @@ def _operator_fingerprint(operators, backend):
         "Lphi",
     )
     for name in groups:
+        if not finite_mass_available and name == "Lphi":
+            continue
         matrix_group = getattr(operators, name)
         for matrix in matrix_group:
             array = np.asarray(backend.to_host(matrix))
@@ -506,6 +513,8 @@ def _operator_fingerprint(operators, backend):
         "PR_v",
         "PZ_v",
     ):
+        if not finite_mass_available and name in ("Bc_full", "Bc"):
+            continue
         value = getattr(operators, name)
         array = np.asarray(backend.to_host(value))
         digest.update(f"{name}:{array.shape}:".encode("ascii"))
@@ -514,12 +523,21 @@ def _operator_fingerprint(operators, backend):
         array = np.asarray(backend.to_host(getattr(operators, name)))
         digest.update(f"{name}:{array.shape}:".encode("ascii"))
         digest.update(np.ascontiguousarray(array).tobytes())
-    for name in ("selected_wall_rows", "selected_constraint_rows"):
+    row_groups = (
+        ("selected_wall_rows",)
+        if not finite_mass_available
+        else ("selected_wall_rows", "selected_constraint_rows")
+    )
+    if not finite_mass_available:
+        digest.update(b"finite-mass-storage:unavailable-v1")
+    for name in row_groups:
         digest.update(
             (name + ":" + ",".join(map(str, getattr(operators, name)))).encode(
                 "ascii"
             )
         )
+    if not finite_mass_available:
+        digest.update(b"selected_constraint_rows:unavailable-v1")
     return digest.hexdigest()
 
 
@@ -1458,9 +1476,24 @@ def load_case(path, overrides=None, backend=None):
     operators = operators_module.build_operators(
         geometry,
         K,
-        {"rank_rtol": rank_rtol, "memory_cap_bytes": memory},
+        {
+            "rank_rtol": rank_rtol,
+            "memory_cap_bytes": memory,
+            "include_finite_mass": (
+                int(getattr(parameters, "electron_inertia", 0)) != 0
+            ),
+        },
         backend,
     )
+    expected_finite_mass = (
+        int(getattr(parameters, "electron_inertia", 0)) != 0
+    )
+    available_finite_mass = operators.finite_mass_available
+    if (
+        type(available_finite_mass) is not bool
+        or available_finite_mass != expected_finite_mass
+    ):
+        raise ValueError("operator storage does not match the electron model")
     geometry_hash = _sha256_bytes(
         (input_hashes["geometry"] + "half_open_ray_certified_v2").encode()
     )
@@ -2636,6 +2669,21 @@ def read_restart(path, case):
                 f"checkpoint={saved_maximum}, "
                 f"configured={case.parameters.waveform_max_iterations}"
             )
+    if (
+        int(getattr(case.parameters, "electron_inertia", 0)) == 0
+        and not getattr(
+            getattr(case, "operators", None),
+            "finite_mass_available",
+            True,
+        )
+        and _array_text(arrays["matrix_fingerprint"])
+        != case.operator_hash
+    ):
+        raise ValueError(
+            "restart operator storage fingerprint mismatch; pre-0.5 full-storage "
+            "massless checkpoints are incompatible with reduced operator storage; "
+            "a changed geometry or operator can also cause this mismatch"
+        )
     expected = {
         "semantic_hash": case.semantic_hash,
         "geometry_hash": case.geometry_hash,

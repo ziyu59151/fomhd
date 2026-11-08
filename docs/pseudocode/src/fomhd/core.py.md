@@ -9,9 +9,22 @@ explicit `1` selects finite-fluid combination.
    have `M*Nc` or `M*3Nc` complex128 entries. Electron parallel pressure is
    likewise `M*Nc`; native ion parallel pressure remains empty.
 2. Magnetic field has `M*len(MB)` entries.
-3. Reject `memory_limit==0`. Apply the same conservative native peak estimate
-   and state/workspace cap before allocating on `Context.compute`.
-4. On `cuda`, require a positive `device_memory_limit` and apply both peak and
+3. Before any cap check, allocation, retained-state check, source counter
+   mutation, or physics work, require model/storage coherence:
+
+   ```text
+   availability = op.finite_mass_available  # bool
+   if electron_inertia != 0 and availability is false:
+     Failure("Model", "finite-mass electron model requires complete
+                      finite-mass operator storage")
+   ```
+
+   A massless model accepts either the reduced selected-storage operators or
+   the complete full-storage operator set; the latter remains the oracle.
+   Non-boolean availability is `Failure("Model")`.
+4. Reject `memory_limit==0`. Apply the selected conservative peak estimate and
+   state/workspace cap before allocating on `Context.compute`.
+5. On `cuda`, require a positive `device_memory_limit` and apply both peak and
    state/workspace bounds to that device cap before allocation. The CPU
    reference continues to use the host `memory_limit`.
 
@@ -62,10 +75,70 @@ explicit `1` selects finite-fluid combination.
 
 ## A0-PY-CORE-05 Memory plan
 
-1. Use the exact native conservative counts for dense systems, constraint
-   matrices, per-mode workspaces, and resident operator matrices.
+1. Use exact checked counts for finite dense systems, constraint matrices,
+   sampled/vector workspaces, and the selected operator inventory.
 2. Multiply entries by 16 bytes and use checked sums/products. This is a
    rejection estimate, not a measured allocator result.
+3. Charge the finite-inertia dense system and full `Bc` workspace only when
+   effective `electron_inertia` is 1:
+
+   ```text
+   system = (2K+1)*Ne + selected_Bc_rows
+   finite_entries = 32*system^2 + 4*Bc_full.size
+   ```
+
+   For massless stages these dense finite-inertia allocations do not exist.
+   Omit only `16*finite_entries`; retain the existing state, diagnostic,
+   sample, predictor/history, resident shared-operator, and fixed-wall-cache
+   terms. Do not remove or raise either host/device cap.
+4. Select this term from the effective electron model, not from a zero-row
+   `Bc` placeholder. The default finite formula, including its conservative
+   `8*resident` term, and both cap checks remain unchanged.
+5. For massless stages replace `8*resident` with the following measured-shape
+   inventory and temporary bound:
+
+   ```text
+   persistent =
+       mode G/C/DB/DJ/Cdag arrays
+     + I/H/QB/T/T_full/DR/DZ/topology
+     + b1r/b1z/b2r/b2z + PR/PZ filter matrices
+     + M0/M1/MB/Rbar_r/Rbar_v
+     + retained PR/PZ LU originals, factors and pivots
+     + finite matrices/factors only when a full-storage massless oracle is used
+
+   wall_temporaries = Nb*W + Ne*W + 5*W*W
+   projection_temporaries = 2*rows(T)*3*Nc + rows(T)^2
+   matrix_temporaries = 16*max(wall_temporaries, projection_temporaries)
+
+   massless_plan =
+       16*(sample workspace + state/predictor history)
+     + persistent
+     + matrix_temporaries
+     + fixed_wall_cache_bound
+   ```
+
+   The wall-cache `C` and `Cdag` members borrow the resident operator arrays
+   and are not charged twice. The fixed-wall bound owns the retained extraction,
+   weighted-adjoint, wall matrix and prepared-factor arrays. During construction
+   one `Nb x W` curl-boundary temporary and one `Ne x W` thin-curl temporary are
+   live; five `W x W` allowances cover the selected principal, two scaling
+   expression buffers, the scaled matrix and its LU factors. The coupled
+   projection bound covers its weighted matrix, exact normal and batched
+   products. Factor originals can alias their source matrices; counting them is
+   a stated conservative upper bound, not an allocator measurement.
+   Also account for the diagnostic complex Cdag stack and its absolute-value
+   output while abs(I) remains live, for retained abs(I)/abs(Cdag)/abs(T_full),
+   and for I/DR/DZ conjugate-transpose work arrays. These phases are separate;
+   use their maximum with wall/projection temporaries. At EAST32 the diagnostic
+   assembly alone requires 491,204,256 bytes. Runtime/library memory is measured
+   separately; array accounting is not a process RSS certificate.
+6. Check every shape product, sum, byte conversion and cap comparison for
+   arithmetic overflow. Build the inventory from the actual operator shapes
+   and reject an incomplete G/C/DB/DJ/Cdag mode inventory with
+   `Failure("Shape")`; never replace its temporary allowance with zero.
+7. Treat `estimated_peak_bytes` as a conservative rejection plan. Report
+   actual allocated stage/diagnostic/history lower bounds and measured RSS or
+   allocator-pool observations separately; never use one as proof of another.
 
 ## A1-PY-CORE-01 - Predictor state assembly and clocks
 
