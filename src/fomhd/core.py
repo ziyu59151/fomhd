@@ -37,6 +37,26 @@ def _checked_sum(left: int, right: int, name: str) -> int:
     return left + right
 
 
+def _history_sample_count(c: Context) -> int:
+    limit = getattr(c, "N", None)
+    samples = getattr(c, "_history_samples", limit)
+    if (
+        isinstance(limit, bool)
+        or type(limit) is not int
+        or limit <= 0
+        or isinstance(samples, bool)
+        or type(samples) is not int
+        or samples <= 0
+        or samples > limit
+    ):
+        raise Failure(
+            "Memory",
+            "history sample identity must be a positive non-boolean "
+            "integer no greater than N",
+        )
+    return samples
+
+
 def _require_memory(required: int, limit: int, name: str) -> None:
     if limit != 0 and required > limit:
         raise Failure(
@@ -64,6 +84,7 @@ def repeat_weights(weights: Any, count: int, backend: Any) -> Any:
 
 def predictor_history_entries(c: Context) -> int:
     """Conservatively count one retained A1 microstep sweep and path."""
+    samples = _history_sample_count(c)
     coupling = getattr(c.p, "coupling", "synchronous")
     if coupling == "synchronous":
         return 0
@@ -102,7 +123,7 @@ def predictor_history_entries(c: Context) -> int:
         _checked_product(
             256,
             _checked_product(
-                c.N,
+                samples,
                 _checked_sum(
                     _checked_sum(
                         3 * c.op.Nc,
@@ -167,6 +188,7 @@ def predictor_history_entries(c: Context) -> int:
 
 def predictor_wall_history_entries(c: Context) -> int:
     """Count retained per-stage dense wall samples and their factors."""
+    samples = _history_sample_count(c)
     if int(getattr(c.p, "electron_inertia", 0)) != 0:
         return 0
     coupling = getattr(c.p, "coupling", "synchronous")
@@ -194,7 +216,7 @@ def predictor_wall_history_entries(c: Context) -> int:
     matrix_entries = _checked_product(
         16,
         _checked_product(
-            c.N,
+            samples,
             _checked_product(
                 wall_count,
                 wall_count,
@@ -207,7 +229,7 @@ def predictor_wall_history_entries(c: Context) -> int:
     vector_entries = _checked_product(
         32,
         _checked_product(
-            c.N,
+            samples,
             _checked_sum(
                 wall_count,
                 3 * c.op.Nc,

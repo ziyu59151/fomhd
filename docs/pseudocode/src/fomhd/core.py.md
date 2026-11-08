@@ -174,12 +174,19 @@ electron-pressure/field state.
 ## A1-PY-CORE-02 - Predictor and waveform preflight memory
 
 ```text
+history_sample_count(c):
+  samples = getattr(c, "_history_samples", c.N)
+  require samples is a non-boolean integer and 1 <= samples <= c.N
+  return samples
+
 predictor_history_entries(c):
   if coupling == synchronous: return 0
   require coupling in {predictor,waveform}
   require micro_steps is positive non-boolean integer
+  samples = history_sample_count(c)
   full_state = checked(11*Nc+MB_size)
   retained = checked(4*M*full_state, plus conservative cache/rhs/stage counts)
+  retained += checked(256*samples*(3*Nc+Ne+Nb))
   if waveform:
     ion_stage = checked(Mmodes*5*Nc)
     retained += checked(2*(4*M)*ion_stage)  # old/new complete ion paths
@@ -194,17 +201,35 @@ preflight_memory(c):
     q=2K+1; w=len(geometry.walls); q and w are checked integers
     missing/None wall lists use w=0; finite inertia contributes zero
   for predictor or waveform massless contexts add per retained stage:
-    16*N*w*w + 32*N*(w+3*Nc) complex128-entry allowance
+    16*samples*w*w + 32*samples*(w+3*Nc) complex128-entry allowance
     multiply by 4*M with checked products; this covers stage wall.samples S,
     CPU dense LU original/factors, and dense vector work per phi sample
   apply checked peak and state/workspace caps before any trial allocation
 ```
+
+`_history_samples` is an internal alias-view identity. The ordinary context has
+no such attribute and therefore uses `N`. A massless alias view changes `N` to
+its alternate spectral sample count but inherits the outer view's history
+sample identity unchanged. A nested alias view propagates that same original
+identity. Boolean, non-integer, nonpositive, and greater-than-`N` identities
+fail before a history allowance is returned.
 
 The predictor and waveform scheduler retain one sweep of all `4M` evaluated
 full stages for the existing read-only interval diagnostics. Waveform adds the
 old/new `4M` ion stage paths and both ion endpoints. The estimate does not grow
 with `waveform_max_iterations`; prior sweeps retain scalar iteration metrics and
 failure checks, not all stage arrays. It is not constant-memory or sparse.
+
+The actual alias probe runs synchronously inside the outer stage before that
+stage returns. Its shallow context copy shares the outer retained history and
+changes only the one-stage sample workspace. The corrected `N=11` alias plan is
+therefore the unchanged outer `N=5` plan plus the alias-stage sample delta:
+`5,262,540,504 = 5,081,734,872 + 180,805,632` bytes at the EAST32 K1 waveform
+fixture. The outer result and its canonical/temporary data remain live until the
+alias call returns; the alias result and local stage temporaries are released
+after the probe. The pre-existing multi-stage history allowance conservatively
+dominates the additional one-stage transient overlap. This is a rejection-plan
+identity, not an allocator trace, measured RSS, or performance claim.
 
 The wall-cache term is a conservative static storage bound, not a measured
 allocator pool, resident-set size, or performance claim. It never constructs a

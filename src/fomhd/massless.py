@@ -8,6 +8,7 @@ import sys
 from types import SimpleNamespace
 
 from .core import (
+    _history_sample_count,
     _hermitian_check,
     allocate_state,
     check_retained,
@@ -886,6 +887,7 @@ def evaluate_stage(state, tag, context, alias=False):
 
 def _alias_probe(canonical, tag, context, result):
     updated = copy.copy(context)
+    updated._history_samples = _history_sample_count(context)
     updated.N = 2 * context.N + 1
     updated.spectral_id = context.spectral_id + 1
     alternate_tag = StageTag(

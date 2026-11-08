@@ -276,6 +276,8 @@ the accepted state or ledger.
 ```text
 alias_probe(state,tag,context,result):
   copy context with alternate padded sample count and spectral id
+  history_samples = history_sample_count(context)
+  copy._history_samples = history_samples
   alternate_tag.step,generation,trial,time = tag values
   alternate_tag.stage = "alias"
   alternate_tag.micro_step = tag.micro_step
@@ -287,3 +289,10 @@ alias_probe(state,tag,context,result):
 The alternate spectral context remains distinct, but the macrostep, microstep,
 iteration, and slab ownership of the stage being probed must not be reset to
 synchronous defaults.
+
+The alternate `N=2N+1` changes only the one-stage sample workspace. The retained
+`4M` sweep remains owned by the outer context, so the alias copy inherits the
+validated outer history sample identity. A nested alias inherits the original
+identity rather than multiplying or resetting it. The fixed wall factorization
+cache key remains unchanged. This accounting correction does not alter any
+physical state, alias diagnostic, cap, or numerical operation.
