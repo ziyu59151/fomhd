@@ -96,3 +96,7 @@ The command-line interface is
 Invalid JSON, unsupported categories, duplicate ids/numbers, absent local files,
 and malformed fields are errors. A nonterminal or terminally incomplete status
 is displayed, never silently upgraded or described as a completed target.
+
+The canonical CSS includes the existing A0 gallery mobile-width metadata and
+list wrapping rule. Preserve exact CSS parity with that historical gallery;
+this changes no numerical content or historical report files.

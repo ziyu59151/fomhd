@@ -111,3 +111,6 @@ offline checks:
 
 The checker must not use pixel comparisons. It reports each check in plain
 English and exits nonzero on any assertion.
+
+The reviewed canonical renderer fingerprint includes the A0 mobile CSS rule;
+CSS equality remains byte-for-byte. Historical solver inputs/data stay intact.

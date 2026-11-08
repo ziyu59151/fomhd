@@ -514,11 +514,10 @@ def sample_apply(matrix: Any, values: Any, N: int, backend: Any) -> Any:
         or values.size != N * matrix.shape[1]
     ):
         raise Failure("Shape", "sample operator shape")
-    samples = [
-        backend.mv(matrix, values.reshape(N, matrix.shape[1])[sample])
-        for sample in range(N)
-    ]
-    return backend.array(backend.xp.stack(samples)).reshape(-1)
+    columns = matrix.shape[1]
+    return backend.array(
+        backend.mm(matrix, values.reshape(N, columns).T).T
+    ).reshape(-1)
 
 
 def inverse(

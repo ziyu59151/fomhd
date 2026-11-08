@@ -1,7 +1,7 @@
 {
-  "schema_version": 2,
-  "created_date": "2026-11-07",
-  "purpose": "Design provenance for active Python/Warp pseudocode; not a runtime dependency",
+  "schema_version": 3,
+  "created_date": "2026-11-08",
+  "purpose": "Design provenance for historical T0/T1 and implemented bounded T2-E under D070; T2-I, T2-C and T3 remain pending, with no full outer-coupled, production 1024^2, multi-GPU or FK acceptance",
   "source_repository": "fomhd-design",
   "git_head_at_capture": "4d773f81591da3544990b736e29bbebcd4fa6ffe",
   "authoritative_worktree_is_dirty": true,
@@ -20,28 +20,33 @@
     "D062",
     "D063",
     "D064",
-    "D065"
+    "D065",
+    "D066",
+    "D067",
+    "D068",
+    "D069",
+    "D070"
   ],
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 163307,
-      "sha256": "56ab2575590c68485efe35e736c8c40b0035fa19fa5dd289c55f3e451376890d"
+      "bytes": 186240,
+      "sha256": "00b0732e2fc2c5044f441b8fc717cbe17c0c56a826dc6c6d49c44f23532a9c37"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
-      "bytes": 75304,
-      "sha256": "4b281407b7e8e987b51f0a3f47cde852a1ab9f0688f66cda974b0f8932f0c872"
+      "bytes": 75616,
+      "sha256": "260cfa97f1566792732e56818b40e5420adda2dfaafffce2f1dab097451299dd"
     },
     {
       "path": "mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
-      "bytes": 25384,
-      "sha256": "fd27c43afb264a4219b811d0e88db5f2c8d6c693e0d49a3656da93c353e1f31d"
+      "bytes": 25846,
+      "sha256": "2e5a5f51f92baee61cfa748b0bf56451382d67166c7f224fa750326733990599"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/integrated_contracts.md",
-      "bytes": 40042,
-      "sha256": "6dd9402cbdb981f03a258a4bffec3e3fc52e70f754bb545d4f005a50e4e5c1be"
+      "bytes": 40546,
+      "sha256": "7040bbef9c7e59785225067cb49bd1ccdd85902001cf820c5a32406c57fb702a"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/08_constraints/constraints.md",
@@ -50,13 +55,13 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/09_diagnostics/diagnostics.md",
-      "bytes": 36612,
-      "sha256": "13e99f0ccbffbb184780234761a143897adbe67cfd779109bad446fc5094e87d"
+      "bytes": 37107,
+      "sha256": "164ad0ddacfcbfffa8db45b28f608189035dd7df4342644af0444de19e9562e7"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
-      "bytes": 6956,
-      "sha256": "ccd9bbf3d703ff4db8c7666a8a261e9cf7204a7fe8c082c78354e0a9eef6dc1e"
+      "bytes": 11024,
+      "sha256": "06973ba570e3d86a2293f63f45280ccb8d21e591a318073ea3c8e5baeaf7e53f"
     },
     {
       "path": "mainline_design/implementation/A0/A0_MASSLESS_ELECTRON.md",
@@ -70,23 +75,23 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 13448,
-      "sha256": "c7fb0ca74e2bc4d2d357a7f6978180944e843e207f069141b48695f81bc165f0"
+      "bytes": 17707,
+      "sha256": "40b8a51e2a37f8ff9020fe3ccc80b178dab9af5c95201e2b4fbf3d0aae8eeb1d"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
-      "bytes": 66974,
-      "sha256": "d386f810d6c524f4099f1ede5fc4910c7021655414d682ed113282eb58ebb55c"
+      "bytes": 70942,
+      "sha256": "6ba6970488e3fcab27da232ef8ea5543d44252f5b140ffdc66ef0dfc7991c7f5"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/HYM_COST_MAP.md",
-      "bytes": 6832,
-      "sha256": "08ee8687c4efdc4589deb399d163f11b32b17b5a4b76bb14912862e520503ec0"
+      "bytes": 7278,
+      "sha256": "232e9ad2047ed2b6f86d786d612cd33781e014c6b52879551083921df0426292"
     },
     {
       "path": "references/A1_PARALLEL_SOURCES.md",
-      "bytes": 3366,
-      "sha256": "1655165856c083d8e8a316c3592eb0452f948eecfae3abdfad3b66166b0c68ac"
+      "bytes": 5948,
+      "sha256": "c802978e4097d742a13ddd4fd0c3d9460e9f6f30ce5d655f69dff6d7542130ce"
     },
     {
       "path": "mainline_design/implementation/A1/A1_T0_REPORT.md",
@@ -105,8 +110,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_T1_WAVEFORM.md",
-      "bytes": 6602,
-      "sha256": "50c03d9e8449de8bc1c91bf3bc3adbdc4e55ede11295df2c7720fa9398a1ef57"
+      "bytes": 7165,
+      "sha256": "f7ab816022cd379d581795628114e0f02fab4c3fe8d9095aa50bb5ad99637b4a"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_T1_LINEAR_CHECK.md",
@@ -120,11 +125,61 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/07_time_integration/time_integration.md",
-      "bytes": 17845,
-      "sha256": "5d83da5e67944961ae7ee10eec99e0c3a4b5f23e1ef2aebde163cafdb0b8f4f2"
+      "bytes": 6610,
+      "sha256": "b7819f00b949f189e7002f85ffd55d0cc47775596a27b76b9292f1be0e366c11"
+    },
+    {
+      "path": "mainline_design/plan.md",
+      "bytes": 62733,
+      "sha256": "44712ed780fd52094b048212bfd82becb729105847b518f0be61f259291a57f7"
+    },
+    {
+      "path": "mainline_design/implementation/plan.md",
+      "bytes": 10877,
+      "sha256": "fa14dd49c0fbdf3747ce6e411e33d41ee7d6f39e784258c718d2bf0979fa6847"
+    },
+    {
+      "path": "mainline_design/target_physics.md",
+      "bytes": 49222,
+      "sha256": "417dc78e4d0493e4356a0a1db8cfc37b592d9f7f404a94e547ba9fcee9e6a9d6"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_FK_COST_AND_TRANSFER.md",
+      "bytes": 18850,
+      "sha256": "a7a52ce5323b9a3b84a97b505dfc8309fe0a01edb6d04b458a5fd7348120f962"
+    },
+    {
+      "path": "mainline_design/implementation/A1/A1_MAINLINE_REVIEW.md",
+      "bytes": 25154,
+      "sha256": "fbbb523b09cd3e70a33f7219f436199f645da6a94c80e27acd0f525b64a6ec99"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_T2_CANDIDATES.md",
+      "bytes": 22797,
+      "sha256": "ecf945f74b2a9cd5146ac447c3b9692637ba0d70149f8bfe639d1772c334d04a"
+    },
+    {
+      "path": "mainline_design/numerics/algorithm_design/A1/A1_VALIDATION_AND_SCALING.md",
+      "bytes": 19555,
+      "sha256": "4d57f0ba59760f1d3e6884bab24f6afb11f923cf1017e104ce95e193667f2e50"
+    },
+    {
+      "path": "mainline_design/implementation/A1/A1_TIME_REDESIGN_REVIEW.md",
+      "bytes": 18226,
+      "sha256": "f2962affc2fb49b774ab419eb8000c24a6f1a0d1b91092ebaf21cb3847aa5e5a"
+    },
+    {
+      "path": "references/GPU_OPTIMIZATION_READING.md",
+      "bytes": 15446,
+      "sha256": "96321731185da3ab12d312bac47e5b8d3b12780bc502b96edc18bdc02430961d"
+    },
+    {
+      "path": "mainline_design/implementation/A1/A1_T2_E_REPORT.md",
+      "bytes": 25195,
+      "sha256": "81b048c048596a06a0f5e49e2c48026076b8372d1c1b89e68116d59ff6a5d1e3"
     }
   ],
-  "captured_utc": "2026-11-07T06:07:17.049589+00:00",
+  "captured_utc": "2026-11-08T09:34:56.565260+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -160,9 +215,9 @@
     "record": "docs/A1_T1_EVIDENCE.md",
     "baseline_branch": "release/a0",
     "baseline_commit": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8",
-    "implemented": "T0 predictor, T1 full ion stage-path waveform iteration and fixed-wall factor reuse",
+    "implemented": "T0 predictor and T1 full ion stage-path waveform iteration/fixed-wall factor reuse remain historical implemented evidence; D070 added a bounded T2-E fixed-path electron-field implementation with CPU/GPU trees and true nonlinear RK4 residual correction",
     "acceptance": "T1 periodic2T: target criteria and hard gates pass; M4/8/16/32/64 meet original joint sampled criteria; M128 high-gain failure retained; M256 isolated pass, not a contiguous range claim",
-    "later_tiers": "T2-T4 remain gated",
+    "later_tiers": "D070 bounded T2-E field implementation is complete; T2-I, T2-C and T3 remain pending. No full outer-coupled, production 1024^2, multi-GPU or FK/T2-I/T2-C acceptance is claimed",
     "multi_gpu": "reference and interface planning only",
     "numerical_commit": "93219d2f85c5185cefaa97fd3e8125cef632f4cb",
     "closed_fixture_repair": "581f20d050df50718e028d7550e9e65d57cc2ea7",
@@ -172,7 +227,7 @@
     "equal_accuracy_speedup": false,
     "report_presentation": "A0-style English7figure/8page T1 HTML and Chinese T1 report, original T0 gallery unchanged",
     "benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261107T043500Z/a1-benchmark.html",
-    "next_tier": "T1 report delivered;T2 requires user decision perO31/D065",
+    "next_tier": "The T2-E report/O35 call for a bounded followup on structure-preserving long propagation and sparse space/history before any broad field qualification. T2-I known-ion-RHS prefixes/full-stage reconstruction, T2-C integration and T3 deployment/space/long-horizon scaling remain the future route; each requires separate scope, with no automatic further implementation",
     "gallery_format": "Existing A0 report renderer, English labels/captions, numbered pages/figures and matching plot conventions",
     "controlled_temporal_protocol": "D064; fixed h=T/2048, 2T; 24 final cases complete with retained rejections",
     "controlled_benchmark_commit": "206e850c3220c021b03932e262e8e52c307f4a7e",
@@ -189,5 +244,172 @@
     "t1_scientific_limits": "physical-reference residual tolerance is not small-signal accuracy; no generalCAW-CFL,walls,asymptotic stability,production-scale,multi-GPU or equal-accuracy speedup qualification",
     "t0_evidence_record": "docs/A1_T0_EVIDENCE.md",
     "t0_benchmark_gallery": "/home/lxzeng/runs/fomhd/a1-benchmark__20261106T163530Z/a1-benchmark.html"
+  },
+  "documentation_review": {
+    "decision": "D066",
+    "date": "2026-11-07",
+    "implementation_changed": false,
+    "source_numerical_baseline": "337ad85944f2da0bfebdda7c52846918fd4c5c7d",
+    "source_development_branch": "codex/a1-fk-roadmap-review",
+    "roadmap": "A0 fluid reference; A1 two-fluid validation for FK transfer; A2 passive particles; A3 bulk-fluid plus self-consistent FK fast ions for scoped 1.0; A4 all ions kinetic",
+    "particle_prototypes": "planned only; no particle or T2-T4 implementation/benchmark in this review",
+    "author_reference_original_sha256": "d386f810d6c524f4099f1ede5fc4910c7021655414d682ed113282eb58ebb55c",
+    "author_reference_original_snapshot": "history/2026-11-07/evidence/a1-fk-mainline-review__20261107T105437Z/before/design/mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
+    "numerical_evidence": "Existing a1_scope and historical evidence fields retain their original acceptance meaning; refreshed design hashes include documentation changes only",
+    "full_review": "mainline_design/implementation/A1/A1_MAINLINE_REVIEW.md"
+  },
+  "t2_planning": {
+    "decision": "D070",
+    "implemented": true,
+    "implemented_scope": "bounded T2-E only",
+    "validated": "bounded fixed-path electron-field subproblem only",
+    "pending": [
+      "T2-I",
+      "T2-C",
+      "T3"
+    ],
+    "implementation_record": "t2_e_implementation",
+    "historical_records": "planning_history.D068",
+    "route": [
+      "T2-E field windows",
+      "T2-I known-ion-RHS prefixes and full stages",
+      "T2-C integration",
+      "T3 deployment, spatial feasibility, long horizons and larger cases"
+    ]
+  },
+  "planning_history": {
+    "D067": {
+      "decision": "D067",
+      "implemented": false,
+      "validated": false,
+      "authority": "mainline_design/numerics/algorithm_design/A1/A1_T2_CANDIDATES.md",
+      "recommended_first_unit": "Prescribed-field real-particle reference and sparse snapshot moments, retaining complete path-current deposition",
+      "other_candidates": [
+        "Rotating-history impulse under a constant guide field",
+        "Accepted-history prediction after self-consistent reference histories exist"
+      ],
+      "two_way_status": "Minimal continuous bulk/FK/massless-electron closure proposed; compatible transfer, stage/path currents, electron continuity and power must be designed and checked before feedback implementation",
+      "counting": "Actual per-particle, traversal and substep sums; averages are measured arithmetic averages; source uniqueness is scoped to stage/feedback-node/version/trial",
+      "source_implementation_changed": false,
+      "new_scientific_runs": false
+    },
+    "D068": {
+      "decision": "D068",
+      "implemented": false,
+      "validated": false,
+      "authority": "mainline_design/numerics/algorithm_design/A1/A1_T2_CANDIDATES.md",
+      "verification_authority": "mainline_design/numerics/algorithm_design/A1/A1_VALIDATION_AND_SCALING.md",
+      "route": [
+        "T2-E field windows",
+        "T2-I known-ion-RHS prefixes and full stages",
+        "T2-C integration",
+        "T3 deployment, spatial feasibility, long horizons and larger cases"
+      ],
+      "recommended_first_unit": "E1 fixed-ion uniform-periodic Hall/CGL affine RK4 CPU tree, independent oracle, corresponding GPU and same-GPU serial comparison",
+      "scope_caps": "18 physical/time configurations; 2 CPU wall hours/4 threads; one GPU/2 GPU job hours, each job <=30 minutes, device workspace <=8 GiB; proposals not execution authorization",
+      "candidate_boundary": "E1 frozen linear model differs from the nonlinear production target; true residual correction and RZ/wall extension are separate later units",
+      "benefits": "Work reduction and extra work for shorter serial dependence both eligible; ideal span is not measured speedup",
+      "future_fk": "Full prescribed E/B permits low-dimensional orbit Newton-prefix candidates; no particle prototype/two-way closure prerequisite for present field algorithm",
+      "source_implementation_changed": false,
+      "new_scientific_runs": false
+    }
+  },
+  "time_redesign_review": {
+    "decision": "D068",
+    "date": "2026-11-08",
+    "input": "A1_TIME_ADVANCE_NEW_REFERENCE_2026-11-08.md",
+    "source_head": "337ad85944f2da0bfebdda7c52846918fd4c5c7d",
+    "scope": "Documentation, planned executable-level pseudocode and bounded implementation plan only",
+    "report": "mainline_design/implementation/A1/A1_TIME_REDESIGN_REVIEW.md",
+    "new_cpu_reference_completed": false,
+    "new_gpu_algorithm_completed": false,
+    "performance_qualified": false,
+    "literature": "L128-L131/E58-E61 with version and actual selected-page review",
+    "historical": true,
+    "historical_scope": "D068 documentation-only record retained from the prior baseline; its implementation-completion flags describe that review, not the bounded D070 T2-E implementation recorded separately."
+  },
+  "t2_e_implementation": {
+    "decision": "D070",
+    "implemented": true,
+    "validated": "bounded fixed-path electron-field subproblem only",
+    "status": "bounded T2-E E1/E2/E3 implementation and experiment delivery; not full-coupled or production acceptance",
+    "source_branch": "codex/a1-t2-electron-field",
+    "base_commit": "337ad85944f2da0bfebdda7c52846918fd4c5c7d",
+    "field_only_scope": true,
+    "raw_data_root": "/home/lxzeng/runs/fomhd/a1-t2-electron-field__20261108T071000Z",
+    "report": "mainline_design/implementation/A1/A1_T2_E_REPORT.md",
+    "actual_cpu_gpu_trees": "CPU and GPU implementations of real affine/prefix trees recover all stages for the bounded fixed-P field problem",
+    "time_batched_true_G": "The nonlinear field operator G is evaluated in real time batches over all RK4 stages; fixed P does not make the physical G linear",
+    "true_rk4_residual_each_round": true,
+    "reference_forms": {
+      "E1": "affine tree with independent sequential RK4 reference",
+      "E2": "frozen periodic Hall/CGL spatial symbol used only for the reference propagation correction",
+      "E3": "finite-degree constrained finite-difference reference propagation on the real RZ/Fourier wall problem"
+    },
+    "cpu_gpu_parity": {
+      "groups": "Original 18 plus 2 stress CPU/GPU pairs",
+      "pair_count": 20,
+      "maximum_scaled_difference": 5.4022512148062795e-14
+    },
+    "same_gpu_findings": {
+      "periodic": "E1/E2 same-GPU benefits are bounded observations on one RTX 5090; short field-unit cost controls used 2 warmups and 5 synchronized timed repeats, whereas complete 2T observations were single executions. Neither qualifies full-coupled or production-scale performance acceptance",
+      "e3_short_windows": "modest or negative: reported ratios 0.641x, 0.999x, 1.10x, 1.63x and 1.08x; no general scaling claim"
+    },
+    "preserved_failures": {
+      "p1_long_fine": "E3 long-window p1 kept the same physical H while halving h and doubling M from 256 to 512; its second-round correction-2 line search failed to find a reduction across the 1, 1/2 and 1/4 trials on CPU and GPU",
+      "p4_coefficient_amplified_db": "E3 long-window p4 at M512 reached the next correction with a coefficient-amplified DB constraint failure; GPU p4 was not registered as validated",
+      "p2_temporal_separation": "p2 passes the M512 same-h field comparison, but the h/h2 iterative/reference-error ratio is about 164.84 and does not qualify temporal separation"
+    },
+    "test_evidence": {
+      "scope": "Counts and durations are parsed from existing complete logs; no tests were rerun for this metadata capture",
+      "cpu_full_suite": {
+        "log": "/home/lxzeng/runs/fomhd/a1-t2-electron-field__20261108T071000Z/cpu-final-full-suite.log",
+        "sha256": "b848303ed98ac50bc2361cd49f4021fd6dd7b7e308e962a7e4d4337e019c9582",
+        "summary": "957 passed, 17 skipped, 3 subtests passed in 179.93s (0:02:59)",
+        "passed": 957,
+        "skipped": 17,
+        "subtests_passed": 3,
+        "warnings": 0,
+        "duration_seconds": 179.93,
+        "status": "complete"
+      },
+      "cpu_final_delivery_suite": {
+        "log": "/home/lxzeng/runs/fomhd/a1-t2-electron-field__20261108T071000Z/cpu-final-delivery-suite.log",
+        "sha256": "43fb8053d9feb11b3c5486694eb85d79424ea1341322dec89d21b4834b07ca6b",
+        "summary": "959 passed, 17 skipped, 3 subtests passed in 185.44s (0:03:05)",
+        "passed": 959,
+        "skipped": 17,
+        "subtests_passed": 3,
+        "warnings": 0,
+        "duration_seconds": 185.44,
+        "status": "complete"
+      },
+      "gpu_regression": {
+        "log": "/home/lxzeng/runs/fomhd/a1-t2-electron-field__20261108T071000Z/gpu-sequential-check-11181.log",
+        "sha256": "250264dad8387294194019cb4df047cbbaed364121ffc762352b17d76fe230d1",
+        "summary": "80 passed, 1 warning in 7.12s",
+        "passed": 80,
+        "skipped": 0,
+        "subtests_passed": 0,
+        "warnings": 1,
+        "duration_seconds": 7.12,
+        "status": "complete"
+      },
+      "gpu_numerical_scope": "The 80 GPU regression tests retain the original numerical scope. The last source-runner edit adds failure counters and RSS capture only; it does not change numerical implementation or timings.",
+      "historical_t0_t1_counts": {
+        "cpu_tests_passed": 886,
+        "gpu_regression_passed": 12,
+        "scope": "Preserved historical T0/T1 record; not replaced by T2-E counts"
+      }
+    },
+    "not_qualified": [
+      "full outer-coupled electron/ion field system",
+      "production 1024^2",
+      "multi-GPU",
+      "FK",
+      "T2-I",
+      "T2-C",
+      "T3"
+    ]
   }
 }

@@ -6,7 +6,7 @@
 > contracts.
 > Authority: the design repository owns the mathematical model; this directory
 > owns the step-by-step mapping to the active Python/Warp/CuPy source.
-> Last synchronized: 2026-11-07; inherited A0 step IDs remain stable.
+> Last synchronized: 2026-11-08; inherited A0 step IDs remain stable.
 
 ## File mapping
 
@@ -44,8 +44,19 @@ documents, not fictitious modules. The active entry point is
 A1-T0 retains the fixed tangent path and complete microstage ion quadrature.
 A1-T1 reconstructs and iterates all ion stages, with separate midpoint states,
 path/endpoint residuals and one final accepted macro transaction. Its discrete
-fixed point is synchronous fine RK4. T2–T4 remain gated; no placeholder APIs
-implement those layers.
+fixed point is synchronous fine RK4. D070 implements the bounded T2-E field units; T2-I/T2-C/T3 remain unimplemented.
+D068 selects the planning order T2-E field
+windows, T2-I known-RHS prefixes/stages, T2-C integration, then T3 deployment and
+scaling. [T2_WINDOW_PLAN.md](T2_WINDOW_PLAN.md) supplies planned old/new window,
+affine tree, source, correction and transaction schedules. It is a design
+specification, not a mirrored source module or a completed traceability row.
+
+Each unit needs a bounded genuine CPU A1 schedule, an independent oracle, a
+matching GPU validation, and same-GPU performance comparison. Existing CPU T0/T1
+are reused. Work reduction and increased work for shorter dependence are both
+research options; future FK prototypes/closure are not prerequisites. Historical
+D067 particle proposals remain archived. A3 retains bulk-fluid plus FK fast ions
+for scoped 1.0; A4 later replaces bulk ions too.
 
 The native implementation-level pseudocode, CMake contracts, native tests and
 native case generator live on `reference/a0-native`. They are not retained here
@@ -108,3 +119,9 @@ Pseudocode is an executable implementation guide, not proof. MMS, convergence,
 conservation, restart, independent-array, and CPU/GPU evidence remain separate.
 Fourth-order claims apply only to measured smooth regions; the staircase wall,
 global spatial order, scientific validation, and performance remain unclaimed.
+
+T2-E adds `time_affine`, `time_field` and `field_batch`, with a fixed-ion CPU/GPU
+runner and A0-style gallery. Their mirrors define real time batches, original
+RK4 residuals and a tree-based approximate correction. See
+[the verification scope](../A1_T2_E_VERIFICATION.md). T2-I, complete integration,
+FK and multi-GPU deployment remain unimplemented.

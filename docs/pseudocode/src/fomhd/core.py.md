@@ -32,16 +32,24 @@ explicit `1` selects finite-fluid combination.
 
 ## A0-PY-CORE-03 Spectrum/sample conversion
 
-1. `mode_apply` and `sample_apply` validate layout and call backend matrix-vector
-   products without changing ownership.
-2. Retained inverse validates shape/input before FFT. Its default is physical:
+1. `mode_apply` validates layout and calls backend matrix-vector products without
+   changing ownership. Its implementation is unchanged.
+2. `sample_apply` validates `N>0`, a two-dimensional matrix, and one-dimensional
+   values of length `N*columns`, then makes one multiple-RHS backend call:
+   `backend.mm(matrix, values.reshape(N,columns).T).T`. The first `.T` is an
+   ordinary transpose, not a conjugate transpose. The transposed result is
+   flattened through `backend.array`, yielding a contiguous backend-owned
+   `(N*rows,)` result. Preserve the existing complex128 result and
+   backend host/device checks; malformed sample layout fails with
+   `Failure("Shape", "sample operator shape")`.
+3. Retained inverse validates shape/input before FFT. Its default is physical:
    only an explicitly requested arbitrary complex trial may pass
    `physical=False`.
-3. Physical output computes the native imaginary-residue limit
+4. Physical output computes the native imaginary-residue limit
    `512*eps*max(max_abs(hat),reference,1e-300)`, invokes the backend
    physical-sample primitive, and reports the first nonreal index. On CUDA this
    primitive is a Warp FP64 kernel.
-4. Forward transform delegates to the selected backend and preserves the
+5. Forward transform delegates to the selected backend and preserves the
    retained mode layout.
 
 ## A0-PY-CORE-04 Reproducible time

@@ -382,7 +382,7 @@ figcaption p{margin:.6rem 0}.source-badge{display:inline-block;font-weight:700;b
 .figure-metadata{display:grid;grid-template-columns:max-content 1fr;gap:.25rem 1rem}.figure-metadata dt{font-weight:700}.figure-metadata dd{margin:0}.status.warning{background:#fff7ed;color:#9a3412;border:1px solid #ea580c;padding:.2rem .4rem}
 .panel-ref{font-weight:700}.figure-details{margin:1.5rem 0}.figure-details>summary{cursor:pointer;font-weight:700;padding:.75rem;background:#eef2f7;border-radius:.4rem}footer{color:#475569;font-size:.95rem}
 @page{size:A4;margin:16mm;@bottom-center{content:"Page " counter(page) " of " counter(pages)}}@media print{.skip,.page-nav{display:none}.report-page{break-inside:avoid}.report-page+.report-page{break-before:page}}
-</style>"""
+@media(max-width:600px){.report-page li{overflow-wrap:anywhere}.figure-metadata{display:block}.figure-metadata dt{margin-top:.4rem}.figure-metadata dd{margin:0 0 .6rem;overflow-wrap:anywhere}}</style>"""
     return (
         '<!doctype html>\n<html lang="en">\n<head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'

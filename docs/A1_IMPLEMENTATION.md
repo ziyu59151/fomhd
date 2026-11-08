@@ -1,11 +1,17 @@
 # A1 implementation contracts
 
-Status: active, bounded T0 and T1 implementations. The design repository owns
+Status: active, bounded T0/T1 and fixed-ion T2-E1/E2/E3 implementations. The design repository owns
 the selected mathematics in
 `mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md`.
-Its `TIME_DECOUPLING_DESIGN.md` is the author's format-only converted reference;
-historical defaults in that body do not replace massless quasineutral CGL-B
-electrons, RK4, FP64/complex128, or the selected time contracts.
+Its `TIME_DECOUPLING_DESIGN.md` is an evolving design reference, revised under
+D066; the original format-only conversion remains archived. Current defaults
+are massless quasineutral CGL-B electrons, RK4 and FP64/complex128.
+The [roadmap](ROADMAP.md) distinguishes A3 hybrid 1.0 from A4 all-ion kinetics.
+T2-E is an experimental field-window API and benchmark; it does not add a
+complete coupled runtime scheme. See [T2-E verification](A1_T2_E_VERIFICATION.md).
+D067 further distinguishes T1 stage values from continuous path representations,
+uses explicit endpoint projections for path maps/residuals, and scopes complete
+4M ion RHS quadrature to the existing fluid T0/T1 references.
 
 A1 inherits A0 source and mirrored pseudocode. There is one solver package;
 `release/a0` at `9a38bf41e7bc1fc50186c81967312a7ec5f028e8` owns the separate
@@ -56,35 +62,24 @@ density. Local operators and shared setup remain largely dense; full sparse
 conversion, streaming history, spatial decomposition and multi-GPU execution
 are separate implementation units.
 
-T1 implements complete ion stage-path waveform iteration. T2 initial-history
-methods, T3 time slabs and T4 JVP correction still require separate reports and
-the user's decision at each layer.
-Installed NCCL/CuPy support is not evidence that multi-GPU solver execution
-has been verified.
+T1 implements complete ion stage-path waveform iteration. Its exact fixed point
+is fine synchronous RK4; it is a serial coupling reference and still computes
+all microstage ion RHS values on every sweep. Synchronous fluid work is already
+acceptable. A1 uses that controllable platform to design transferable methods
+for future expensive FK work, not to infer success from fluid convergence or
+fewer sweeps alone.
 
-At a fixed total of N microsteps, actual complete model evaluations are
-6N+N/M for T0 and 7N for synchronous RK4, including midpoint alias probes.
-Both remain O(N); assembly and diagnostics are additional work. Failure
-evidence uses cached diagnostic/tag buckets while preserving full record
-equality and order, avoiding quadratic scans of complete microstage history. Success
-history storage includes each stage's density-dependent wall matrices and
-factors, not only independent state vectors.
-
-The pressure-adjoint roundoff scale includes the absolute pressure-rate
-operands before CGL cancellation, velocity-pressure-force products, and
-pressure-gradient products. Its residual, configured physical budgets, hard
-status and 4096*epsilon factor are unchanged. This scale applies only to the
-adjoint check and its pressure-pairing duplicate. Independent force/E
-comparisons and a corrupted-work hard-gate control remain separate checks.
-
-The experimental CLI `tools/warp_t0_verify.py` compares identical microstep
-sizes and physical horizons. It retains per-field SI errors, dimensionless
-P/Z errors, phase, actual stage counts and failed arrays. Its timed trajectory
-includes check aggregation and modal history projection. RSS/HWM and CuPy pool
-statistics are process-wide observations, not isolated per-case live peaks.
-
-Measured scope and retained failures are recorded in
-[A1_T0_EVIDENCE.md](A1_T0_EVIDENCE.md). The user authorized T1 on 7 November 2026.
+D068 replaces that proposed ordering with T2-E electron/field windows, T2-I
+known-ion-increment prefixes and stage reconstruction, T2-C integration, then T3
+scaling/deployment. The implemented field units include a uniform-periodic affine RK4 prefix,
+true nonlinear periodic residual correction, and bounded nonuniform constrained
+RZ experiments. They have genuine CPU tree schedules, independent sequential
+oracles, GPU time batches, and scoped same-GPU comparisons. Particle prototypes and
+two-way FK closure are not prerequisites for the field algorithm. History guesses,
+slabs and Block Jacobi remain tools/controls; JVP and propagation preconditioners
+may be designed in T2. The original T0/T1 implementation remains unchanged.
+See [the planned executable schedule](pseudocode/T2_WINDOW_PLAN.md) and the design
+`A1/A1_VALIDATION_AND_SCALING.md` for reference coverage, budgets and stopping.
 
 ## Controlled T0 temporal baseline
 
@@ -158,10 +153,73 @@ For S completed sweeps of M microsteps, complete stage evaluations are
 S*(4M+1)+1, alias probes are 2MS, and total model calls are S*(6M+1)+1.
 Failure counts use actual attempted calls and completed quadrature entries.
 The single-device backend is inherited from Warp/CuPy; waveform sweeps and
-microsteps remain serial in time. Cross-slab time parallelism belongs to T3.
+microsteps remain serial in this retained T1 reference. The separate D070
+fixed-ion T2-E API implements time-batched residuals and prefix correction;
+complete coupling and T3 scaling/deployment remain pending.
 The controlled runner is `tools/warp_t1_verify.py`; CPU walltime in this small
 fixture is a diagnostic, not a speedup qualification. T0 raw evidence and
 `release/a1-t0` at fc9a19e remain the comparison baseline.
 
 Controlled T1 results, known tolerance limits, GPU scope and reproducible
 artifacts are recorded in [A1_T1_EVIDENCE.md](A1_T1_EVIDENCE.md).
+
+## Transfer constraints for future particles
+
+A3 keeps bulk-fluid ions and adds FK fast ions on the macro side, with
+electrons/fields on the micro side. A4 replaces bulk ions with FK too. Macro
+commit frequency and orbit subdivisions are independent: gyrophase, resonance
+and target accuracy decide the latter.
+
+Future implementation pseudocode must identify the actual particle traversals,
+pushes, gathers, snapshot/path deposition and feedback construction per sweep
+and window, together with prediction, reconstruction, memory, communication,
+checks and replay costs. Model-stage calls are not particle-push counts.
+JVP residual evaluations may repeat expensive orbits. Compare with a reasonable
+same-accuracy particle-subcycled reference. Four full sweeps reduced to two
+still need a net-work or resource-qualified elapsed-time benefit against that
+reference. The design authority is `A1/A1_FK_COST_AND_TRANSFER.md`.
+
+Particle states, weights, boundary events and sources must retain population,
+stage, iteration and trial identity, with one source producer, rollback and one
+final commit. Moment and path currents remain distinct. Complete A3 feedback
+and the all-ion closure are future designs, not new APIs in this source tree.
+
+Actual orbit and E/B gather counts are summed per particle, traversal and
+substep; N times an average is valid only for the measured arithmetic average.
+Snapshot visits, path segments and stencil writes are separate counts. A shared
+source is unique for one stage/feedback-node and generation/trial key, not once
+for an entire macro window. Distinct midpoint identities remain distinct.
+Future FK representation and closure dependencies are recorded separately in
+`A1/A1_FK_COST_AND_TRANSFER.md`; D067 proposals remain archived. The current T2
+plan concerns the fluid field window and known-RHS prefix, not a particle gate.
+
+## Implemented fixed-ion field solver and pending integration (D070)
+
+Each real field-window residual reads one old trajectory batch, preserves all
+four RK stages and reconstructs the true massless Ohm/CGL constraints. Frozen
+fast propagation is an approximate inverse, not frozen physics or a new implicit
+time integrator. Matrix-free JVP alone does not provide a parallel inverse.
+Production field transport and constraints remain spatially coupled.
+
+An approximate field solve requires the original field residual and complete
+ion-stage/endpoint map defect; T1's small ion update alone is insufficient.
+Compatible magnetic trial data must preserve CT/wall/flux constraints; electron
+canonicalization does not repair arbitrary B. Extend inner-iteration/cache keys
+when connecting this API to the outer transaction. The field-only module uses
+explicit window/node/stage arrays, trial history and frozen producer identity;
+it does not mutate StageTag or shared Context counters.
+
+Count outer S, each field r_Z, future orbit r_p and actual per-particle q
+separately. Charge setup/refresh, derivatives, real RHS/constraint applications,
+communication, checks, trial rejection and replay. Retain one final stage history
+and one commit; no inner history leaks into accepted ledgers. New restart
+semantics need compatibility tests and remain unimplemented.
+
+Validate CPU A1 schedules first, then matching GPU over full waveforms, stages,
+forces, constraints, cache versions and rollback, then same-GPU A0/T1/new-method
+end-to-end performance at equal error and horizon. CPU A0 is not analytic truth;
+keep independent manufactured/analytic/sequential oracles. Fixed H with smaller
+h and fixed h with longer H are distinct tests. Main-memory and device-memory
+peaks, synchronized times, cold setup/compilation/warmup and rejected work remain
+separate measurements. No logarithmic-span or CPU/GPU ratio is an algorithmic
+speedup qualification.

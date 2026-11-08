@@ -41,7 +41,7 @@ A0_HTML_DEFAULT = Path(
     "/home/lxzeng/runs/fomhd/a0-benchmark-figures__20261104T050738Z/index.html"
 )
 CANONICAL_HASHES = {
-    "renderer": "8d043646d669b0854b4acb27bf494eb704cb40c146eae841914dd7955a4597a5",
+    "renderer": "f404274ca47a55fb335e762571a0d4fef07c68560246b7d45617ae62498e91e5",
     "plot_tokamak_cae": "7cdb2fcfb77ab987d492b2a45f82c25a48209ffb7059647f8c700ce300b4068e",
     "plot_cae_comparison": (
         "3ef32bf13e78632fa80adbe71d45abbacb9de0b253e417cfecdf8ab34c1c850f"

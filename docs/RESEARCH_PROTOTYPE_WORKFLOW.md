@@ -94,3 +94,27 @@ not by a claim that every defect is fixed. Carry unresolved issues into the
 next version with specific reopening triggers. A1 time decoupling and the
 scalability of dense spatial operators are separate engineering questions;
 neither should be described as already solving the other.
+
+## A1 time-unit validation and attribution (D068 planning)
+
+For each new unit, build a bounded CPU reference that actually expresses the
+new window, old/new batches, affine composition or prefix schedule; reuse the
+existing physical RHS and T0/T1 references. Validate the matching GPU algorithm
+next, then compare old and new methods on the same GPU at matched error and
+physical horizon. CPU A0 is a reference implementation, not analytic truth.
+Independent analytic, manufactured or sequential controls remain necessary.
+
+T0 may differ through decoupling error. Fully converged T1 targets fine-step
+synchronous RK4. T2 that preserves this discrete target must recover its serial
+reference under controlled inner and outer errors. Changed discretizations need
+separate order, stability and physical-error evidence. Compare full waveforms,
+stage identities, impulses, constraints, raw balances, cache versions and failure
+rollback; reduction order differences do not require bitwise equality.
+
+Count work and dependencies separately from measured synchronized time. Include
+setup/refresh, derivatives, temporary memory, communication, rejection and replay.
+Report CPU/GPU hardware benefit separately from same-GPU algorithmic benefit, and
+host and device memory separately. Larger GPU runs need bounded CPU coverage,
+refinement and diagnostics, not a mandatory same-size complete CPU rerun.
+Fixed-window step refinement and fixed-step window growth are distinct evidence.
+These are requirements for future units, not a claim that their references exist.

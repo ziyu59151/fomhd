@@ -7,8 +7,12 @@
 A1 inherits A0 in the same source tree. `release/a0` at `9a38bf4` is the
 independent A0 maintenance baseline; the retained local checkout is
 `/home/lxzeng/.codex/worktrees/fomhd-a0-maintenance/fomhd`. Compare exact commits
-with identical inputs and dependencies. A1's first delivery stops at a T0
-report and user decision before T1. See [A1_IMPLEMENTATION.md](A1_IMPLEMENTATION.md).
+with identical inputs and dependencies. T0 and T1 have bounded delivered
+evidence; D070 adds bounded fixed-ion T2-E1/E2/E3 evidence. D068 revises the time route to T2-E field windows, T2-I ion prefixes, T2-C
+integration and T3 scaling. Each unit needs CPU reference, GPU parity and
+same-GPU performance attribution. The current branch is
+`codex/a1-t2-electron-field`; no particle or complete coupled scheme is added. See
+[A1_IMPLEMENTATION.md](A1_IMPLEMENTATION.md) and [ROADMAP.md](ROADMAP.md).
 
 The mathematical authority is the sibling design repository:
 `DECISIONS`, `A0_IMPLEMENTATION_SPEC`, and `A0_GLOBAL_DISCRETIZATION`. Design
@@ -105,6 +109,11 @@ after review and verification. The native reference is
 after a stated benchmark scope has passed. Do not force-push, rewrite tags, or
 manufacture history to make implementations look equivalent.
 
+The A3-to-1.0 and later A4 roadmap does not create release branches or tags.
+Documentation reviews use a `codex/<task>` branch and preserve existing A0/T0/T1
+maintenance references. A3 release acceptance must name the actual model,
+benchmarks, budgets and reproducible evidence before version 1.0 is created.
+
 Formal benchmark runs use a clean source commit. Debug runs may be dirty only
 when the manifest retains the exact source snapshot. A running job uses a
 frozen Python/Warp checkout and matching lock and environment; those paths are
@@ -189,3 +198,13 @@ The native reference branch additionally retains the independent oracle
 exporter imported unchanged from `d9390ac`; its solver baseline remains
 `48beca7`. Python core tests need no native build. Set
 `FOMHD_NATIVE_ORACLE_DIR` only for the optional independent parity tests.
+
+## T2 development units and evidence boundary
+
+Use `codex/a1-t2-electron-field` for the bounded E1/E2/E3 implementation, and
+separate subsequent ion and integration branches with
+one source package, synchronized pseudocode and exact benchmark commits. Preserve
+`release/a0`, `release/a1-t0`, `release/a1-t1` and their independent checkouts.
+Do not relabel documentation changes as new numerical evidence. Spatial backend
+changes use separately verified commits so their benefits can be distinguished
+from time-algorithm changes. No merge, release or tag is implied by this plan.
