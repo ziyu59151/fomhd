@@ -8,3 +8,11 @@ both midpoint stages. Test matched cold/warm/repeat controls, unchanged physical
 horizon, all saved candidate/reference endpoints and stages, outside-timer
 checks, exact input hashing and CUDA rejection outside an owned allocation.
 This reference is a research window without production transaction or ledger.
+
+## Host-oracle phase postprocessing regression
+
+A completed CUDA execution returns host arrays for comparison/output. The phase
+helper must explicitly transfer these arrays to its context backend before
+calling the backend-sensitive mode observer. A fake device backend rejects host
+inputs and verifies both complex components, nonzero phase and amplitude errors;
+this CPU test requires no CUDA context. The transfer is outside matched timing.

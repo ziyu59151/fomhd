@@ -94,3 +94,10 @@ arrays across all macro windows. Validate stage identities in every window,
 report both total and per-window stage counts, synchronize outside-timer
 physical checks, and record shared fixture setup separately. Device-pool bytes
 are post-campaign allocator samples; no instrumented allocation peak is claimed.
+
+## Host/device phase observation
+
+Endpoint/oracle arrays stored on the host are converted with the owning context's
+`xp.asarray` before backend-sensitive mode reconstruction. This explicit copy is
+postprocessing outside matched algorithm timing and is included in total elapsed
+runtime. Never pass NumPy arrays directly to a CUDA `core.inverse` operation.

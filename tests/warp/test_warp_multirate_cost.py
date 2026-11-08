@@ -190,3 +190,37 @@ def test_cuda_run_requires_owned_slurm_allocation(tmp_path, monkeypatch):
             repetitions=3,
         )
     assert not (tmp_path / "output").exists()
+
+
+def test_phase_observation_places_host_oracles_on_context_backend(monkeypatch):
+    from types import SimpleNamespace
+
+    cost = _cost_tool()
+
+    class DeviceArray:
+        def __init__(self, value):
+            self.value = np.asarray(value)
+
+    class DeviceBackend:
+        @staticmethod
+        def asarray(value):
+            return value if isinstance(value, DeviceArray) else DeviceArray(value)
+
+    def observe(context, p, z, mode, case):
+        assert isinstance(p, DeviceArray), "host ion oracle reached device observer"
+        assert isinstance(z, DeviceArray), "host field oracle reached device observer"
+        return {
+            name: {"amplitude": float(abs(value)), "phase_rad": float(np.angle(value))}
+            for name, value in (("velocity_mode", p.value.item()),
+                                ("magnetic_mode", z.value.item()))
+        }
+
+    monkeypatch.setattr(cost.multirate, "_mode_evidence", observe)
+    context = SimpleNamespace(compute=SimpleNamespace(xp=DeviceBackend))
+    result = cost._phase(context, np.array(2j), np.array(-1j),
+                         np.array(1 + 0j), np.array(2 + 0j), 4, object())
+    assert result["mode"] == 4
+    assert result["velocity_phase_error_rad"] == pytest.approx(np.pi / 2)
+    assert result["magnetic_phase_error_rad"] == pytest.approx(-np.pi / 2)
+    assert result["velocity_amplitude_relative"] == pytest.approx(1.0)
+    assert result["magnetic_amplitude_relative"] == pytest.approx(0.5)

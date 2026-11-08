@@ -173,6 +173,8 @@ def _compare(context, pa, za, pb, zb):
 def _phase(context, pa, za, pb, zb, mode, case):
     if case is None:
         return {"available": False, "reason": "closed RZ has no target phase"}
+    xp = context.compute.xp
+    pa, za, pb, zb = (xp.asarray(value) for value in (pa, za, pb, zb))
     left = multirate._mode_evidence(context, pa, za, mode, case)
     right = multirate._mode_evidence(context, pb, zb, mode, case)
     result = {"available": True, "mode": int(mode)}
