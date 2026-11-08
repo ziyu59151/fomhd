@@ -1,5 +1,10 @@
 # A1 implementation contracts
 
+D071 concurrently advances complete 0.5.0 experiments and reduced-ion-work
+research. The complete runtime retains the A0/T0/T1 transaction contracts below;
+new multirate prototypes are separate research APIs until their interval-work
+and acceptance interfaces are implemented and verified.
+
 Status: active, bounded T0/T1 and fixed-ion T2-E1/E2/E3 implementations. The design repository owns
 the selected mathematics in
 `mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md`.

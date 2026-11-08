@@ -19,6 +19,8 @@ documents, not fictitious modules. The active entry point is
 
 | Mainline responsibility | Mirrored pseudocode |
 |---|---|
+| Reduced-ion C1/C2 research | [algorithm](src/fomhd/time_multirate.md), [runner](tools/warp_multirate_ion.py.md) |
+| Matched lean synchronous cost reference | [cost runner](tools/warp_multirate_cost.py.md), [tests](tests/warp/test_warp_multirate_cost.py.md) |
 | A1 T1 complete ion stage-path waveform iteration | [waveform scheduler](src/fomhd/time_waveform.py.md), [tests](tests/warp/test_time_waveform.py.md) |
 | A1 T1 controlled comparison and A0-style gallery | [runner](tools/warp_t1_verify.py.md), [gallery](tools/plots/build_a1_t1_report.py.md) |
 | A1 T0 fixed-tangent microsteps and fixed wall-system reuse | [predictor](src/fomhd/time_predictor.py.md), [wall cache](src/fomhd/wall_cache.py.md) |
@@ -45,11 +47,10 @@ A1-T0 retains the fixed tangent path and complete microstage ion quadrature.
 A1-T1 reconstructs and iterates all ion stages, with separate midpoint states,
 path/endpoint residuals and one final accepted macro transaction. Its discrete
 fixed point is synchronous fine RK4. D070 implements the bounded T2-E field units; T2-I/T2-C/T3 remain unimplemented.
-D068 selects the planning order T2-E field
-windows, T2-I known-RHS prefixes/stages, T2-C integration, then T3 deployment and
-scaling. [T2_WINDOW_PLAN.md](T2_WINDOW_PLAN.md) supplies planned old/new window,
-affine tree, source, correction and transaction schedules. It is a design
-specification, not a mirrored source module or a completed traceability row.
+D071 concurrently advances complete experiments and reduced-ion-work research.
+Known-RHS prefixes, field windows and deployment tools are used where their
+actual dependencies justify them. The retained [T2_WINDOW_PLAN.md](T2_WINDOW_PLAN.md)
+records field/window tools rather than gating complete scaling experiments.
 
 Each unit needs a bounded genuine CPU A1 schedule, an independent oracle, a
 matching GPU validation, and same-GPU performance comparison. Existing CPU T0/T1
