@@ -101,7 +101,7 @@ def project_B(value,context,stored,flux=None):
 
 
 def make_context(kind,nodes,K,device,eq_path=None,*,memory_limit_bytes=24<<30):
-    if not 4<=nodes<=32 or K not in (0,1):raise ValueError('nodes in [4,32] and K=0/1 required')
+    if not 4<=nodes<=40 or K not in (0,1):raise ValueError('nodes in [4,40] and K=0/1 required')
     if type(memory_limit_bytes) is not int or memory_limit_bytes<=0:raise ValueError('positive integer memory_limit_bytes required')
     meta={'kind':kind,'nodes':nodes,'K':K,'Nphi':5,'electron_inertia':0,
           'wall':'fixed closed conductor with constrained weak-wall reactions',

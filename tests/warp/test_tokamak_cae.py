@@ -83,6 +83,22 @@ def test_larger_grid_keeps_memory_gate_and_validates_cap():
     with pytest.raises(ValueError,match='positive integer'):
         make_context('circle',32,0,'cpu',memory_limit_bytes=0)
     with pytest.raises(ValueError,match='nodes in'):
-        make_context('circle',33,0,'cpu')
+        make_context('circle',41,0,'cpu')
     with pytest.raises(Failure,match='memory'):
         make_context('circle',32,0,'cpu',memory_limit_bytes=1)
+
+
+def test_050_grid40_reaches_geometry_under_unchanged_memory_cap(monkeypatch):
+    from tools import warp_tokamak_cae as cae
+
+    class GeometryReached(RuntimeError):
+        pass
+
+    def stop_before_allocation(*args, **kwargs):
+        raise GeometryReached("bounded grid validation passed")
+
+    monkeypatch.setattr(cae, "build_geometry", stop_before_allocation)
+    with pytest.raises(GeometryReached):
+        cae.make_context("circle", 40, 1, "cpu", memory_limit_bytes=8 << 30)
+    with pytest.raises(ValueError, match="nodes"):
+        cae.make_context("circle", 41, 1, "cpu", memory_limit_bytes=8 << 30)

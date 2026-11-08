@@ -11,5 +11,9 @@ when the conservative operator estimator is observe.
 
 An explicit short horizon overrides a longer cycles argument in target_periods.
 
-Larger enclosing grids up to32 retain the same memory failure gate; reject
+Larger enclosing grids up to40 retain the same memory failure gate; reject
 nonpositive caps and grids above the bounded supported range before execution.
+
+The 0.5.0 capacity probe must reach geometry construction for40; intercept that
+construction in the CPU unit test so testing the input policy allocates no
+large matrices. Grids above40 still reject before construction.
