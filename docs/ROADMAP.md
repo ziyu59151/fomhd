@@ -1,9 +1,9 @@
 # FOMHD roadmap and release scope
 
-Status: roadmap synchronized with D066-D070 on 8 November 2026. Bounded T2-E
-field algorithms now complement the retained T0/T1 references. The measured
-scope and failures are in [T2-E evidence](A1_T2_E_VERIFICATION.md); full coupling,
-particle APIs, production scaling and 1.0 remain future work.
+Status: D071 runs complete 0.5.0 A0/T1 scaling experiments and reduced-ion
+multirate research concurrently. Historical T0/T1 and fixed-ion T2-E evidence,
+including failures, remain unchanged. A3/1.0 and A4 retain the scoped roadmap
+below; 0.5.0 is an experimental platform.
 
 The sibling design repository owns the full definitions in
 `mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md`
@@ -16,7 +16,7 @@ They are review context, never a build or runtime dependency.
 | Stage | Model and purpose | Status |
 |---|---|---|
 | A0 | Fluid reference: bulk-ion fluid and fluid electrons | Bounded reference evidence retained on `release/a0` |
-| A1 | Use the controllable two-fluid system to study time decoupling, parallel iteration, storage and computational scaling for future kinetic hybrids | T0/T1 retained; bounded fixed-ion T2-E implemented with preserved failures; T2-I/C and production scaling pending |
+| A1 | Use the controllable two-fluid system to study time decoupling, parallel iteration, storage and computational scaling for future kinetic hybrids | T0/T1 retained; complete scaling experiments and reduced-ion prototypes proceed concurrently; bounded fixed-ion T2-E remains available |
 | A2 | Passive particle verification; read-only fields, no deposition or feedback | Planned; remains optional as an independent stage |
 | A3 | Retain bulk-ion fluid and fluid electrons; add self-consistent fully kinetic (FK) fast-ion populations | Planned; stable, reproducible, scoped acceptance is the 1.0 milestone |
 | A4 | Replace bulk ions with FK representations too, so all ion species are kinetic; electrons remain fluid | Long-term work after 1.0, not part of the current implementation |
@@ -93,14 +93,15 @@ retain their historical meaning; they do not set the current implementation orde
   constraint-representation failures are recorded separately. Structured
   large-space propagation and storage still need work; no dense field prefix
   is required or constructed.
-- T2-I then parallelizes the already-known full ion RHS increments and reconstructs
-  every RK4 stage. This does not reduce RHS calls or make spatial fluid transport
-  independent small blocks.
-- T2-C integrates the field and ion units into T1, comparing original field and
-  complete ion residuals, waveform, forces, constraints, budgets and one commit.
-- T3 covers deployment, spatial feasibility, longer observation windows and larger
-  cases. It starts on one GPU and tests spatial and temporal multi-GPU separately
-  when measurements identify those bottlenecks.
+- D071 scales complete A0/T1 now and screens at most two low-ion-work
+  multirate discretizations. Expensive ion work, cheap grid feedback and field
+  work are counted separately. Fixed-H h refinement and fixed-h H scans answer
+  different questions; useful prototypes proceed CPU then GPU.
+- Known-RHS ion prefixes only shorten accumulation dependencies. Integration
+  and space/time deployment tools remain available when a selected algorithm
+  needs them; they do not impose the development order for this campaign.
+- Spatial and temporal multi-GPU are separate later measurements after
+  single-GPU capacity and bottlenecks are established.
 
 Former T2 history prediction remains an initialization tool. Former T2 particle
 operations/feedback proposals remain future FK work, not field-solver prerequisites.
@@ -127,5 +128,5 @@ The full candidate equations and first-unit caps are in design authority
 `A1/A1_T2_CANDIDATES.md`; references, actual dense bottlenecks, grid/mode and
 H/h/M/horizon growth, memory/jobs, acceptance/stopping and report templates are in
 `A1/A1_VALIDATION_AND_SCALING.md`. The planned executable schedule is
-[pseudocode/T2_WINDOW_PLAN.md](pseudocode/T2_WINDOW_PLAN.md). No T2 implementation,
-new benchmark, GPU performance qualification, or release is declared here.
+[pseudocode/T2_WINDOW_PLAN.md](pseudocode/T2_WINDOW_PLAN.md). Implementation, correctness and performance claims require their versioned
+unit reports. A local field or kernel gain is not complete-system acceptance.

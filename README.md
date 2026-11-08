@@ -10,11 +10,14 @@ issues determine prototype development priorities.
 bulk-fluid ions and adds self-consistent FK fast ions for the scoped 1.0
 milestone; A4 later makes all ions kinetic. A1 uses the controllable two-fluid
 platform to shorten serial time dependencies and assess future particle costs.
-D068 proposes T2-E field windows, T2-I ion prefixes, T2-C integration, then T3
-scaling and deployment. D070 implements bounded CPU/GPU T2-E1/E2/E3 field experiments. See
-[T2-E evidence and limits](docs/A1_T2_E_VERIFICATION.md) and the
-[window schedule](docs/pseudocode/T2_WINDOW_PLAN.md). Full coupled integration
-and production-scale qualification remain pending.
+D071 advances two concurrent lines: complete 0.5.0 A0/T1 experiments at larger
+space/time scales, and at most two reduced-ion-work multirate prototypes.
+The retained [T2-E field research](docs/A1_T2_E_VERIFICATION.md) accelerates a
+fixed-ion subproblem; completing or integrating it is not a prerequisite for
+the full simulations. Current temporal work reduction, ordinary GPU/spatial
+optimization and time-parallel benefits have separate evidence requirements.
+
+[0.5.0 experiment platform](docs/EXPERIMENTS_050.md) records the current complete-run scope.
 
 [A1 implementation](docs/A1_IMPLEMENTATION.md) records the inherited solver,
 fixed wall-system reuse, and the experimental T0/T1 time couplings. A0 is maintained
