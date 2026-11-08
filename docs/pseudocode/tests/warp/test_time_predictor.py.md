@@ -32,6 +32,12 @@ transaction:
 
 ## A1-PY-TEST-PREDICTOR-02 - Guards, configuration, memory, clocks
 
+Memory-only fixtures supply one empty matrix per retained mode for each mode
+operator group; their zero payload isolates history accounting without an
+inconsistent operator-count record.
+Peak differences also include the separate wall-cache construction temporaries;
+they are distinct from persistent fixed-wall storage and retained stage history.
+
 ```text
 guard uses h=H/M and (nsteps-step)*M but labels micro-RK4 scope
 invalid configuration/source is rejected before counters or state mutate

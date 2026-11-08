@@ -47,8 +47,12 @@ load_case(path,overrides):
     continuous residual status; manifest hashes equal actual file bytes
   load geometry NPZ with safe-key/dtype/zip limits
   build host geometry and selected-backend operators
+  pass include_finite_mass=(effective electron_inertia != 0)
+    after strict parsing; only the massless model selects omitted storage
   operator fingerprint includes the fixed-wall thin/prepared algorithm version;
     hash existing matrices only, never materialize curl-curl for a hash
+    hash the explicit finite-storage availability marker for massless
+    operators; omit Lphi/Bc records canonically instead of hashing None
   compute config_hash over canonical resolved config
   compute semantic_hash excluding only stop step, paths and display timing;
     include model, physics, effective electron_inertia, integrator,
@@ -160,6 +164,8 @@ read_restart(path,case):
   require exact checkpoint key set, accepted A0 schema/layout
   enforce file limit and NPZ safety
   compare semantic/model/integrator/geometry/operator fingerprints, dt/start
+  if current massless storage is reduced and its fingerprint differs:
+    fail explicitly with pre-0.5 full-storage incompatibility before decode
   decode state; validate scheduler endpoint and cumulative baseline/counters
   validate latest hash when pointer names file
   return state/cumulative/parent/trial/source without creating output
@@ -172,8 +178,15 @@ inspect(run_dir):
 The effective integrator and electron inertia are materialized in the restart
 semantic identity. A historical checkpoint created with the former omitted
 finite-electron default therefore cannot match or resume as the new massless
-default. Ambiguous legacy omitted-integrator checkpoints are rejected for the
-same reason. run.json anchors the exact resolved.json bytes with
+default. The 0.5 storage boundary is also explicit: a massless checkpoint made
+with the former full operator set has a different fingerprint from the selected
+reduced set. Restart detects that actual fingerprint difference and rejects the
+legacy checkpoint as pre-0.5 full storage before state decode or upload. No
+migration is attempted. A checkpoint and case made with the same selected
+storage still restart normally.
+
+Ambiguous legacy omitted-integrator checkpoints are rejected for the same
+reason. run.json anchors the exact resolved.json bytes with
 resolved_config_sha256, independent of JSON serialization ordering.
 
 ## A1-PY-IO-01 - Coupling configuration and semantic identity
@@ -203,9 +216,10 @@ semantic time normalization:
 
 Omitted defaults and explicit defaults produce the same resolved semantic
 identity. Waveform keys are inserted into semantic identity only for waveform
-coupling, so existing synchronous/predictor semantic hashes and checkpoints
-remain valid. `nsteps` remains the accepted macro-interval count and `dt`
-remains the macro interval.
+coupling. Same-storage synchronous/predictor checkpoints remain valid;
+pre-0.5 full-storage massless checkpoints do not cross the selected-storage
+boundary and are rejected explicitly. `nsteps` remains the accepted
+macro-interval count and `dt` remains the macro interval.
 
 ## A1-PY-IO-02 - Coupling manifest and restart compatibility
 

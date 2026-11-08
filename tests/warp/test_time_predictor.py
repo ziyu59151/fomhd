@@ -1074,11 +1074,11 @@ def _fake_memory_context(*, K, walls, inertia=0, memory_limit=1 << 40):
             Nb=4,
             Bc=empty_matrix,
             Bc_full=vector,
-            G=[],
-            C=[],
-            DB=[],
-            DJ=[],
-            Cdag=[],
+            G=[empty_matrix] * (2 * K + 1),
+            C=[empty_matrix] * (2 * K + 1),
+            DB=[empty_matrix] * (2 * K + 1),
+            DJ=[empty_matrix] * (2 * K + 1),
+            Cdag=[empty_matrix] * (2 * K + 1),
             Lphi=[],
             I=vector,
             H=vector,
@@ -1112,7 +1112,8 @@ def test_fixed_wall_cache_bound_grows_with_modes_and_walls():
 
     base = core.estimated_peak_bytes(no_walls)
     with_walls = core.estimated_peak_bytes(K0W2)
-    assert with_walls == base + bound_0w2
+    setup_temporaries = 16 * (4 * 2 + 3 * 2 + 5 * 2 * 2)
+    assert with_walls == base + bound_0w2 + setup_temporaries
 
     finite = _fake_memory_context(
         K=1, walls=[object()] * 4, inertia=1
@@ -1153,6 +1154,7 @@ def test_retained_predictor_wall_samples_scale_with_stages_and_walls():
     two_wall_peak = core.estimated_peak_bytes(two_walls)
     assert two_wall_peak - no_wall_peak == (
         entries[2] * 16 + core.fixed_wall_cache_bytes(two_walls)
+        + 16 * (4 * 2 + 3 * 2 + 5 * 2 * 2)
     )
 
 

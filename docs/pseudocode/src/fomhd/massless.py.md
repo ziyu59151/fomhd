@@ -70,6 +70,29 @@ storage, so the shared retained-state checker is applied to the independent
 state with electron momentum replaced by zero; the compatibility field is
 checked by its definition and Hermitian spectrum.
 
+### Exact diagonal wall-normal specialization
+
+```text
+Q(nodal,density):
+  validate positive current-stage density and finite nodal values
+  T=current operator-selected wall rows
+  winv=tile(current_density/M0,3)
+  if every nonzero column of T occurs in at most one row:
+    diagonal=sum(winv*abs(T)^2) over columns, samples batched
+    largest=max(diagonal); smallest=min(diagonal)
+    solve, bounded refinement, residuals, and full T_full check as below
+  else:
+    build each dense scaled normal and use checked SVD/LU fallback
+```
+
+For the diagonal branch, positivity makes the diagonal equal the exact normal
+eigenvalues in ascending and descending order, so the configured relative
+rank criterion is unchanged. The structural test uses the actual selected
+`T`; it is not enabled from geometry alone. The fast path does not import
+`FieldBatch`, cache a mutable operator, or retain a previous stage's density.
+Dense coupled rows retain the original per-sample checked solve and full-wall
+residual behavior.
+
 ## A0-PY-MASSLESS-03: Electron pressure and field
 
 ```text

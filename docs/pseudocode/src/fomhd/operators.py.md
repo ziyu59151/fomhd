@@ -64,3 +64,45 @@
    reverse solve order. Reject every shape mismatch.
 5. `apply_t2_inverse_block` defaults to `operators.compute` when no backend is
    supplied, so its right solves can never switch a device operator to CPU.
+
+## A0-PY-OP-06 Selected finite-mass storage
+
+`OperatorOptions.include_finite_mass` defaults to `True`. It is storage
+selection, not a model switch: every caller keeps the finite system unless it
+explicitly requests massless construction.
+
+```text
+build_operators(geometry,K,options,backend):
+  require options.include_finite_mass is boolean
+  finite_plan=estimate(lphi, isolated phi LU, Bc_full, maximum selected Bc)
+  preflight=full_dense_plan-finite_plan when massless
+           full_dense_plan otherwise
+  build G,C,DB,DJ,Cdag,I,H,QB,T_full,T,DR,DZ,topology and all shared factors
+  if finite:
+    build Lphi, spectra, phi factors, Bc_full, selected Bc
+    mark finite facilities available
+  else:
+    keep Lphi/phi factors/spectra empty and Bc rows empty
+    omit constraint-row selection; do not build and discard a Poisson matrix
+    mark finite facilities unavailable with an explicit reason and omitted names
+  validate every shared algebra, adjoint, topology and wall check
+```
+
+The massless placeholders have zero rows and are not ordinary finite
+constraints. Finite field solves require `finite_mass_available`; the selected
+massless stage and wall cache do not read `Lphi`, `phi_factor`, `Bc_full`, or
+`Bc`. The global dense `Bc_full` remains required for finite Darwin solves and
+full-row divergence checks.
+
+The consumer audit found that `fields.electrostatic`, `fields.transverse`, and
+the finite `stage.evaluate_stage` path read the Poisson/Darwin storage. The
+massless stage dispatches before those paths. `core.estimated_peak_bytes` reads
+`Bc.shape` and `Bc_full.size` only for its generic plan, so zero-row
+placeholders safely reduce that plan. The IO fingerprint conditionally skips
+the unavailable records and hashes an explicit unavailable marker. No shared
+massless consumer was found to require any omitted finite quantity.
+
+The memory estimate reports the omitted Lphi, retained phi factor copies and
+pivots, full Bc, and maximum selected-Bc storage separately. This is storage
+selection only. High-order curl retains graph-filter inverses and is not
+treated as a sparse operator.
