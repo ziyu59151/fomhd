@@ -67,3 +67,26 @@ Actual inputs, source fingerprints, accepted prefixes, full checks, scalar
 histories, bounded spatial snapshots, timing samples and failure records live
 outside the source repository under the dated personal run directory. The
 design authority owns the corresponding report and A0-style English gallery.
+
+## Bounded results (2026-11-09)
+
+The verified campaign reached complete A0 at40 enclosing nodes per R/Z axis and
+T1 at32, with K=1/Nphi=5; these are short capacity probes. At40 T1 is rejected
+before acceptance by its9.532GB storage plan against8GiB, not by an observed
+OOM or instability. Independent real-RZ12-node long runs retain matched A0,
+T1 and h/2 A0 endpoints at351.980629ns (about2.018 target periods). The original
+16-period plan remains incomplete. Soft energy/power/momentum observations and
+nonzero mapped equilibrium residuals remain explicit.
+
+Shared same-GPU complete-advance medians improve by1.374x for A0 and1.163x for
+T1 in the measured16-node window; counts are unchanged. This is ordinary
+spatial/algebra/backend optimization, not new time parallelism. The separate
+reduced-ion research branch retains both successful and failed accuracy
+controls, with no demonstrated FK saving or net same-GPU candidate gain.
+
+The full numerical/physical scope, raw paths, strict continuation audit and
+A0-style English offline gallery are linked by the design authority's
+`mainline_design/implementation/A1/A1_050_MULTIRATE_REPORT.md`. Literature and
+large run products remain outside this source checkout. The gallery can be
+rebuilt with `tools/plots/build_050_multirate_gallery.py` using explicit run,
+source and output roots; output must lie outside both input roots.

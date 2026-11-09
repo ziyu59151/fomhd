@@ -126,3 +126,5 @@ runner and A0-style gallery. Their mirrors define real time batches, original
 RK4 residuals and a tree-based approximate correction. See
 [the verification scope](../A1_T2_E_VERIFICATION.md). T2-I, complete integration,
 FK and multi-GPU deployment remain unimplemented.
+
+The bounded0.5.0/multirate gallery reuses the A0 renderer and A1 plot style: [builder mirror](tools/plots/build_050_multirate_gallery.py.md). Raw results stay in the personal run directory.
