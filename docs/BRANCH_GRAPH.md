@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a050-two-fluid-experiments": "e756ca6af3571f35de25ea20c94b08cbea62e6ea", "codex/a1-benchmark-report": "ece24d48046895abc48985b2a9515be6f5311e20", "codex/a1-multirate-ion": "b54c31e1ff47d318ce0b86c862c76e1aa0d156a1", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "codex/a1-t1-waveform": "4c75394ec2f540cf224b91b0cb08766c34d0a506", "codex/a1-t2-electron-field": "be5f1c07913409bfd377f22e9ea9d69ac614b158", "main": "163c3bec100c1750c3f748f2273660e20e59db5b", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8", "release/a1-t0": "fc9a19e26fc2fb6d601c39e18a11a095386e3038"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a050-two-fluid-experiments": "f7074744aa184bcfbffd98b3ee110f2885ce7448", "codex/a1-benchmark-report": "ece24d48046895abc48985b2a9515be6f5311e20", "codex/a1-multirate-ion": "b54c31e1ff47d318ce0b86c862c76e1aa0d156a1", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "codex/a1-t1-waveform": "4c75394ec2f540cf224b91b0cb08766c34d0a506", "codex/a1-t2-electron-field": "be5f1c07913409bfd377f22e9ea9d69ac614b158", "main": "1007f6e6d30802f875b97e5ec6d1f9161933ff42", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8", "release/a1-t0": "fc9a19e26fc2fb6d601c39e18a11a095386e3038"} -->
 
 ```mermaid
 flowchart LR
@@ -198,18 +198,18 @@ flowchart LR
   cbe5f1c07913409bfd377f22e9ea9d69ac614b158["be5f1c07 · Add bounded CPU and GPU time-parallel field windows"]
   c337ad85944f2da0bfebdda7c52846918fd4c5c7d --> cbe5f1c07913409bfd377f22e9ea9d69ac614b158
   click cbe5f1c07913409bfd377f22e9ea9d69ac614b158 "https://github.com/ziyu59151/fomhd/commit/be5f1c07913409bfd377f22e9ea9d69ac614b158"
-  c0199021af2f4e7d5e93826432575b6e0a9681e6f["0199021a · Avoid unused finite-mass storage in massless runs"]
-  cbe5f1c07913409bfd377f22e9ea9d69ac614b158 --> c0199021af2f4e7d5e93826432575b6e0a9681e6f
-  click c0199021af2f4e7d5e93826432575b6e0a9681e6f "https://github.com/ziyu59151/fomhd/commit/0199021af2f4e7d5e93826432575b6e0a9681e6f"
-  cca867c541d77712d3dde5c8215f61a254be462ff["ca867c54 · Keep waveform history ownership in alias memory plans"]
-  c0199021af2f4e7d5e93826432575b6e0a9681e6f --> cca867c541d77712d3dde5c8215f61a254be462ff
-  click cca867c541d77712d3dde5c8215f61a254be462ff "https://github.com/ziyu59151/fomhd/commit/ca867c541d77712d3dde5c8215f61a254be462ff"
-  c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab["4ba3e3bf · Add the bounded 0.5.0 two-fluid experiment platform"]
-  cca867c541d77712d3dde5c8215f61a254be462ff --> c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab
-  click c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab "https://github.com/ziyu59151/fomhd/commit/4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab"
-  ce756ca6af3571f35de25ea20c94b08cbea62e6ea["e756ca6a · Allow the bounded 40-cell capacity probe through shared input validation"]
-  c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab --> ce756ca6af3571f35de25ea20c94b08cbea62e6ea
-  click ce756ca6af3571f35de25ea20c94b08cbea62e6ea "https://github.com/ziyu59151/fomhd/commit/e756ca6af3571f35de25ea20c94b08cbea62e6ea"
+  c2a3f226f0f08e93cb313507a67a9a8a305c89787["2a3f226f · Avoid unused finite-mass storage in massless runs"]
+  cbe5f1c07913409bfd377f22e9ea9d69ac614b158 --> c2a3f226f0f08e93cb313507a67a9a8a305c89787
+  click c2a3f226f0f08e93cb313507a67a9a8a305c89787 "https://github.com/ziyu59151/fomhd/commit/2a3f226f0f08e93cb313507a67a9a8a305c89787"
+  c1184e3f89d3f5e44fd639842999f7ef77deee882["1184e3f8 · Add two bounded reduced-ion multirate research schemes"]
+  c2a3f226f0f08e93cb313507a67a9a8a305c89787 --> c1184e3f89d3f5e44fd639842999f7ef77deee882
+  click c1184e3f89d3f5e44fd639842999f7ef77deee882 "https://github.com/ziyu59151/fomhd/commit/1184e3f89d3f5e44fd639842999f7ef77deee882"
+  c679063fe10678dafdede9a75906ee09f0531e524["679063fe · Fix backend placement in multirate cost phase diagnostics"]
+  c1184e3f89d3f5e44fd639842999f7ef77deee882 --> c679063fe10678dafdede9a75906ee09f0531e524
+  click c679063fe10678dafdede9a75906ee09f0531e524 "https://github.com/ziyu59151/fomhd/commit/679063fe10678dafdede9a75906ee09f0531e524"
+  cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1["b54c31e1 · Record bounded multirate evidence and follow-up limits"]
+  c679063fe10678dafdede9a75906ee09f0531e524 --> cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1
+  click cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1 "https://github.com/ziyu59151/fomhd/commit/b54c31e1ff47d318ce0b86c862c76e1aa0d156a1"
   cefa1f05b666c171f73fea67303e41beb88a09a46["efa1f05b · docs: update branch graph [skip ci]"]
   c439eff62dd7e7e42bc211b4019f5799ffd99e8f3 --> cefa1f05b666c171f73fea67303e41beb88a09a46
   click cefa1f05b666c171f73fea67303e41beb88a09a46 "https://github.com/ziyu59151/fomhd/commit/efa1f05b666c171f73fea67303e41beb88a09a46"
@@ -225,18 +225,24 @@ flowchart LR
   c163c3bec100c1750c3f748f2273660e20e59db5b["163c3bec · docs: update branch graph [skip ci]"]
   c93cf86019ea6a1dcaaa79710b0ba8160d04c376a --> c163c3bec100c1750c3f748f2273660e20e59db5b
   click c163c3bec100c1750c3f748f2273660e20e59db5b "https://github.com/ziyu59151/fomhd/commit/163c3bec100c1750c3f748f2273660e20e59db5b"
-  c2a3f226f0f08e93cb313507a67a9a8a305c89787["2a3f226f · Avoid unused finite-mass storage in massless runs"]
-  cbe5f1c07913409bfd377f22e9ea9d69ac614b158 --> c2a3f226f0f08e93cb313507a67a9a8a305c89787
-  click c2a3f226f0f08e93cb313507a67a9a8a305c89787 "https://github.com/ziyu59151/fomhd/commit/2a3f226f0f08e93cb313507a67a9a8a305c89787"
-  c1184e3f89d3f5e44fd639842999f7ef77deee882["1184e3f8 · Add two bounded reduced-ion multirate research schemes"]
-  c2a3f226f0f08e93cb313507a67a9a8a305c89787 --> c1184e3f89d3f5e44fd639842999f7ef77deee882
-  click c1184e3f89d3f5e44fd639842999f7ef77deee882 "https://github.com/ziyu59151/fomhd/commit/1184e3f89d3f5e44fd639842999f7ef77deee882"
-  c679063fe10678dafdede9a75906ee09f0531e524["679063fe · Fix backend placement in multirate cost phase diagnostics"]
-  c1184e3f89d3f5e44fd639842999f7ef77deee882 --> c679063fe10678dafdede9a75906ee09f0531e524
-  click c679063fe10678dafdede9a75906ee09f0531e524 "https://github.com/ziyu59151/fomhd/commit/679063fe10678dafdede9a75906ee09f0531e524"
-  cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1["b54c31e1 · Record bounded multirate evidence and follow-up limits"]
-  c679063fe10678dafdede9a75906ee09f0531e524 --> cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1
-  click cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1 "https://github.com/ziyu59151/fomhd/commit/b54c31e1ff47d318ce0b86c862c76e1aa0d156a1"
+  c1007f6e6d30802f875b97e5ec6d1f9161933ff42["1007f6e6 · docs: update branch graph [skip ci]"]
+  c163c3bec100c1750c3f748f2273660e20e59db5b --> c1007f6e6d30802f875b97e5ec6d1f9161933ff42
+  click c1007f6e6d30802f875b97e5ec6d1f9161933ff42 "https://github.com/ziyu59151/fomhd/commit/1007f6e6d30802f875b97e5ec6d1f9161933ff42"
+  c0199021af2f4e7d5e93826432575b6e0a9681e6f["0199021a · Avoid unused finite-mass storage in massless runs"]
+  cbe5f1c07913409bfd377f22e9ea9d69ac614b158 --> c0199021af2f4e7d5e93826432575b6e0a9681e6f
+  click c0199021af2f4e7d5e93826432575b6e0a9681e6f "https://github.com/ziyu59151/fomhd/commit/0199021af2f4e7d5e93826432575b6e0a9681e6f"
+  cca867c541d77712d3dde5c8215f61a254be462ff["ca867c54 · Keep waveform history ownership in alias memory plans"]
+  c0199021af2f4e7d5e93826432575b6e0a9681e6f --> cca867c541d77712d3dde5c8215f61a254be462ff
+  click cca867c541d77712d3dde5c8215f61a254be462ff "https://github.com/ziyu59151/fomhd/commit/ca867c541d77712d3dde5c8215f61a254be462ff"
+  c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab["4ba3e3bf · Add the bounded 0.5.0 two-fluid experiment platform"]
+  cca867c541d77712d3dde5c8215f61a254be462ff --> c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab
+  click c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab "https://github.com/ziyu59151/fomhd/commit/4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab"
+  ce756ca6af3571f35de25ea20c94b08cbea62e6ea["e756ca6a · Allow the bounded 40-cell capacity probe through shared input validation"]
+  c4ba3e3bfc1abc9f65876bc09aa8e47880659a3ab --> ce756ca6af3571f35de25ea20c94b08cbea62e6ea
+  click ce756ca6af3571f35de25ea20c94b08cbea62e6ea "https://github.com/ziyu59151/fomhd/commit/e756ca6af3571f35de25ea20c94b08cbea62e6ea"
+  cf7074744aa184bcfbffd98b3ee110f2885ce7448["f7074744 · Add reviewed A0-style gallery for bounded 0.5.0 and multirate experiments"]
+  ce756ca6af3571f35de25ea20c94b08cbea62e6ea --> cf7074744aa184bcfbffd98b3ee110f2885ce7448
+  click cf7074744aa184bcfbffd98b3ee110f2885ce7448 "https://github.com/ziyu59151/fomhd/commit/f7074744aa184bcfbffd98b3ee110f2885ce7448"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-grid-convergence"]) -.-> c81e89dbb9f58e36ff73be89e2e1912e7354920c4
   b2(["codex/a0-nl-cellplots"]) -.-> c0ff316a7ac35d7508b426fac3b268d99713dd1cb
@@ -244,13 +250,13 @@ flowchart LR
   b4(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
   b5(["codex/a0-tokamak-cae"]) -.-> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
   b6(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
-  b7(["codex/a050-two-fluid-experiments"]) -.-> ce756ca6af3571f35de25ea20c94b08cbea62e6ea
+  b7(["codex/a050-two-fluid-experiments"]) -.-> cf7074744aa184bcfbffd98b3ee110f2885ce7448
   b8(["codex/a1-benchmark-report"]) -.-> cece24d48046895abc48985b2a9515be6f5311e20
   b9(["codex/a1-multirate-ion"]) -.-> cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1
   b10(["codex/a1-t0"]) -.-> cb9af715ab2cb75f661b2254a2ea05d2179334599
   b11(["codex/a1-t1-waveform"]) -.-> c4c75394ec2f540cf224b91b0cb08766c34d0a506
   b12(["codex/a1-t2-electron-field"]) -.-> cbe5f1c07913409bfd377f22e9ea9d69ac614b158
-  b13(["main"]) -.-> c163c3bec100c1750c3f748f2273660e20e59db5b
+  b13(["main"]) -.-> c1007f6e6d30802f875b97e5ec6d1f9161933ff42
   b14(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
   b15(["release/a0"]) -.-> c9a38bf41e7bc1fc50186c81967312a7ec5f028e8
   b16(["release/a1-t0"]) -.-> cfc9a19e26fc2fb6d601c39e18a11a095386e3038
