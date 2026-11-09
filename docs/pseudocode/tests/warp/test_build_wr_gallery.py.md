@@ -62,6 +62,10 @@ require missing required source fails before output creation
 require output under raw_root fails
 require output that is an ancestor of an input fails
 require existing output fails and retains its marker file unchanged
+optional wall_response_addendum HTML:
+  require unchanged old figure behavior
+  require exact path in known_issues and HTML evidence link
+  require wall_response_addendum role in provenance hash record
 ```
 
 ## WRGAL-TEST-04 - Actual periodic and RZ campaign data
@@ -138,6 +142,7 @@ these optional-source tests use tmp_path and do not require a final manifest
 portable precheck fixtures provide direct output paths and command --output
 referenced run/history/failure records:
   require first-window-boundary-work with four canonical panels
+  require macro-step acceptance title/copy distinct from spatial wall boundary
   require corrected coarse, stage-evaluator and field counter labels
   require acceptedprefix and converged-hard-rejected classification
   require no A0/T1 row in the WR ladder
@@ -145,5 +150,6 @@ referenced run/history/failure records:
   require kinetic/field rejection series only where explicit checks exist
   require accepted-prefix rows not zero-filled
   require first-window, budget-stop/unscanned and no-stability-bound captions
+  require first-window energy-gate control title/copy
   require every existing referenced record in provenance
 ```

@@ -20,7 +20,7 @@ manifest:
     backend_comparison, parity_v3
     optional periodic_trial, periodic_comparison, matched_gpu_cost,
     production_precheck, boundary_precheck,
-    reviewed_sections and energy_attribution
+    reviewed_sections, wall_response_addendum and energy_attribution
   availability: id/status/detail rows
   periodic_runs: id, label, run_json, history_jsonl, snapshots,
                  optional checkpoint
@@ -144,6 +144,8 @@ first-window boundary controls, when both prechecks are supplied:
   accepted-prefix rows lack rejection samples and are not zero-filled
   base-h M64/M128 absent rows remain not_run; never infer a stability bound
   captions state first-window only and budget stop/unscanned scope
+  macro-step acceptance and energy-gate controls are explicitly not the real
+  spatial wall-boundary response audit; figure IDs remain stable
 
 Every figure caption encodes:
   Question / Fixed / Scan / Reference / Pass scope
@@ -167,6 +169,7 @@ generate output:
 inject availability table into canonical rendered HTML
 embed every figure as base64 SVG; retain local SVG/data links
 link the reviewed prior RZ sections unchanged
+link optional wall_response_addendum HTML in canonical known-evidence area
 refuse HTTP/remote assets
 write provenance only after rendering; custom pages link data.json
 

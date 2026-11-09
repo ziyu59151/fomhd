@@ -575,6 +575,39 @@ def test_missing_required_source_fails_before_output_creation(tmp_path):
     assert not output.exists()
 
 
+def test_optional_wall_response_addendum_is_hashed_and_linked(tmp_path):
+    builder = load_builder()
+    manifest, _ = _tiny_inputs(tmp_path)
+    wall = tmp_path / "wall-response.html"
+    wall.write_text("<!doctype html><title>wall response</title>\n")
+    value = json.loads(manifest.read_text())
+    value["sources"]["wall_response_addendum"] = str(wall)
+    manifest.write_text(json.dumps(value, indent=2))
+    output = tmp_path / "gallery-wall"
+
+    result = builder.build_gallery(manifest, output, SOURCE_ROOT)
+
+    assert result["figures"] == 6
+    data = json.loads((output / "data.json").read_text())
+    issue = next(
+        item
+        for item in data["known_issues"]
+        if item["label"].startswith("Wall-adjacent response audit")
+    )
+    assert issue["path"] == str(wall.resolve())
+    html = (output / "index.html").read_text()
+    assert "Wall-adjacent response audit" in html
+    assert "raw states, initialization and shared-scale maps" in html
+    assert "wall-response.html" in html
+    provenance = json.loads((output / "provenance.json").read_text())
+    record = next(
+        item
+        for item in provenance["inputs"]
+        if item["path"] == str(wall.resolve())
+    )
+    assert "wall_response_addendum" in record["roles"]
+
+
 def test_output_inside_raw_root_is_rejected(tmp_path):
     builder = load_builder()
     manifest, _ = _tiny_inputs(tmp_path)
@@ -690,6 +723,7 @@ def test_first_window_boundary_controls_use_referenced_records(tmp_path):
     )
     work = figures["first-window-boundary-work"]
     assert len(work["panels"]) == 4
+    assert work["title"] == "First-window macro-step acceptance controls"
     labels = {
         series["label"]
         for panel in work["panels"]
@@ -709,6 +743,7 @@ def test_first_window_boundary_controls_use_referenced_records(tmp_path):
 
     energy = figures["first-window-energy-rejection"]
     panel = energy["panels"][0]
+    assert energy["title"] == "First-window energy-gate rejection control"
     assert panel["xlabel"] == "Effective base-h M = M*h/h_base"
     assert panel["horizontal_lines"][0]["y"] == 1.0
     assert {series["label"] for series in panel["series"]} == {
@@ -718,6 +753,8 @@ def test_first_window_boundary_controls_use_referenced_records(tmp_path):
     }
     assert "not zero-filled" in energy["caption"]
     assert "no stability bound" in energy["caption"].casefold()
+    assert "not a real spatial wall-boundary" in work["caption"]
+    assert "not a real spatial wall-boundary" in energy["caption"]
 
     provenance = json.loads((output / "provenance.json").read_text())
     paths = {Path(record["path"]) for record in provenance["inputs"]}

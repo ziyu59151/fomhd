@@ -39,6 +39,7 @@ OPTIONAL_SOURCES = (
     "production_precheck",
     "boundary_precheck",
     "reviewed_sections",
+    "wall_response_addendum",
     "energy_attribution",
 )
 CANONICAL_SOURCES = (
@@ -1066,7 +1067,7 @@ def _first_window_boundary_figures(
     )
     work_figure = _figure(
         "first-window-boundary-work",
-        "First-window macro boundary work and cost",
+        "First-window macro-step acceptance controls",
         "verification",
         [
             _panel(
@@ -1126,7 +1127,8 @@ def _first_window_boundary_figures(
             f"evaluator means raw full_stage_calls after the counter erratum. "
             f"Status: {status_text}. Base-h M64/M128 are absent and remain "
             "not_run with no zero fillers; accepted-prefix rows stop at the "
-            "segment budget with the remaining horizon unscanned."
+            "segment budget with the remaining horizon unscanned. These are "
+            "macro-step acceptance controls, not a real spatial wall-boundary."
         ),
         status="first-window precheck",
         device="CPU",
@@ -1173,7 +1175,7 @@ def _first_window_boundary_figures(
     ]
     energy_figure = _figure(
         "first-window-energy-rejection",
-        "First-window hard energy rejection ratios",
+        "First-window energy-gate rejection control",
         "verification",
         [
             _panel(
@@ -1202,7 +1204,8 @@ def _first_window_boundary_figures(
             f"Acceptedprefix cases ({', '.join(record['name'] for record in accepted)}) "
             "have no rejection sample in the source and are not zero-filled. "
             "Base-h M64/M128 remain not_run. The threshold-1 line is the "
-            "declared hard check; no stability bound is inferred."
+            "declared hard check; no stability bound is inferred. This is a "
+            "macro-step energy gate, not a real spatial wall-boundary."
         ),
         status="first-window precheck",
         device="CPU",
@@ -1733,6 +1736,18 @@ def _build_data(
         )
 
     known_issues = []
+    if "wall_response_addendum" in paths:
+        if paths["wall_response_addendum"].suffix.lower() not in {".html", ".htm"}:
+            raise InputError("wall_response_addendum must be an HTML file")
+        known_issues.append(
+            {
+                "label": (
+                    "Wall-adjacent response audit "
+                    "(raw states, initialization and shared-scale maps)"
+                ),
+                "path": str(paths["wall_response_addendum"]),
+            }
+        )
     if "reviewed_sections" in paths:
         known_issues.append(
             {
