@@ -72,3 +72,30 @@ pusher is added by these prototypes. Fluid work counts do not establish
 particle pushes/gathers/deposits saved against a reasonable hybrid reference.
 A3 retains bulk fluid plus self-consistent CCS-coupled FK fast ions; A4 replaces
 all ions. Particle orbit phase, resonance and feedback require their own tests.
+
+## Bounded evidence (2026-11-09)
+
+The18-case CPU matrix and selected GPU runs preserve the candidate algorithms,
+phase controls, full final-stage identities and retained failures. C1 centered
+feedback can remove uniform-Hall norm growth while leaving macro phase error;
+C2 live electromagnetic response is more accurate in the tested fluid fixture.
+Neither result proves reduced FK orbit/gather/weight/deposition cost. Current
+microstep scans remain causal and do not add time-batch parallelism.
+
+Matched same-GPU research-window medians for C1M64 are57.873s versus30.068s for
+the lean full-ion reference; C2M64 is62.740s versus30.150s. Transport calls drop
+from2048 to56/48, including charged endpoint debug work, but field scans grow.
+The current candidates are slower on this fluid load. Separate production
+A0/T1 shared-operator optimization and fixed-P T2-E results have different
+scopes and are not candidate time-algorithm gains. The old backend-placement
+failure after completed timing is retained; commit679063f changes phase
+postprocessing placement only, with numerical source unchanged.
+
+Next trajectory research should directly solve a few per-particle phase-space
+and weight coefficients, then verify compatible CCS feedback and actual
+operations. Boris-SDC/BGSDC, DGiT and orbit Picard-Chebyshev sources inform this
+future choice; they are not current implementations or plasma performance
+proofs. Finite-inertia quasineutral/no-displacement-current electron physics is
+a separate future model, distinct from current charge-separating Darwin; the
+present default remains massless CGL-B. The design authority's D071 report and
+2026-11-09 reading note own page-level literature and follow-up boundaries.
