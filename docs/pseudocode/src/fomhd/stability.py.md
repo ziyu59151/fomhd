@@ -48,7 +48,8 @@ massless default `0`; explicit `1` selects finite plasma/cyclotron saturation.
 
 ```text
 assess_predictor_runtime(estimate,context,macro_step):
-  require coupling in {predictor,waveform}, massless electrons, and RK4
+  require coupling in {predictor,waveform,multirate_wr}, massless electrons,
+    and RK4
   M=validated micro_steps; h=dt/M
   remaining_micro_steps=(nsteps-macro_step)*M
   report=assess_dt("rk4",omega_estimate,h,remaining_micro_steps,...)

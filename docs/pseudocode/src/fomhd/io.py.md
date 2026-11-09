@@ -138,6 +138,62 @@ failure(error,last_accepted,phase):
   failure NPZ is never accepted restart state
 ```
 
+### A1-WR rejected-failure publication
+
+```text
+failure partial-array seam:
+  preserve the original in-memory Error.partial_arrays unchanged
+  classify every value as:
+    safe numeric/string scalar or array-like evidence
+    omitted structured evidence
+
+  safe evidence:
+    NumPy arrays, backend arrays converted through their host accessor, and
+      finite/nonfinite numeric scalars or strings converted to host arrays
+    reject object dtype, unsupported dtype, dataclass/module/backend graphs,
+      and conversion errors
+    preserve shape/dtype/content and allow nonfinite failure values
+
+  omitted evidence:
+    retain records/identities on the original Failure evidence attributes
+    list each key with its original type and stable reason in failure JSON
+
+  publish one NPZ only when at least one safe array remains
+  JSON failure record includes:
+    all partial keys, safe published keys/count, omitted keys/count
+    partial file/hash and publication status
+    JSON-safe Error.coupling_metadata when present
+    JSON-safe Error.mixed_diagnostic_work when present, otherwise explicit
+      accumulator/checker diagnostic-work values from coupling metadata
+    exact Failure stage identity and rejected residual history
+
+  accepted state and cumulative data are not read or mutated by publication
+```
+
+### A1-WR accepted coupling-metadata publication
+
+```text
+Run.time_coupling_evidence(metadata):
+  called only after the accepted numerical advance and transaction commit
+  owner: I/O publication boundary
+
+  synchronize the accepted backend once
+  convert metadata through strict JSON-safe compact conversion:
+    dataclasses, mappings, tuples, scalars follow existing policy
+    NumPy/CuPy real or integer arrays with at most 16 entries:
+      host-copy once at this I/O boundary and preserve every element
+    larger arrays:
+      do not host-copy; retain dtype and shape summary
+    object/unsupported arrays:
+      retain explicit dtype/shape omission metadata
+    no arbitrary object stringification
+
+  store the safe value in run.json time_coupling_evidence
+  do not mutate the metadata object, accepted state, cache or cumulative
+  failures after accepted output publication use post_commit_output phase,
+    not rollback or failed-before-commit labels
+```
+
 ## A0-PY-IO-04 - Atomic checkpoint and restart
 
 ```text
@@ -193,7 +249,8 @@ resolved_config_sha256, independent of JSON serialization ordering.
 
 ```text
 time allowed additions:
-  coupling in {"synchronous","predictor","waveform"}, default "synchronous"
+  coupling in {"synchronous","predictor","waveform","multirate_wr"},
+    default "synchronous"
   micro_steps actual positive integer, default 1
   waveform_rtol positive finite non-boolean float, default 1e-10
   waveform_max_iterations positive non-boolean integer, default 12
@@ -201,7 +258,8 @@ time allowed additions:
 cross-field validation:
   synchronous requires micro_steps==1
   predictor or waveform requires electron_inertia==0 and integrator=="rk4"
-  waveform controls are accepted only with coupling="waveform"
+  waveform controls are accepted with waveform or multirate_wr
+  ion_nodes, wr_initial, and wr_relaxation exist only for multirate_wr
   reject bool, fractional, zero, negative, or noninteger micro_steps
   reject nonfinite/nonpositive/bool waveform_rtol and invalid sweep limit
   reject unsupported combinations before Run directory or trial mutation
@@ -212,6 +270,11 @@ semantic time normalization:
   if waveform:
     time.waveform_rtol=effective Parameters.waveform_rtol
     time.waveform_max_iterations=effective Parameters.waveform_max_iterations
+  if multirate_wr:
+    time.waveform_rtol and time.waveform_max_iterations
+    time.ion_nodes=effective Parameters.ion_nodes
+    time.wr_initial=effective Parameters.wr_initial
+    time.wr_relaxation=effective Parameters.wr_relaxation
 ```
 
 Omitted defaults and explicit defaults produce the same resolved semantic
@@ -232,7 +295,8 @@ run manifest:
 
 checkpoint identity:
   write time_coupling and micro_steps scalar metadata for all couplings
-  if waveform: write waveform_rtol and waveform_max_iterations
+  if waveform or multirate_wr: write waveform_rtol and waveform_max_iterations
+  if multirate_wr: write ion_nodes, wr_initial, and wr_relaxation
   keep semantic_hash as the complete compatibility gate; waveform controls also
     enter waveform semantic identity
 
@@ -245,8 +309,10 @@ read_restart:
   legacy checkpoints without the added metadata are rejected explicitly
   synchronous scheme/M continues to resume; predictor resumes only under the
     same scheme, M, model, integrator, and semantic identity
-  waveform resumes only under the same scheme, M, tolerance, sweep limit,
+  waveform and multirate_wr resume only under the same scheme, M, tolerance,
+  sweep limit,
     model, integrator, and semantic identity
+  multirate_wr additionally requires identical s, initializer, and relaxation
 ```
 
 Only complete accepted macro endpoints are encoded. No partially iterated

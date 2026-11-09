@@ -65,7 +65,7 @@ def test_native_field_order_and_defaults() -> None:
         "iteration",
         "slab",
     ]
-    assert [field.name for field in dataclasses.fields(Parameters)][-10:] == [
+    assert [field.name for field in dataclasses.fields(Parameters)][-13:] == [
         "electron_inertia",
         "integrator",
         "dt_guard",
@@ -76,11 +76,17 @@ def test_native_field_order_and_defaults() -> None:
         "micro_steps",
         "waveform_rtol",
         "waveform_max_iterations",
+        "ion_nodes",
+        "wr_initial",
+        "wr_relaxation",
     ]
     assert Parameters().coupling == "synchronous"
     assert Parameters().micro_steps == 1
     assert Parameters().waveform_rtol == 1e-10
     assert Parameters().waveform_max_iterations == 12
+    assert Parameters().ion_nodes is None
+    assert Parameters().wr_initial is None
+    assert Parameters().wr_relaxation is None
     assert Parameters().electron_inertia == 0
     assert Parameters(electron_inertia=1).electron_inertia == 1
     assert Parameters().integrator == "rk4"

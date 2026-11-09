@@ -1,11 +1,15 @@
 # A1 implementation contracts
 
-D071 concurrently advances complete 0.5.0 experiments and reduced-ion-work
-research. The complete runtime retains the A0/T0/T1 transaction contracts below;
-new multirate prototypes are separate research APIs until their interval-work
-and acceptance interfaces are implemented and verified.
+D072 selects a few-node multirate waveform method on the 0.5.0 branch.
+T2-E, C1/C2 and unimplemented T tiers are retained research, not prerequisites.
+The new target is documented in design authority `A1/A1_WR_050.md`; few ion
+nodes remain after convergence. The inherited A0/T0/T1 contracts below retain
+their original meaning. A new runtime capability needs its own complete
+interval-work, rollback, restart and CPU/GPU acceptance evidence.
 
-Status: active, bounded T0/T1 and fixed-ion T2-E1/E2/E3 implementations. The design repository owns
+Status: active few-node WR implementation on the experiment branch, with separate
+correctness, physical-range and cost verification. T0/T1 and bounded fixed-ion
+T2-E1/E2/E3 remain implemented references. The design repository owns
 the selected mathematics in
 `mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md`.
 Its `TIME_DECOUPLING_DESIGN.md` is an evolving design reference, revised under
@@ -23,7 +27,36 @@ A1 inherits A0 source and mirrored pseudocode. There is one solver package;
 maintenance baseline. A0's native implementation remains on its own
 `reference/a0-native` branch. No new dependencies are required for T0.
 
-## Selected time controls
+## Active few-node time controls
+
+```toml
+[time]
+coupling = "multirate_wr"
+micro_steps = 8
+ion_nodes = 3
+wr_initial = "tangent"
+wr_relaxation = 1.0
+waveform_rtol = 1e-10
+waveform_max_iterations = 12
+integrator = "rk4"
+```
+
+`dt` is H, `h=H/M`, and `nsteps` counts accepted macros. Ion density,
+momentum and pressure are solved directly at three or five Lobatto nodes.
+The real field RK4 stages consume the polynomial from one immutable ion-node
+version. Coarse transport and fine continuity/electromagnetic response use
+their declared integration weights in the same complete transaction. This
+changed discrete target is specified in the design authority
+`A1/A1_WR_050.md`; it does not recover all T1 ion microstages.
+
+See [the generic window](pseudocode/src/fomhd/time_multirate_wr.py.md),
+[the physical split](pseudocode/src/fomhd/multirate_wr_physics.py.md),
+[the mixed ledger](pseudocode/src/fomhd/multirate_wr_checks.py.md) and
+[the complete transaction](pseudocode/src/fomhd/time_multirate.py.md).
+The stage count is a work metric, separate from actual GPU acceleration and
+future particle operations. The present field scan is causal.
+
+## Retained T0 time controls
 
 ```toml
 [time]
@@ -74,9 +107,10 @@ acceptable. A1 uses that controllable platform to design transferable methods
 for future expensive FK work, not to infer success from fluid convergence or
 fewer sweeps alone.
 
-D068 replaces that proposed ordering with T2-E electron/field windows, T2-I
+The retained D068/D070 research ordering was T2-E electron/field windows, T2-I
 known-ion-increment prefixes and stage reconstruction, T2-C integration, then T3
-scaling/deployment. The implemented field units include a uniform-periodic affine RK4 prefix,
+scaling/deployment. D072 removes that ordering as a prerequisite. The retained
+field units include a uniform-periodic affine RK4 prefix,
 true nonlinear periodic residual correction, and bounded nonuniform constrained
 RZ experiments. They have genuine CPU tree schedules, independent sequential
 oracles, GPU time batches, and scoped same-GPU comparisons. Particle prototypes and

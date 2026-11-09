@@ -15,7 +15,7 @@ import time as time_module
 import tomllib
 import uuid
 import zipfile
-from dataclasses import dataclass
+from dataclasses import dataclass, fields as dataclass_fields, is_dataclass
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -137,6 +137,11 @@ def _json_value(value):
         return [_json_value(child) for child in value]
     if isinstance(value, dict):
         return {str(key): _json_value(child) for key, child in value.items()}
+    if is_dataclass(value):
+        return {
+            field.name: _json_value(getattr(value, field.name))
+            for field in dataclass_fields(value)
+        }
     if hasattr(value, "__dict__"):
         return {
             str(key): _json_value(child)
@@ -749,6 +754,194 @@ def _host_array(value):
     return np.asarray(value)
 
 
+def _failure_numeric_arrays(partial):
+    """Return safe NPZ arrays and explicit reasons for omitted failure values."""
+
+    arrays = {}
+    omitted = []
+    supported = set("fcbiuU")
+    for key, value in partial.items():
+        try:
+            array = _host_array(value)
+        except Exception as error:
+            omitted.append(
+                {
+                    "key": key,
+                    "type": type(value).__name__,
+                    "reason": f"conversion failed: {type(error).__name__}",
+                }
+            )
+            continue
+        if array.dtype.hasobject:
+            omitted.append(
+                {
+                    "key": key,
+                    "type": type(value).__name__,
+                    "reason": "object dtype is not safe for allow_pickle=False",
+                }
+            )
+            continue
+        if array.dtype.kind not in supported:
+            omitted.append(
+                {
+                    "key": key,
+                    "type": type(value).__name__,
+                    "reason": f"unsupported dtype {array.dtype}",
+                }
+            )
+            continue
+        arrays[key] = np.asarray(array)
+    return arrays, omitted
+
+
+def _failure_json_value(value):
+    """Compact an arbitrary failure metadata object to strict JSON data."""
+
+    def compact(item):
+        if item is None or isinstance(item, (bool, int, str)):
+            return item
+        if isinstance(item, float):
+            return typed_value(item)
+        if isinstance(item, np.ndarray):
+            if item.dtype.hasobject:
+                return {
+                    "type": "ndarray",
+                    "dtype": str(item.dtype),
+                    "shape": list(item.shape),
+                    "omitted": "object dtype",
+                }
+            if item.size <= 16:
+                return compact(item.tolist())
+            return {
+                "type": "ndarray",
+                "dtype": str(item.dtype),
+                "shape": list(item.shape),
+                "omitted": "more than 16 scalar values",
+            }
+        if isinstance(item, dict):
+            return {
+                str(key): compact(child)
+                for key, child in item.items()
+            }
+        if isinstance(item, (list, tuple)):
+            return [compact(child) for child in item]
+        if isinstance(item, Path):
+            return str(item)
+        return {
+            "type": type(item).__name__,
+            "omitted": "unsupported JSON metadata type",
+        }
+
+    result = compact(_json_value(value))
+    return _require_finite_json(result)
+
+
+_METADATA_VECTOR_LIMIT = 16
+
+
+def _accepted_metadata_json_value(value, backend):
+    """Serialize accepted metadata with bounded host copies of small vectors."""
+
+    xp = getattr(backend, "xp", None)
+
+    def compact(item):
+        if item is None or isinstance(item, (bool, int, str)):
+            return item
+        if isinstance(item, float):
+            return typed_value(item)
+        if isinstance(item, dict):
+            return {
+                str(key): compact(child)
+                for key, child in item.items()
+            }
+        if isinstance(item, (list, tuple)):
+            return [compact(child) for child in item]
+        if isinstance(item, Path):
+            return str(item)
+        is_array = isinstance(item, np.ndarray) or (
+            xp is not None and isinstance(item, xp.ndarray)
+        )
+        if is_array:
+            size = int(item.size)
+            if size > _METADATA_VECTOR_LIMIT:
+                return {
+                    "type": "ndarray",
+                    "dtype": str(item.dtype),
+                    "shape": list(item.shape),
+                    "omitted": (
+                        f"more than {_METADATA_VECTOR_LIMIT} scalar values"
+                    ),
+                }
+            array = (
+                np.asarray(item)
+                if isinstance(item, np.ndarray)
+                else np.asarray(backend.to_host(item))
+            )
+            if array.dtype.hasobject:
+                return {
+                    "type": "ndarray",
+                    "dtype": str(array.dtype),
+                    "shape": list(array.shape),
+                    "omitted": "object dtype",
+                }
+            if array.dtype.kind == "c":
+                return {
+                    "real": compact(array.real.tolist()),
+                    "imag": compact(array.imag.tolist()),
+                }
+            if array.dtype.kind not in "biufU":
+                return {
+                    "type": "ndarray",
+                    "dtype": str(array.dtype),
+                    "shape": list(array.shape),
+                    "omitted": "unsupported dtype",
+                }
+            return compact(array.tolist())
+        return {
+            "type": type(item).__name__,
+            "omitted": "unsupported JSON metadata type",
+        }
+
+    result = compact(_json_value(value))
+    return _require_finite_json(result)
+
+
+def _failure_identity_metadata(partial):
+    """Retain JSON-safe compact stage identities without producer graphs."""
+
+    result = {}
+    for key, value in partial.items():
+        if "identit" not in key.lower():
+            continue
+        try:
+            converted = _failure_json_value(value)
+        except (TypeError, ValueError):
+            continue
+        result[key] = converted
+    return result
+
+
+def _failure_mixed_diagnostic_work(error, coupling_metadata):
+    explicit = getattr(error, "mixed_diagnostic_work", None)
+    if explicit is not None:
+        return _failure_json_value(explicit)
+    if not isinstance(coupling_metadata, dict):
+        return None
+    if (
+        "bundle_diagnostic_work" not in coupling_metadata
+        and "result_diagnostic_work" not in coupling_metadata
+    ):
+        return None
+    return {
+        "accumulator": _failure_json_value(
+            coupling_metadata.get("bundle_diagnostic_work")
+        ),
+        "checker": _failure_json_value(
+            coupling_metadata.get("result_diagnostic_work")
+        ),
+    }
+
+
 def _scatter(vector, table, modes, ny, nx, components=1):
     vector = _host_array(vector).reshape(-1)
     keys = _entity_keys(table)
@@ -1044,6 +1237,9 @@ def _build_parameters(species, solver, grid, time, budgets, diagnostics):
         waveform_max_iterations=time.get(
             "waveform_max_iterations", 12
         ),
+        ion_nodes=time.get("ion_nodes"),
+        wr_initial=time.get("wr_initial"),
+        wr_relaxation=time.get("wr_relaxation"),
     )
     return parameters_value
 
@@ -1176,6 +1372,9 @@ def load_case(path, overrides=None, backend=None):
         "micro_steps",
         "waveform_rtol",
         "waveform_max_iterations",
+        "ion_nodes",
+        "wr_initial",
+        "wr_relaxation",
     ):
         if optional in time:
             allowed_time.add(optional)
@@ -1199,15 +1398,31 @@ def load_case(path, overrides=None, backend=None):
     coupling = time.get("coupling", "synchronous")
     if type(coupling) is not str:
         raise ValueError("coupling must be a string")
-    if coupling not in ("synchronous", "predictor", "waveform"):
+    if coupling not in (
+        "synchronous",
+        "predictor",
+        "waveform",
+        "multirate_wr",
+    ):
         raise ValueError(f"unknown time coupling: {coupling}")
     has_waveform_controls = (
         "waveform_rtol" in time
         or "waveform_max_iterations" in time
     )
-    if has_waveform_controls and coupling != "waveform":
+    if has_waveform_controls and coupling not in (
+        "waveform",
+        "multirate_wr",
+        ):
+            raise ValueError(
+            "waveform controls require waveform coupling or multirate_wr "
+            "coupling"
+        )
+    wr_keys = {"ion_nodes", "wr_initial", "wr_relaxation"}
+    has_wr_controls = bool(wr_keys & set(time))
+    if has_wr_controls and coupling != "multirate_wr":
         raise ValueError(
-            "waveform controls require waveform coupling"
+            "ion_nodes, wr_initial, and wr_relaxation require "
+            "multirate_wr coupling"
         )
     micro_steps = time.get("micro_steps", 1)
     if type(micro_steps) is not int or micro_steps <= 0:
@@ -1218,7 +1433,7 @@ def load_case(path, overrides=None, backend=None):
         raise ValueError(
             "synchronous coupling requires micro_steps=1"
         )
-    if coupling in ("predictor", "waveform"):
+    if coupling in ("predictor", "waveform", "multirate_wr"):
         if inertia != 0:
             raise ValueError(
                 f"{coupling} coupling requires massless electron_inertia=0"
@@ -1227,11 +1442,28 @@ def load_case(path, overrides=None, backend=None):
             raise ValueError(
                 f"{coupling} coupling requires integrator='rk4'"
             )
-    if coupling == "waveform":
+    if coupling in ("waveform", "multirate_wr"):
         if "waveform_rtol" in time:
             _real(time, "waveform_rtol", True)
         if "waveform_max_iterations" in time:
             _integer(time, "waveform_max_iterations", True)
+    if coupling == "multirate_wr":
+        missing = sorted(wr_keys - set(time))
+        if missing:
+            raise ValueError(
+                "multirate_wr is missing controls: " + ", ".join(missing)
+            )
+        ion_nodes = _integer(time, "ion_nodes", True)
+        if ion_nodes not in (3, 5):
+            raise ValueError("ion_nodes must be 3 or 5")
+        initial = _string(time, "wr_initial")
+        if initial not in ("tangent", "constant"):
+            raise ValueError(
+                "wr_initial must be 'tangent' or 'constant'"
+            )
+        relaxation = _real(time, "wr_relaxation", True)
+        if relaxation > 1.0:
+            raise ValueError("wr_relaxation must be at most one")
     for name, positive in (
         ("minimum_samples_per_cycle", True),
         ("max_amplitude_error", True),
@@ -1516,11 +1748,15 @@ def load_case(path, overrides=None, backend=None):
     semantic["time"]["integrator"] = parameters.integrator
     semantic["time"]["coupling"] = parameters.coupling
     semantic["time"]["micro_steps"] = parameters.micro_steps
-    if parameters.coupling == "waveform":
+    if parameters.coupling in ("waveform", "multirate_wr"):
         semantic["time"]["waveform_rtol"] = parameters.waveform_rtol
         semantic["time"][
             "waveform_max_iterations"
         ] = parameters.waveform_max_iterations
+    if parameters.coupling == "multirate_wr":
+        semantic["time"]["ion_nodes"] = parameters.ion_nodes
+        semantic["time"]["wr_initial"] = parameters.wr_initial
+        semantic["time"]["wr_relaxation"] = parameters.wr_relaxation
     semantic["time"].pop("nsteps", None)
     for name in (
         "output_dir",
@@ -1611,12 +1847,23 @@ def _identity(arrays, committed, case, run_id, k, compute):
     arrays["micro_steps"] = np.asarray(
         getattr(case.parameters, "micro_steps", 1), dtype=np.uint64
     )
-    if getattr(case.parameters, "coupling", "synchronous") == "waveform":
+    if getattr(case.parameters, "coupling", "synchronous") in (
+        "waveform",
+        "multirate_wr",
+    ):
         arrays["waveform_rtol"] = np.asarray(
             case.parameters.waveform_rtol, dtype=np.float64
         )
         arrays["waveform_max_iterations"] = np.asarray(
             case.parameters.waveform_max_iterations, dtype=np.uint64
+        )
+    if getattr(case.parameters, "coupling", "synchronous") == "multirate_wr":
+        arrays["ion_nodes"] = np.asarray(
+            case.parameters.ion_nodes, dtype=np.uint64
+        )
+        arrays["wr_initial"] = np.asarray(case.parameters.wr_initial)
+        arrays["wr_relaxation"] = np.asarray(
+            case.parameters.wr_relaxation, dtype=np.float64
         )
     arrays["accepted"] = np.asarray(True, dtype=np.bool_)
     arrays["schema_version"] = np.asarray(SCHEMA_VERSION, dtype=np.uint64)
@@ -1882,7 +2129,19 @@ class Run:
                     if getattr(
                         case.parameters, "coupling", "synchronous"
                     )
-                    == "waveform"
+                    in ("waveform", "multirate_wr")
+                    else {}
+                ),
+                **(
+                    {
+                        "ion_nodes": case.parameters.ion_nodes,
+                        "wr_initial": case.parameters.wr_initial,
+                        "wr_relaxation": case.parameters.wr_relaxation,
+                    }
+                    if getattr(
+                        case.parameters, "coupling", "synchronous"
+                    )
+                    == "multirate_wr"
                     else {}
                 ),
                 "time_guard": {
@@ -1974,7 +2233,10 @@ class Run:
 
     def time_coupling_evidence(self, metadata):
         """Publish accepted coupling stage-count, weight and memory evidence."""
-        self.manifest["time_coupling_evidence"] = _json_value(metadata)
+        self.case.compute.synchronize()
+        self.manifest["time_coupling_evidence"] = (
+            _accepted_metadata_json_value(metadata, self.case.compute)
+        )
         self._publish_manifest()
 
     def diagnostics(self, state, checks, totals, momentum, elapsed):
@@ -2264,31 +2526,53 @@ class Run:
                 _check_json(check) for check in getattr(error, "checks", [])
             ]
             record["stage"] = _json_value(getattr(error, "stage", None))
+            coupling_metadata = getattr(error, "coupling_metadata", None)
+            if coupling_metadata is not None:
+                record["coupling_metadata"] = _failure_json_value(
+                    coupling_metadata
+                )
+            mixed_diagnostic_work = _failure_mixed_diagnostic_work(
+                error,
+                coupling_metadata,
+            )
+            if mixed_diagnostic_work is not None:
+                record["mixed_diagnostic_work"] = mixed_diagnostic_work
             partial = getattr(error, "partial_arrays", {})
             record["partial_array_keys"] = sorted(partial)
             record["partial_array_count"] = len(partial)
+            identity_metadata = _failure_identity_metadata(partial)
+            if identity_metadata:
+                record["partial_identity_metadata"] = identity_metadata
+            arrays, omitted = _failure_numeric_arrays(partial)
+            record["partial_numeric_keys"] = sorted(arrays)
+            record["partial_numeric_count"] = len(arrays)
+            record["partial_omitted"] = omitted
+            record["partial_omitted_keys"] = [
+                item["key"] for item in omitted
+            ]
+            record["partial_omitted_count"] = len(omitted)
             if partial:
-                arrays = {
-                    key: _host_array(value) for key, value in partial.items()
-                }
-                partial_path = (
-                    self.directory
-                    / "failure"
-                    / f"{failure_class}__{uuid.uuid4().hex}.npz"
-                )
-                try:
-                    digest = atomic_publish(
-                        partial_path,
-                        lambda path: _npz_write(
-                            path, arrays, allow_nonfinite=True
-                        ),
+                if arrays:
+                    partial_path = (
+                        self.directory
+                        / "failure"
+                        / f"{failure_class}__{uuid.uuid4().hex}.npz"
                     )
-                    record["partial_file"] = partial_path.name
-                    record["partial_sha256"] = digest
-                    record["partial_published"] = True
-                except Exception as partial_error:
+                    try:
+                        digest = atomic_publish(
+                            partial_path,
+                            lambda path: _npz_write(
+                                path, arrays, allow_nonfinite=True
+                            ),
+                        )
+                        record["partial_file"] = partial_path.name
+                        record["partial_sha256"] = digest
+                        record["partial_published"] = True
+                    except Exception as partial_error:
+                        record["partial_published"] = False
+                        record["partial_write_error"] = str(partial_error)
+                else:
                     record["partial_published"] = False
-                    record["partial_write_error"] = str(partial_error)
             else:
                 record["partial_published"] = False
         if isinstance(error, PublicationError):
@@ -2587,11 +2871,22 @@ def read_restart(path, case):
         "time_coupling",
         "micro_steps",
     }
-    if getattr(case.parameters, "coupling", "synchronous") == "waveform":
+    if getattr(case.parameters, "coupling", "synchronous") in (
+        "waveform",
+        "multirate_wr",
+    ):
         allowed.update(
             {
                 "waveform_rtol",
                 "waveform_max_iterations",
+            }
+        )
+    if getattr(case.parameters, "coupling", "synchronous") == "multirate_wr":
+        allowed.update(
+            {
+                "ion_nodes",
+                "wr_initial",
+                "wr_relaxation",
             }
         )
     arrays = read_npz(path, case.limits, allowed)
@@ -2645,7 +2940,7 @@ def read_restart(path, case):
             f"checkpoint={saved_micro_steps}, "
             f"configured={configured_micro_steps}"
         )
-    if configured_coupling == "waveform":
+    if configured_coupling in ("waveform", "multirate_wr"):
         for name in ("waveform_rtol", "waveform_max_iterations"):
             if name not in arrays:
                 raise ValueError(
@@ -2668,6 +2963,36 @@ def read_restart(path, case):
                 "restart waveform_max_iterations mismatch: "
                 f"checkpoint={saved_maximum}, "
                 f"configured={case.parameters.waveform_max_iterations}"
+            )
+    if configured_coupling == "multirate_wr":
+        for name in ("ion_nodes", "wr_initial", "wr_relaxation"):
+            if name not in arrays:
+                raise ValueError(
+                    f"restart {name} metadata missing; "
+                    "multirate_wr checkpoint cannot establish scheme identity"
+                )
+        saved_nodes = _array_scalar(arrays["ion_nodes"], np.uint64)
+        saved_initial = _array_text(arrays["wr_initial"])
+        saved_relaxation = _array_scalar(
+            arrays["wr_relaxation"], np.float64
+        )
+        if saved_nodes != case.parameters.ion_nodes:
+            raise ValueError(
+                "restart ion_nodes mismatch: "
+                f"checkpoint={saved_nodes}, "
+                f"configured={case.parameters.ion_nodes}"
+            )
+        if saved_initial != case.parameters.wr_initial:
+            raise ValueError(
+                "restart wr_initial mismatch: "
+                f"checkpoint={saved_initial}, "
+                f"configured={case.parameters.wr_initial}"
+            )
+        if saved_relaxation != case.parameters.wr_relaxation:
+            raise ValueError(
+                "restart wr_relaxation mismatch: "
+                f"checkpoint={saved_relaxation}, "
+                f"configured={case.parameters.wr_relaxation}"
             )
     if (
         int(getattr(case.parameters, "electron_inertia", 0)) == 0

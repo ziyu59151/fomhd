@@ -24,6 +24,7 @@ def validate_time_controls(parameters):
         "synchronous",
         "predictor",
         "waveform",
+        "multirate_wr",
     ):
         raise Failure("Config", f"unknown time coupling: {coupling}")
     micro_steps = getattr(parameters, "micro_steps", 1)
@@ -43,7 +44,7 @@ def validate_time_controls(parameters):
             "Config",
             "synchronous coupling requires micro_steps=1",
         )
-    if coupling in ("predictor", "waveform"):
+    if coupling in ("predictor", "waveform", "multirate_wr"):
         if inertia != 0:
             raise Failure(
                 "Config",
@@ -54,7 +55,7 @@ def validate_time_controls(parameters):
                 "Config",
                 f"{coupling} coupling requires integrator='rk4'",
             )
-    if coupling == "waveform":
+    if coupling in ("waveform", "multirate_wr"):
         rtol = getattr(parameters, "waveform_rtol", 1.0e-10)
         if (
             type(rtol) not in (int, float)
@@ -74,6 +75,40 @@ def validate_time_controls(parameters):
                 "Config",
                 "waveform_max_iterations must be a positive "
                 "non-boolean integer",
+            )
+    wr_controls = (
+        getattr(parameters, "ion_nodes", None),
+        getattr(parameters, "wr_initial", None),
+        getattr(parameters, "wr_relaxation", None),
+    )
+    if coupling != "multirate_wr" and any(
+        value is not None for value in wr_controls
+    ):
+        raise Failure(
+            "Config",
+            "ion_nodes, wr_initial, and wr_relaxation require "
+            "multirate_wr coupling",
+        )
+    if coupling == "multirate_wr":
+        ion_nodes = wr_controls[0]
+        if type(ion_nodes) is not int or ion_nodes not in (3, 5):
+            raise Failure("Config", "ion_nodes must be 3 or 5")
+        initial = wr_controls[1]
+        if type(initial) is not str or initial not in ("tangent", "constant"):
+            raise Failure(
+                "Config",
+                "wr_initial must be 'tangent' or 'constant'",
+            )
+        relaxation = wr_controls[2]
+        if (
+            type(relaxation) not in (int, float)
+            or isinstance(relaxation, bool)
+            or not math.isfinite(float(relaxation))
+            or not 0.0 < float(relaxation) <= 1.0
+        ):
+            raise Failure(
+                "Config",
+                "wr_relaxation must be finite in (0, 1]",
             )
     return coupling, micro_steps
 
@@ -304,7 +339,9 @@ def _retain(
                 )
 
 
-def _pending_cumulative(cumulative, quadrature, endpoint, trial):
+def _pending_cumulative(
+    cumulative, quadrature, endpoint, trial, *, mixed_interval=None
+):
     pending = copy.deepcopy(cumulative)
     ledger_fields = (
         "electric_node",
@@ -326,30 +363,66 @@ def _pending_cumulative(cumulative, quadrature, endpoint, trial):
         "internal_perp",
         "internal_parallel",
     )
-    for _, stage, weight in quadrature:
+    if mixed_interval is None:
+        for _, stage, weight in quadrature:
+            for a in range(2):
+                for name in ledger_fields:
+                    value = (
+                        float(getattr(pending.integrals[a], name))
+                        + weight * float(getattr(stage.ledger[a], name, 0.0))
+                    )
+                    if not math.isfinite(value):
+                        raise Failure("Ledger", "nonfinite cumulative ledger")
+                    setattr(pending.integrals[a], name, value)
+                for name in boundary_fields:
+                    value = float(getattr(pending.boundary_integrals, name)[a])
+                    value += weight * float(
+                        getattr(stage.boundary, name, [0.0, 0.0])[a]
+                    )
+                    if not math.isfinite(value):
+                        raise Failure("Ledger", "nonfinite cumulative ledger")
+                    getattr(pending.boundary_integrals, name)[a] = value
+            for name in ("field_energy", "total_energy"):
+                value = float(getattr(pending.boundary_integrals, name))
+                value += weight * float(getattr(stage.boundary, name, 0.0))
+                if not math.isfinite(value):
+                    raise Failure("Ledger", "nonfinite cumulative ledger")
+                setattr(pending.boundary_integrals, name, value)
+    else:
+        from .multirate_wr_checks import _validate_interval_shape
+
+        _validate_interval_shape(mixed_interval)
+        if int(mixed_interval.trial) != int(trial):
+            raise Failure(
+                "WRTrial",
+                "mixed interval trial does not match pending transaction",
+            )
+        boundary_values = {}
         for a in range(2):
             for name in ledger_fields:
-                value = (
-                    float(getattr(pending.integrals[a], name))
-                    + weight * float(getattr(stage.ledger[a], name, 0.0))
+                value = float(getattr(pending.integrals[a], name)) + float(
+                    getattr(mixed_interval.ledger[a], name)
                 )
                 if not math.isfinite(value):
                     raise Failure("Ledger", "nonfinite cumulative ledger")
                 setattr(pending.integrals[a], name, value)
-            for name in boundary_fields:
-                value = float(getattr(pending.boundary_integrals, name)[a])
-                value += weight * float(
-                    getattr(stage.boundary, name, [0.0, 0.0])[a]
-                )
-                if not math.isfinite(value):
-                    raise Failure("Ledger", "nonfinite cumulative ledger")
-                getattr(pending.boundary_integrals, name)[a] = value
+        for name in boundary_fields:
+            pair = [
+                float(getattr(pending.boundary_integrals, name)[a])
+                + float(getattr(mixed_interval.boundary, name)[a])
+                for a in range(2)
+            ]
+            if not all(math.isfinite(value) for value in pair):
+                raise Failure("Ledger", "nonfinite cumulative ledger")
+            boundary_values[name] = pair
         for name in ("field_energy", "total_energy"):
-            value = float(getattr(pending.boundary_integrals, name))
-            value += weight * float(getattr(stage.boundary, name, 0.0))
+            value = float(getattr(pending.boundary_integrals, name)) + float(
+                getattr(mixed_interval.boundary, name)
+            )
             if not math.isfinite(value):
                 raise Failure("Ledger", "nonfinite cumulative ledger")
-            setattr(pending.boundary_integrals, name, value)
+            boundary_values[name] = value
+        pending.boundary_integrals = SimpleNamespace(**boundary_values)
     pending.accepted_intervals = int(pending.accepted_intervals) + 1
     pending.last_trial = trial
     pending.last_step = endpoint.step
@@ -669,4 +742,13 @@ def advance(committed, cumulative, context, source=None):
         from . import time_waveform
 
         return time_waveform.advance(committed, cumulative, context)
+    if coupling == "multirate_wr":
+        if source is not None:
+            raise Failure(
+                "ManufacturedSource",
+                "multirate_wr source callbacks are unsupported",
+            )
+        from . import time_multirate
+
+        return time_multirate.advance(committed, cumulative, context)
     return _advance(committed, cumulative, context, source, integrator)

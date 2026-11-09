@@ -82,12 +82,303 @@ def repeat_weights(weights: Any, count: int, backend: Any) -> Any:
     return backend.real_array(backend.xp.tile(weights, count))
 
 
+def _multirate_wr_controls(c: Context) -> tuple[int, int, int, int]:
+    micro_steps = getattr(c.p, "micro_steps", None)
+    if (
+        isinstance(micro_steps, bool)
+        or type(micro_steps) is not int
+        or micro_steps <= 0
+    ):
+        raise Failure(
+            "Config",
+            "micro_steps must be a positive non-boolean integer",
+        )
+    maximum = getattr(c.p, "waveform_max_iterations", None)
+    if isinstance(maximum, bool) or type(maximum) is not int or maximum <= 0:
+        raise Failure(
+            "Config",
+            "waveform_max_iterations must be a positive non-boolean integer",
+        )
+    ion_nodes = getattr(c.p, "ion_nodes", None)
+    if type(ion_nodes) is not int or ion_nodes not in (3, 5):
+        raise Failure("Config", "ion_nodes must be 3 or 5")
+    samples = _history_sample_count(c)
+    return micro_steps, maximum, ion_nodes, samples
+
+
+def _stage_history_entries(c: Context, samples: int) -> int:
+    """Conservative per-retained-full-stage workspace/record bound."""
+
+    modes = 2 * c.p.K + 1
+    full_state = _checked_product(
+        modes,
+        _checked_sum(11 * c.op.Nc, c.op.MB.size, "retained stage state"),
+        "retained stage state",
+    )
+    workspace = _checked_product(
+        256,
+        _checked_product(
+            samples,
+            _checked_sum(
+                _checked_sum(
+                    3 * c.op.Nc,
+                    c.op.Ne,
+                    "retained stage workspace",
+                ),
+                c.op.Nb,
+                "retained stage workspace",
+            ),
+            "retained stage workspace",
+        ),
+        "retained stage workspace",
+    )
+    cache = _checked_product(
+        modes,
+        _checked_sum(8 * c.op.Nc, c.op.Ne, "retained stage cache"),
+        "retained stage cache",
+    )
+    return _checked_sum(
+        _checked_sum(
+            2 * full_state,
+            cache,
+            "retained stage",
+        ),
+        workspace,
+        "retained stage",
+    )
+
+
+def _wall_history_per_stage(c: Context, samples: int) -> int:
+    walls = getattr(c.geometry, "walls", ())
+    wall_count = len(walls) if walls is not None else 0
+    if wall_count == 0:
+        return 0
+    matrix_entries = _checked_product(
+        16,
+        _checked_product(
+            samples,
+            _checked_product(
+                wall_count,
+                wall_count,
+                "retained wall matrix",
+            ),
+            "retained wall matrix",
+        ),
+        "retained wall matrix",
+    )
+    vector_entries = _checked_product(
+        32,
+        _checked_product(
+            samples,
+            _checked_sum(
+                wall_count,
+                3 * c.op.Nc,
+                "retained wall vector",
+            ),
+            "retained wall vector",
+        ),
+        "retained wall vector",
+    )
+    return _checked_sum(
+        matrix_entries,
+        vector_entries,
+        "retained wall stage",
+    )
+
+
+def _multirate_wr_wall_history_entries(c: Context) -> int:
+    micro_steps, maximum, ion_nodes, samples = _multirate_wr_controls(c)
+    alias_samples = _checked_sum(
+        2 * c.N,
+        1,
+        "alias sample count",
+    )
+    alias_samples = max(alias_samples, samples)
+    coarse_count = _checked_sum(
+        1,
+        _checked_product(ion_nodes, maximum, "WR coarse count"),
+        "WR coarse count",
+    )
+    fine_count = _checked_product(
+        4,
+        _checked_product(micro_steps, maximum, "WR fine count"),
+        "WR fine count",
+    )
+    alias_count = _checked_product(
+        2,
+        _checked_product(micro_steps, maximum, "WR alias count"),
+        "WR alias count",
+    )
+    non_alias_count = _checked_sum(
+        _checked_sum(coarse_count, fine_count, "WR wall count"),
+        2,
+        "WR wall count",
+    )
+    non_alias = _checked_product(
+        non_alias_count,
+        _wall_history_per_stage(c, samples),
+        "WR wall history",
+    )
+    alias = _checked_product(
+        alias_count,
+        _wall_history_per_stage(c, alias_samples),
+        "WR alias wall history",
+    )
+    return _checked_sum(non_alias, alias, "WR wall history")
+
+
+def multirate_wr_history_entries(c: Context) -> int:
+    """Conservative retained-memory bound for all WR outer sweeps."""
+
+    micro_steps, maximum, ion_nodes, samples = _multirate_wr_controls(c)
+    alias_samples = max(
+        samples,
+        _checked_sum(2 * c.N, 1, "alias sample count"),
+    )
+    modes = 2 * c.p.K + 1
+    p_entries = _checked_product(
+        modes, 5 * c.op.Nc, "WR P entries"
+    )
+    z_entries = _checked_product(
+        modes,
+        _checked_sum(2 * c.op.Nc, c.op.Nb, "WR Z entities"),
+        "WR Z entries",
+    )
+    walls = getattr(c.geometry, "walls", ())
+    wall_count = len(walls) if walls is not None else 0
+    vector_entries = _checked_product(
+        samples, 3 * c.op.Nc, "WR vector entries"
+    )
+    coarse_count = _checked_sum(
+        1,
+        _checked_product(ion_nodes, maximum, "WR coarse count"),
+        "WR coarse count",
+    )
+    fine_count = _checked_product(
+        4,
+        _checked_product(micro_steps, maximum, "WR fine count"),
+        "WR fine count",
+    )
+    alias_count = _checked_product(
+        2,
+        _checked_product(micro_steps, maximum, "WR alias count"),
+        "WR alias count",
+    )
+    stage_entries = _stage_history_entries(c, samples)
+    alias_stage_entries = _stage_history_entries(c, alias_samples)
+    full_stage_count = _checked_sum(
+        coarse_count,
+        _checked_sum(fine_count, 2, "WR full stage count"),
+        "WR full stage count",
+    )
+    history = _checked_product(
+        full_stage_count,
+        stage_entries,
+        "WR retained full stages",
+    )
+    history = _checked_sum(
+        history,
+        _checked_product(
+            alias_count,
+            alias_stage_entries,
+            "WR retained alias stages",
+        ),
+        "WR retained stages",
+    )
+    coarse_extra = _checked_sum(
+        _checked_product(
+            3, p_entries, "WR coarse A/C/F storage"
+        ),
+        _checked_sum(
+            _checked_product(
+                2, vector_entries, "WR coarse projection storage"
+            ),
+            _checked_product(
+                2, wall_count, "WR coarse multiplier storage"
+            ),
+            "WR coarse projection storage",
+        ),
+        "WR coarse record storage",
+    )
+    history = _checked_sum(
+        history,
+        _checked_product(
+            coarse_count,
+            coarse_extra,
+            "WR coarse records",
+        ),
+        "WR coarse records",
+    )
+    fine_extra = _checked_sum(
+        _checked_product(
+            2,
+            _checked_sum(p_entries, z_entries, "WR fine input/rate"),
+            "WR fine input/rate",
+        ),
+        _checked_sum(
+            _checked_product(
+                4, vector_entries, "WR EM producer storage"
+            ),
+            _checked_product(
+                2, wall_count, "WR EM multiplier storage"
+            ),
+            "WR EM producer storage",
+        ),
+        "WR fine record storage",
+    )
+    history = _checked_sum(
+        history,
+        _checked_product(
+            fine_count,
+            fine_extra,
+            "WR fine records",
+        ),
+        "WR fine records",
+    )
+    window_entries = _checked_product(
+        4,
+        _checked_product(
+            micro_steps,
+            _checked_sum(
+                _checked_sum(p_entries, p_entries, "WR window P"),
+                _checked_sum(z_entries, z_entries, "WR window Z"),
+                "WR window stages",
+            ),
+            "WR window stages",
+        ),
+        "WR window stages",
+    )
+    window_entries = _checked_sum(
+        window_entries,
+        _checked_product(
+            16,
+            _checked_product(
+                ion_nodes,
+                max(p_entries, z_entries),
+                "WR coarse window",
+            ),
+            "WR coarse window",
+        ),
+        "WR window",
+    )
+    history = _checked_sum(
+        history, window_entries, "WR window history"
+    )
+    return _checked_sum(
+        history,
+        _multirate_wr_wall_history_entries(c),
+        "WR retained history",
+    )
+
+
 def predictor_history_entries(c: Context) -> int:
     """Conservatively count one retained A1 microstep sweep and path."""
     samples = _history_sample_count(c)
     coupling = getattr(c.p, "coupling", "synchronous")
     if coupling == "synchronous":
         return 0
+    if coupling == "multirate_wr":
+        return multirate_wr_history_entries(c)
     if coupling not in ("predictor", "waveform"):
         raise Failure("Config", f"unknown time coupling: {coupling}")
     micro_steps = getattr(c.p, "micro_steps", None)
@@ -194,6 +485,8 @@ def predictor_wall_history_entries(c: Context) -> int:
     coupling = getattr(c.p, "coupling", "synchronous")
     if coupling == "synchronous":
         return 0
+    if coupling == "multirate_wr":
+        return _multirate_wr_wall_history_entries(c)
     if coupling not in ("predictor", "waveform"):
         raise Failure("Config", f"unknown time coupling: {coupling}")
     micro_steps = getattr(c.p, "micro_steps", None)
@@ -206,44 +499,9 @@ def predictor_wall_history_entries(c: Context) -> int:
             "Config",
             "micro_steps must be a positive non-boolean integer",
         )
-    walls = getattr(c.geometry, "walls", ())
-    wall_count = len(walls) if walls is not None else 0
-    if wall_count == 0:
-        return 0
-    # Each retained ion wall context stores one dense w-by-w S matrix and, on
-    # CPU, a dense LU original/factor set per phi sample. The factor 16 is a
-    # conservative complex128-entry allowance for those matrices and copies.
-    matrix_entries = _checked_product(
-        16,
-        _checked_product(
-            samples,
-            _checked_product(
-                wall_count,
-                wall_count,
-                "predictor wall matrix history",
-            ),
-            "predictor wall matrix history",
-        ),
-        "predictor wall matrix history",
-    )
-    vector_entries = _checked_product(
-        32,
-        _checked_product(
-            samples,
-            _checked_sum(
-                wall_count,
-                3 * c.op.Nc,
-                "predictor wall vector history",
-            ),
-            "predictor wall vector history",
-        ),
-        "predictor wall vector history",
-    )
-    per_stage = _checked_sum(
-        matrix_entries,
-        vector_entries,
-        "predictor wall matrix history",
-    )
+    # Each retained ion wall context stores dense matrices, factors, and
+    # sample vectors. This helper preserves the historical predictor bound.
+    per_stage = _wall_history_per_stage(c, samples)
     return _checked_product(
         _checked_product(4, micro_steps, "predictor wall history"),
         per_stage,

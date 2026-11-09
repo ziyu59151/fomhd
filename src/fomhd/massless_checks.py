@@ -1373,6 +1373,275 @@ def out_tag(out):
     return out[-1].tag if out else SimpleNamespace()
 
 
+def _electron_work_gate_records(
+    result,
+    context,
+    out,
+    tag,
+    *,
+    ledger,
+    residuals,
+):
+    """Append the existing electron work and wall-work hard gates."""
+
+    xp = _xp(context)
+    nc = context.op.Nc
+    ne = context.op.Ne
+    start = len(out)
+    pressure_tensor = xp.asarray(result.fluid[1].tensor).reshape(
+        context.N, 3, 3, nc
+    )
+    velocity_gradient = xp.asarray(result.fluid[1].gradient).reshape(
+        context.N, 3, 3, nc
+    )
+    pressure_rate_operands = (
+        xp.abs(
+            xp.asarray(result.fluid[1].pdot_perp).reshape(context.N, nc)
+        )
+        + 0.5
+        * xp.abs(
+            xp.asarray(result.fluid[1].pdot_parallel).reshape(context.N, nc)
+        )
+    )
+    pressure_force_work_operands = xp.sum(
+        xp.abs(
+            xp.conj(
+                xp.asarray(result.fluid[1].u).reshape(
+                    context.N, 3, nc
+                )
+            )
+            * xp.asarray(result.fluid[1].pressure_force).reshape(
+                context.N, 3, nc
+            )
+        ),
+        axis=1,
+    )
+    pressure_gradient_operands = xp.sum(
+        xp.abs(pressure_tensor * velocity_gradient),
+        axis=(1, 2),
+    )
+    pressure_scale = xp.abs(
+        _integrate_cells(
+            pressure_gradient_operands.reshape(-1), 1, context
+        )
+    )
+    pressure_adjoint_scale = (
+        pressure_scale
+        + xp.abs(
+            _integrate_cells(
+                pressure_rate_operands.reshape(-1), 1, context
+            )
+        )
+        + xp.abs(
+            _integrate_cells(
+                pressure_force_work_operands.reshape(-1), 1, context
+            )
+        )
+    )
+    _scaled_scalar(
+        out,
+        "electron_pressure_adjoint",
+        residuals["electron_pressure_adjoint"][0].real,
+        pressure_adjoint_scale,
+        "W",
+        tag,
+        context,
+        context.p.species[1].id,
+    )
+    _scaled_scalar(
+        out,
+        "electron_magnetic_work",
+        ledger.magnetic,
+        max(ledger.magnetic_scale, 1.0e-300),
+        "W",
+        tag,
+        context,
+        context.p.species[1].id,
+    )
+    _scaled_scalar(
+        out,
+        "pressure_pairing",
+        residuals["electron_pressure_adjoint"][0].real,
+        pressure_adjoint_scale,
+        "W",
+        tag,
+        context,
+        context.p.species[1].id,
+    )
+    electron_energy = inverse(
+        result.cache.E,
+        ne,
+        context,
+        True,
+        context.p.ref.electric,
+    )
+    electric_scale = abs(
+        _integrate_edges(
+            xp.abs(
+                context.p.species[1].charge
+                * xp.asarray(result.fluid[1].flux)
+                * xp.conj(electron_energy)
+            ).reshape(-1),
+            context,
+        )
+    )
+    pressure_electric_scale = abs(
+        _integrate_edges(
+            xp.abs(
+                context.p.species[1].charge
+                * xp.asarray(result.fluid[1].flux)
+                * xp.asarray(result.fluid[1].pressure_electric_field)
+            ).reshape(-1),
+            context,
+        )
+    )
+    _scaled_scalar(
+        out,
+        "electron_electric_pairing",
+        residuals["electron_electric_pairing"][0].real,
+        max(pressure_scale, abs(electric_scale)),
+        "W",
+        tag,
+        context,
+        context.p.species[1].id,
+    )
+    _scaled_scalar(
+        out,
+        "electric_pairing",
+        residuals["electron_electric_pairing"][0].real,
+        max(pressure_scale, abs(electric_scale)),
+        "W",
+        tag,
+        context,
+        context.p.species[1].id,
+    )
+    _scaled_scalar(
+        out,
+        "electron_pressure_only_pairing",
+        residuals["electron_pressure_only_pairing"][0].real,
+        max(pressure_scale, abs(pressure_electric_scale)),
+        "W",
+        tag,
+        context,
+        context.p.species[1].id,
+    )
+    pressure_truncation_record = diagnostics._record(
+        name="electron_pressure_truncation",
+        tag=tag,
+        unit="W",
+        population=context.p.species[1].id,
+    )
+    pressure_truncation_record.raw = float(
+        residuals["electron_pressure_truncation"][0].real
+    )
+    pressure_truncation_record.reference = pressure_scale
+    pressure_truncation_record.threshold = (
+        4096.0 * sys.float_info.epsilon * pressure_scale
+    )
+    pressure_truncation_record.available = True
+    pressure_truncation_record.passed = (
+        abs(pressure_truncation_record.raw)
+        <= pressure_truncation_record.threshold
+    )
+    pressure_truncation_record.hard = False
+    pressure_truncation_record.reason = (
+        "full padded pressure source versus retained Fourier RHS"
+    )
+    out.append(pressure_truncation_record)
+    for name in ("ion", "electron", "current"):
+        sample_scale = _bound_real(
+            residuals[f"wall_field_reaction_scale_{name}"][0],
+            f"{name} absolute scale",
+        )
+        _scaled_scalar(
+            out,
+            f"wall_field_reaction_work_{name}",
+            residuals[f"wall_field_reaction_work_{name}"][0].real,
+            sample_scale,
+            "W",
+            tag,
+            context,
+        )
+        record = out[-1]
+        record.absolute_final_terms = record.reference
+        record.modal_work = record.raw
+        record.sample_work = float(
+            residuals[f"wall_field_reaction_sample_work_{name}"][0].real
+        )
+        record.transform_difference = float(
+            residuals[
+                f"wall_field_reaction_transform_difference_{name}"
+            ][0].real
+        )
+        record.upstream_bound = _bound_real(
+            residuals[f"wall_field_reaction_upstream_bound_{name}"][0],
+            f"{name} upstream bound",
+        )
+        record.compatibility_bound = _bound_real(
+            residuals[
+                f"wall_field_reaction_compatibility_bound_{name}"
+            ][0],
+            f"{name} compatibility bound",
+        )
+        record.arithmetic_bound = _bound_real(
+            residuals[f"wall_field_reaction_arithmetic_bound_{name}"][0],
+            f"{name} arithmetic bound",
+        )
+        record.threshold = max(
+            record.configured_threshold, record.arithmetic_bound
+        )
+        record.passed = record.available and (
+            abs(record.raw) <= record.threshold
+        )
+        record.reason = (
+            "retained Parseval work; arithmetic_bound includes direct "
+            "producer, checked-input compatibility, and bilinear-sum error"
+        )
+    wall_work_scale = _bound_real(
+        residuals["wall_field_reaction_scale"][0],
+        "species absolute scale",
+    )
+    _scaled_scalar(
+        out,
+        "wall_field_reaction_work",
+        residuals["wall_field_reaction_work"][0].real,
+        wall_work_scale,
+        "W",
+        tag,
+        context,
+    )
+    record = out[-1]
+    record.absolute_final_terms = record.reference
+    record.modal_work = record.raw
+    record.sample_work = float(
+        residuals["wall_field_reaction_sample_work"][0].real
+    )
+    record.transform_difference = float(
+        residuals["wall_field_reaction_transform_difference"][0].real
+    )
+    record.upstream_bound = _bound_real(
+        residuals["wall_field_reaction_upstream_bound"][0],
+        "species upstream bound",
+    )
+    record.compatibility_bound = _bound_real(
+        residuals["wall_field_reaction_compatibility_bound"][0],
+        "species compatibility bound",
+    )
+    record.arithmetic_bound = _bound_real(
+        residuals["wall_field_reaction_arithmetic_bound"][0],
+        "species arithmetic bound",
+    )
+    record.threshold = max(
+        record.configured_threshold, record.arithmetic_bound
+    )
+    record.passed = record.available and abs(record.raw) <= record.threshold
+    record.reason = (
+        "aggregate retained Parseval work with component and "
+        "species-addition bounds"
+    )
+    return len(out) - start
+
+
 def check_stage(state, result, context):
     """Hard-gate algebraic branch identities and report convergence defects."""
     xp = _xp(context)
@@ -1559,271 +1828,13 @@ def check_stage(state, result, context):
             "versus derived theta"
         )
 
-    pressure_tensor = xp.asarray(result.fluid[1].tensor).reshape(
-        context.N, 3, 3, nc
-    )
-    velocity_gradient = xp.asarray(result.fluid[1].gradient).reshape(
-        context.N, 3, 3, nc
-    )
-    # The CGL pressure-rate terms may cancel before the retained pressure-work
-    # sum is formed. Include their pre-cancellation operands so 4096*eps scales
-    # the arithmetic that actually produced the residual, not only P:grad(u).
-    pressure_rate_operands = (
-        xp.abs(
-            xp.asarray(result.fluid[1].pdot_perp).reshape(context.N, nc)
-        )
-        + 0.5
-        * xp.abs(
-            xp.asarray(result.fluid[1].pdot_parallel).reshape(context.N, nc)
-        )
-    )
-    pressure_force_work_operands = xp.sum(
-        xp.abs(
-            xp.conj(
-                xp.asarray(result.fluid[1].u).reshape(
-                    context.N, 3, nc
-                )
-            )
-            * xp.asarray(result.fluid[1].pressure_force).reshape(
-                context.N, 3, nc
-            )
-        ),
-        axis=1,
-    )
-    pressure_gradient_operands = xp.sum(
-        xp.abs(pressure_tensor * velocity_gradient),
-        axis=(1, 2),
-    )
-    pressure_scale = xp.abs(
-        _integrate_cells(
-            pressure_gradient_operands.reshape(-1), 1, context
-        )
-    )
-    pressure_adjoint_scale = (
-        pressure_scale
-        + xp.abs(
-            _integrate_cells(
-                pressure_rate_operands.reshape(-1), 1, context
-            )
-        )
-        + xp.abs(
-            _integrate_cells(
-                pressure_force_work_operands.reshape(-1), 1, context
-            )
-        )
-    )
-    _scaled_scalar(
+    _electron_work_gate_records(
+        result,
+        context,
         out,
-        "electron_pressure_adjoint",
-        result.residuals["electron_pressure_adjoint"][0].real,
-        pressure_adjoint_scale,
-        "W",
         tag,
-        context,
-        context.p.species[1].id,
-    )
-    _scaled_scalar(
-        out,
-        "electron_magnetic_work",
-        result.ledger[1].magnetic,
-        max(result.ledger[1].magnetic_scale, 1.0e-300),
-        "W",
-        tag,
-        context,
-        context.p.species[1].id,
-    )
-    _scaled_scalar(
-        out,
-        "pressure_pairing",
-        result.residuals["electron_pressure_adjoint"][0].real,
-        pressure_adjoint_scale,
-        "W",
-        tag,
-        context,
-        context.p.species[1].id,
-    )
-    electron_energy = inverse(
-        result.cache.E,
-        ne,
-        context,
-        True,
-        context.p.ref.electric,
-    )
-    electric_scale = abs(
-        _integrate_edges(
-            xp.abs(
-                context.p.species[1].charge
-                * xp.asarray(result.fluid[1].flux)
-                * xp.conj(electron_energy)
-            ).reshape(-1),
-            context,
-        )
-    )
-    pressure_electric_scale = abs(
-        _integrate_edges(
-            xp.abs(
-                context.p.species[1].charge
-                * xp.asarray(result.fluid[1].flux)
-                * xp.asarray(result.fluid[1].pressure_electric_field)
-            ).reshape(-1),
-            context,
-        )
-    )
-    _scaled_scalar(
-        out,
-        "electron_electric_pairing",
-        result.residuals["electron_electric_pairing"][0].real,
-        max(pressure_scale, abs(electric_scale)),
-        "W",
-        tag,
-        context,
-        context.p.species[1].id,
-    )
-    _scaled_scalar(
-        out,
-        "electric_pairing",
-        result.residuals["electron_electric_pairing"][0].real,
-        max(pressure_scale, abs(electric_scale)),
-        "W",
-        tag,
-        context,
-        context.p.species[1].id,
-    )
-    _scaled_scalar(
-        out,
-        "electron_pressure_only_pairing",
-        result.residuals["electron_pressure_only_pairing"][0].real,
-        max(pressure_scale, abs(pressure_electric_scale)),
-        "W",
-        tag,
-        context,
-        context.p.species[1].id,
-    )
-    pressure_truncation_record = diagnostics._record(
-        name="electron_pressure_truncation",
-        tag=tag,
-        unit="W",
-        population=context.p.species[1].id,
-    )
-    pressure_truncation_record.raw = float(
-        result.residuals["electron_pressure_truncation"][0].real
-    )
-    pressure_truncation_record.reference = pressure_scale
-    pressure_truncation_record.threshold = (
-        4096.0 * sys.float_info.epsilon * pressure_scale
-    )
-    pressure_truncation_record.available = True
-    pressure_truncation_record.passed = (
-        abs(pressure_truncation_record.raw)
-        <= pressure_truncation_record.threshold
-    )
-    pressure_truncation_record.hard = False
-    pressure_truncation_record.reason = (
-        "full padded pressure source versus retained Fourier RHS"
-    )
-    out.append(pressure_truncation_record)
-    for name in ("ion", "electron", "current"):
-        sample_scale = _bound_real(
-            result.residuals[f"wall_field_reaction_scale_{name}"][0],
-            f"{name} absolute scale",
-        )
-        _scaled_scalar(
-            out,
-            f"wall_field_reaction_work_{name}",
-            result.residuals[
-                f"wall_field_reaction_work_{name}"
-            ][0].real,
-            sample_scale,
-            "W",
-            tag,
-            context,
-        )
-        record = out[-1]
-        record.absolute_final_terms = record.reference
-        record.modal_work = record.raw
-        record.sample_work = float(
-            result.residuals[
-                f"wall_field_reaction_sample_work_{name}"
-            ][0].real
-        )
-        record.transform_difference = float(
-            result.residuals[
-                f"wall_field_reaction_transform_difference_{name}"
-            ][0].real
-        )
-        record.upstream_bound = _bound_real(
-            result.residuals[
-                f"wall_field_reaction_upstream_bound_{name}"
-            ][0],
-            f"{name} upstream bound",
-        )
-        record.compatibility_bound = _bound_real(
-            result.residuals[
-                f"wall_field_reaction_compatibility_bound_{name}"
-            ][0],
-            f"{name} compatibility bound",
-        )
-        record.arithmetic_bound = _bound_real(
-            result.residuals[
-                f"wall_field_reaction_arithmetic_bound_{name}"
-            ][0],
-            f"{name} arithmetic bound",
-        )
-        record.threshold = max(
-            record.configured_threshold, record.arithmetic_bound
-        )
-        record.passed = record.available and (
-            abs(record.raw) <= record.threshold
-        )
-        record.reason = (
-            "retained Parseval work; arithmetic_bound includes direct "
-            "producer, checked-input compatibility, and bilinear-sum error"
-        )
-    wall_work_scale = _bound_real(
-        result.residuals["wall_field_reaction_scale"][0],
-        "species absolute scale",
-    )
-    _scaled_scalar(
-        out,
-        "wall_field_reaction_work",
-        result.residuals["wall_field_reaction_work"][0].real,
-        wall_work_scale,
-        "W",
-        tag,
-        context,
-    )
-    record = out[-1]
-    record.absolute_final_terms = record.reference
-    record.modal_work = record.raw
-    record.sample_work = float(
-        result.residuals["wall_field_reaction_sample_work"][0].real
-    )
-    record.transform_difference = float(
-        result.residuals[
-            "wall_field_reaction_transform_difference"
-        ][0].real
-    )
-    record.upstream_bound = _bound_real(
-        result.residuals["wall_field_reaction_upstream_bound"][0],
-        "species upstream bound",
-    )
-    record.compatibility_bound = _bound_real(
-        result.residuals[
-            "wall_field_reaction_compatibility_bound"
-        ][0],
-        "species compatibility bound",
-    )
-    record.arithmetic_bound = _bound_real(
-        result.residuals["wall_field_reaction_arithmetic_bound"][0],
-        "species arithmetic bound",
-    )
-    record.threshold = max(
-        record.configured_threshold, record.arithmetic_bound
-    )
-    record.passed = record.available and abs(record.raw) <= record.threshold
-    record.reason = (
-        "aggregate retained Parseval work with component and "
-        "species-addition bounds"
+        ledger=result.ledger[1],
+        residuals=result.residuals,
     )
     _truth(
         out,
@@ -2011,6 +2022,106 @@ def _sum_ledger(quadrature, species, name):
     )
 
 
+def _fine_electron_work_residuals(ledger, metrics, context):
+    """Create the existing electron-work residual fields for a fine view."""
+
+    xp = _xp(context)
+    residuals = {
+        "electron_pressure_adjoint": xp.asarray(
+            ledger.pressure_kinetic + ledger.pressure_internal_full
+        ).reshape(1),
+        "electron_electric_pairing": xp.asarray(
+            ledger.pressure_internal - ledger.electric_edge
+        ).reshape(1),
+        "electron_pressure_only_pairing": xp.asarray(
+            ledger.pressure_kinetic + ledger.pressure_electric_edge
+        ).reshape(1),
+        "electron_pressure_truncation": xp.asarray(
+            ledger.pressure_truncation
+        ).reshape(1),
+    }
+    for name in ("ion", "electron", "current"):
+        metric = metrics[name]
+        residuals[f"wall_field_reaction_scale_{name}"] = xp.asarray(
+            metric.absolute_scale
+        ).reshape(1)
+        residuals[f"wall_field_reaction_sample_work_{name}"] = xp.asarray(
+            metric.sample_work
+        ).reshape(1)
+        residuals[f"wall_field_reaction_transform_difference_{name}"] = (
+            xp.asarray(metric.transform_difference).reshape(1)
+        )
+        residuals[f"wall_field_reaction_upstream_bound_{name}"] = (
+            xp.asarray(metric.upstream_bound).reshape(1)
+        )
+        residuals[f"wall_field_reaction_compatibility_bound_{name}"] = (
+            xp.asarray(metric.compatibility_bound).reshape(1)
+        )
+        residuals[f"wall_field_reaction_arithmetic_bound_{name}"] = (
+            xp.asarray(metric.arithmetic_bound).reshape(1)
+        )
+        residuals[f"wall_field_reaction_work_{name}"] = xp.asarray(
+            metric.work
+        ).reshape(1)
+    species = metrics["species"]
+    residuals["wall_field_reaction_work"] = xp.asarray(species.work).reshape(1)
+    residuals["wall_field_reaction_scale"] = xp.asarray(
+        species.absolute_scale
+    ).reshape(1)
+    residuals["wall_field_reaction_sample_work"] = xp.asarray(
+        species.sample_work
+    ).reshape(1)
+    residuals["wall_field_reaction_transform_difference"] = xp.asarray(
+        species.transform_difference
+    ).reshape(1)
+    residuals["wall_field_reaction_upstream_bound"] = xp.asarray(
+        species.upstream_bound
+    ).reshape(1)
+    residuals["wall_field_reaction_compatibility_bound"] = xp.asarray(
+        species.compatibility_bound
+    ).reshape(1)
+    residuals["wall_field_reaction_arithmetic_bound"] = xp.asarray(
+        species.arithmetic_bound
+    ).reshape(1)
+    return residuals
+
+
+def _fine_electron_work_checks(
+    result,
+    context,
+    out,
+    tag,
+    diagnostic_work,
+):
+    """Run the shared work gates from actual fine-only producer evidence."""
+
+    diagnostic_work.electron_ledger_calls += 1
+    diagnostic_work.electron_pressure_only_projections += 1
+    diagnostic_work.electron_ledger_inverse_transforms += 4
+    ledger = _electron_ledger(result, context)
+
+    diagnostic_work.wall_work_metric_calls += 1
+    diagnostic_work.wall_work_inverse_transforms += 2
+    diagnostic_work.wall_work_mode_envelope_sets += _modes(context)
+    metrics = _wall_work_metrics(result.state, result, context)
+
+    residuals = _fine_electron_work_residuals(ledger, metrics, context)
+    diagnostic_work.electron_work_gate_calls += 1
+    diagnostic_work.electron_gate_transforms += 1
+    start = len(out)
+    try:
+        _electron_work_gate_records(
+            result,
+            context,
+            out,
+            tag,
+            ledger=ledger,
+            residuals=residuals,
+        )
+    finally:
+        diagnostic_work.work_gate_records += len(out) - start
+
+
 def check_step(
     left,
     base,
@@ -2023,6 +2134,7 @@ def check_step(
     prescribed_source=None,
     *,
     quadrature=None,
+    mixed_interval=None,
 ):
     """Check one accepted explicit interval without finite-mass field logic."""
     if prescribed_source is not None:
@@ -2033,6 +2145,34 @@ def check_step(
     xp = _xp(context)
     quadrature = _quadrature(context, quadrature, midpoint_state, midpoint)
     dt = float(context.p.dt)
+    if mixed_interval is not None:
+        from .multirate_wr_checks import (
+            _source_key,
+            _validate_interval_shape,
+            validate_mixed_identity,
+            validate_scheduler_identity,
+        )
+
+        _validate_interval_shape(mixed_interval)
+        validate_mixed_identity(mixed_interval)
+        validate_scheduler_identity(
+            mixed_interval,
+            context,
+            left,
+            right,
+        )
+        if mixed_interval.trial != int(end.tag.trial):
+            raise Failure("WRTrial", "mixed interval endpoint trial mismatch")
+        if len(quadrature) != len(mixed_interval.fine_sources):
+            raise Failure("WRSources", "mixed fine quadrature count mismatch")
+        for (_, stage, weight), (source, frozen_weight) in zip(
+            quadrature, mixed_interval.fine_sources
+        ):
+            if (
+                _source_key(stage.source_id, stage.tag) != source
+                or float(weight) != frozen_weight
+            ):
+                raise Failure("WRSources", "mixed fine source identity mismatch")
     if abs(sum(weight for _, _, weight in quadrature) - dt) > (
         64.0 * sys.float_info.epsilon * max(abs(dt), 1.0e-300)
     ):
@@ -2065,29 +2205,54 @@ def check_step(
         accepted=False,
         applicability=_applicability(),
     )
+    if mixed_interval is not None:
+        interval.mixed_interval = mixed_interval
+        interval.mixed_attribution = {
+            "delta_D": (
+                mixed_interval.density_work_coarse
+                - mixed_interval.density_work_fine
+            ),
+            "density_quadrature_defect": (
+                mixed_interval.density_work_coarse
+                - mixed_interval.density_work_fine
+            ),
+            "density_work_coarse": mixed_interval.density_work_coarse,
+            "density_work_fine": mixed_interval.density_work_fine,
+            "kinetic_path": mixed_interval.kinetic_path,
+        }
     charge_change = xp.zeros(_modes(context) * nc, dtype=xp.complex128)
-    boundary_number = [0.0, 0.0]
-    boundary_kinetic = [0.0, 0.0]
-    boundary_internal_perp = [0.0, 0.0]
-    boundary_internal_parallel = [0.0, 0.0]
-    boundary_total_energy = 0.0
-    boundary_field_energy = 0.0
-    for _, stage, weight in quadrature:
-        for species in range(2):
-            boundary_number[species] += (
-                weight * stage.boundary.number[species]
-            )
-            boundary_kinetic[species] += (
-                weight * stage.boundary.kinetic[species]
-            )
-            boundary_internal_perp[species] += (
-                weight * stage.boundary.internal_perp[species]
-            )
-            boundary_internal_parallel[species] += (
-                weight * stage.boundary.internal_parallel[species]
-            )
-        boundary_total_energy += weight * stage.boundary.total_energy
-        boundary_field_energy += weight * stage.boundary.field_energy
+    if mixed_interval is None:
+        boundary_number = [0.0, 0.0]
+        boundary_kinetic = [0.0, 0.0]
+        boundary_internal_perp = [0.0, 0.0]
+        boundary_internal_parallel = [0.0, 0.0]
+        boundary_total_energy = 0.0
+        boundary_field_energy = 0.0
+        for _, stage, weight in quadrature:
+            for species in range(2):
+                boundary_number[species] += (
+                    weight * stage.boundary.number[species]
+                )
+                boundary_kinetic[species] += (
+                    weight * stage.boundary.kinetic[species]
+                )
+                boundary_internal_perp[species] += (
+                    weight * stage.boundary.internal_perp[species]
+                )
+                boundary_internal_parallel[species] += (
+                    weight * stage.boundary.internal_parallel[species]
+                )
+            boundary_total_energy += weight * stage.boundary.total_energy
+            boundary_field_energy += weight * stage.boundary.field_energy
+    else:
+        boundary_number = list(mixed_interval.boundary.number)
+        boundary_kinetic = list(mixed_interval.boundary.kinetic)
+        boundary_internal_perp = list(mixed_interval.boundary.internal_perp)
+        boundary_internal_parallel = list(
+            mixed_interval.boundary.internal_parallel
+        )
+        boundary_total_energy = mixed_interval.boundary.total_energy
+        boundary_field_energy = mixed_interval.boundary.field_energy
 
     def scalar(name, value, unit, population=""):
         diagnostics.scalar_check(
@@ -2127,24 +2292,28 @@ def check_step(
             "1",
             context.p.species[species].id,
         )
-        ledger = SimpleNamespace(
-            **{
-                name: _sum_ledger(quadrature, species, name)
-                for name in (
-                    "electric_node",
-                    "electric_edge",
-                    "pressure_kinetic",
-                    "pressure_internal",
-                    "magnetic",
-                    "wall",
-                    "convection",
-                    "perp_rate",
-                    "parallel_rate",
-                    "spectral_kinetic",
-                    "spectral_perp",
-                    "spectral_parallel",
-                )
-            }
+        ledger = (
+            mixed_interval.ledger[species]
+            if mixed_interval is not None
+            else SimpleNamespace(
+                **{
+                    name: _sum_ledger(quadrature, species, name)
+                    for name in (
+                        "electric_node",
+                        "electric_edge",
+                        "pressure_kinetic",
+                        "pressure_internal",
+                        "magnetic",
+                        "wall",
+                        "convection",
+                        "perp_rate",
+                        "parallel_rate",
+                        "spectral_kinetic",
+                        "spectral_perp",
+                        "spectral_parallel",
+                    )
+                }
+            )
         )
         if species == 0:
             scalar(
@@ -2263,8 +2432,16 @@ def check_step(
     )
     field_exchange = (
         pb
-        + _sum_ledger(quadrature, 0, "electric_edge")
-        + _sum_ledger(quadrature, 1, "electric_edge")
+        + (
+            mixed_interval.ledger[0].electric_edge
+            if mixed_interval is not None
+            else _sum_ledger(quadrature, 0, "electric_edge")
+        )
+        + (
+            mixed_interval.ledger[1].electric_edge
+            if mixed_interval is not None
+            else _sum_ledger(quadrature, 1, "electric_edge")
+        )
         + boundary_field_energy
     ) / dt
     scalar("field_exchange_interval", field_exchange, "W")
@@ -2286,9 +2463,13 @@ def check_step(
     )
     scalar("total_charge_balance_interval", total_charge, "C")
     for axis, d in zip(("x", "y", "z"), range(3)):
-        integrated_traction = sum(
-            weight * stage.momentum.outward[d]
-            for _, stage, weight in quadrature
+        integrated_traction = (
+            mixed_interval.outward[d]
+            if mixed_interval is not None
+            else sum(
+                weight * stage.momentum.outward[d]
+                for _, stage, weight in quadrature
+            )
         )
         defect = (
             end.momentum.value[d]
@@ -2308,9 +2489,13 @@ def check_step(
             ),
             "endpoint momentum change plus integrated wall traction",
         )
-    angular_traction = sum(
-        weight * stage.momentum.outward_torque
-        for _, stage, weight in quadrature
+    angular_traction = (
+        mixed_interval.outward_torque
+        if mixed_interval is not None
+        else sum(
+            weight * stage.momentum.outward_torque
+            for _, stage, weight in quadrature
+        )
     )
     _convergence_scalar(
         out,
@@ -2350,14 +2535,73 @@ def check_step(
         interval_tag,
         context,
     )
-    for _, stage, _ in quadrature:
-        diagnostics.gate(stage.checks)
+    diagnostic_work = None
+    if mixed_interval is not None:
+        from .multirate_wr_checks import MixedDiagnosticWork
+
+        _truth(
+            out,
+            "mixed_interval_source_identity",
+            all(
+                _source_key(stage.source_id, stage.tag) == source
+                and float(weight) == frozen_weight
+                and stage.complete_stage is False
+                for (_, stage, weight), (source, frozen_weight) in zip(
+                    quadrature, mixed_interval.fine_sources
+                )
+            )
+            and mixed_interval.node_version >= 0
+            and mixed_interval.trial > 0,
+            interval_tag,
+        )
+        _convergence_scalar(
+            out,
+            "mixed_density_quadrature_defect",
+            mixed_interval.density_work_coarse
+            - mixed_interval.density_work_fine,
+            "J",
+            interval_tag,
+            max(
+                abs(mixed_interval.density_work_coarse),
+                abs(mixed_interval.density_work_fine),
+                1.0e-300,
+            ),
+            "fine density-chain attribution; not subtracted from a physical gate",
+        )
+        diagnostic_work = MixedDiagnosticWork()
+        try:
+            for _, stage, _ in quadrature:
+                _fine_electron_work_checks(
+                    stage,
+                    context,
+                    out,
+                    stage.tag,
+                    diagnostic_work,
+                )
+            for _, stage, _ in quadrature:
+                diagnostics.gate(stage.checks)
+        except Failure as failure:
+            failure.mixed_diagnostic_work = diagnostic_work
+            failure.mixed_interval = mixed_interval
+            raise
+    else:
+        for _, stage, _ in quadrature:
+            diagnostics.gate(stage.checks)
     result = SimpleNamespace(
         checks=out,
         totals=end.totals,
         momentum=end.momentum,
         interval=interval,
         applicability=_applicability(),
+        diagnostic_work=diagnostic_work,
     )
-    diagnostics.gate(out)
+    if diagnostic_work is not None:
+        interval.mixed_diagnostic_work = diagnostic_work
+    try:
+        diagnostics.gate(out)
+    except Failure as failure:
+        if diagnostic_work is not None:
+            failure.mixed_diagnostic_work = diagnostic_work
+            failure.mixed_interval = mixed_interval
+        raise
     return result

@@ -2,15 +2,39 @@
 
 This experimental branch starts at `be5f1c07913409bfd377f22e9ea9d69ac614b158`.
 It retains one Python/Warp solver, synchronous A0 and complete-stage T1.
-D071 authorizes complete real-RZ scaling experiments alongside independent
-reduced-ion multirate research. Fixed-ion T2-E remains a research module and
-is not a prerequisite for these complete simulations.
+D072 selects few-ion-node multirate waveform relaxation directly on this
+experiment branch. T2-E, C1/C2 and unimplemented T tiers remain research
+controls and are not prerequisites. Prior complete real-RZ experiments and
+their exact acceptance scopes remain evidence; a new method needs separate
+complete interval, rollback, restart, CPU/GPU and scientific verification.
 
 The physical defaults are massless quasineutral CGL-B electrons, SI units,
 FP64/complex128 and RK4. A3 adds CCS-coupled FK fast ions to bulk-fluid ions;
 scoped stable A3 acceptance is the 1.0 milestone, followed by all-ion FK in A4.
 Version 0.5.0 identifies a numerical experiment platform with explicit evidence
 bounds, not a completed physical-validation program.
+
+## Current WR experiment entries
+
+`tools/warp_wr_periodic.py` and `tools/warp_wr_rz.py` exercise the complete
+`multirate_wr` transaction. They retain exact accepted endpoints, all cumulative
+fields, source/input/scheme hashes, attempted work, failure arrays and strict
+checkpoint continuation. The RZ entry uses the existing EAST mapping, matched
+control/perturbed runs, K=1 and Nphi=5. Its explicit `--waveform-rtol` is part
+of checkpoint identity; tightening it is a separately labeled experiment.
+
+One H contains M field steps and three or five direct ion nodes. The selected
+discrete equations differ from T1. Raw hard checks keep their original
+thresholds; observed budgets retain their original observations. A converged
+window may still fail a budget. A capacity-plan rejection is not a measured
+out-of-memory event or a stability conclusion. The current conservative WR
+plan reserves retained records for the configured maximum outer sweeps.
+
+Every spatial experiment must include direct active-cell RZ component maps
+and perturbed-minus-control maps at matched times. Use the A0 renderer and
+English figure style, show units and wall mask, and avoid interpolation over
+inactive cells. Retained historical cross sections are rebuilt by
+`tools/plots/build_050_sections.py`; they do not establish new WR accuracy.
 
 ## Shared implementation scope
 

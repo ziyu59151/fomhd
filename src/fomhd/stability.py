@@ -187,12 +187,12 @@ def assess_predictor_runtime(estimate: dict, context, *, step: int) -> dict:
     micro_steps = getattr(p, "micro_steps", None)
     coupling = getattr(p, "coupling", None)
     if (
-        coupling not in ("predictor", "waveform")
+        coupling not in ("predictor", "waveform", "multirate_wr")
         or getattr(p, "electron_inertia", None) != 0
         or getattr(p, "integrator", None) != "rk4"
     ):
         raise ValueError(
-            "microstep guard requires coupling=predictor|waveform, "
+            "microstep guard requires coupling=predictor|waveform|multirate_wr, "
             "massless electrons, and rk4"
         )
     if (

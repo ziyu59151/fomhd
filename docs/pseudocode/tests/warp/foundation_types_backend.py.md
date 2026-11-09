@@ -56,4 +56,7 @@ Historical finite-electron expectations explicitly request electron_inertia=1;
 the production omitted-model default is massless electron_inertia=0 (D062).
 
 A1 T1 appends waveform_rtol=1e-10 and waveform_max_iterations=12 to the
-Parameters tail; verify the unchanged preceding field order and new defaults.
+Parameters tail. A1 multirate WR then appends the backward-compatible optional
+fields `ion_nodes=None`, `wr_initial=None`, and `wr_relaxation=None`. Check the
+complete final 13-field tail while preserving every preceding field and
+default.

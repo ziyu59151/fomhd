@@ -240,3 +240,72 @@ The result is accepted only by the existing time transaction after all hard
 gates pass. Diagnostics do not mutate the trial state, cumulative ledger, or
 committed state. Applicability metadata is attached to stage totals, ledgers,
 boundary records, interval records, and the cumulative ledger.
+
+## A1-PY-MASSLESS-CHECK-04: Mixed WR interval override
+
+```text
+check_step(...,*,quadrature=None,mixed_interval=None):
+  if mixed_interval is None:
+    execute the existing A0 path without numeric or identity changes
+  else:
+    validate the immutable MixedInterval left/right/context identities
+    use actual fine FieldFrame views for continuity, current, wall flux,
+      CT/B quadrature, checks and electron work gates
+    replace only:
+      the 12 per-species ledger sums
+      the six boundary-integral fields
+      integrated outward traction and angular traction
+      projection-reaction evidence
+    use the same mixed ledger electric edges in field exchange
+    keep every raw kinetic/internal/energy residual and configured threshold
+    never subtract density_quadrature_defect or kinetic_path from a physical
+      gate; retain them as explicit interval attribution only
+```
+
+The boundary and traction reducer reuses actual wall traces. It separates the
+coarse transport and fine electromagnetic traction as declared by the
+appendix, but does not turn the fine field record into a complete ion stage.
+
+### Shared fine electron-work gates
+
+```text
+_electron_work_gate_records(result,ctx,out,tag,ledger,residuals):
+  pressure_scale=integral(abs(Pe:grad(ue)))
+  pressure_adjoint_scale=pressure_scale
+    +integral(abs(pdot_perp)+0.5abs(pdot_parallel))
+    +integral(abs(conj(ue)ge))
+  append:
+    electron_pressure_adjoint
+    electron_magnetic_work
+    pressure_pairing
+    electron_electric_pairing
+    electric_pairing
+    electron_pressure_only_pairing
+    electron_pressure_truncation (soft)
+    wall_field_reaction_work_ion
+    wall_field_reaction_work_electron
+    wall_field_reaction_work_current
+    wall_field_reaction_work
+  preserve original hard flags, configured budgets, producer arithmetic
+  bounds, sample/modal evidence and aggregate-species allowance
+```
+
+`check_stage` calls this helper with its existing electron ledger and residual
+dictionary. The old path does not perform another wall-work pass.
+
+For an actual fine field view:
+
+```text
+_fine_electron_work_checks(view,ctx,out,tag,diagnostic_work):
+  ledger=_electron_ledger(view,ctx)
+  metrics=_wall_work_metrics(view.state,view,ctx)
+  residuals=derive the existing electron pressure/pairing fields plus
+    wall work/sample/transform/upstream/compatibility/arithmetic fields
+  _electron_work_gate_records(...)
+  count ledger calls, pressure-only projection, inverse transforms, wall
+    metrics, mode-envelope sets, gate calls and emitted records
+```
+
+No complete fine ion RHS, gradient, transport, boundary, or momentum record is
+constructed. If the mixed interval is rejected after these checks, the failure
+retains the actual diagnostic-work counts.

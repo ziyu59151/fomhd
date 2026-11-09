@@ -116,12 +116,23 @@ advance(committed,cumulative,context,source=None):
     reject source is not None before any mutation or model evaluation
     locally import time_waveform.advance and run the complete ion-stage-path
       fixed-point transaction
+  elif coupling == "multirate_wr":
+    require massless electrons, RK4, exactly M field microsteps, s in {3,5},
+      positive WR tolerance and iteration cap, tangent/constant initializer,
+      and relaxation in (0,1]
+    reject source callbacks before base evaluation or trial allocation
+    locally import time_multirate.advance and run one complete accepted macro
   else: reject unknown coupling
 ```
 
 Validation happens before `_check_clock`, `_fresh`, stage evaluation, or source
 invocation. Invalid direct calls do not mutate accepted state, cumulative
 ledgers, or scheduler counters.
+
+The multirate transaction reuses `waveform_rtol` and
+`waveform_max_iterations` semantics. Its explicit stage identities retain the
+accepted-left clock for all coarse/fine callbacks and use standard `endpoint`
+identity at `n+1` for the committed state/cache.
 
 ## A1-PY-TIME-02 - A0 evidence identity
 

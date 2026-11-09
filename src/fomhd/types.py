@@ -79,6 +79,9 @@ class Parameters:
     micro_steps: int = 1
     waveform_rtol: float = 1.0e-10
     waveform_max_iterations: int = 12
+    ion_nodes: int | None = None
+    wr_initial: str | None = None
+    wr_relaxation: float | None = None
 
 
 @dataclass

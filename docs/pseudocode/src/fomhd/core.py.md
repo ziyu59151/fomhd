@@ -181,6 +181,9 @@ history_sample_count(c):
 
 predictor_history_entries(c):
   if coupling == synchronous: return 0
+  if coupling == multirate_wr:
+    require positive non-boolean M/max_iterations and s in {3,5}
+    use the separate conservative WR branch below
   require coupling in {predictor,waveform}
   require micro_steps is positive non-boolean integer
   samples = history_sample_count(c)
@@ -240,3 +243,31 @@ stage owns its own density-scaled matrices and factors.
 Internal ion endpoint q_j storage aliases the corresponding reconstructed r1
 stage; it is not an additional M+1-array history. Only the old/new final macro
 endpoints are extra arrays in the memory plan.
+
+## A1-PY-CORE-03 - Conservative multirate-WR retained history
+
+```text
+retained_full_stage =
+  2*state + cache + 256*samples*(3*Nc+Ne+Nb)
+
+coarse_count = 1+s*max_iterations
+fine_count = 4*M*max_iterations
+alias_count = 2*M*max_iterations
+fixed_full_count = 2  # full base and accepted endpoint
+
+history =
+  (coarse_count+fine_count+fixed_full_count)*retained_full_stage
+  + alias_count*retained_full_stage(alias_samples)
+  + coarse_count*(3*P + 2*projection + wall multiplier storage)
+  + fine_count*(2*(P+Z) + 4*EM vectors + wall multiplier storage)
+  + final generic window P/Z/G/C and coarse-node arrays
+  + retained wall history for full/fine/alias stages
+
+alias_samples=max(history_samples,2*N+1)
+```
+
+All integer products and sums are checked. This is a conservative capacity
+rejection estimate, not an OOM measurement. It explicitly charges every
+retained outer sweep, tangent and `s` coarse frames, alias frames,
+base/endpoint, generic window arrays, and wall records. A0/T0/T1 formulas are
+unchanged. Actual host/device resource guards remain separate in the runner.

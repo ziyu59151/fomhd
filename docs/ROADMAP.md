@@ -1,9 +1,10 @@
 # FOMHD roadmap and release scope
 
-Status: D071 runs complete 0.5.0 A0/T1 scaling experiments and reduced-ion
-multirate research concurrently. Historical T0/T1 and fixed-ion T2-E evidence,
-including failures, remain unchanged. A3/1.0 and A4 retain the scoped roadmap
-below; 0.5.0 is an experimental platform.
+Status: D072 selects few ion nodes or trajectory coefficients, field
+microsteps, and multirate waveform relaxation on the 0.5.0 branch. Historical
+T0/T1, T2-E and C1/C2 evidence and failures remain unchanged. T2-E, C1/C2 and
+unimplemented T tiers are research branches; they are not development or
+integration prerequisites. A3/1.0 and A4 retain the scoped roadmap below.
 
 The sibling design repository owns the full definitions in
 `mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md`
@@ -16,7 +17,7 @@ They are review context, never a build or runtime dependency.
 | Stage | Model and purpose | Status |
 |---|---|---|
 | A0 | Fluid reference: bulk-ion fluid and fluid electrons | Bounded reference evidence retained on `release/a0` |
-| A1 | Use the controllable two-fluid system to study time decoupling, parallel iteration, storage and computational scaling for future kinetic hybrids | T0/T1 retained; complete scaling experiments and reduced-ion prototypes proceed concurrently; bounded fixed-ion T2-E remains available |
+| A1 | Use the controllable two-fluid system to study time decoupling, parallel iteration, storage and computational scaling for future kinetic hybrids | T0/T1 retained as references; D072 few-node multirate waveform method is active; T2-E and C1/C2 remain research controls |
 | A2 | Passive particle verification; read-only fields, no deposition or feedback | Planned; remains optional as an independent stage |
 | A3 | Retain bulk-ion fluid and fluid electrons; add self-consistent fully kinetic (FK) fast-ion populations | Planned; stable, reproducible, scoped acceptance is the 1.0 milestone |
 | A4 | Replace bulk ions with FK representations too, so all ion species are kinetic; electrons remain fluid | Long-term work after 1.0, not part of the current implementation |
@@ -80,7 +81,19 @@ Microstep count, orbit subdivisions, population counts and marker counts are
 separate parameters. Compare with a reasonable synchronous or particle-subcycled
 reference that reuses field and moment data, not an artificially costly replay.
 
-## Current T0-T3 route and implementation boundary
+## Current selected route and retained research
+
+D072 supersedes the development order in this section's historical T mapping.
+The active method directly solves a small number of ion nodes and exchanges
+their polynomial waveform with real RK4 field microsteps. Expensive ion
+transport remains coarse after convergence. Its mixed-history discrete target
+has independent accuracy, stability, work and transaction acceptance. The
+design authority is `A1/A1_WR_050.md`. New accepted capabilities may merge to
+main only after complete advance, cumulative work, rollback, restart,
+CPU/GPU integration and independent review pass the declared scope.
+Otherwise the method stays on the experimental branch with explicit blockers.
+
+The following T mapping is retained research context, not a required sequence.
 
 T0 retains the single tangent prediction and full history quadrature. T1 retains
 the serial complete-stage waveform reference, original data, tolerance limits,

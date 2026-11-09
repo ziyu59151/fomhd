@@ -43,11 +43,25 @@ documents, not fictitious modules. The active entry point is
 | Offline analysis and accepted-run figures | [analyze.py](tools/analyze.py.md), [plot run](tools/plots/plot_run.py.md) |
 | User-owned Slurm launcher | [a0.slurm](jobs/a0.slurm.md) |
 
+D072 selects few-ion-node multirate waveform relaxation directly on the
+0.5.0 experiment branch. The active mirrors are the
+[window equations and iteration](src/fomhd/time_multirate_wr.py.md),
+[field-only physical evaluation](src/fomhd/massless_field.py.md),
+[physical adapter](src/fomhd/multirate_wr_physics.py.md),
+[mixed interval accounting](src/fomhd/multirate_wr_checks.py.md),
+[complete accepted transaction](src/fomhd/time_multirate.py.md),
+[periodic experiment](tools/warp_wr_periodic.py.md) and
+[real RZ experiment](tools/warp_wr_rz.py.md). Ion nodes remain few after
+convergence. T2-E, C1/C2 and unimplemented T tiers are retained research
+controls, with no dependency on their internal propagation or splitting.
+
+The following describes retained references and their original targets.
+
 A1-T0 retains the fixed tangent path and complete microstage ion quadrature.
 A1-T1 reconstructs and iterates all ion stages, with separate midpoint states,
 path/endpoint residuals and one final accepted macro transaction. Its discrete
 fixed point is synchronous fine RK4. D070 implements the bounded T2-E field units; T2-I/T2-C/T3 remain unimplemented.
-D071 concurrently advances complete experiments and reduced-ion-work research.
+D071 recorded complete experiments and the earlier reduced-ion research.
 Known-RHS prefixes, field windows and deployment tools are used where their
 actual dependencies justify them. The retained [T2_WINDOW_PLAN.md](T2_WINDOW_PLAN.md)
 records field/window tools; it does not gate the complete 0.5.0 experiments.

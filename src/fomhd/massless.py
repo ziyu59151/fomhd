@@ -332,7 +332,10 @@ def _constraint_project(nodal, density, context):
     return output.reshape(-1)
 
 
-def _derive_electron(state, context):
+def _derive_electron(state, context, *, ion_transport=True):
+    """Derive electron fields; optionally skip ion non-electric transport."""
+    if type(ion_transport) is not bool:
+        raise Failure("Model", "ion_transport must be a boolean")
     _require_model(context)
     xp = _xp(context)
     nc = context.op.Nc
@@ -372,7 +375,8 @@ def _derive_electron(state, context):
         stage="canonicalize",
     )
     ion = build_fluid(state.fluid[0], 0, BN, bhat, tag, context)
-    build_non_electric(ion, 0, BN, bhat, context)
+    if ion_transport:
+        build_non_electric(ion, 0, BN, bhat, context)
 
     electron_charge = float(context.p.species[1].charge)
     e = -electron_charge

@@ -10,14 +10,17 @@ issues determine prototype development priorities.
 bulk-fluid ions and adds self-consistent FK fast ions for the scoped 1.0
 milestone; A4 later makes all ions kinetic. A1 uses the controllable two-fluid
 platform to shorten serial time dependencies and assess future particle costs.
-D071 advances two concurrent lines: complete 0.5.0 A0/T1 experiments at larger
-space/time scales, and at most two reduced-ion-work multirate prototypes.
-The retained [T2-E field research](docs/A1_T2_E_VERIFICATION.md) accelerates a
-fixed-ion subproblem; completing or integrating it is not a prerequisite for
-the full simulations. Current temporal work reduction, ordinary GPU/spatial
-optimization and time-parallel benefits have separate evidence requirements.
+D072 selects few ion nodes, RK4 field microsteps and multirate waveform
+relaxation on the 0.5.0 experiment branch. The new discrete target keeps few
+ion unknowns after convergence; it does not recover every fine ion RHS stage.
+T2-E, C1/C2 and the remaining planned T tiers are retained research branches,
+including their original reports and failures. They are not prerequisites or
+production architecture for the selected method. Temporal work reduction,
+ordinary GPU optimization and time-parallel benefits require separate evidence.
 
 [0.5.0 experiment platform](docs/EXPERIMENTS_050.md) records the current complete-run scope.
+[Few-node WR evidence](docs/A1_WR_EVIDENCE.md) separates its accepted numerical
+scope, raw work reduction, measured cost and remaining capacity limits.
 
 [A1 implementation](docs/A1_IMPLEMENTATION.md) records the inherited solver,
 fixed wall-system reuse, and the experimental T0/T1 time couplings. A0 is maintained

@@ -36,11 +36,14 @@ final material RHS is truncated to `-K..K`.
 ## A0-PY-MASSLESS-02: Canonical state and shared electron production
 
 ```text
-derive_electron(state,context):
+derive_electron(state, context, *, ion_transport=true):
+  require ion_transport is exactly boolean
   validate q_i>0, q_e<0, e=-q_e, m_e>0, state shapes and finite values
   BN=inverse(QB*B); bhat=BN/|BN|; require |BN|>B_min
   ion=BuildFluid(state.fluid[0],0,BN,bhat,context)
-  BuildNonElectric(ion,...)
+  if ion_transport:
+    BuildNonElectric(ion,...)
+  # false skips only this ion transport call; derive electron fields below
   J=Cdag*B/mu_0
   Fe=(q_i*ion.flux_hat-J)/e
   ne_hat=(q_i/e)*ion density spectrum
@@ -57,8 +60,13 @@ derive_electron(state,context):
     refine Q solve boundedly on the same factors
     require T_full*(ne*ue)=0 at roundoff scale
   ue_hat=FFT(ne*ue)
-  return ion,J,Fe,ne,nf,ue,ue_hat
+  return ion,J,Fe,ne,nf,ue,ue_hat,updated compatibility momentum
 ```
+
+The keyword is keyword-only and defaults to true. `canonicalize_state` keeps its
+existing default call and field input/output contract. A field-only caller can
+derive once with `ion_transport=false`, then pass its compatibility outputs to
+`_copy_state`; it must not perform a second derivation.
 
 The retained component layout is R-block, phi-block, Z-block, but the
 sample-space division is performed after reshaping to `[N,3,Nc]`. A flat

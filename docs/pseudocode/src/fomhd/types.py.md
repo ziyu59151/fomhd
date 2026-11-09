@@ -59,6 +59,12 @@ selects finite electron inertia.
    predictor stage times do not collapse `midpoint` and `midpoint_2`; their
    generation, micro index, and stage string remain distinct.
 
+7. Append nullable `ion_nodes`, `wr_initial`, and `wr_relaxation` fields.
+   `multirate_wr` requires `ion_nodes` in `{3,5}`, initial in
+   `{tangent,constant}`, and relaxation in `(0,1]`. These fields are absent for
+   every legacy coupling so old defaults and semantic identities remain
+   unchanged.
+
 6. Waveform tags use the macro step, generation, trial, spectral context,
    integer microstep, nonnegative sweep iteration, and slab index. Both
    midpoint stages retain separate tags, generations, and values.
