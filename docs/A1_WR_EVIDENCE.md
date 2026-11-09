@@ -58,9 +58,13 @@ committing that implementation does not relabel them clean-commit runs.
   strict restart and mismatched-scheme rejection. The log is
   `LOGS/gpu-io-cost-11255.log`. A warning from an intentional singular-system
   negative test is retained.
+- A second owned run, job 11267, repeats all 24 GPU integration tests from
+  the exact clean `75e4083` archive (source-p09). Its log is
+  `LOGS/gpu-clean-commit-11267.log`; later changes only document evidence or
+  extend the gallery's optional wall-audit link.
 - Complete two-nominal-period periodic CPU references include synchronous RK4, T1,
   s3/M4, s3/M8, s5/M8 and fixed-H s3 with h/2. Complete GPU synchronous and
-  s3/M8 runs use the same physical observation window. The initial condition
+  T1/M8 and s3/M8 runs use the same physical observation window. The initial condition
   is finite-amplitude and nonuniform, with a small grid-high seed; it is not
   a pure eigenmode. Target mode 1 error is measured independently of mode 16.
 - The real nonuniform EAST wall/K=1 calculation uses matched background and
@@ -70,10 +74,12 @@ committing that implementation does not relabel them clean-commit runs.
   power and momentum exceedances remain explicit. Successful transactions
   do not establish exact equilibrium or experimental validation.
   The default-rtol GPU M2 run later stops at macro 81 on ion continuity,
-  retaining 80 common accepted endpoints. This is not a completed GPU RZ
-  two-period qualification. The state-density residual divided by H explains
-  the rate-gate rejection; a separately identified tighter-tolerance case is
-  required. Old RZ eigenmode seeds differ from this smooth velocity impulse,
+  retaining 80 common accepted endpoints; that original case remains failed.
+  A fresh GPU M2/s3 case, uniformly rtol=1e-12 from initialization, completes
+  all 88 macrosteps / 176 microsteps with the same hard gates. A state-density
+  stopping defect divided by H explains the old rate-gate rejection, and its
+  saved native modal rate is independently reproduced exactly. Old RZ
+  eigenmode seeds differ from this smooth velocity impulse,
   so matched smooth-seed A0/h2 references are used instead of subtracting
   mismatched historical signals.
 - New WR spatial capacity reaches 16 enclosing nodes per R/Z axis, 200 active
@@ -122,7 +128,33 @@ it does not count complete RHS evaluations. Do not describe 144 to 24 producer
 calls as a complete-RHS reduction. Stage evaluator calls are 40 to 12 in the
 same measured A0/WR comparison; these overlapping counters are not added.
 
+The wall case gives a different total-work result. Summed over the full
+matched horizon and both ensembles, A0 at h uses 1760 complete stage
+evaluations; CPU WR M4 uses 2904 and strict GPU WR M2 uses 5280. Nine or ten
+outer sweeps outweigh the per-sweep node reduction here. The strict GPU
+response error is 1.86e-5 to 7.01e-5 against same-h A0 (volume-weighted m=1
+fields), but this numerical accuracy does not imply ion-work savings. No
+uniform net gain or FK saving is inferred from the periodic short cost case.
+
 ## Remaining boundaries
+
+The bounded wall audit confirms the edge velocity/density structures are in
+the saved state, not a mask, interpolation or color-scale artifact. The
+same-input A0 and h/2 controls also develop them. The initial mapped state has
+nonzero complete momentum RHS before evolution, despite zero initial flow
+and zero density RHS. Pressure, electric force and wall reaction substantially
+cancel; no unique causal operation or definite boundary-code defect was
+established. Local normal traces and cache/reaction ownership were checked;
+cell-field extrapolations are not substituted for physical wall traces.
+
+At 360.166225 ns the control changes reach 14-19 km/s and 5.32% density,
+whereas the matched perturbation response is about 131-165 m/s and 0.0051%
+density. This limits a steady-equilibrium small-perturbation CAW/ICE
+interpretation. Matched numerical method comparisons remain meaningful.
+The macro-81 native continuity residual is not first-wall-layer dominated
+in aggregate; a common cause with the ring is not established. The final
+report and linked wall addendum retain the three required differences under
+common scales, initial/first-stage decomposition and separate failure maps.
 
 The field scan is still causal. Polynomial batching and GPU execution do not
 shorten its time dependency. There is no new temporal-prefix speedup, FK

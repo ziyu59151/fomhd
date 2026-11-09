@@ -32,8 +32,8 @@
   "files": [
     {
       "path": "DECISIONS.md",
-      "bytes": 195439,
-      "sha256": "fef9cf2a7b70c7674d1459a2d17da9390ec58636b0e2eb70873bdd7a04224a1f"
+      "bytes": 195747,
+      "sha256": "22f659a43ddb773eb233d3c20e989ae9d1fb08bda5d40018f43ce127d18395e4"
     },
     {
       "path": "mainline_design/implementation/A0/A0_IMPLEMENTATION_SPEC.md",
@@ -62,8 +62,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md",
-      "bytes": 11264,
-      "sha256": "b2dc1ac2ec5d4ac4c89874eb2497511f7243e5ad281d264e81f9ebade6b911f5"
+      "bytes": 11440,
+      "sha256": "80b4fa1e65a6b6a9856e048dff2b0aab5b13a902ab10d61a30f0e64109e4b4e8"
     },
     {
       "path": "mainline_design/implementation/A0/A0_MASSLESS_ELECTRON.md",
@@ -77,13 +77,13 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_ALGORITHM_DESIGN.md",
-      "bytes": 18793,
-      "sha256": "ef861ed42461610bc7978e4b77b25c9f7b61d3d87ba34884d9bf3f11a77973ab"
+      "bytes": 18821,
+      "sha256": "01930797e4f1102c0667d4460a9a752c1cf937ec5b9e097c68f27cff363b7a46"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/TIME_DECOUPLING_DESIGN.md",
-      "bytes": 72300,
-      "sha256": "41ef54570a385ecee02be52577703704def74b26703ef2c8b8ee6d456b7ff300"
+      "bytes": 72405,
+      "sha256": "c7a2c70046f537e798e42a7fb45199cb87782e64a561c898dcb0d1483e2ff3d7"
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/HYM_COST_MAP.md",
@@ -132,8 +132,8 @@
     },
     {
       "path": "mainline_design/plan.md",
-      "bytes": 63979,
-      "sha256": "41ed97a0db77ff66cf5c43047e6aef4314a0792cdeb9dd062b1b516ce1577c86"
+      "bytes": 64012,
+      "sha256": "0673f04c845a990a62480a6426b3180da1b0730782dafc8cceddf3e52dc9055c"
     },
     {
       "path": "mainline_design/implementation/plan.md",
@@ -182,8 +182,8 @@
     },
     {
       "path": "mainline_design/numerics/algorithm_design/A1/A1_WR_050.md",
-      "bytes": 9184,
-      "sha256": "c0972768bdabc0fa8253c358b8138e24d0bf318eecc04d6797c645ca889b1011"
+      "bytes": 9703,
+      "sha256": "dda3dbfcbd401f52c7febfaa5a54a58df087453d040ae33abd7c3e58e5f29bc4"
     },
     {
       "path": "references/A1_WR_READING_2026-11-09.md",
@@ -191,7 +191,7 @@
       "sha256": "568f7f345b6ba2307e44b566e37c5b61ea7184363b4599adda4d462060e76a31"
     }
   ],
-  "captured_utc": "2026-11-08T09:34:56.565260+00:00",
+  "captured_utc": "2026-11-09T10:16:37.837004+00:00",
   "native_reference_scope": {
     "branch": "reference/a0-native",
     "commit": "48beca7",
@@ -437,6 +437,14 @@
     },
     "owned_gpu_job": "11255",
     "owned_gpu_selected_tests_passed": 24,
-    "scope": "Few-node equations, complete interval transactions, strict restart/rollback, bounded periodic and real-wall experiments; not net A0 speedup, particle savings, new time parallelism or production capacity"
+    "scope": "Few-node equations, complete interval transactions, strict restart/rollback, bounded periodic and real-wall experiments; not net A0 speedup, particle savings, new time parallelism or production capacity",
+    "clean_gpu_reference_commit": "75e4083797716cfb5ac7fa03f105edd0a64a4f1a",
+    "clean_gpu_reference_snapshot": "source-p09",
+    "clean_gpu_reference_job": "11267",
+    "clean_gpu_selected_tests_passed": 24,
+    "real_wall_complete_scope": "N12 K1,176microsteps,360.166225ns; CPU M4rtol1e-10 and fresh GPU M2rtol1e-12 complete; oldGPU M2rtol1e-10 fails81 after80 accepted",
+    "wall_response_scope": "Initial complete momentum RHS nonzero and shared A0 control drift; raw state/display agree; physical equilibrium/growth-rate interpretation not qualified; no definite wall implementation defect found",
+    "resource_charged_single_gpu_seconds": 16942,
+    "resource_cap_single_gpu_seconds": 21600
   }
 }
