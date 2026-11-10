@@ -22,6 +22,12 @@ ordinary GPU optimization and time-parallel benefits require separate evidence.
 [Few-node WR evidence](docs/A1_WR_EVIDENCE.md) separates its accepted numerical
 scope, raw work reduction, measured cost and remaining capacity limits.
 
+[Structured-wall work](docs/CLT_INTERCEPT_IMPLEMENTATION.md) records the current
+local intercept/metric implementation and failed physical gates. It is not yet
+a selectable complete evolution path. [VEQ preprocessing](docs/VEQ_EQUILIBRIUM_INTERFACE.md)
+records actual external GS calls, the independent circle control, model
+compatibility checks and formal old-path initialization.
+
 [A1 implementation](docs/A1_IMPLEMENTATION.md) records the inherited solver,
 fixed wall-system reuse, and the experimental T0/T1 time couplings. A0 is maintained
 on `release/a0` at `9a38bf4`; each checkout contains one solver source tree.

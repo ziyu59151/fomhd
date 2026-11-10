@@ -19,6 +19,8 @@ documents, not fictitious modules. The active entry point is
 
 | Mainline responsibility | Mirrored pseudocode |
 |---|---|
+| Local structured-wall geometry and positive quadrature candidates; not complete boundary evolution | [geometry](src/fomhd/boundary_geometry.py.md), [quadrature](src/fomhd/boundary_quadrature.py.md), [CLT coefficients](tools/clt_boundary_coefficients.py.md), [paired patch](tools/clt_boundary_patch_reference.py.md) |
+| External VEQ GS calls and independent continuous model checks | [VEQ entry](tools/prepare_veq_equilibrium.py.md), [conversion](tools/veq_equilibrium.py.md), [equation auditor](tools/equilibrium_compatibility.py.md), [self-circle](tools/circular_equilibrium.py.md), [formal old mapping](tools/prepare_staircase_equilibrium.py.md) |
 | Complete 0.5.0 experiment and strict continuation | [runner](tools/warp_050_experiments.py.md), [tests](tests/warp/test_050_extension.py.md) |
 | Shared storage and alias-history ownership | [core](src/fomhd/core.py.md), [regression](tests/warp/test_alias_history_ownership.py.md) |
 | A1 T1 complete ion stage-path waveform iteration | [waveform scheduler](src/fomhd/time_waveform.py.md), [tests](tests/warp/test_time_waveform.py.md) |
