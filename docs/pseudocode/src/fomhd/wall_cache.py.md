@@ -115,3 +115,8 @@ massless stage boundary while preserving the original traceback by exception
 chaining. Hermitian, rank, conditioning, nonfinite right-hand-side, prepared
 solve, and full-row residual failures remain explicit `Failure` objects.
 There is no CPU fallback and no whole-array host transfer.
+
+
+## A050 polygon wall dispatch
+
+For polygon_dual_v1 the shared wall cache obtains signed normal extraction from [polygon_wall](polygon_wall.py.md), using actual face IDs and normals. Cache identity, invalidation, ownership and the existing field solve are unchanged. No consumer reinterprets a polygon normal facet as an R or Z face.

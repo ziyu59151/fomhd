@@ -147,3 +147,144 @@ The kinetic-density term
 the three-component integral. The same once-only rule applies to the sampled
 and convective density terms; broadcasting it across all components triples
 the recorded work in compressible flow.
+# Polygon-dual fluid actions
+
+## Scope and dispatch
+
+This pseudocode covers only the `polygon_dual_v1` branches of
+`src/fomhd/fluid.py`. The legacy staircase branch remains the default and its
+actions are unchanged. Dispatch uses `geometry.kind`, with
+`op.geometry_kind` as the fallback and `staircase_v1` as the final default.
+
+All retained state is mode-major complex128. The retained sample backend is
+CPU or CuPy; scalar reductions are backend operations and no whole-stage host
+copy is introduced. Geometry tables, measures, interpolation, and operators
+are supplied by the polygon mesh implementation.
+
+`op.face_normals_backend` and `op.cell_radius_backend` are borrowed immutable
+backend float64 arrays. Fluid actions consume them directly and never upload
+the corresponding host geometry during a stage. Reading
+`geometry.face_normals` or `geometry.cells.R` is only the bounded fallback for
+synthetic tests whose operator lacks those persistent arrays. The parent
+memory planner owns the persistent-array accounting.
+
+The polygon layouts are:
+
+```text
+E = [normal-face samples Nf, toroidal cell samples Nc]
+B = [toroidal vertex samples Nv, tangential-face samples Nf]
+```
+
+The scalar transfer is `scalar_I = [S; identity(Nc)]`, where `S` maps cell
+scalars to normal-face centroids. The vector transfer `I` maps three physical
+cell components to `Ne = Nf + Nc` edge components and is used only for
+physical vectors. In particular, repeated scalar values use `scalar_I`, never
+`I` repeated three times. `scalar_I` is a real-contract operator matrix but is
+consumed with its existing dtype; fluid does not cast it to float64.
+
+## Scalar flux and divergence
+
+For a retained scalar vector `s`, the sampled face scalar is
+
+```text
+nf = scalar_I s
+F_hat = I (pi / m)
+F = inverse(F_hat)
+div_hat = DJ F_hat
+div = Dface F_n + Dphi(F_phi) / R_c
+```
+
+`Dface` acts from the `Nf` normal-face rows to cells. `Dphi` is the complete
+periodic toroidal derivative and `R_c = M0 / area` is the positive cell
+radius. The existing retained/sampled divergence identity check applies
+without modification.
+
+## Velocity gradient
+
+Let `n` be sampled density, `nf` the scalar transfer of density, `u_q` a
+physical velocity component, and
+
+```text
+W_n = diag(n),  W_f = diag(1 / nf),
+F_R = diag(n_R / nf),  F_Z = diag(n_Z / nf).
+```
+
+Only the first `Nf` rows of `scalar_I` and the face normals contribute to
+normal derivatives. For component `q`, the three coordinate columns are
+
+```text
+(G u)_q,R = Dface F_R S W_n u_q - u_q / R_c
+(G u)_q,phi = Dphi(u_q) / R_c
+(G u)_q,Z = Dface F_Z S W_n u_q
+```
+
+After those three actions, the original cylindrical connections are retained:
+
+```text
+G_R,phi -= u_phi / R_c
+G_phi,phi += u_R / R_c
+```
+
+The pressure tensor and force pairing continue to use the existing `I`, `H`,
+and `M0` weighted adjoint conventions.
+
+## Exact weighted adjoint
+
+The adjoint is derived from the same actions rather than from an independently
+guessed force. For tensor `P`, define `P_qc` and the unweighted transpose by
+
+```text
+<P, Gx>_M0 = <G^T (M0 P), x>
+```
+
+The stored weighted adjoint is `(G^T (M0 P)) / M0`. For row/component `q`:
+
+```text
+normal_q =
+    W_n S_R^T (n_R / nf) Dface^T (M0 P_q,R)
+  + W_n S_R^T (n_Z / nf) Dface^T (M0 P_q,Z)
+
+toroidal_q = Dphi^T (M0 P_q,phi / R_c)
+
+y_q = (normal_q - M0 P_q,R / R_c - toroidal_q) / M0
+```
+
+`S_R` is the first `Nf` rows of `S`; toroidal rows are inserted as zero
+normal-flux rows. The transpose of the radial `-u_q / R_c` term is the
+`-M0 P_q,R / R_c` term above.
+
+The cylindrical connections have the further adjoint contributions
+
+```text
+q = R:   +P_phi,phi / R_c
+q = phi: -P_R,phi / R_c
+q = Z:    0
+```
+
+The periodic spectral derivative has the existing antisymmetric discrete
+transpose behavior, so its reverse action is applied with the same backend
+derivative and the sign used by the staircase path. All products are dense
+matrix actions or backend elementwise operations already present in the
+fluid stage.
+
+## Verification
+
+The focused tests use a two-triangle non-axis finite-volume fixture with a
+shared slanted face, an explicitly specified scalar transfer, face areas,
+normals, cell measures, and boundary incidence. They independently check:
+
+1. scalar transfer uses `[S; I]`;
+2. normal-face plus toroidal divergence;
+3. constant and linear cylindrical gradient actions under variable density;
+4. the weighted gradient adjoint for complex, multi-mode toroidal data; and
+5. the unchanged staircase dispatch.
+
+This fixture verifies algebraic operator contracts only. Its synthetic
+`Dface`, projection rows, and normals do not establish physical polynomial
+consistency on the real polygon mesh.
+
+A full vacuum RHS is not available until the independent polygon mesh backend
+is present. That integration is reported separately and is not replaced by a
+second fluid model or an RHS offset. Constant/linear `G u` recovery and the
+constant-pressure wall projection on the actual mesh remain parent integration
+gates.

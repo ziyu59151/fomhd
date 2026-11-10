@@ -2,6 +2,8 @@
 
 from types import SimpleNamespace
 
+from . import polygon_projection
+from .polygon_wall import is_polygon
 from .types import Failure
 
 
@@ -54,12 +56,21 @@ def build_wall(n, species, tag, context):
         species.mass * n_ref / context.p.ref.length**3
     )
     samples = []
+    polygon = is_polygon(context)
     for sample in range(context.N):
         weights = winv[sample]
         weighted_adjoint = wall_adjoint * weights[:, None]
         scaled = wall_matrix @ weighted_adjoint
         factor = None
-        if wall_matrix.shape[0]:
+        basis = None
+        if polygon:
+            basis = polygon_projection.prepare(
+                wall_matrix,
+                weights,
+                context,
+                label="wall",
+            )
+        elif wall_matrix.shape[0]:
             scaled_matrix = scaled * (col_scale / row_scale)
             singular = context.compute.singular_values(scaled_matrix)
             if singular.size == 0 or not bool(
@@ -73,12 +84,61 @@ def build_wall(n, species, tag, context):
             SimpleNamespace(
                 S=scaled,
                 lu=factor,
+                basis=basis,
                 winv=weights,
                 row_scale=row_scale,
                 col_scale=col_scale,
             )
         )
     return SimpleNamespace(samples=samples, tag=tag)
+
+
+def _project_polygon_wall(wall, sampled, context):
+    xp = _xp(context)
+    rows = context.op.T.shape[0]
+    value = xp.empty_like(sampled)
+    reaction = xp.empty_like(sampled)
+    multiplier = xp.empty(
+        (context.N, rows),
+        dtype=xp.complex128,
+    )
+    multiplier_residual = xp.empty_like(multiplier)
+    ranks = []
+    refinements = []
+    for sample, record in enumerate(wall.samples):
+        if record.basis is None:
+            raise Failure(
+                "WallProjection",
+                "polygon wall sample lacks a weighted SVD basis",
+            )
+        projected = polygon_projection.apply(
+            record.basis,
+            sampled[sample],
+            context.op.T,
+            context.op.T_full,
+            context,
+        )
+        value[sample] = projected.value
+        reaction[sample] = projected.reaction
+        multiplier[sample] = projected.multiplier
+        multiplier_residual[sample] = projected.multiplier_residual
+        ranks.append(projected.rank)
+        refinements.append(projected.refinements)
+    if not bool(
+        xp.all(xp.isfinite(value))
+        and xp.all(xp.isfinite(reaction))
+        and xp.all(xp.isfinite(multiplier))
+        and xp.all(xp.isfinite(multiplier_residual))
+    ):
+        raise Failure("Finite", "wall projection contains non-finite values")
+    return SimpleNamespace(
+        value=value.reshape(-1),
+        reaction=reaction.reshape(-1),
+        multiplier=multiplier.reshape(-1),
+        multiplier_residual=multiplier_residual.reshape(-1),
+        rank=max(ranks, default=0),
+        refinements=max(refinements, default=0),
+    )
 
 
 def project_wall(wall, r, context):
@@ -90,6 +150,8 @@ def project_wall(wall, r, context):
     if len(wall.samples) != context.N:
         raise Failure("Shape", "wall response sample count")
     sampled = _as_complex_xp(r, context).reshape(context.N, entities)
+    if is_polygon(context):
+        return _project_polygon_wall(wall, sampled, context)
     value = sampled.copy()
     reaction = xp.zeros_like(sampled)
     wall_matrix = xp.asarray(context.op.T, dtype=xp.complex128)

@@ -472,7 +472,39 @@ def _budget_registry(parameters):
     return _finite_budget_registry(parameters)
 
 
+def _is_polygon_layout(geometry):
+    return getattr(geometry, "kind", "staircase_v1") == "polygon_dual_v1"
+
+
+def _has_polygon_entities(geometry):
+    return hasattr(geometry, "face_normals") and hasattr(
+        geometry, "cell_polygons"
+    )
+
+
+def _polygon_geometry_fingerprint(geometry):
+    from . import polygon_io
+
+    return polygon_io.geometry_fingerprint(geometry)
+
+
 def _operator_fingerprint(operators, backend):
+    kind = getattr(
+        operators,
+        "geometry_kind",
+        getattr(
+            getattr(operators, "geometry", None),
+            "kind",
+            "staircase_v1",
+        ),
+    )
+    if kind == "polygon_dual_v1" or (
+        hasattr(operators, "geometry")
+        and _has_polygon_entities(operators.geometry)
+    ):
+        from . import polygon_io
+
+        return polygon_io.operator_fingerprint(operators, backend)
     existing = getattr(operators, "matrix_fingerprint", None)
     if existing:
         return str(existing)
@@ -1009,6 +1041,10 @@ def _gather(array, table, modes, ny, nx, components=1):
 
 
 def encode_state(state, geometry):
+    if _is_polygon_layout(geometry) or _has_polygon_entities(geometry):
+        from . import polygon_io
+
+        return polygon_io.encode_state(state, geometry)
     nc = len(_entity_keys(geometry.cells))
     modes = int(state.fluid[0].n.size) // nc
     ny, nx = len(geometry.Z), len(geometry.R)
@@ -1061,6 +1097,10 @@ def encode_state(state, geometry):
 
 
 def decode_state(arrays, geometry, K):
+    if _is_polygon_layout(geometry) or _has_polygon_entities(geometry):
+        from . import polygon_io
+
+        return polygon_io.decode_state(arrays, geometry, K)
     from .types import FluidState, State
 
     ny, nx = len(geometry.Z), len(geometry.R)
@@ -1119,6 +1159,10 @@ def decode_state(arrays, geometry, K):
 
 
 def encode_vertex(vector, geometry, K):
+    if _is_polygon_layout(geometry) or _has_polygon_entities(geometry):
+        from . import polygon_io
+
+        return polygon_io.encode_vertex(vector, geometry, K)
     modes = 2 * int(K) + 1
     return _scatter(
         vector,
@@ -1130,6 +1174,10 @@ def encode_vertex(vector, geometry, K):
 
 
 def decode_vertex(array, geometry, K):
+    if _is_polygon_layout(geometry) or _has_polygon_entities(geometry):
+        from . import polygon_io
+
+        return polygon_io.decode_vertex(array, geometry, K)
     return _gather(
         array,
         geometry.vertices,

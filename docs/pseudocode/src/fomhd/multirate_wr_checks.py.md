@@ -219,3 +219,19 @@ Focused tests:
 
 CPU only; no GPU, Slurm, install, Git operation, or source promotion.
 ```
+
+
+## A050 polygon wall dispatch
+
+For polygon_dual_v1, mixed coarse-ion/fine-field interval summands and traction use the same wall trace producer, physical normals, radius and area as synchronous checks. Ion node count, accepted macro transaction, original thresholds and continuity-rate gate are unchanged. Integrate each interval exactly once; trial sweeps never enter cumulative ledgers. Prescribed electromagnetic wall traces do not by themselves prove boundary consistency.
+
+
+## Polygon boundary observation batching
+
+The native polygon path consumes the single declared 18-channel wall-observation
+host batch defined in [polygon wall](polygon_wall.py.md). Physical traces are
+constructed on the selected backend; one explicit observation export supplies
+NumPy boundary integrals and tractions. Reuse requires the same immutable stage,
+state versions and sampling context. Volume/reaction reductions and actual
+physical constraints remain on the selected backend. No hard gate, physical
+formula or staircase path changes. Retain finite-positive mass/density guards.

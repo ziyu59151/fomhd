@@ -40,6 +40,63 @@ def _as_complex(value, context):
     return _xp(context).asarray(value, dtype=_xp(context).complex128)
 
 
+def _geometry_kind(context):
+    kind = getattr(context.geometry, "kind", None)
+    if kind is None:
+        kind = getattr(context.op, "geometry_kind", "staircase_v1")
+    return kind
+
+
+def _is_polygon(context):
+    return _geometry_kind(context) == "polygon_dual_v1"
+
+
+def _polygon_backend_real_array(context, value, expected_shape, name):
+    xp = _xp(context)
+    if not isinstance(value, xp.ndarray):
+        raise Failure("Backend", f"{name} must be a backend array")
+    if value.dtype != xp.float64 or tuple(value.shape) != tuple(expected_shape):
+        raise Failure("Layout", f"{name} has an invalid dtype or shape")
+    return value
+
+
+def _polygon_face_normals(context, nf):
+    xp = _xp(context)
+    value = getattr(context.op, "face_normals_backend", None)
+    if value is None:
+        # Synthetic-test fallback only; production operators publish this array.
+        value = xp.asarray(context.geometry.face_normals)
+    return _polygon_backend_real_array(
+        context, value, (nf, 2), "polygon face normals"
+    )
+
+
+def _polygon_cell_radius(context):
+    xp = _xp(context)
+    value = getattr(context.op, "cell_radius_backend", None)
+    if value is None:
+        # Synthetic-test fallback only; production operators publish this array.
+        value = xp.asarray(context.geometry.cells.R)
+    return _polygon_backend_real_array(
+        context, value, (context.op.Nc,), "polygon cell radius"
+    )
+
+
+def _polygon_normal_data(context):
+    xp = _xp(context)
+    nc = context.op.Nc
+    nf = context.op.Dface.shape[1]
+    scalar_i = xp.asarray(context.op.scalar_I)
+    face_normals = _polygon_face_normals(context, nf)
+    if (
+        context.op.Dface.ndim != 2
+        or tuple(context.op.Dface.shape) != (nc, nf)
+        or tuple(scalar_i.shape) != (context.op.Ne, nc)
+    ):
+        raise Failure("Layout", "polygon normal-face operators are inconsistent")
+    return nf, scalar_i[:nf], face_normals
+
+
 def _apply_mode_matrix(matrix, value, entities, context):
     modes = _modes(context)
     _require_size(value, modes * entities, "mode input")
@@ -52,6 +109,16 @@ def _component_flux(scalar, context):
     xp = _xp(context)
     nc = context.op.Nc
     _require_size(scalar, context.N * nc, "scalar interpolation")
+    if _is_polygon(context):
+        result = sample_apply(
+            context.op.scalar_I, scalar, context.N, context.compute
+        )
+        _require_size(
+            result,
+            context.N * context.op.Ne,
+            "polygon scalar interpolation",
+        )
+        return result
     nodes = xp.repeat(scalar.reshape(context.N, 1, nc), 3, axis=1)
     result = sample_apply(
         context.op.I, nodes.reshape(-1), context.N, context.compute
@@ -63,6 +130,22 @@ def _component_flux(scalar, context):
 def _sampled_divergence(edges, context):
     xp = _xp(context)
     nc = context.op.Nc
+    if _is_polygon(context):
+        nf = context.op.Dface.shape[1]
+        if nf + nc != context.op.Ne:
+            raise Failure("Layout", "polygon edge component offsets are inconsistent")
+        samples = edges.reshape(context.N, context.op.Ne)
+        normal = sample_apply(
+            context.op.Dface,
+            samples[:, :nf].reshape(-1),
+            context.N,
+            context.compute,
+        ).reshape(context.N, nc)
+        toroidal = context.compute.derivative(
+            samples[:, nf:].reshape(-1), nc, context.N
+        ).reshape(context.N, nc)
+        radius = _polygon_cell_radius(context)
+        return (normal + toroidal / radius[None, :]).reshape(-1)
     nr = context.op.DR.shape[1]
     nz = context.op.DZ.shape[1]
     if nr + nc + nz != context.op.Ne:
@@ -338,6 +421,46 @@ def velocity_gradient(fluid, x, context):
     _require_size(fluid.nf, context.N * context.op.Ne, "velocity-gradient denominator")
     _require_finite(x, "velocity-gradient input", context)
     values = x.reshape(context.N, 3, nc)
+    if _is_polygon(context):
+        nf, scalar_to_face, face_normals = _polygon_normal_data(context)
+        density = fluid.n.reshape(context.N, 1, nc)
+        face_density = fluid.nf.reshape(context.N, context.op.Ne)
+        radius = _polygon_cell_radius(context)
+        gradient = xp.zeros(
+            (context.N, 3, 3, nc), dtype=xp.complex128
+        )
+        for component in range(3):
+            weighted = density * values[:, component : component + 1, :]
+            face_scalar = sample_apply(
+                scalar_to_face,
+                weighted.reshape(-1),
+                context.N,
+                context.compute,
+            ).reshape(context.N, nf)
+            normal_scalar = face_scalar / face_density[:, :nf]
+            radial = sample_apply(
+                context.op.Dface,
+                (face_normals[:, 0][None, :] * normal_scalar).reshape(-1),
+                context.N,
+                context.compute,
+            ).reshape(context.N, nc)
+            axial = sample_apply(
+                context.op.Dface,
+                (face_normals[:, 1][None, :] * normal_scalar).reshape(-1),
+                context.N,
+                context.compute,
+            ).reshape(context.N, nc)
+            phi = context.compute.derivative(
+                values[:, component, :].reshape(-1), nc, context.N
+            ).reshape(context.N, nc)
+            gradient[:, component, 0, :] = (
+                radial - values[:, component, :] / radius[None, :]
+            )
+            gradient[:, component, 1, :] = phi / radius[None, :]
+            gradient[:, component, 2, :] = axial
+        gradient[:, 0, 1, :] -= values[:, 1, :] / radius[None, :]
+        gradient[:, 1, 1, :] += values[:, 0, :] / radius[None, :]
+        return gradient.reshape(-1)
     density = fluid.n.reshape(context.N, 1, nc)
     face_density = fluid.nf.reshape(context.N, context.op.Ne)
     radius = xp.asarray(context.geometry.cells.R, dtype=xp.float64)
@@ -379,6 +502,67 @@ def gradient_adjoint(fluid, tensor, context):
     _require_size(fluid.nf, context.N * context.op.Ne, "gradient-adjoint denominator")
     _require_finite(tensor, "gradient-adjoint tensor", context)
     values = tensor.reshape(context.N, 3, 3, nc)
+    if _is_polygon(context):
+        nf, scalar_to_face, face_normals = _polygon_normal_data(context)
+        density = fluid.n.reshape(context.N, nc)
+        face_density = fluid.nf.reshape(context.N, context.op.Ne)
+        m0 = xp.real(xp.asarray(context.op.M0)).astype(xp.float64)
+        radius = _polygon_cell_radius(context)
+        result = xp.zeros((context.N, 3, nc), dtype=xp.complex128)
+        for row in range(3):
+            weighted = m0[None, None, :] * values[:, row, :, :]
+            radial_rhs = sample_apply(
+                context.op.Dface.T.conj(),
+                weighted[:, 0, :].reshape(-1),
+                context.N,
+                context.compute,
+            ).reshape(context.N, nf)
+            axial_rhs = sample_apply(
+                context.op.Dface.T.conj(),
+                weighted[:, 2, :].reshape(-1),
+                context.N,
+                context.compute,
+            ).reshape(context.N, nf)
+            radial_scalar = (
+                face_normals[:, 0][None, :]
+                * radial_rhs
+                / face_density[:, :nf]
+            )
+            axial_scalar = (
+                face_normals[:, 1][None, :]
+                * axial_rhs
+                / face_density[:, :nf]
+            )
+            radial_nodes = sample_apply(
+                scalar_to_face.T.conj(),
+                radial_scalar.reshape(-1),
+                context.N,
+                context.compute,
+            ).reshape(context.N, nc)
+            axial_nodes = sample_apply(
+                scalar_to_face.T.conj(),
+                axial_scalar.reshape(-1),
+                context.N,
+                context.compute,
+            ).reshape(context.N, nc)
+            toroidal_rhs = (weighted[:, 1, :] / radius[None, :]).reshape(-1)
+            toroidal = context.compute.derivative(
+                toroidal_rhs, nc, context.N
+            ).reshape(context.N, nc)
+            result[:, row, :] = (
+                density * (radial_nodes + axial_nodes)
+                - weighted[:, 0, :] / radius[None, :]
+                - toroidal
+            ) / m0[None, :]
+            if row == 0:
+                result[:, row, :] += (
+                    values[:, 1, 1, :] / radius[None, :]
+                )
+            elif row == 1:
+                result[:, row, :] -= (
+                    values[:, 0, 1, :] / radius[None, :]
+                )
+        return result.reshape(-1)
     density = fluid.n.reshape(context.N, nc)
     face_density = fluid.nf.reshape(context.N, context.op.Ne)
     m0 = xp.real(xp.asarray(context.op.M0)).astype(xp.float64)

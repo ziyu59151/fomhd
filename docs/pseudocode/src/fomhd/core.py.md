@@ -115,6 +115,7 @@ explicit `1` selects finite-fluid combination.
      + persistent
      + matrix_temporaries
      + fixed_wall_cache_bound
+     + polygon_projection_cache_bound
    ```
 
    The wall-cache `C` and `Cdag` members borrow the resident operator arrays
@@ -132,6 +133,22 @@ explicit `1` selects finite-fluid combination.
    use their maximum with wall/projection temporaries. At EAST32 the diagnostic
    assembly alone requires 491,204,256 bytes. Runtime/library memory is measured
    separately; array accounting is not a process RSS certificate.
+   For `polygon_dual_v1`, add a conservative two-entry projection-cache bound:
+
+   ```text
+   per_entry =
+       16*rows(T)*columns(T)   # retained T copy
+     +  8*columns(T)           # positive winv copy
+     + 16*rows(T)^2             # U
+     +  8*rows(T)               # singular values
+     + 16*rows(T)*columns(T)   # Vh
+     +  8*columns(T)           # sqrt(winv)
+   bound = 2*per_entry
+   ```
+
+   Count this bound once for polygon contexts in both finite and massless peak
+   plans. Scalar metadata is negligible; the six owned arrays above are the
+   persistent payload. Actual cache statistics report their live byte total.
 6. Check every shape product, sum, byte conversion and cap comparison for
    arithmetic overflow. Build the inventory from the actual operator shapes
    and reject an incomplete G/C/DB/DJ/Cdag mode inventory with
@@ -271,3 +288,68 @@ rejection estimate, not an OOM measurement. It explicitly charges every
 retained outer sweep, tangent and `s` coarse frames, alias frames,
 base/endpoint, generic window arrays, and wall records. A0/T0/T1 formulas are
 unchanged. Actual host/device resource guards remain separate in the runner.
+
+## A050-PY-CORE-POLYGON-PERSISTENT
+
+When a polygon operator exposes any of the following persistent members, add
+their actual backend-array storage to the selected massless inventory:
+
+```text
+S
+scalar_I
+Dface
+face_normals_backend
+cell_radius_backend
+curvature_radius
+```
+
+For every present member, record
+`polygon_<name>_bytes = checked(logical array nbytes)`. Sum those entries into
+`polygon_operator_array_bytes`. This is an inventory of occupied/logical
+buffer extents, not a physical-RSS measurement.
+
+If `op.nnzCSR` is present, require a non-negative integer scalar and record its
+value in `polygon_nnzCSR_entries`. If that value is itself an array, also count
+its nbytes. This is accounting only; it does not imply a production CSR
+solver.
+
+For polygon geometry, count the actual SciPy CSR compatibility incidences:
+
+```text
+csr_bytes(b1,b2) =
+    checked nbytes(data + indices + indptr for b1)
+  + checked nbytes(data + indices + indptr for b2)
+```
+
+The result is `polygon_csr_incidence_bytes`. It counts buffers already owned by
+the polygon geometry and does not construct a new CSR operator.
+
+The inventory is deliberately conservative for aliases. The current operator
+has `Dface` and `DR` sharing the mode-`K` `DJ` buffer, and
+`curvature_radius`/`cell_radius_backend` sharing one real vector. Count both
+named logical extents and disclose their sum as
+`polygon_alias_duplicate_bytes`. `S` and `scalar_I` are separate backend
+buffers in the current implementation and are counted separately. If a future
+implementation aliases them, retaining both extents remains a safe upper
+bound.
+
+If no polygon member is present, add no polygon keys and leave the staircase
+inventory dictionary exactly unchanged. When any member is present:
+
+```text
+polygon_persistent =
+    polygon_operator_array_bytes
+  + polygon_csr_incidence_bytes
+  + polygon_nnzCSR_bytes
+
+persistent = existing_persistent_groups + polygon_persistent
+```
+
+`estimated_peak_bytes` therefore includes `polygon_persistent`, and
+`preflight_memory` can reject a polygon context before `allocate_state`
+performs its first backend allocation.
+
+Do not reduce the existing conservative multi-rate-WR history allowance in
+this unit. The solver retains its last converged trial in the returned window,
+while the adapter accumulates evaluation records separately. Exact reference
+auditing is required before any history-bound change.

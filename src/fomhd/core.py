@@ -566,6 +566,68 @@ def fixed_wall_cache_bytes(c: Context) -> int:
     )
 
 
+def polygon_projection_cache_bytes(c: Context) -> int:
+    """Conservative two-entry polygon projection-cache payload bound."""
+    kind = getattr(getattr(c, "geometry", None), "kind", None)
+    if kind is None:
+        kind = getattr(c.op, "geometry_kind", "staircase_v1")
+    if kind != "polygon_dual_v1":
+        return 0
+    matrix = getattr(c.op, "T", None)
+    if matrix is None or getattr(matrix, "ndim", 0) != 2:
+        return 0
+    rows, columns = (int(matrix.shape[0]), int(matrix.shape[1]))
+    matrix_copy = _checked_product(
+        _checked_product(
+            rows,
+            columns,
+            "polygon projection cache storage",
+        ),
+        16,
+        "polygon projection cache storage",
+    )
+    weight_vector = _checked_product(
+        columns,
+        8,
+        "polygon projection cache storage",
+    )
+    left = _checked_product(
+        _checked_product(
+            rows,
+            rows,
+            "polygon projection cache storage",
+        ),
+        16,
+        "polygon projection cache storage",
+    )
+    singular = _checked_product(
+        rows,
+        8,
+        "polygon projection cache storage",
+    )
+    right_h = matrix_copy
+    sqrt_winv = weight_vector
+    per_entry = 0
+    for value in (
+        matrix_copy,
+        weight_vector,
+        left,
+        singular,
+        right_h,
+        sqrt_winv,
+    ):
+        per_entry = _checked_sum(
+            per_entry,
+            value,
+            "polygon projection cache storage",
+        )
+    return _checked_product(
+        2,
+        per_entry,
+        "polygon projection cache storage",
+    )
+
+
 def _require_model_storage(c: Context) -> None:
     """Reject operator storage that the selected electron model cannot use."""
     finite_mass_available = getattr(c.op, "finite_mass_available", True)
@@ -608,6 +670,128 @@ def _factor_storage_bytes(factor: Any) -> int:
             "operator factor storage",
         )
     return total
+
+
+def _csr_storage_bytes(value: Any) -> int:
+    if value is None:
+        return 0
+    total = 0
+    for name in ("data", "indices", "indptr"):
+        part = getattr(value, name, None)
+        if part is None:
+            raise Failure("Memory", f"polygon CSR member {name} is absent")
+        total = _checked_sum(
+            total,
+            _array_storage_bytes(part),
+            "polygon CSR incidence storage",
+        )
+    return total
+
+
+def _shared_storage_bytes(left: Any, right: Any, xp: Any) -> int:
+    if left is None or right is None:
+        return 0
+    shares_memory = getattr(xp, "shares_memory", None)
+    if shares_memory is None:
+        return 0
+    try:
+        shared = bool(shares_memory(left, right))
+    except Exception as error:
+        raise Failure(
+            "Memory", f"polygon storage alias check failed: {error}"
+        ) from error
+    if not shared:
+        return 0
+    return min(_array_storage_bytes(left), _array_storage_bytes(right))
+
+
+def _polygon_storage(c: Context, storage: dict[str, int]) -> int:
+    names = (
+        "S",
+        "scalar_I",
+        "Dface",
+        "face_normals_backend",
+        "cell_radius_backend",
+        "curvature_radius",
+    )
+    present = any(hasattr(c.op, name) for name in names)
+    present = present or hasattr(c.op, "nnzCSR")
+    if not present:
+        return 0
+
+    operator_bytes = 0
+    for name in names:
+        value = getattr(c.op, name, None)
+        if value is None:
+            continue
+        item_bytes = _array_storage_bytes(value)
+        storage[f"polygon_{name}_bytes"] = item_bytes
+        operator_bytes = _checked_sum(
+            operator_bytes, item_bytes, "polygon operator array storage"
+        )
+    storage["polygon_operator_array_bytes"] = operator_bytes
+
+    csr_bytes = 0
+    csr_entries = 0
+    for name in ("b1", "b2"):
+        value = getattr(c.geometry, name, None)
+        if value is None:
+            continue
+        csr_bytes = _checked_sum(
+            csr_bytes,
+            _csr_storage_bytes(value),
+            "polygon CSR incidence storage",
+        )
+        csr_entries = _checked_sum(
+            csr_entries,
+            int(getattr(value, "nnz", 0)),
+            "polygon CSR incidence entries",
+        )
+    storage["polygon_csr_incidence_bytes"] = csr_bytes
+    storage["polygon_csr_nnz_entries"] = csr_entries
+
+    nnz_bytes = 0
+    if hasattr(c.op, "nnzCSR"):
+        value = c.op.nnzCSR
+        number = value.item() if hasattr(value, "item") else value
+        if (
+            isinstance(number, bool)
+            or not isinstance(number, (int, np.integer))
+            or int(number) < 0
+        ):
+            raise Failure(
+                "Memory", "polygon nnzCSR must be a non-negative integer"
+            )
+        storage["polygon_nnzCSR_entries"] = int(number)
+        nnz_bytes = _array_storage_bytes(value)
+        storage["polygon_nnzCSR_bytes"] = nnz_bytes
+
+    alias_bytes = 0
+    xp = c.compute.xp
+    for left_name, right_name in (
+        ("S", "scalar_I"),
+        ("Dface", "DR"),
+        ("curvature_radius", "cell_radius_backend"),
+    ):
+        alias_bytes = _checked_sum(
+            alias_bytes,
+            _shared_storage_bytes(
+                getattr(c.op, left_name, None),
+                getattr(c.op, right_name, None),
+                xp,
+            ),
+            "polygon alias duplicate storage",
+        )
+    storage["polygon_alias_duplicate_bytes"] = alias_bytes
+
+    polygon_bytes = _checked_sum(
+        operator_bytes, csr_bytes, "polygon persistent storage"
+    )
+    polygon_bytes = _checked_sum(
+        polygon_bytes, nnz_bytes, "polygon persistent storage"
+    )
+    storage["polygon_persistent"] = polygon_bytes
+    return polygon_bytes
 
 
 def massless_matrix_storage(c: Context) -> dict[str, int]:
@@ -704,15 +888,19 @@ def massless_matrix_storage(c: Context) -> dict[str, int]:
         )
     storage["finite_storage_oracle"] = finite_oracle
 
+    _polygon_storage(c, storage)
     persistent = 0
-    for name in (
+    persistent_groups = [
         "mode_matrices",
         "fixed_matrices",
         "filter_matrices",
         "metric_vectors",
         "filter_factors",
         "finite_storage_oracle",
-    ):
+    ]
+    if "polygon_persistent" in storage:
+        persistent_groups.append("polygon_persistent")
+    for name in persistent_groups:
         persistent = _checked_sum(
             persistent,
             storage[name],
@@ -858,13 +1046,15 @@ def estimated_peak_bytes(c: Context) -> int:
         ):
             resident = add(resident, matrix.size)
         entries = add(entries, product(8, resident))
-        return add(product(entries, 16), fixed_wall_cache_bytes(c))
+        total = add(product(entries, 16), fixed_wall_cache_bytes(c))
+        return add(total, polygon_projection_cache_bytes(c))
 
     storage = massless_matrix_storage(c)
     total = product(entries, 16)
     total = add(total, storage["persistent"])
     total = add(total, storage["temporary_matrices"])
-    return add(total, fixed_wall_cache_bytes(c))
+    total = add(total, fixed_wall_cache_bytes(c))
+    return add(total, polygon_projection_cache_bytes(c))
 
 
 def _workspace_bytes(c: Context) -> int:

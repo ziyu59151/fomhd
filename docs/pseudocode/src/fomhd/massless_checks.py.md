@@ -309,3 +309,19 @@ _fine_electron_work_checks(view,ctx,out,tag,diagnostic_work):
 No complete fine ion RHS, gradient, transport, boundary, or momentum record is
 constructed. If the mixed interval is rejected after these checks, the failure
 retains the actual diagnostic-work counts.
+
+
+## A050 polygon wall dispatch
+
+For polygon_dual_v1, form number/energy and Cartesian/angular-momentum integrals from the shared actual wall frame, face radius, area and physical toroidal samples. Pressure and magnetic traction use the actual normal, not separate u_R/u_Z zero conditions. Species-normal flux and reaction/work are measured from evolved values. Prescribed B_n/E_t traces and their zero Poynting flux are boundary definitions, not independent evidence of smooth-wall physical compatibility; separate same-field consistency/convergence checks remain required. Native aliases retain explicit layout labels. Staircase formulas are retained.
+
+
+## Polygon boundary observation batching
+
+The native polygon path consumes the single declared 18-channel wall-observation
+host batch defined in [polygon wall](polygon_wall.py.md). Physical traces are
+constructed on the selected backend; one explicit observation export supplies
+NumPy boundary integrals and tractions. Reuse requires the same immutable stage,
+state versions and sampling context. Volume/reaction reductions and actual
+physical constraints remain on the selected backend. No hard gate, physical
+formula or staircase path changes. Retain finite-positive mass/density guards.

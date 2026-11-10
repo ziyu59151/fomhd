@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from . import core, diagnostics
+from . import core, diagnostics, polygon_wall
 from .core import forward, inverse, mode_apply, sample_apply
 from .fluid import power_ledger
 from .massless import MODEL_NAME
@@ -377,7 +377,7 @@ def _electron_ledger(stage, context):
     )
 
 
-def _wall_trace_data(state, stage, context):
+def _legacy_wall_trace_data(state, stage, context):
     xp = _xp(context)
     nc = context.op.Nc
     nr = len(context.geometry.r_faces.keys)
@@ -463,12 +463,30 @@ def _wall_trace_data(state, stage, context):
             velocity.append(velocity_trace)
             perp.append(perp_trace)
             parallel.append(parallel_trace)
+        radius = float(
+            context.geometry.r_faces.R[wall.face]
+            if radial
+            else context.geometry.z_faces.R[wall.face]
+        )
+        normal3 = (
+            (float(wall.sign), 0.0, 0.0)
+            if radial
+            else (0.0, 0.0, float(wall.sign))
+        )
+        tangent3 = (
+            (0.0, 0.0, float(wall.sign))
+            if radial
+            else (-float(wall.sign), 0.0, 0.0)
+        )
         traces.append(
             SimpleNamespace(
                 wall=wall,
                 edge=edge,
                 direction=direction,
                 sigma=sigma,
+                normal3=normal3,
+                tangent3=tangent3,
+                radius=radius,
                 area=area,
                 B=bvectors,
                 density=density,
@@ -481,7 +499,196 @@ def _wall_trace_data(state, stage, context):
     return traces
 
 
-def _boundary(state, stage, context):
+def _wall_trace_data(state, stage, context):
+    if polygon_wall.is_polygon(context):
+        return polygon_wall.wall_trace_data(state, stage, context)
+    return _legacy_wall_trace_data(state, stage, context)
+
+
+def _polygon_boundary_batched(trace_data, context):
+    """Build public traces and integrals from NumPy wall observations."""
+    host = trace_data.host
+    integrals = host.boundary
+    result = SimpleNamespace(
+        traces=[],
+        number=integrals.number.tolist(),
+        kinetic=integrals.kinetic.tolist(),
+        internal_perp=integrals.internal_perp.tolist(),
+        internal_parallel=integrals.internal_parallel.tolist(),
+        field_energy=integrals.field_energy,
+        total_energy=integrals.total_energy,
+        applicability=_applicability(),
+    )
+    for sample in range(context.N):
+        for wall_index in range(host.packed.shape[1]):
+            trace = SimpleNamespace(
+                B=[
+                    float(host.B[sample, wall_index, component])
+                    for component in range(3)
+                ],
+                EL=[0.0, 0.0, 0.0],
+                ET=[0.0, 0.0, 0.0],
+                E_n=float(host.electric_normal[sample, wall_index]),
+                E_wall=[
+                    float(value)
+                    for value in host.electric_wall[sample, wall_index]
+                ],
+                normal3=tuple(host.normal3[wall_index]),
+                tangent3=tuple(host.tangent3[wall_index]),
+                radius=float(host.radius[wall_index]),
+                direction=None,
+                velocity=[
+                    [
+                        float(value)
+                        for value in host.velocity[species, sample, wall_index]
+                    ]
+                    for species in range(2)
+                ],
+                density=[
+                    float(host.density[species, sample, wall_index])
+                    for species in range(2)
+                ],
+                normal_flux=[
+                    float(host.normal_flux[species, sample, wall_index])
+                    for species in range(2)
+                ],
+                perp=[
+                    float(host.perp[species, sample, wall_index])
+                    for species in range(2)
+                ],
+                parallel=[
+                    float(host.parallel[species, sample, wall_index])
+                    for species in range(2)
+                ],
+            )
+            result.traces.append(trace)
+    result._trace_data = trace_data
+    return result
+
+
+def _polygon_boundary(state, stage, context):
+    """Integrate polygon traces using the shared actual face frame."""
+    xp = _xp(context)
+    result = SimpleNamespace(
+        traces=[],
+        number=[0.0, 0.0],
+        kinetic=[0.0, 0.0],
+        internal_perp=[0.0, 0.0],
+        internal_parallel=[0.0, 0.0],
+        field_energy=0.0,
+        total_energy=0.0,
+        applicability=_applicability(),
+    )
+    trace_data = _wall_trace_data(state, stage, context)
+    if getattr(trace_data, "host", None) is not None:
+        return _polygon_boundary_batched(trace_data, context)
+    for sample in range(context.N):
+        for data in trace_data:
+            normal = xp.asarray(data.normal3, dtype=xp.float64)
+            tangent = xp.asarray(data.tangent3, dtype=xp.float64)
+            b = xp.stack(
+                (
+                    data.B[0][sample],
+                    data.B[1][sample],
+                    data.B[2][sample],
+                )
+            )
+            electric_wall = data.electric_wall[sample]
+            trace = SimpleNamespace(
+                B=[float(xp.real(value[sample]).item()) for value in data.B],
+                EL=[0.0, 0.0, 0.0],
+                ET=[0.0, 0.0, 0.0],
+                E_n=float(data.electric_normal[sample].item()),
+                E_wall=[
+                    float(xp.real(value).item()) for value in electric_wall
+                ],
+                normal3=data.normal3,
+                tangent3=data.tangent3,
+                radius=data.radius,
+                direction=None,
+                velocity=[[0.0] * 3 for _ in range(2)],
+                density=[0.0, 0.0],
+                normal_flux=[0.0, 0.0],
+                perp=[0.0, 0.0],
+                parallel=[0.0, 0.0],
+            )
+            for species in range(2):
+                density = float(data.density[species][sample].item())
+                normal_flux = float(
+                    data.normal_flux[species][sample].item()
+                )
+                perp = float(data.perp[species][sample].item())
+                parallel = float(data.parallel[species][sample].item())
+                velocity = data.velocity[species][sample]
+                un_flux = normal_flux / density
+                un_velocity = float(
+                    xp.real(xp.sum(velocity * normal)).item()
+                )
+                kinetic_density = (
+                    0.5
+                    * context.p.species[species].mass
+                    * density
+                    * float(xp.real(xp.sum(velocity * velocity)).item())
+                    if species == 0
+                    else 0.0
+                )
+                trace.density[species] = density
+                trace.normal_flux[species] = normal_flux
+                trace.perp[species] = perp
+                trace.parallel[species] = parallel
+                trace.velocity[species] = [
+                    float(xp.real(value).item()) for value in velocity
+                ]
+                result.number[species] += data.area * normal_flux
+                result.kinetic[species] += (
+                    data.area * kinetic_density * un_flux
+                )
+                result.internal_perp[species] += (
+                    data.area
+                    * perp
+                    * un_flux
+                    * (
+                        1.0
+                        if species
+                        else 1.0 / (context.p.species[0].gamma - 1.0)
+                    )
+                )
+                if species:
+                    result.internal_parallel[species] += (
+                        data.area * 0.5 * parallel * un_flux
+                    )
+                internal_density = (
+                    perp + 0.5 * parallel
+                    if species
+                    else perp / (context.p.species[0].gamma - 1.0)
+                )
+                pressure_work = perp * un_velocity
+                if species:
+                    bmag = float(xp.sqrt(xp.sum(b * b)).item())
+                    if bmag <= 0.0:
+                        raise Failure(
+                            "WallTrace",
+                            "polygon wall tangential magnetic field is zero",
+                        )
+                    bhat = b / bmag
+                    pressure_work += (
+                        (parallel - perp)
+                        * float(xp.real(xp.sum(bhat * velocity)).item())
+                        * float(xp.real(xp.sum(bhat * normal)).item())
+                    )
+                result.total_energy += (
+                    data.area
+                    * (
+                        (kinetic_density + internal_density) * un_flux
+                        + pressure_work
+                    )
+                )
+            result.traces.append(trace)
+    result._trace_data = trace_data
+    return result
+
+
+def _legacy_boundary(state, stage, context):
     """Integrate actual per-wall traces; electron kinetic transport is absent."""
     xp = _xp(context)
     nc = context.op.Nc
@@ -613,7 +820,13 @@ def _boundary(state, stage, context):
     return result
 
 
-def momentum(state, result, context):
+def _boundary(state, stage, context):
+    if polygon_wall.is_polygon(context):
+        return _polygon_boundary(state, stage, context)
+    return _legacy_boundary(state, stage, context)
+
+
+def _legacy_momentum(state, result, context):
     """Return Cartesian ion momentum and the approved no-displacement traction."""
     xp = _xp(context)
     nc = context.op.Nc
@@ -763,6 +976,163 @@ def momentum(state, result, context):
             ),
         ),
     )
+
+
+def _polygon_momentum(state, result, context):
+    """Integrate polygon traction with the actual normal and face radius."""
+    xp = _xp(context)
+    nc = context.op.Nc
+    m0 = xp.real(xp.asarray(context.op.M0)).astype(xp.float64)
+    cell_radius = xp.asarray(context.geometry.cells.R).reshape(nc)
+    ion = xp.asarray(result.fluid[0].mom).reshape(context.N, 3, nc)
+    reaction = xp.asarray(result.terms[0].reaction).reshape(
+        context.N,
+        3,
+        nc,
+    )
+    ion_rate = inverse(
+        result.rhs.fluid[0].mom,
+        3 * nc,
+        context,
+        True,
+        context.p.species[0].mass
+        * context.p.ref.ni
+        * context.p.ref.velocity
+        / context.p.ref.time,
+    ).reshape(context.N, 3, nc)
+    samples = max(context.N, 3)
+    value = np.zeros(3)
+    pdot = np.zeros(3)
+    reaction_xyz = np.zeros(3)
+    traction_xyz = np.zeros(3)
+    angular = 0.0
+    angular_rate = 0.0
+    wall_torque = 0.0
+    outward_torque = 0.0
+    trace_data = result.boundary._trace_data
+    host = getattr(trace_data, "host", None)
+    wall_count = (
+        host.packed.shape[1]
+        if host is not None
+        else len(trace_data)
+    )
+    for q in range(samples):
+        sample = 0 if context.N == 1 else q
+        angle = 2.0 * math.pi * q / samples
+        cos_angle = math.cos(angle)
+        sin_angle = math.sin(angle)
+        weights = 2.0 * math.pi * m0 / samples
+        for target, source in (
+            (value, ion[sample]),
+            (pdot, ion_rate[sample]),
+            (reaction_xyz, reaction[sample]),
+        ):
+            cartesian = (
+                source[0] * cos_angle - source[1] * sin_angle,
+                source[0] * sin_angle + source[1] * cos_angle,
+                source[2],
+            )
+            for component in range(3):
+                target[component] += _physical_real(
+                    xp.sum(weights * cartesian[component]),
+                    "ion momentum integral",
+                )
+        angular += _physical_real(
+            xp.sum(weights * cell_radius * ion[sample, 1, :]),
+            "ion angular momentum integral",
+        )
+        angular_rate += _physical_real(
+            xp.sum(weights * cell_radius * ion_rate[sample, 1, :]),
+            "ion angular momentum rate",
+        )
+        wall_torque += _physical_real(
+            xp.sum(weights * cell_radius * reaction[sample, 1, :]),
+            "ion projection torque",
+        )
+        for wall_index in range(wall_count):
+            if host is not None:
+                traction = host.traction[sample, wall_index]
+                area_per_radian = (
+                    host.area[wall_index]
+                    * context.N
+                    / (2.0 * math.pi)
+                )
+                surface_radius = host.radius[wall_index]
+            else:
+                data = trace_data[wall_index]
+                traction = polygon_wall.wall_traction(
+                    data,
+                    sample,
+                    context,
+                )
+                area_per_radian = data.wall.area_per_radian
+                surface_radius = data.radius
+            cartesian = (
+                traction[0] * cos_angle - traction[1] * sin_angle,
+                traction[0] * sin_angle + traction[1] * cos_angle,
+                traction[2],
+            )
+            wall_weight = (
+                2.0 * math.pi * area_per_radian / samples
+            )
+            for component in range(3):
+                if host is not None:
+                    traction_xyz[component] += (
+                        wall_weight * cartesian[component]
+                    )
+                else:
+                    traction_xyz[component] += wall_weight * float(
+                        xp.real(cartesian[component]).item()
+                    )
+            outward_torque += (
+                wall_weight
+                * surface_radius
+                * (
+                    traction[1]
+                    if host is not None
+                    else float(xp.real(traction[1]).item())
+                )
+            )
+    balance_defect = pdot + traction_xyz
+    return SimpleNamespace(
+        value=value.tolist(),
+        pdot=pdot.tolist(),
+        outward=traction_xyz.tolist(),
+        wall_reaction=reaction_xyz.tolist(),
+        angular=angular,
+        angular_rate=angular_rate,
+        angular_balance_defect=angular_rate + outward_torque,
+        outward_torque=outward_torque,
+        wall_torque=wall_torque,
+        angular_samples=samples,
+        balance_defect=balance_defect.tolist(),
+        normal=(
+            tuple(host.normal3[0])
+            if host is not None
+            else (trace_data[0].normal3 if trace_data else None)
+        ),
+        tangent=(
+            tuple(host.tangent3[0])
+            if host is not None
+            else (trace_data[0].tangent3 if trace_data else None)
+        ),
+        applicability=SimpleNamespace(
+            electron_momentum="not_applicable",
+            electron_kinetic_energy="not_applicable",
+            electron_mechanical_stress="not_applicable",
+            longitudinal_electric_stress="not_applicable",
+            boundary_traction=(
+                "mi ni ui ui + pi I + Pe + |B|^2 I/(2 mu0) "
+                "- B B/mu0 applied to the actual wall normal"
+            ),
+        ),
+    )
+
+
+def momentum(state, result, context):
+    if polygon_wall.is_polygon(context):
+        return _polygon_momentum(state, result, context)
+    return _legacy_momentum(state, result, context)
 
 
 def _gamma_operation(count, epsilon):
@@ -1234,6 +1604,8 @@ def _stage_residuals(state, result, context):
 
 
 def _wall_flux_samples(flux, context):
+    if polygon_wall.is_polygon(context):
+        return polygon_wall.wall_flux_samples(flux, context)
     xp = _xp(context)
     nc = context.op.Nc
     nr = len(context.geometry.r_faces.keys)

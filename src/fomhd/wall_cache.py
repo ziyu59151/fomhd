@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any
 
+from .polygon_wall import is_polygon, signed_wall_extraction
 from .types import Failure
 
 
@@ -55,6 +56,8 @@ def _maximum(value: Any, backend: Any) -> float:
 
 
 def _signed_wall_extraction(context, backend):
+    if is_polygon(context):
+        return signed_wall_extraction(context, backend)
     xp = backend.xp
     nc = context.op.Nc
     nr = len(context.geometry.r_faces.keys)

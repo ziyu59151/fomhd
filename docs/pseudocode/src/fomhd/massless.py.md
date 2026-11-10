@@ -304,3 +304,8 @@ validated outer history sample identity. A nested alias inherits the original
 identity rather than multiplying or resetting it. The fixed wall factorization
 cache key remains unchanged. This accounting correction does not alter any
 physical state, alias diagnostic, cap, or numerical operation.
+
+
+## A050 polygon wall dispatch
+
+The polygon layout uses actual normal extraction and the shared weighted thin-SVD velocity projection. Magnetic alias groups are [B_phi(vertex), B_t(face)] with layout labels; the existing diagnostic budget components are selected explicitly. Physical Ohm, QN/current reconstruction and one-producer stage contracts are unchanged. See [polygon_wall](polygon_wall.py.md) and [polygon_projection](polygon_projection.py.md).

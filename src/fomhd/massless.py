@@ -30,6 +30,12 @@ from .fluid import (
     velocity_gradient,
 )
 from .stage import _retain_common_failure_evidence
+from . import polygon_projection
+from .polygon_wall import (
+    is_polygon,
+    magnetic_alias_groups,
+    signed_wall_extraction,
+)
 from .types import (
     Failure,
     FluidState,
@@ -102,6 +108,8 @@ def _require_model(context):
 
 
 def _signed_wall_extraction(context, mode_index):
+    if is_polygon(context):
+        return signed_wall_extraction(context, context.compute)
     xp = _xp(context)
     nc = context.op.Nc
     nr = len(context.geometry.r_faces.keys)
@@ -118,6 +126,9 @@ def _signed_wall_extraction(context, mode_index):
 
 
 def _wall_extractions(context):
+    if is_polygon(context):
+        extraction = signed_wall_extraction(context, context.compute)
+        return [extraction for _ in range(_modes(context))]
     return get_wall_cache(context).extraction
 
 
@@ -247,6 +258,22 @@ def _constraint_project(nodal, density, context):
     source = xp.asarray(nodal, dtype=xp.complex128).reshape(
         context.N, entities
     )
+    if is_polygon(context):
+        projected = [
+            polygon_projection.project(
+                source[sample],
+                T,
+                context.op.T_full,
+                winv[sample],
+                context,
+                label="electron wall",
+            )
+            for sample in range(context.N)
+        ]
+        return xp.stack(
+            [record.value for record in projected],
+            axis=0,
+        ).reshape(-1)
     length = float(context.p.ref.length)
     row_scale = 1.0 / length**3
     column_scale = 1.0 / length**3
@@ -957,17 +984,12 @@ def _alias_probe(canonical, tag, context, result):
         context,
         context.p.species[1].id,
     )
-    offsets = (
-        0,
-        len(context.geometry.z_faces.keys),
-        len(context.geometry.z_faces.keys)
-        + len(context.geometry.vertices.keys),
-        context.op.Nb,
-    )
+    polygon = is_polygon(context)
+    offsets, names, measure_names, layout = magnetic_alias_groups(context)
     mb = _xp(context).real(_xp(context).asarray(context.op.MB)).astype(
         _xp(context).float64
     )
-    for component, name in enumerate(("R", "phi", "Z")):
+    for component, name in enumerate(names):
         start, stop = offsets[component], offsets[component + 1]
         left = result.rhs.B.reshape(_modes(context), context.op.Nb)[
             :, start:stop
@@ -975,6 +997,7 @@ def _alias_probe(canonical, tag, context, result):
         right = alternate.rhs.B.reshape(_modes(context), context.op.Nb)[
             :, start:stop
         ].reshape(-1)
+        start_record = len(result.checks)
         diagnostics.measure(
             result.checks,
             "alias_B",
@@ -983,8 +1006,12 @@ def _alias_probe(canonical, tag, context, result):
             "T/s",
             tag,
             context,
-            component=name,
+            component=measure_names[component],
         )
+        if polygon:
+            for record in result.checks[start_record:]:
+                record.component = name
+                record.layout = layout
     diagnostics.gate(result.checks)
 
 

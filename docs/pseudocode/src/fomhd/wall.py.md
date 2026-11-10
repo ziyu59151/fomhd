@@ -100,3 +100,8 @@ constraints as well.
 No physical-real projection is applied: complex unit vectors used to
 materialize the electric response preserve their complex coefficients through
 this operation. The input `r` is never changed.
+
+
+## A050 polygon wall dispatch
+
+The explicit polygon layout dispatches to the weighted thin-SVD projector in [polygon_projection](polygon_projection.py.md). For each physical toroidal sample, prepare A=T sqrt(Winv), retain every selected independent constraint, and project with that basis. Reaction=value-source, multiplier uses the same singular basis, and the actual multiplier residual is T(Winv T* lambda)-T source. Refine only against the existing full-row forward gate; never lower rank to pass a gate. The old staircase LU path is unchanged.

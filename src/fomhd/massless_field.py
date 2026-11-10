@@ -40,6 +40,11 @@ from .massless import (
     _wall_correction,
     _xp,
 )
+from .polygon_wall import (
+    is_polygon,
+    magnetic_alias_groups,
+    wall_flux_samples,
+)
 from .types import Failure, StageTag, field_cache_record
 from .wall import project_wall
 from .wall_cache import get_wall_cache
@@ -305,6 +310,8 @@ def _field_residuals(frame, context):
 
 
 def _wall_flux_samples(flux, context):
+    if is_polygon(context):
+        return wall_flux_samples(flux, context)
     xp = _xp(context)
     nc = context.op.Nc
     nr = len(context.geometry.r_faces.keys)
@@ -775,17 +782,12 @@ def _alias_probe(canonical, tag, context, result):
         context,
         context.p.species[1].id,
     )
-    offsets = (
-        0,
-        len(context.geometry.z_faces.keys),
-        len(context.geometry.z_faces.keys)
-        + len(context.geometry.vertices.keys),
-        context.op.Nb,
-    )
+    polygon = is_polygon(context)
+    offsets, names, measure_names, layout = magnetic_alias_groups(context)
     mb = _xp(context).real(
         _xp(context).asarray(context.op.MB)
     ).astype(_xp(context).float64)
-    for component, name in enumerate(("R", "phi", "Z")):
+    for component, name in enumerate(names):
         start, stop = offsets[component], offsets[component + 1]
         left = result.field_rates.B.reshape(
             _modes(context), context.op.Nb
@@ -793,6 +795,7 @@ def _alias_probe(canonical, tag, context, result):
         right = alternate.field_rates.B.reshape(
             _modes(context), context.op.Nb
         )[:, start:stop].reshape(-1)
+        start_record = len(result.checks)
         diagnostics.measure(
             result.checks,
             "alias_B",
@@ -801,8 +804,12 @@ def _alias_probe(canonical, tag, context, result):
             "T/s",
             tag,
             context,
-            component=name,
+            component=measure_names[component],
         )
+        if polygon:
+            for record in result.checks[start_record:]:
+                record.component = name
+                record.layout = layout
     diagnostics.gate(result.checks)
 
 

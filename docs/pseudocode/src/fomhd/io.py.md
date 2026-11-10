@@ -318,3 +318,8 @@ read_restart:
 Only complete accepted macro endpoints are encoded. No partially iterated
 waveform window is encoded; mid-microstage and old/new path states held for
 iteration or interval quadrature are never written as restart candidates.
+
+
+## A050 native polygon I/O
+
+Dispatch explicit `polygon_dual_v1` entities to [polygon_io](polygon_io.py.md). Native physical frames, cochain order and geometry/payload fingerprints are mandatory; reject cross-layout data. Codec inputs are explicit host complex128 arrays exported only at the I/O boundary. Legacy staircase layout remains unchanged.

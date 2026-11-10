@@ -160,3 +160,8 @@ adding it to the padded electric force; it must not transfer to host, copy
 needlessly, or retain a borrowed temporary. The public `ion_em_terms.magnetic`
 contract remains flat `N*3*Nc`, matching `electric`, `projected`, and
 `reaction`.
+
+
+## A050 polygon wall dispatch
+
+For polygon_dual_v1 use shared actual-normal flux extraction and native [B_phi(vertex), B_t(face)] magnetic alias groups. Fixed ion paths, field-only evaluation, stage identity, trial ownership and final commit remain unchanged. Polygon traces are defined in [polygon_wall](polygon_wall.py.md); no complete ion RHS is added to a field-only call.

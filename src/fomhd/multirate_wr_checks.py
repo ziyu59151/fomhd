@@ -17,7 +17,7 @@ from typing import Any
 
 import numpy as np
 
-from . import core, massless_checks
+from . import core, massless_checks, polygon_wall
 from .core import forward, inverse
 from .types import Failure
 
@@ -624,7 +624,111 @@ def validate_mixed_interval(
     return interval
 
 
+def _polygon_boundary_summands(state, stage, context):
+    """Return WR interval summands from actual polygon face frames."""
+    traces = massless_checks._wall_trace_data(state, stage, context)
+    host = getattr(traces, "host", None)
+    if host is not None:
+        boundary = host.boundary
+        return _BoundarySummands(
+            number=tuple(float(value) for value in boundary.number),
+            kinetic=tuple(float(value) for value in boundary.kinetic),
+            internal_perp=tuple(
+                float(value) for value in boundary.internal_perp
+            ),
+            internal_parallel=tuple(
+                float(value) for value in boundary.internal_parallel
+            ),
+            energy=tuple(float(value) for value in boundary.energy),
+            field_energy=float(boundary.field_energy),
+        )
+    xp = _xp(context)
+    number = [0.0, 0.0]
+    kinetic = [0.0, 0.0]
+    internal_perp = [0.0, 0.0]
+    internal_parallel = [0.0, 0.0]
+    energy = [0.0, 0.0]
+    for sample in range(context.N):
+        for data in traces:
+            normal = xp.asarray(data.normal3, dtype=xp.float64)
+            b = xp.stack(
+                (
+                    data.B[0][sample],
+                    data.B[1][sample],
+                    data.B[2][sample],
+                )
+            )
+            for species in range(2):
+                density = float(data.density[species][sample].item())
+                normal_flux = float(
+                    data.normal_flux[species][sample].item()
+                )
+                un_flux = normal_flux / density
+                perp = float(data.perp[species][sample].item())
+                parallel = float(data.parallel[species][sample].item())
+                velocity = data.velocity[species][sample]
+                kinetic_density = (
+                    0.5
+                    * context.p.species[species].mass
+                    * density
+                    * float(xp.real(xp.sum(velocity * velocity)).item())
+                    if species == 0
+                    else 0.0
+                )
+                number[species] += data.area * normal_flux
+                kinetic[species] += data.area * kinetic_density * un_flux
+                internal_perp[species] += (
+                    data.area
+                    * perp
+                    * un_flux
+                    * (
+                        1.0
+                        if species
+                        else 1.0 / (context.p.species[0].gamma - 1.0)
+                    )
+                )
+                if species:
+                    internal_parallel[species] += (
+                        data.area * 0.5 * parallel * un_flux
+                    )
+                internal_density = (
+                    perp + 0.5 * parallel
+                    if species
+                    else perp / (context.p.species[0].gamma - 1.0)
+                )
+                pressure_work = perp * float(
+                    xp.real(xp.sum(velocity * normal)).item()
+                )
+                if species:
+                    bmag = float(xp.sqrt(xp.sum(b * b)).item())
+                    if bmag <= 0.0:
+                        raise Failure(
+                            "WRTraction",
+                            "polygon wall tangential magnetic field is zero",
+                        )
+                    bhat = b / bmag
+                    pressure_work += (
+                        (parallel - perp)
+                        * float(xp.real(xp.sum(bhat * velocity)).item())
+                        * float(xp.real(xp.sum(bhat * normal)).item())
+                    )
+                energy[species] += data.area * (
+                    (kinetic_density + internal_density) * un_flux
+                    + pressure_work
+                )
+    return _BoundarySummands(
+        number=(number[0], number[1]),
+        kinetic=(kinetic[0], kinetic[1]),
+        internal_perp=(internal_perp[0], internal_perp[1]),
+        internal_parallel=(internal_parallel[0], internal_parallel[1]),
+        energy=(energy[0], energy[1]),
+        field_energy=0.0,
+    )
+
+
 def _boundary_summands(state, stage, context):
+    if polygon_wall.is_polygon(context):
+        return _polygon_boundary_summands(state, stage, context)
     traces = stage.boundary._trace_data if hasattr(stage, "boundary") else massless_checks._wall_trace_data(state, stage, context)
     xp = _xp(context)
     nc = context.op.Nc
@@ -732,6 +836,8 @@ def _boundary_summands(state, stage, context):
 
 
 def _traction_components(data, sample, context):
+    if polygon_wall.is_polygon(context):
+        return polygon_wall.traction_components(data, sample, context)
     xp = _xp(context)
     direction = data.direction
     sigma = data.sigma
@@ -790,6 +896,7 @@ def _momentum_integrals(
     m0 = xp.real(xp.asarray(context.op.M0)).astype(xp.float64)
     cell_radius = xp.asarray(context.geometry.cells.R).reshape(nc)
     traces = massless_checks._wall_trace_data(state, stage, context)
+    host = getattr(traces, "host", None)
     samples = max(context.N, 3)
     outward = np.zeros(3)
     outward_torque = 0.0
@@ -822,31 +929,44 @@ def _momentum_integrals(
                 xp.sum(weights * cell_radius * source[1]),
                 "mixed projection torque",
             )
-        for data in traces:
-            transport, electromagnetic = _traction_components(
-                data, sample, context
-            )
-            components = (
-                transport
-                if traction_role == "transport"
-                else electromagnetic
-            )
-            wall_weight = 2.0 * math.pi * data.wall.area_per_radian / samples
-            surface_radius = (
-                float(context.geometry.r_faces.R[data.wall.face])
-                if data.wall.component == "r_face"
-                else float(context.geometry.z_faces.R[data.wall.face])
-            )
-            cartesian = (
-                components[0] * cos_angle - components[1] * sin_angle,
-                components[0] * sin_angle + components[1] * cos_angle,
-                components[2],
-            )
-            for component in range(3):
-                outward[component] += wall_weight * cartesian[component]
-            outward_torque += (
-                wall_weight * surface_radius * components[1]
-            )
+        if host is None:
+            for data in traces:
+                transport, electromagnetic = _traction_components(
+                    data, sample, context
+                )
+                components = (
+                    transport
+                    if traction_role == "transport"
+                    else electromagnetic
+                )
+                wall_weight = (
+                    2.0 * math.pi * data.wall.area_per_radian / samples
+                )
+                surface_radius = (
+                    data.radius
+                    if polygon_wall.is_polygon(context)
+                    else (
+                        float(context.geometry.r_faces.R[data.wall.face])
+                        if data.wall.component == "r_face"
+                        else float(context.geometry.z_faces.R[data.wall.face])
+                    )
+                )
+                cartesian = (
+                    components[0] * cos_angle - components[1] * sin_angle,
+                    components[0] * sin_angle + components[1] * cos_angle,
+                    components[2],
+                )
+                for component in range(3):
+                    outward[component] += wall_weight * cartesian[component]
+                outward_torque += (
+                    wall_weight * surface_radius * components[1]
+                )
+    if host is not None:
+        outward, outward_torque = polygon_wall.host_traction_integrals(
+            host,
+            traction_role,
+            samples,
+        )
     return (
         tuple(float(value) for value in outward),
         float(outward_torque),
