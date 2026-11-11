@@ -94,3 +94,7 @@ Pseudocode is an executable implementation guide, not proof. MMS, convergence,
 conservation, restart, independent-array, and CPU/GPU evidence remain separate.
 Fourth-order claims apply only to measured smooth regions; the staircase wall,
 global spatial order, scientific validation, and performance remain unclaimed.
+
+[D075 rectangular outer wall](src/fomhd/box_boundary.py.md) explains the
+formal geometry entry, fixed magnetic flux, shared stress and work trace,
+and restart identity.

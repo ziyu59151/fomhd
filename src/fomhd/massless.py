@@ -7,6 +7,7 @@ import math
 import sys
 from types import SimpleNamespace
 
+from .box_boundary import electron_pressure_traction, magnetic_divergence
 from .core import (
     _hermitian_check,
     allocate_state,
@@ -38,6 +39,7 @@ from .types import (
     stage_result_record,
 )
 from .wall import build_wall
+from .wall_cache import apply_wall_cache, get_wall_cache
 
 
 UINT64_MAX = (1 << 64) - 1
@@ -114,6 +116,8 @@ def _signed_wall_extraction(context, mode_index):
 
 
 def _wall_extractions(context):
+    if getattr(context.geometry, "lcfs_polygon", None) is not None:
+        return get_wall_cache(context).extraction
     return [
         _signed_wall_extraction(context, stored)
         for stored in range(_modes(context))
@@ -469,6 +473,8 @@ def _electron_fluid(derived, state, tag, context):
         SimpleNamespace(perp=pressure, parallel=parallel), 1, derived.bhat, context
     )
     pressure_force = gradient_adjoint(fluid, tensor.reshape(-1), context)
+    if getattr(context.op, "box_wall", None) is not None:
+        pressure_force += electron_pressure_traction(state.B, fluid, context)
     magnetic_force = _warp_magnetic_force(
         velocity, derived.BN, density, electron.charge, context
     )
@@ -569,6 +575,8 @@ def _massless_e0(fluid, derived, context):
 
 
 def _wall_correction(e0, context):
+    if getattr(context.geometry, "lcfs_polygon", None) is not None:
+        return apply_wall_cache(get_wall_cache(context), e0)
     xp = _xp(context)
     ne = context.op.Ne
     m1 = xp.real(xp.asarray(context.op.M1)).astype(xp.float64)
@@ -648,7 +656,7 @@ def _wall_correction(e0, context):
 def _initial_constraints(derived, context):
     xp = _xp(context)
     modes = _modes(context)
-    divergence = mode_apply(context.op.DB, derived.state_B, context.compute)
+    divergence = magnetic_divergence(derived.state_B, context)
     divergence_scale = 0.0
     for stored in range(modes):
         matrix = xp.asarray(context.op.DB[stored], dtype=xp.complex128)
@@ -989,7 +997,7 @@ def initialize(state, context, cumulative, equilibrium, captured=None):
         diagnostics.measure(
             stage.checks,
             "initial_divB",
-            mode_apply(context.op.DB, stage.canonical_state.B, context.compute),
+            magnetic_divergence(stage.canonical_state.B, context),
             context.geometry.wv,
             "T/m",
             tag,
@@ -1075,9 +1083,7 @@ def initialize(state, context, cumulative, equilibrium, captured=None):
             stage.checks, ("initial_divB", "wall_initial_current")
         )
         cumulative.baseline = SimpleNamespace(
-            divB=mode_apply(
-                context.op.DB, stage.canonical_state.B, context.compute
-            ),
+            divB=magnetic_divergence(stage.canonical_state.B, context),
             totals=stage.totals,
             momentum=stage.momentum,
             time=stage.canonical_state.time,

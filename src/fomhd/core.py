@@ -104,12 +104,11 @@ def estimated_peak_bytes(c: Context) -> int:
     return product(entries, 16)
 
 
-def allocate_state(c: Context) -> State:
+def preflight_memory(c: Context) -> int:
     if c.p.memory_limit == 0:
         raise Failure("Memory", "a positive host memory cap is required")
     peak_bytes = estimated_peak_bytes(c)
     _require_memory(peak_bytes, c.p.memory_limit, "complete A0 peak storage plan")
-    xp = c.compute.xp
     nc = c.op.Nc
     modes = 2 * c.p.K + 1
     entries = _checked_product(
@@ -132,6 +131,15 @@ def allocate_state(c: Context) -> State:
             c.p.device_memory_limit,
             "device state/workspace",
         )
+
+    return peak_bytes
+
+
+def allocate_state(c: Context) -> State:
+    preflight_memory(c)
+    xp = c.compute.xp
+    nc = c.op.Nc
+    modes = 2 * c.p.K + 1
 
     def empty() -> Any:
         return c.compute.array(xp.empty(0, dtype=xp.complex128))
