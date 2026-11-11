@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import numpy as np
 
 from . import core, diagnostics
+from .box_boundary import wall_magnetic_trace
 from .core import forward, inverse, mode_apply, sample_apply
 from .fluid import power_ledger
 from .massless import MODEL_NAME
@@ -291,6 +292,17 @@ def _electron_ledger(stage, context):
         _integrate_edges(edge_electric.reshape(-1), context),
         "electron edge electric power",
     )
+    pressure_wall_load = getattr(fluid, "pressure_wall_load", None)
+    pressure_wall = 0.0
+    pressure_wall_scale = 0.0
+    if pressure_wall_load is not None:
+        products = xp.conj(velocity.reshape(-1)) * pressure_wall_load
+        pressure_wall = -_physical_real(
+            _integrate_cells(products, 3, context), "outward electron pressure work"
+        )
+        pressure_wall_scale = _physical_real(
+            _integrate_cells(xp.abs(products), 3, context), "electron pressure wall scale"
+        )
     return SimpleNamespace(
         electric_node=0.0,
         node_electric_work=node_electric_work,
@@ -307,6 +319,8 @@ def _electron_ledger(stage, context):
         ),
         pressure_internal=pressure_retained_integral,
         pressure_internal_full=pressure_full_integral,
+        pressure_wall=pressure_wall,
+        pressure_wall_scale=pressure_wall_scale,
         pressure_truncation=pressure_retained_integral - pressure_full_integral,
         magnetic=_physical_real(
             _integrate_cells(magnetic.reshape(-1), 3, context),
@@ -395,7 +409,11 @@ def _wall_trace_data(state, stage, context):
         context.N, context.op.Nb
     )
     traces = []
-    for wall in context.geometry.walls:
+    physical_wall_B = (
+        wall_magnetic_trace(state.B, context)
+        if getattr(context.op, "box_wall", None) is not None else None
+    )
+    for wall_id, wall in enumerate(context.geometry.walls):
         radial = wall.component == "r_face"
         edge = wall.face if radial else nr + nc + wall.face
         direction = 0 if radial else 2
@@ -413,6 +431,8 @@ def _wall_trace_data(state, stage, context):
             bvectors[2] = xp.real(magnetic[:, nz + nv + wall.face])
         else:
             bvectors[0] = xp.real(magnetic[:, wall.face])
+        if physical_wall_B is not None:
+            bvectors = [physical_wall_B[:, d, wall_id] for d in range(3)]
         density = []
         velocity = []
         perp = []
@@ -493,9 +513,11 @@ def _boundary(state, stage, context):
         internal_perp=[0.0, 0.0],
         internal_parallel=[0.0, 0.0],
         field_energy=0.0,
+        electron_pressure_work=0.0,
         total_energy=0.0,
         applicability=_applicability(),
     )
+    box = getattr(context.op, "box_wall", None) is not None
     trace_data = _wall_trace_data(state, stage, context)
     for sample in range(context.N):
         for data in trace_data:
@@ -599,8 +621,10 @@ def _boundary(state, stage, context):
                         * parallel_b
                         * wall.sign
                         * direction_b
-                        / bmag
+                        / (bmag * bmag)
                     )
+                    if box:
+                        result.electron_pressure_work += area * pressure_work
                 result.total_energy += (
                     area
                     * (
@@ -1215,10 +1239,12 @@ def _stage_residuals(state, result, context):
     residuals["electron_pressure_adjoint"] = (
         xp.asarray(result.ledger[1].pressure_kinetic)
         + xp.asarray(result.ledger[1].pressure_internal_full)
+        + xp.asarray(result.boundary.electron_pressure_work)
     ).reshape(1)
     residuals["electron_electric_pairing"] = xp.asarray(
         result.ledger[1].pressure_internal
         - result.ledger[1].electric_edge
+        + result.boundary.electron_pressure_work
     ).reshape(1)
     residuals["electron_pressure_only_pairing"] = xp.asarray(
         result.ledger[1].pressure_kinetic
@@ -1426,7 +1452,7 @@ def _electron_work_gate_records(
         )
     )
     pressure_adjoint_scale = (
-        pressure_scale
+        pressure_scale + getattr(ledger, "pressure_wall_scale", 0.0)
         + xp.abs(
             _integrate_cells(
                 pressure_rate_operands.reshape(-1), 1, context
@@ -2028,10 +2054,10 @@ def _fine_electron_work_residuals(ledger, metrics, context):
     xp = _xp(context)
     residuals = {
         "electron_pressure_adjoint": xp.asarray(
-            ledger.pressure_kinetic + ledger.pressure_internal_full
+            ledger.pressure_kinetic + ledger.pressure_internal_full + ledger.pressure_wall
         ).reshape(1),
         "electron_electric_pairing": xp.asarray(
-            ledger.pressure_internal - ledger.electric_edge
+            ledger.pressure_internal - ledger.electric_edge + ledger.pressure_wall
         ).reshape(1),
         "electron_pressure_only_pairing": xp.asarray(
             ledger.pressure_kinetic + ledger.pressure_electric_edge

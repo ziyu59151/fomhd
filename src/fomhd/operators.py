@@ -75,6 +75,8 @@ class Operators:
     setup_checks: list[SimpleNamespace] = field(default_factory=list)
     poisson_spectra: list[Any] = field(default_factory=list)
     compute: Any = None
+    wall_magnetic_divergence: Any = None
+    box_wall: Any = None
     finite_mass_available: bool = True
     finite_mass_unavailable_reason: str | None = None
     omitted_finite_mass: tuple[str, ...] = ()

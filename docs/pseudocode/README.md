@@ -142,3 +142,7 @@ RK4 residuals and a tree-based approximate correction. See
 FK and multi-GPU deployment remain unimplemented.
 
 The bounded0.5.0/multirate gallery reuses the A0 renderer and A1 plot style: [builder mirror](tools/plots/build_050_multirate_gallery.py.md). Raw results stay in the personal run directory.
+
+[D075 rectangular wall](src/fomhd/box_boundary.py.md) maps the outer box,
+fixed cap, electron traction and the synchronous, predictor, waveform
+and few-node WR consumers.

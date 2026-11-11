@@ -95,6 +95,7 @@ class Geometry:
     walls: list[Wall]
     wall_polyline: list[Point2]
     diagnostics: GeometryDiagnostics
+    lcfs_polygon: list[Point2] | None = None
 
     def is_active(self, i: int, j: int) -> bool:
         if i < 0 or j < 0 or i >= self.R.size or j >= self.Z.size:
@@ -822,6 +823,44 @@ def build_rectangle(
         Point2(r0, Z[-1]),
     ]
     return build_geometry(R, Z, polygon, options)
+
+
+def build_aligned_box(
+    R: Any,
+    Z: Any,
+    lcfs: Iterable[Any],
+    options: GeometryOptions | dict[str, Any] | None = None,
+) -> Geometry:
+    settings = _options(options)
+    R_array = np.array(R, dtype=np.float64, copy=True)
+    Z_array = np.array(Z, dtype=np.float64, copy=True)
+    _validate_grid(R_array, Z_array, settings.grid_rtol)
+    _, lcfs_polygon = _validate_polygon(lcfs)
+    hr = float(R_array[1] - R_array[0])
+    hz = float(Z_array[1] - Z_array[0])
+    lower_r = R_array[0] - 0.5 * hr
+    upper_r = R_array[-1] + 0.5 * hr
+    lower_z = Z_array[0] - 0.5 * hz
+    upper_z = Z_array[-1] + 0.5 * hz
+    if any(
+        point.R <= lower_r
+        or point.R >= upper_r
+        or point.Z <= lower_z
+        or point.Z >= upper_z
+        for point in lcfs_polygon
+    ):
+        raise Failure("Geometry", "LCFS must lie strictly inside the physical wall")
+    wall = [
+        Point2(lower_r, lower_z),
+        Point2(upper_r, lower_z),
+        Point2(upper_r, upper_z),
+        Point2(lower_r, upper_z),
+    ]
+    geometry = build_geometry(R_array, Z_array, wall, settings)
+    if not np.all(geometry.active):
+        raise Failure("Geometry", "aligned box must activate every cell")
+    geometry.lcfs_polygon = lcfs_polygon
+    return geometry
 
 
 def build_stepped_disk(

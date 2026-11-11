@@ -1,0 +1,59 @@
+{
+  "layer": "A1",
+  "date": "2026-11-11",
+  "ancestor": "73fb2a048813d622b643986cf6ea58dfcb82e139",
+  "branch": "codex/a1-hym-rectangle",
+  "source_capture": "/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/source-a1-box-v1",
+  "source_files_sha256": {
+    "src/fomhd/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/fomhd/__main__.py": "1484be04e964e2edc5ced840b5b9bb93dae56c1772621bc36a1efcefcb3c9cf2",
+    "src/fomhd/backend.py": "9790d6a53bb93f8a7060a34d598239ce045e0a6c58ede2adda11effa8b2b2078",
+    "src/fomhd/box_boundary.py": "250845ef5c7d82fd16609c286bf1cc8fef455548bc57d521b64926f61f4c70c1",
+    "src/fomhd/core.py": "83ebf698a656c72adadc75d2935b510f18e62e62931d54f61bd2429f53afa940",
+    "src/fomhd/diagnostics.py": "4838404d5955badd0ff339ad22a6562a13a201df1b68df250c324f5dfb228451",
+    "src/fomhd/energy.py": "4527ef0c67d1b219ffdfbdffaab8e0e9029a17083b8e7f6c770f8c64bbb60861",
+    "src/fomhd/field_batch.py": "a3c59bfd27322c5134e058052689e69a35c654758053a63201bdf4b9bec7e3c5",
+    "src/fomhd/fields.py": "a80e8ea02c10e4ca8ab4fc78c6b9f0b3da4988c0f24e1a2499792d550488456d",
+    "src/fomhd/fluid.py": "609665d6a34fdc78b050371bac00e50439fbf0ad114ad5d879344077f03cfecc",
+    "src/fomhd/geometry.py": "864633ff459110344a3b8953365d8decb82221de09340d2c43f6b98d070c5ba4",
+    "src/fomhd/io.py": "b54649e947bb4855710e76b8954d64eb12bd2833926553bbbb45782bf0b97f73",
+    "src/fomhd/massless.py": "5a040a876f0e37c875e129818630cfb22d4fd6e3aad90310db89e1aa600a98ca",
+    "src/fomhd/massless_checks.py": "7c38d6c3136d0476631983e250a89303d26f11949cdaafd8fe140b9113f53fbc",
+    "src/fomhd/massless_field.py": "a4d44665d3323cc0e21a1a5a269dbbd9abcc53cf732276cf1fb00b25cbabea66",
+    "src/fomhd/multirate_wr_checks.py": "778acd442961878d7836eea85defefa15ada55b0dbb988b8b7ab304fb775dbe5",
+    "src/fomhd/multirate_wr_physics.py": "52e1b3bd815f8a031fdf8d2c5a6a34a4fbbd74200ce80166c315ceb3a583fbe0",
+    "src/fomhd/operators.py": "520dc633de40e30a75044e0c136435eed5828a07f05e61b212da0e7fae929468",
+    "src/fomhd/stability.py": "5aab152f37d3b4a6be0c3288724d116e04aad72e8eb607fa34e5d617861d3001",
+    "src/fomhd/stage.py": "2dbfc60430ab617482f7b846a8d053c00ddcf0db58fd9b580b2a0a820dd46d88",
+    "src/fomhd/time.py": "99907822bcf8ab39c9605d66f83266e960b95f7c300a80694d2fa02f94804d09",
+    "src/fomhd/time_affine.py": "881c6d163d44a07c806e1bc475aaf93d727d08903f29ff670a26279f012ce577",
+    "src/fomhd/time_field.py": "caae3ec220e87fcdf69efa2aff706bd341fc22c351ee124958aab008db465028",
+    "src/fomhd/time_multirate.py": "5bc014cefd71437f65d62ed6e1838d9da92e413b11beda60665b786cd50251df",
+    "src/fomhd/time_multirate_wr.py": "c9484bd1829840b4017078ea8242dc2880ad7f472c7a671b6dffcfa753085de3",
+    "src/fomhd/time_predictor.py": "e928605c4121fbfa486804969054388cad99351b207ee1abf5c6a5257424b145",
+    "src/fomhd/time_waveform.py": "2b9b58ecd70715ad313a6987cfae39faabafe371fd8d9cfd0e969b42fe465e46",
+    "src/fomhd/types.py": "d3efe8f7e3ff899947ad538da00f89ac6a81149c3bd2d1136eaa76319614d4af",
+    "src/fomhd/wall.py": "d6b5a4d7b077b22729ab7b32622185128e95b7f4df6e99bc77e04dfbeff6ec74",
+    "src/fomhd/wall_cache.py": "53356d5336ffb251f540a39e9c9aa4ebe69ca1787a6be7171cc5bffb6643682f"
+  },
+  "active_spatial_design": "/home/lxzeng/fomhd-design/mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
+  "active_spatial_design_sha256": "0378c0cc6319beb9b3a798145a7e50199e2165328f2478fcbdeb76d0ebd11e4b",
+  "traceability_sha256": "9618e8982082de61a3470d3365af57e19602510703b21d96ce6d4f3fdcfe354f",
+  "traceability": [
+    {
+      "id": "A1-PY-BOX-01",
+      "pseudocode": "docs/pseudocode/src/fomhd/box_boundary.py.md",
+      "source": "src/fomhd/box_boundary.py",
+      "checks": "pytest:tests/warp/test_rectangle_magnetic_flux.py;pytest:tests/warp/test_rectangular_wall_entry.py"
+    },
+    {
+      "id": "A1-PY-BOX-02",
+      "pseudocode": "docs/pseudocode/src/fomhd/box_boundary.py.md",
+      "source": "src/fomhd/multirate_wr_checks.py",
+      "checks": "pytest:tests/warp/test_rectangle_magnetic_flux.py;pytest:tests/warp/test_time_multirate.py"
+    }
+  ],
+  "numerical_scope_report": "/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/REPORT.md",
+  "cpu_suite": "/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/logs/a1-cpu-suite-v2.log",
+  "notes": "The historical baseline and release snapshot remain separate. This receipt records the candidate D075 source and its actual finite verification scope."
+}
