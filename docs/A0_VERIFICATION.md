@@ -200,3 +200,14 @@ The tested CUDA executable SHA-256 is
 test logs and verifies that the measured native sources and binaries did not
 change during this sync. Regenerating a manifest is not a new GPU test.
 All earlier failed runs and negative controls remain in the raw evidence tree.
+
+## Grid-aligned outer-wall reference
+
+The D075 candidate uses an internal LCFS and four physical faces at the
+grid's outer cell edges. See the [boundary reading guide](pseudocode/src/fomhd/box_boundary.py.md)
+for formal case selection, fixed magnetic flux and restart behavior.
+The [verification record](/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/REPORT.md)
+contains the completed Solov'ev and cold Hall box runs, CPU/CUDA and
+transaction checks, full numerical data and actual RZ sections.
+The old staircase and periodic results above keep their own geometry
+and verification scope.

@@ -1,6 +1,6 @@
 # A0 实现级伪代码与维护说明书
 
-> Status: active Python/Warp implementation specification for `main`.
+> Status: Python/Warp source reading guide for the active implementation.
 > `reference/a0-native` owns the frozen native implementation and its mirrored
 > pseudocode. Acceptance evidence is recorded separately from implementation
 > contracts.
