@@ -3,7 +3,7 @@
   "date": "2026-11-12",
   "ancestor": "60a2252fdce390780139bf18e7279fe850706188",
   "branch": "codex/a0-rect-wall-curl",
-  "source_capture": "/home/lxzeng/runs/fomhd/a0-rect-curl-20261112T045238Z.BfVyXU/source-a0-repaired",
+  "source_capture": "https://github.com/ziyu59151/fomhd/tree/bc809bdd3aa5253e1ffa60c21e7dcf5e7c84d369",
   "source_files_sha256": {
     "src/fomhd/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "src/fomhd/__main__.py": "8ad8fe2cf712d8d62f592b4230ecad43dbfe9dbde7fc6cab2a7d406de466aa7c",
@@ -49,7 +49,8 @@
       "checks": "pytest:tests/warp/test_rectangle_magnetic_flux.py;pytest:tests/warp/test_rectangular_wall_entry.py"
     }
   ],
-  "numerical_scope_report": "/home/lxzeng/runs/fomhd/a0-rect-curl-20261112T045238Z.BfVyXU/REPORT.md",
-  "cpu_suite": "/home/lxzeng/runs/fomhd/a0-rect-curl-analytic__20261112T000000Z.qYdgSP/a0-cpu-suite.log",
-  "notes": "The archived input chart is unchanged. The aligned-box operator and magnetic ledger use the verified poloidal link norm. The historical rectangle and release snapshots retain their original scopes."
+  "numerical_scope_report": "docs/benchmarks/rectangular-wall/REPORT.md",
+  "cpu_suite": "docs/benchmarks/rectangular-wall/evidence/a0-cpu-suite.log",
+  "notes": "The archived input chart is unchanged. The aligned-box operator and magnetic ledger use the verified poloidal link norm. The historical rectangle and release snapshots retain their original scopes.",
+  "published_spatial_design": "docs/benchmarks/rectangular-wall/DESIGN.md"
 }
