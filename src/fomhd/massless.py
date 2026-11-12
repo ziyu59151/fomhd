@@ -156,6 +156,8 @@ def _project_diagonal_constraint(
     multiplier = (
         (right / row_scale) / scaled
     ) * column_scale
+    if not bool(xp.all(xp.isfinite(multiplier))):
+        raise Failure("Finite", "wall projection solution contains non-finite values")
     applied = diagonal * multiplier
     residual = applied - right
 
@@ -187,14 +189,6 @@ def _project_diagonal_constraint(
         applied = diagonal * multiplier
         residual = applied - right
         active = active_rows()
-    if bool(xp.any(active).item()):
-        sample = int(xp.argmax(active.astype(xp.int8)).item())
-        raise Failure(
-            "WallProjection",
-            "electron flux constraint refinement did not converge at "
-            f"time row {sample}",
-        )
-
     correction = winv * xp.matmul(multiplier, xp.conj(T))
     output = source - correction
     applied = diagonal * multiplier
@@ -207,8 +201,9 @@ def _project_diagonal_constraint(
         1.0e-300,
     )
     rejected = xp.any(
-        xp.abs(residual)
-        > 4096.0 * sys.float_info.epsilon * final_scale[:, None],
+        ~xp.isfinite(residual)
+        | (xp.abs(residual)
+           > 4096.0 * sys.float_info.epsilon * final_scale[:, None]),
         axis=1,
     )
     if bool(xp.any(rejected).item()):
@@ -318,8 +313,12 @@ def _constraint_project(nodal, density, context):
         context.N,
         context.compute,
     )
-    if _max_abs(full, context) > 4096.0 * sys.float_info.epsilon * max(
-        _max_abs(output, context),
+    full_norm = _max_abs(full, context)
+    output_norm = _max_abs(output, context)
+    if not math.isfinite(full_norm) or not math.isfinite(output_norm):
+        raise Failure("Finite", "wall projection output contains non-finite values")
+    if full_norm > 4096.0 * sys.float_info.epsilon * max(
+        output_norm,
         _max_abs(source, context),
         1.0e-300,
     ):

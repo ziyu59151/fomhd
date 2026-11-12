@@ -86,3 +86,21 @@ def test_ion_wall_projection_uses_exact_diagonal_normal(monkeypatch):
     np.testing.assert_allclose(
         actual.reaction.reshape(source.shape), expected - source, atol=2e-15
     )
+
+
+def test_diagonal_electron_projection_rejects_nonfinite_solution():
+    from fomhd.types import Failure
+
+    matrix = np.array([[1.0, 0.0, 0.0]], dtype=np.complex128)
+    context = SimpleNamespace(
+        p=SimpleNamespace(ref=SimpleNamespace(length=1.0), rank_rtol=1e-10),
+        op=SimpleNamespace(Nc=1, M0=np.ones(1), T=matrix, T_full=matrix),
+        compute=Backend("cpu"),
+        N=1,
+    )
+    with np.errstate(over="ignore", invalid="ignore"), pytest.raises(Failure, match="finite"):
+        _constraint_project(
+            np.array([1e200, 0.0, 0.0], dtype=np.complex128),
+            np.array([1e-150], dtype=np.complex128),
+            context,
+        )
