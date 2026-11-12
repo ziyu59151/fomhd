@@ -18,7 +18,7 @@ SCRATCH = Path(__file__).resolve().parents[2]
 SOURCE_ROOT = Path(
     os.environ.get(
         "FOMHD_SOURCE_ROOT",
-        "/home/lxzeng/.codex/worktrees/fomhd-050-experiments/fomhd",
+        str(SCRATCH),
     )
 ).resolve()
 TOOL = SCRATCH / "tools" / "warp_050_experiments.py"

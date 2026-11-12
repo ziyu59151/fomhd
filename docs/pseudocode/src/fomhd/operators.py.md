@@ -106,3 +106,26 @@ The memory estimate reports the omitted Lphi, retained phi factor copies and
 pivots, full Bc, and maximum selected-Bc storage separately. This is storage
 selection only. High-order curl retains graph-filter inverses and is not
 treated as a sparse operator.
+
+## Aligned-box Ampère closure
+
+For the aligned box, compute two magnetic norm blocks on the existing
+half/full-link samples. In each direction integrate the link weight and
+centroid, with R weighting for radial links. Subtract the weighted mean of the
+centroid offsets, cumulatively sum the resulting weighted offsets, and divide
+by each adjacent centroid gap. Use the positive coefficients in a symmetric
+tridiagonal update to the raw diagonal link norm. Transform each norm to the
+existing stored chart by congruence with the inverse one-dimensional graph
+factor. Keep the toroidal magnetic block diagonal.
+
+Apply the two small norm matrices along lines of the magnetic component
+arrays, with transverse volume factors. Use this action on the rows of
+(C^*) and divide by (M_1) to assemble Ampère. The same magnetic pairing
+integrates magnetic energy and induction power. The cell/face transfer,
+Faraday and divergence matrices, and installed wall caps retain their
+existing representations.
+
+The rectangular magnetic-flux regression feeds independent flux differences
+through `apply_t2` and the cap installer. It checks affine derivatives, smooth
+first/second-layer and corner refinement, an analytic Faraday rate, and the
+magnetic/electric pairing with three Fourier modes.

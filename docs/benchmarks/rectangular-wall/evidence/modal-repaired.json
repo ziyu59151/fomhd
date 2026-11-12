@@ -1,0 +1,38 @@
+{
+  "7x6": {
+    "grid": [
+      7,
+      6
+    ],
+    "cap_abs_max_Wb_per_rad": 0.129428571428571,
+    "DBC_matrix_max_m_inv2": [
+      2.662526081940792e-14,
+      2.662526081940792e-14,
+      2.662526081940792e-14
+    ],
+    "divB_plus_fixed_cap_after_update_max_T_per_m": 4.263256414560601e-14,
+    "div_curl_B_max_T_per_m2": 2.375877272697835e-14,
+    "wall_normal_curl_B_max_T_per_m": 1.7763568394002505e-15,
+    "wall_normal_trace_finite": true,
+    "power_pair_relative_error": 2.075112272109218e-16,
+    "magnetic_metric_quadratic_form_positive": true
+  },
+  "10x8": {
+    "grid": [
+      10,
+      8
+    ],
+    "cap_abs_max_Wb_per_rad": 0.09114,
+    "DBC_matrix_max_m_inv2": [
+      7.105427357601002e-14,
+      7.105427357601002e-14,
+      7.105427357601002e-14
+    ],
+    "divB_plus_fixed_cap_after_update_max_T_per_m": 1.652011860642233e-13,
+    "div_curl_B_max_T_per_m2": 4.729550084903167e-14,
+    "wall_normal_curl_B_max_T_per_m": 3.2803286093439427e-15,
+    "wall_normal_trace_finite": true,
+    "power_pair_relative_error": 2.1711038939880875e-16,
+    "magnetic_metric_quadratic_form_positive": true
+  }
+}

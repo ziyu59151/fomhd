@@ -2,8 +2,10 @@
 
 This experimental branch starts at `be5f1c07913409bfd377f22e9ea9d69ac614b158`.
 It retains one Python/Warp solver, synchronous A0 and complete-stage T1.
-D072 selects few-ion-node multirate waveform relaxation directly on this
-experiment branch. T2-E, C1/C2 and unimplemented T tiers remain research
+D072 selected few-ion-node multirate waveform relaxation on this experiment
+branch. Its code, results and failures are retained during the A0 baseline
+work. The [rectangular conductor evidence](benchmarks/rectangular-wall/README.md)
+is the shared physical reference. T2-E, C1/C2 and unimplemented T tiers remain research
 controls and are not prerequisites. Prior complete real-RZ experiments and
 their exact acceptance scopes remain evidence; a new method needs separate
 complete interval, rollback, restart, CPU/GPU and scientific verification.
@@ -14,7 +16,7 @@ scoped stable A3 acceptance is the 1.0 milestone, followed by all-ion FK in A4.
 Version 0.5.0 identifies a numerical experiment platform with explicit evidence
 bounds, not a completed physical-validation program.
 
-## Current WR experiment entries
+## Retained WR experiment entries
 
 `tools/warp_wr_periodic.py` and `tools/warp_wr_rz.py` exercise the complete
 `multirate_wr` transaction. They retain exact accepted endpoints, all cumulative

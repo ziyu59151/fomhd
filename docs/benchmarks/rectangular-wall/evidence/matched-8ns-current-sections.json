@@ -1,0 +1,79 @@
+{
+  "scope": "Production Ampère current reconstructed from accepted quiet magnetic states. Error is relative to the common external equilibrium profile.",
+  "exact_common_times_s": [
+    0.0,
+    1.6e-09,
+    3.2e-09,
+    4.8e-09,
+    6.4e-09,
+    8e-09
+  ],
+  "first_layer": [
+    {
+      "time_s": 0.0,
+      "legacy": {
+        "peak_A_m2": 121338.31141454449,
+        "weighted_RMS_A_m2": 33161.127021988614
+      },
+      "repaired": {
+        "peak_A_m2": 11416.569141496324,
+        "weighted_RMS_A_m2": 2753.2090694103513
+      }
+    },
+    {
+      "time_s": 1.6e-09,
+      "legacy": {
+        "peak_A_m2": 121329.97859059514,
+        "weighted_RMS_A_m2": 33159.09768892039
+      },
+      "repaired": {
+        "peak_A_m2": 11415.274786431908,
+        "weighted_RMS_A_m2": 2752.9084717983055
+      }
+    },
+    {
+      "time_s": 3.2e-09,
+      "legacy": {
+        "peak_A_m2": 121307.96685098516,
+        "weighted_RMS_A_m2": 33153.08922448648
+      },
+      "repaired": {
+        "peak_A_m2": 11411.579958174305,
+        "weighted_RMS_A_m2": 2752.01429882941
+      }
+    },
+    {
+      "time_s": 4.8e-09,
+      "legacy": {
+        "peak_A_m2": 121276.70595504028,
+        "weighted_RMS_A_m2": 33143.32412144915
+      },
+      "repaired": {
+        "peak_A_m2": 11405.832835824009,
+        "weighted_RMS_A_m2": 2750.5541853761824
+      }
+    },
+    {
+      "time_s": 6.4e-09,
+      "legacy": {
+        "peak_A_m2": 121240.15157647154,
+        "weighted_RMS_A_m2": 33130.14433584536
+      },
+      "repaired": {
+        "peak_A_m2": 11398.417826201769,
+        "weighted_RMS_A_m2": 2748.574181598919
+      }
+    },
+    {
+      "time_s": 8e-09,
+      "legacy": {
+        "peak_A_m2": 121201.37472315888,
+        "weighted_RMS_A_m2": 33113.979977139985
+      },
+      "repaired": {
+        "peak_A_m2": 11389.691044227828,
+        "weighted_RMS_A_m2": 2746.133011179341
+      }
+    }
+  ]
+}

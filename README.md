@@ -2,21 +2,24 @@
 
 [Visual branch history](docs/BRANCH_GRAPH.md) · [Development policy](docs/development.md)
 
+[Rectangular conducting-wall baseline](docs/benchmarks/rectangular-wall/README.md) ·
+[Complete fields and comparison figures](docs/benchmarks/rectangular-wall/GALLERY.md)
+
+The default development baseline uses E/B vectors on the grid-aligned RZ
+conductor with the paired FOMHD Ampère closure and synchronous RK4. The
+next acceptance is a reproducible GPU A0 with measured capacity and a
+matched independent n_phi=1 compressional Alfvén mode. A2 passive particle
+development follows that acceptance.
+
 [Physical simulation prototype workflow](docs/RESEARCH_PROTOTYPE_WORKFLOW.md)
 records how verification, independent physical comparisons, and retained known
 issues determine prototype development priorities.
 
 [Roadmap and release scope](docs/ROADMAP.md) records A0 through A4: A3 retains
 bulk-fluid ions and adds self-consistent FK fast ions for the scoped 1.0
-milestone; A4 later makes all ions kinetic. A1 uses the controllable two-fluid
-platform to shorten serial time dependencies and assess future particle costs.
-D072 selects few ion nodes, RK4 field microsteps and multirate waveform
-relaxation on the 0.5.0 experiment branch. The new discrete target keeps few
-ion unknowns after convergence; it does not recover every fine ion RHS stage.
-T2-E, C1/C2 and the remaining planned T tiers are retained research branches,
-including their original reports and failures. They are not prerequisites or
-production architecture for the selected method. Temporal work reduction,
-ordinary GPU optimization and time-parallel benefits require separate evidence.
+milestone; A4 later makes all ions kinetic. The A1 time experiments on the two-fluid platform are retained with
+their original tests, costs and failures. Further time-method
+selection follows the reproducible A0 baseline.
 
 [0.5.0 experiment platform](docs/EXPERIMENTS_050.md) records the current complete-run scope.
 [Few-node WR evidence](docs/A1_WR_EVIDENCE.md) separates its accepted numerical
@@ -24,7 +27,7 @@ scope, raw work reduction, measured cost and remaining capacity limits.
 
 [A1 implementation](docs/A1_IMPLEMENTATION.md) records the inherited solver,
 fixed wall-system reuse, and the experimental T0/T1 time couplings. A0 is maintained
-on `release/a0` at `9a38bf4`; each checkout contains one solver source tree.
+on `release/a0`; each checkout contains one solver source tree.
 The default time coupling remains synchronous RK4. T0 is selected explicitly
 and does not imply waveform iteration or multi-GPU acceptance.
 [T0 evidence and limits](docs/A1_T0_EVIDENCE.md) retains the comparison baseline.

@@ -528,6 +528,14 @@ def _operator_fingerprint(operators, backend):
         array = np.asarray(backend.to_host(getattr(operators, name)))
         digest.update(f"{name}:{array.shape}:".encode("ascii"))
         digest.update(np.ascontiguousarray(array).tobytes())
+    box_norm = getattr(operators, "box_magnetic_norm", None)
+    if box_norm is not None:
+        digest.update(b"rectangle:affine-link-magnetic-norm")
+        for factor in box_norm[:-1]:
+            array = np.asarray(backend.to_host(factor))
+            digest.update(f"{array.shape}:".encode("ascii"))
+            digest.update(np.ascontiguousarray(array).tobytes())
+        digest.update(struct.pack("<d", box_norm[-1]))
     row_groups = (
         ("selected_wall_rows",)
         if not finite_mass_available
@@ -1474,12 +1482,19 @@ def load_case(path, overrides=None, backend=None):
 
     boundary = document["boundary"]
     _keys(boundary, {"kind", "potential", "version"}, "boundary")
-    if (
-        _string(boundary, "kind") != "fixed_lcfs_static"
-        or _real(boundary, "potential") != 0
-        or _string(boundary, "version") != "staircase_relative_v1"
-    ):
+    boundary_kind = _string(boundary, "kind")
+    boundary_version = _string(boundary, "version")
+    if _real(boundary, "potential") != 0 or (
+        boundary_kind,
+        boundary_version,
+    ) not in {
+        ("fixed_lcfs_static", "staircase_relative_v1"),
+        ("fixed_outer_wall_static", "rectangle_relative_v1"),
+    }:
         raise ValueError("unsupported boundary")
+
+    if boundary_version == "rectangle_relative_v1" and inertia != 0:
+        raise ValueError("rectangle_relative_v1 requires massless electrons")
 
     grid = document["grid"]
     _keys(grid, {"R0", "Z0", "hR", "hZ", "NR", "NZ", "K", "Nphi"}, "grid")
@@ -1696,9 +1711,15 @@ def load_case(path, overrides=None, backend=None):
     from . import geometry as geometry_module
     from . import operators as operators_module
 
-    geometry = geometry_module.build_geometry(
-        R, Z, polygon, {"memory_cap_bytes": memory, "grid_rtol": 1e-12}
-    )
+    geometry_options = {"memory_cap_bytes": memory, "grid_rtol": 1e-12}
+    if boundary_version == "rectangle_relative_v1":
+        geometry = geometry_module.build_aligned_box(
+            R, Z, polygon, geometry_options
+        )
+    else:
+        geometry = geometry_module.build_geometry(
+            R, Z, polygon, geometry_options
+        )
     if backend is None:
         from .backend import Backend
 
@@ -1726,9 +1747,23 @@ def load_case(path, overrides=None, backend=None):
         or available_finite_mass != expected_finite_mass
     ):
         raise ValueError("operator storage does not match the electron model")
-    geometry_hash = _sha256_bytes(
-        (input_hashes["geometry"] + "half_open_ray_certified_v2").encode()
+    geometry_identity = (
+        boundary_version
+        if boundary_version == "rectangle_relative_v1"
+        else "half_open_ray_certified_v2"
     )
+    geometry_hash = _sha256_bytes(
+        (input_hashes["geometry"] + geometry_identity).encode()
+    )
+    if boundary_version == "rectangle_relative_v1":
+        from .box_boundary import install_normal_flux
+
+        initial_arrays = _initial_arrays(initial_path, limits, rectangle=True)
+        flux = initial_arrays.get("wall_magnetic_flux")
+        if flux is None:
+            flux = np.zeros((2 * K + 1, len(geometry.walls), 2), dtype=np.complex128)
+        install_normal_flux(operators, geometry, flux)
+        del initial_arrays
     fingerprint = _operator_fingerprint(operators, backend)
     resolved = {
         **document,
@@ -1812,22 +1847,33 @@ def load_case(path, overrides=None, backend=None):
     )
 
 
+INITIAL_STATE_KEYS = frozenset(
+    {
+        "n_i",
+        "mom_i",
+        "p_i",
+        "n_e",
+        "mom_e",
+        "p_perp_e",
+        "p_parallel_e",
+        "B_R",
+        "B_phi",
+        "B_Z",
+    }
+)
+
+
+def _initial_arrays(path, limits, *, rectangle):
+    allowed = INITIAL_STATE_KEYS
+    if rectangle and "wall_magnetic_flux" in _inspect_npz(path, limits):
+        allowed = allowed | {"wall_magnetic_flux"}
+    return read_npz(path, limits, allowed)
+
+
 def load_initial(case):
-    arrays = read_npz(
-        case.initial_path,
-        case.limits,
-        {
-            "n_i",
-            "mom_i",
-            "p_i",
-            "n_e",
-            "mom_e",
-            "p_perp_e",
-            "p_parallel_e",
-            "B_R",
-            "B_phi",
-            "B_Z",
-        },
+    arrays = _initial_arrays(
+        case.initial_path, case.limits,
+        rectangle=case.geometry.lcfs_polygon is not None,
     )
     state = decode_state(arrays, case.geometry, case.parameters.K)
     _upload_state(state, case.compute)

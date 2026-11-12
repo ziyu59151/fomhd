@@ -1,0 +1,62 @@
+{
+  "freegs_version": "0.8.2",
+  "upstream_example": "https://github.com/freegs-plasma/freegs/blob/v0.8.2/01-freeboundary.py",
+  "numpy_version": "2.5.4",
+  "scipy_version": "1.18.1",
+  "freegs_N_R_Z": [
+    65,
+    65
+  ],
+  "crop_R_Z_m": [
+    0.6390625,
+    1.9109375000000002,
+    -0.875,
+    0.875
+  ],
+  "crop_N_R_Z": [
+    45,
+    57
+  ],
+  "axis_RZpsi": [
+    1.3102853540204769,
+    0.0968308461050195,
+    0.08646453339391058
+  ],
+  "xpoint_RZpsi": [
+    1.1055050725101436,
+    -0.5963748431058875,
+    0.03197276196102179
+  ],
+  "psi_span_Wb_per_rad": 0.05449177143288879,
+  "max_separatrix_relative_flux_error": 9.308435586468662e-14,
+  "max_native_separatrix_relative_flux_error": 1.1161564323069403e-06,
+  "Jphi_peak_A_m2": 1543078.1369904692,
+  "outside_traced_lcfs_source_peak_A_m2": 0.0,
+  "native_mask_private_pixels": 2,
+  "Jphi_native_vs_final_profile_rel_linf": 5.214644721681358e-08,
+  "Jphi_independent_FD_rel_linf": 9.350255456115668e-06,
+  "Jphi_independent_FD_rel_rms": 5.681734877709634e-07,
+  "Jphi_halo_independent_FD_rel_linf": 9.350255456115668e-06,
+  "F_T_m": 2.0,
+  "max_abs_RBphi_minus_F_T_m": 4.440892098500626e-16,
+  "pprime_amplitude_Pa_per_Wb_rad": 1174270.5533468735,
+  "p_gs_axis_Pa": 21329.360864449893,
+  "n_axis_m3": 2e+19,
+  "n_halo_m3": 1e+19,
+  "p_i_constant_Pa": 1000.0,
+  "p_e_halo_Pa": 100.0,
+  "Ip_A": 199999.99999999994,
+  "coil_currents_A": {
+    "P1L": 141404.2327486287,
+    "P1U": 72357.74698544147,
+    "P2L": -119377.73281003314,
+    "P2U": -92369.084494512
+  },
+  "solve_wall_seconds": 5.822452585911378,
+  "P2_coil_radius_m": 2.25,
+  "picard_iterations": 126,
+  "picard_final_abs_Wb_per_rad": 2.2944078581499383e-09,
+  "picard_final_relative_change": 8.923835925285975e-09,
+  "array_order": "Z first, R second; actual FreeGS point data transposed",
+  "scope": "Poloidal flux includes external coils; crop contains no coil. The exterior has finite FOMHD density and pressure, and zero prescribed volume current. This is an equilibrium input, not FOMHD evolution evidence."
+}
