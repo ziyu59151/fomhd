@@ -1,9 +1,9 @@
 {
   "layer": "A0",
-  "date": "2026-11-11",
-  "ancestor": "9a38bf41e7bc1fc50186c81967312a7ec5f028e8",
-  "branch": "codex/a0-hym-rectangle",
-  "source_capture": "/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/source-a0-box-v4",
+  "date": "2026-11-12",
+  "ancestor": "60a2252fdce390780139bf18e7279fe850706188",
+  "branch": "codex/a0-rect-wall-curl",
+  "source_capture": "/home/lxzeng/runs/fomhd/a0-rect-curl-20261112T045238Z.BfVyXU/source-a0-repaired",
   "source_files_sha256": {
     "src/fomhd/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "src/fomhd/__main__.py": "8ad8fe2cf712d8d62f592b4230ecad43dbfe9dbde7fc6cab2a7d406de466aa7c",
@@ -15,10 +15,10 @@
     "src/fomhd/fields.py": "a80e8ea02c10e4ca8ab4fc78c6b9f0b3da4988c0f24e1a2499792d550488456d",
     "src/fomhd/fluid.py": "609665d6a34fdc78b050371bac00e50439fbf0ad114ad5d879344077f03cfecc",
     "src/fomhd/geometry.py": "864633ff459110344a3b8953365d8decb82221de09340d2c43f6b98d070c5ba4",
-    "src/fomhd/io.py": "68b49ee0a85aba9affb9ccb677fade5dcb58b2b68e872c4c425e05ee3234bc21",
+    "src/fomhd/io.py": "24d4218eaaf1c0eb09987a5f00ba5d650735cf6a4aa3c137b5f0dc08359ec05f",
     "src/fomhd/massless.py": "84a72e8a1e42e5ee60607eeba20861ecd6e7435b5810f3238d287c5ce6de25e8",
-    "src/fomhd/massless_checks.py": "ecceb25407d396a544cf9dd74c3729f347adad097215b4e17c3decac54a03b5b",
-    "src/fomhd/operators.py": "a4c5aba69643a56bde2ef9006303f11ee310ce329de43811d7bc6a847b06b577",
+    "src/fomhd/massless_checks.py": "785eb886b2213fd1036596d882b208a2eddb58924950289696aaf96a5cc6d68b",
+    "src/fomhd/operators.py": "0eb4a6654b21f39d61b64c0505b69b42a8c5f31f50e6874c44c607c4524f48a3",
     "src/fomhd/stability.py": "d5d7f1876b66f40200ada9dfbce71441771a2688f7d2f4e64ddb498f4e8a5b76",
     "src/fomhd/stage.py": "a7a03a80211e4f41274ea26a8ecc591103b8b7f8f6a921df6d5a50ccb8faf407",
     "src/fomhd/time.py": "3e4404789dbc454f6da17ddde596880cd65580b74aa55215f732231e7a388a1f",
@@ -27,8 +27,8 @@
     "src/fomhd/wall_cache.py": "53356d5336ffb251f540a39e9c9aa4ebe69ca1787a6be7171cc5bffb6643682f"
   },
   "active_spatial_design": "/home/lxzeng/fomhd-design/mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
-  "active_spatial_design_sha256": "0378c0cc6319beb9b3a798145a7e50199e2165328f2478fcbdeb76d0ebd11e4b",
-  "traceability_sha256": "c7b17365fbfb8298a93edeb4ee3eb1daa4f565bc4887aa6a5cea2f1ec65ea11f",
+  "active_spatial_design_sha256": "21a41d00031abd679f63ac67b0de9e87d9064122c009d655edebcf9dedc26041",
+  "traceability_sha256": "dbec04c6e95066eea919ea8f97526b0637374913709f7b4d887b8d24a22c60d6",
   "traceability": [
     {
       "id": "A0-PY-BOX-01",
@@ -41,9 +41,15 @@
       "pseudocode": "docs/pseudocode/src/fomhd/wall_cache.py.md",
       "source": "src/fomhd/wall_cache.py",
       "checks": "pytest:tests/warp/test_rectangle_magnetic_flux.py"
+    },
+    {
+      "id": "A0-PY-BOX-CURL",
+      "pseudocode": "docs/pseudocode/src/fomhd/operators.py.md",
+      "source": "src/fomhd/operators.py",
+      "checks": "pytest:tests/warp/test_rectangle_magnetic_flux.py;pytest:tests/warp/test_rectangular_wall_entry.py"
     }
   ],
-  "numerical_scope_report": "/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/REPORT.md",
-  "cpu_suite": "/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/logs/a0-cpu-suite-v4.log",
-  "notes": "The historical baseline and release snapshot remain separate. This receipt records the candidate D075 source and its actual finite verification scope."
+  "numerical_scope_report": "/home/lxzeng/runs/fomhd/a0-rect-curl-20261112T045238Z.BfVyXU/REPORT.md",
+  "cpu_suite": "/home/lxzeng/runs/fomhd/a0-rect-curl-analytic__20261112T000000Z.qYdgSP/a0-cpu-suite.log",
+  "notes": "The archived input chart is unchanged. The aligned-box operator and magnetic ledger use the verified poloidal link norm. The historical rectangle and release snapshots retain their original scopes."
 }

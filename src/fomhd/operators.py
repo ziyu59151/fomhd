@@ -34,6 +34,7 @@ class Operators:
     M0: Any = None
     M1: Any = None
     MB: Any = None
+    box_magnetic_norm: tuple[Any, Any, Any, float] | None = None
     Rbar_r: Any = None
     Rbar_v: Any = None
     b1r: Any = None
@@ -435,6 +436,92 @@ def _make_fixed_spatial_state(
     return operators, t1, t2, t3
 
 
+def _link_magnetic_norm(
+    nodes: np.ndarray, offset: np.ndarray, weight: np.ndarray, chart: np.ndarray
+) -> np.ndarray:
+    """Fit constant and affine link averages in the energy metric."""
+    shift = np.average(offset, weights=weight)
+    gap = np.diff(nodes) + np.diff(offset)
+    flux = np.cumsum(weight * (offset - shift))[:-1]
+    if np.any(gap <= 0.0) or np.any(flux <= 0.0):
+        raise Failure("Operators", "rectangular magnetic norm has invalid link moments")
+    coupling = flux / gap
+    raw = np.diag(weight)
+    index = np.arange(coupling.size)
+    raw[index, index] += coupling
+    raw[index + 1, index + 1] += coupling
+    raw[index, index + 1] = -coupling
+    raw[index + 1, index] = -coupling
+    left = np.linalg.solve(chart.T, raw)
+    stored = np.linalg.solve(chart.T, left.T).T
+    return 0.5 * (stored + stored.T)
+
+
+def _box_magnetic_norm(
+    geometry: Geometry, operators: Operators, backend: Backend
+) -> tuple[Any, Any, Any, float]:
+    """Build the two shared axial/radial line norms in the stored chart."""
+    nr, nz = geometry.R.size, geometry.Z.size
+    hr = float(geometry.R[1] - geometry.R[0])
+    hz = float(geometry.Z[1] - geometry.Z[0])
+    r_nodes = geometry.r_faces.R[:nr + 1]
+    r_mean = geometry.Rbar_r[:nr + 1]
+    lr = geometry.lr[:nr + 1]
+    pr = backend.to_host(operators.PR_r[:nr + 1, :nr + 1]).real
+    # The centroid of the sampled B_Z uses R dR rather than dR.
+    radial = _link_magnetic_norm(
+        r_nodes,
+        r_mean - r_nodes + lr**2 / (12.0 * r_mean),
+        r_mean * lr,
+        pr * r_mean[None, :] / r_mean[:, None],
+    )
+    z_nodes = geometry.z_faces.Z[::nr]
+    lz = geometry.lz[::nr]
+    z_offset = np.zeros_like(lz)
+    z_offset[0], z_offset[-1] = 0.5 * lz[0], -0.5 * lz[-1]
+    pz = backend.to_host(operators.PZ_z[::nr, ::nr]).real
+    axial = _link_magnetic_norm(z_nodes, z_offset, lz, pz)
+    return (
+        backend.asarray(radial),
+        backend.asarray(axial),
+        backend.real_array(hr * geometry.R),
+        hz,
+    )
+
+
+def magnetic_weight(
+    operators: Operators, values: Any, backend: Backend | None = None
+) -> Any:
+    """Apply the magnetic energy metric to stored, mode-major B values."""
+    backend = backend or operators.compute
+    xp = backend.xp
+    b = xp.asarray(values).reshape(-1, operators.MB.size)
+    norm = getattr(operators, "box_magnetic_norm", None)
+    if norm is None:
+        return (b * operators.MB).reshape(values.shape)
+    radial, axial, radial_measure, hz = norm
+    nr, nz = radial.shape[0] - 1, axial.shape[0] - 1
+    split_r = nr * (nz + 1)
+    split_z = split_r + (nr + 1) * (nz + 1)
+    result = xp.empty_like(b)
+    br = b[:, :split_r].reshape(-1, nz + 1, nr)
+    bz = b[:, split_z:].reshape(-1, nz, nr + 1)
+    result[:, :split_r] = ((axial @ br) * radial_measure).reshape(-1, split_r)
+    result[:, split_r:split_z] = (
+        b[:, split_r:split_z] * operators.MB[split_r:split_z]
+    )
+    result[:, split_z:] = (hz * (bz @ radial)).reshape(-1, (nr + 1) * nz)
+    return result.reshape(values.shape)
+
+
+def magnetic_pair(
+    operators: Operators, left: Any, right: Any, backend: Backend
+) -> Any:
+    """Real magnetic inner product without the Fourier factor or permeability."""
+    xp = backend.xp
+    return xp.sum(xp.real(xp.conj(left) * magnetic_weight(operators, right, backend)))
+
+
 def _select_columns(matrix: Any, first: int, count: int) -> Any:
     if first < 0 or count < 0 or first + count > matrix.shape[1]:
         raise Failure("Shape", "selected matrix columns are out of bounds")
@@ -623,6 +710,12 @@ def _estimate_operator_bytes(geometry: Geometry, K: int) -> int:
     )
     elements = _checked_sum(elements, per_mode, "operator estimate")
     elements = _checked_sum(elements, constraint, "operator estimate")
+    if geometry.lcfs_polygon is not None:
+        elements = _checked_sum(
+            elements,
+            square(geometry.R.size + 1) + square(geometry.Z.size + 1) + geometry.R.size,
+            "rectangular magnetic line norms",
+        )
     byte_count = _checked_product(elements, 16, "operator estimate bytes")
     return _checked_sum(
         byte_count, byte_count // 2, "operator estimate with workspaces"
@@ -870,6 +963,8 @@ def build_operators(
     )
     operators, t1, t2, t3 = _make_fixed_spatial_state(geometry, backend)
     operators.K = K
+    if geometry.lcfs_polygon is not None:
+        operators.box_magnetic_norm = _box_magnetic_norm(geometry, operators, backend)
     nc = operators.Nc
     nr = len(geometry.r_faces.keys)
     nz = len(geometry.z_faces.keys)
@@ -878,12 +973,18 @@ def build_operators(
         spatial = _assemble_spatial(
             geometry, mode, operators, t1, t2, t3, True, settings, backend
         )
-        cdag = backend.mm(
-            _diagonal_inverse(operators.M1, backend),
-            backend.mm(
-                _adjoint(spatial.C, backend), _diagonal(operators.MB, backend)
-            ),
-        )
+        curl_adjoint = _adjoint(spatial.C, backend)
+        if operators.box_magnetic_norm is None:
+            cdag = backend.mm(
+                _diagonal_inverse(operators.M1, backend),
+                backend.mm(curl_adjoint, _diagonal(operators.MB, backend)),
+            )
+        else:
+            cdag = _scale_rows(
+                magnetic_weight(operators, curl_adjoint),
+                1.0 / operators.M1,
+                backend,
+            )
         lphi = backend.asarray(-backend.mm(spatial.DJ, spatial.G))
         spectrum = backend.singular_values(lphi)
         spectrum_host = backend.to_host(spectrum)

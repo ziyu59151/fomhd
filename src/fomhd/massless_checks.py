@@ -13,6 +13,7 @@ from .box_boundary import wall_magnetic_trace
 from .core import forward, inverse, mode_apply, sample_apply
 from .fluid import power_ledger
 from .massless import MODEL_NAME
+from .operators import magnetic_pair
 from .types import Failure
 
 
@@ -151,17 +152,9 @@ def state_totals(state, result, context):
         ).item()
     )
     mb = xp.real(xp.asarray(context.op.MB)).astype(xp.float64)
-    magnetic = float(
-        (
-            xp.sum(
-                2.0
-                * math.pi
-                * xp.tile(mb, state.B.size // mb.size)
-                * xp.abs(xp.asarray(state.B)) ** 2
-                / (2.0 * context.p.mu0)
-            )
-        ).item()
-    )
+    magnetic = math.pi * float(
+        magnetic_pair(context.op, state.B, state.B, context.compute).item()
+    ) / context.p.mu0
     b0_start = context.p.K * mb.size
     b0 = xp.asarray(state.B)[b0_start : b0_start + mb.size]
     topology_row = xp.asarray(context.op.topology_flux_row).reshape(-1)
@@ -2218,15 +2211,11 @@ def check_step(
     )
     pb = 0.0
     for state, stage, weight in quadrature:
-        mb = xp.real(xp.asarray(context.op.MB)).astype(xp.float64)
-        state_b = xp.asarray(state.B)
-        rhs_b = xp.asarray(stage.rhs.B)
         power = (
             2.0
             * math.pi
-            * xp.sum(
-                xp.tile(mb, state_b.size // mb.size)
-                * xp.real(xp.conj(state_b) * rhs_b)
+            * magnetic_pair(
+                context.op, state.B, stage.rhs.B, context.compute
             ).item()
             / context.p.mu0
         )
