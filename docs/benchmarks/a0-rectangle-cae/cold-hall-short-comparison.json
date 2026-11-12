@@ -1,0 +1,160 @@
+{
+  "case": "cold-hall-g8-12ns-guarded/case.toml",
+  "run_status": "completed",
+  "saved_samples": 11,
+  "final_saved_ns": 12.0,
+  "run_matrix_fingerprint": "c813329747415765b14336563abf35bf127e65e3b446707c35dbf33f5b2fc410",
+  "cpu_rebuild_fingerprint": "2a1ccf89a607aa6331383e673fa9005c80fe65248408853713e748e125cdf1b8",
+  "reference_frequency_MHz": 10.991394759459142,
+  "fit": null,
+  "max_off_profile": 0.0617064277612606,
+  "initial_total_error": 0.04532454620562597,
+  "final_total_error": 0.06341081295085095,
+  "median_amplitude": 0.9813443482732054,
+  "samples": [
+    {
+      "t_s": 0.0,
+      "coeff": [
+        0.9776591847111361,
+        0.0
+      ],
+      "expected": [
+        1.0,
+        -0.0
+      ],
+      "outside_reference_span": 0.03943605534247565,
+      "error_to_exact": 0.04532454620562597
+    },
+    {
+      "t_s": 1.2e-09,
+      "coeff": [
+        0.9743262573510394,
+        -0.08262265177239134
+      ],
+      "expected": [
+        0.9965679842591916,
+        -0.08277833502536552
+      ],
+      "outside_reference_span": 0.03978684761896556,
+      "error_to_exact": 0.045581925097358346
+    },
+    {
+      "t_s": 2.4e-09,
+      "coeff": [
+        0.964351057610377,
+        -0.164655966222368
+      ],
+      "expected": [
+        0.9862954945008567,
+        -0.1649884769531211
+      ],
+      "outside_reference_span": 0.040852457360406734,
+      "error_to_exact": 0.04637447726522255
+    },
+    {
+      "t_s": 3.6e-09,
+      "coeff": [
+        0.9478014544820823,
+        -0.24552223669784443
+      ],
+      "expected": [
+        0.9692530414180911,
+        -0.24606613278096645
+      ],
+      "outside_reference_span": 0.04272551872973206,
+      "error_to_exact": 0.04781146665260045
+    },
+    {
+      "t_s": 4.8e-09,
+      "coeff": [
+        0.9247832150113584,
+        -0.32466251466516965
+      ],
+      "expected": [
+        0.9455576049453789,
+        -0.32545478292684354
+      ],
+      "outside_reference_span": 0.045514555033600836,
+      "error_to_exact": 0.05003776233997381
+    },
+    {
+      "t_s": 6e-09,
+      "coeff": [
+        0.8954352883674682,
+        -0.4015375128602945
+      ],
+      "expected": [
+        0.9153718313046394,
+        -0.40260950119686806
+      ],
+      "outside_reference_span": 0.049051368639516334,
+      "error_to_exact": 0.052958961668522875
+    },
+    {
+      "t_s": 7.2e-09,
+      "coeff": [
+        0.8599312428850732,
+        -0.4756243752483736
+      ],
+      "expected": [
+        0.8789029165964396,
+        -0.4770006951758791
+      ],
+      "outside_reference_span": 0.05278545776076979,
+      "error_to_exact": 0.0561081378444397
+    },
+    {
+      "t_s": 8.4e-09,
+      "coeff": [
+        0.8184873066073465,
+        -0.5464138513634531
+      ],
+      "expected": [
+        0.836401184599437,
+        -0.54811774136645
+      ],
+      "outside_reference_span": 0.05608659716627045,
+      "error_to_exact": 0.05890260204004253
+    },
+    {
+      "t_s": 9.6e-09,
+      "coeff": [
+        0.7713726563061649,
+        -0.6134119680647385
+      ],
+      "expected": [
+        0.7881583685400823,
+        -0.6154724901246488
+      ],
+      "outside_reference_span": 0.058607407369345346,
+      "error_to_exact": 0.060998638581122026
+    },
+    {
+      "t_s": 1.08e-08,
+      "coeff": [
+        0.7189151904897223,
+        -0.6761472620287091
+      ],
+      "expected": [
+        0.7345056086265687,
+        -0.6786026163345629
+      ],
+      "outside_reference_span": 0.060386063519966136,
+      "error_to_exact": 0.062414472037661206
+    },
+    {
+      "t_s": 1.2e-08,
+      "coeff": [
+        0.6614977573837671,
+        -0.734180958255537
+      ],
+      "expected": [
+        0.6758111790920182,
+        -0.737074792822449
+      ],
+      "outside_reference_span": 0.0617064277612606,
+      "error_to_exact": 0.06341081295085095
+    }
+  ],
+  "comparison_scope": "Independent cold linear full-box wave. Nonlinear finite positive pressure and discrete harmonic background differ slightly. Field metrics use actual reconstructed nodal B and ion velocity."
+}

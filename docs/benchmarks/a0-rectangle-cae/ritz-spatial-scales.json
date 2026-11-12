@@ -1,0 +1,351 @@
+[
+  {
+    "archive": "ritz-R15-n2e19-a0p6-p12.npz",
+    "order": 12,
+    "mode_index": 354,
+    "frequency_hz": 6162655.649816986,
+    "half_width_m": 0.6,
+    "antinode_offset_r_z_m": [
+      0.09925981611707062,
+      -2.2251085678280653e-09
+    ],
+    "effective_wavelength_r_z_m": [
+      1.4964478042857365,
+      1.6088743021069434
+    ],
+    "interior_effective_wavelength_r_z_m": [
+      1.5485762218310428,
+      1.6138418873529488
+    ],
+    "half_max_intervals_offset_r_z_m": [
+      [
+        -0.16866920550562559,
+        0.3600600948180684
+      ],
+      [
+        -0.2792674971476798,
+        0.27926749644619586
+      ]
+    ],
+    "half_max_width_r_z_m": [
+      0.5287293003236939,
+      0.5585349935938757
+    ],
+    "wall_to_half_amplitude_m": {
+      "r_lower": 0.19904736842027806,
+      "r_upper": 0.04061644866783125,
+      "z_lower": 0.09002626014333452,
+      "z_upper": 0.09002626063453686
+    }
+  },
+  {
+    "archive": "ritz-R15-n2e19-a0p6-p14.npz",
+    "order": 14,
+    "mode_index": 470,
+    "frequency_hz": 6170819.435632694,
+    "half_width_m": 0.6,
+    "antinode_offset_r_z_m": [
+      0.08583763150617164,
+      -3.542060547197398e-09
+    ],
+    "effective_wavelength_r_z_m": [
+      1.5118608441450139,
+      1.5945184553263363
+    ],
+    "interior_effective_wavelength_r_z_m": [
+      1.5469833745633204,
+      1.5910033539304245
+    ],
+    "half_max_intervals_offset_r_z_m": [
+      [
+        -0.18192699889348785,
+        0.3446860360949289
+      ],
+      [
+        -0.2742493497292703,
+        0.27424934975948906
+      ]
+    ],
+    "half_max_width_r_z_m": [
+      0.5266130349884168,
+      0.5484986994887593
+    ],
+    "wall_to_half_amplitude_m": {
+      "r_lower": 0.18175950294163049,
+      "r_upper": 0.054491949572277605,
+      "z_lower": 0.09829141265753105,
+      "z_upper": 0.09829141262364868
+    }
+  },
+  {
+    "archive": "ritz-R15-n2e19-a0p6-p16.npz",
+    "order": 16,
+    "mode_index": 602,
+    "frequency_hz": 6176966.898100754,
+    "half_width_m": 0.6,
+    "antinode_offset_r_z_m": [
+      0.07630269750121206,
+      -2.3414491614631067e-09
+    ],
+    "effective_wavelength_r_z_m": [
+      1.5225670948623742,
+      1.5849679520183422
+    ],
+    "interior_effective_wavelength_r_z_m": [
+      1.5383719865189627,
+      1.5694344465753804
+    ],
+    "half_max_intervals_offset_r_z_m": [
+      [
+        -0.19453024602302185,
+        0.33763651825904617
+      ],
+      [
+        -0.2735805385853103,
+        0.2735805372800766
+      ]
+    ],
+    "half_max_width_r_z_m": [
+      0.532166764282068,
+      0.5471610758653869
+    ],
+    "wall_to_half_amplitude_m": {
+      "r_lower": 0.1647023845130069,
+      "r_upper": 0.060610410801643554,
+      "z_lower": 0.09884557059233924,
+      "z_upper": 0.0988455716868107
+    },
+    "grid_scales": [
+      {
+        "cells_per_direction": 12,
+        "spacing_m": 0.09999999999999999,
+        "cells_per_effective_wavelength_r_z": [
+          15.225670948623742,
+          15.849679520183422
+        ],
+        "cells_per_half_max_width_r_z": [
+          5.32166764282068,
+          5.471610758653869
+        ]
+      },
+      {
+        "cells_per_direction": 16,
+        "spacing_m": 0.075,
+        "cells_per_effective_wavelength_r_z": [
+          20.30089459816499,
+          21.13290602691123
+        ],
+        "cells_per_half_max_width_r_z": [
+          7.09555685709424,
+          7.295481011538492
+        ]
+      },
+      {
+        "cells_per_direction": 20,
+        "spacing_m": 0.06,
+        "cells_per_effective_wavelength_r_z": [
+          25.376118247706238,
+          26.416132533639036
+        ],
+        "cells_per_half_max_width_r_z": [
+          8.8694460713678,
+          9.119351264423115
+        ]
+      },
+      {
+        "cells_per_direction": 24,
+        "spacing_m": 0.049999999999999996,
+        "cells_per_effective_wavelength_r_z": [
+          30.451341897247485,
+          31.699359040366843
+        ],
+        "cells_per_half_max_width_r_z": [
+          10.64333528564136,
+          10.943221517307737
+        ]
+      },
+      {
+        "cells_per_direction": 32,
+        "spacing_m": 0.0375,
+        "cells_per_effective_wavelength_r_z": [
+          40.60178919632998,
+          42.26581205382246
+        ],
+        "cells_per_half_max_width_r_z": [
+          14.19111371418848,
+          14.590962023076983
+        ]
+      }
+    ]
+  },
+  {
+    "archive": "ritz-R15-n2e19-a0p6-p18.npz",
+    "order": 18,
+    "mode_index": 750,
+    "frequency_hz": 6181834.655286489,
+    "half_width_m": 0.6,
+    "antinode_offset_r_z_m": [
+      0.06770056839669877,
+      -2.3777433333812615e-09
+    ],
+    "effective_wavelength_r_z_m": [
+      1.5302539235587893,
+      1.5783004456438963
+    ],
+    "interior_effective_wavelength_r_z_m": [
+      1.532869272223303,
+      1.5537227708407526
+    ],
+    "half_max_intervals_offset_r_z_m": [
+      [
+        -0.2025612427766094,
+        0.32933468553629686
+      ],
+      [
+        -0.27261037128618965,
+        0.2726103725552225
+      ]
+    ],
+    "half_max_width_r_z_m": [
+      0.5318959283129062,
+      0.5452207438414122
+    ],
+    "wall_to_half_amplitude_m": {
+      "r_lower": 0.1568666223702754,
+      "r_upper": 0.06773938317560703,
+      "z_lower": 0.09903682208483412,
+      "z_upper": 0.09903682132110571
+    }
+  },
+  {
+    "archive": "ritz-R15-n2e19-a0p75-p12.npz",
+    "order": 12,
+    "mode_index": 354,
+    "frequency_hz": 4925015.137210747,
+    "half_width_m": 0.75,
+    "antinode_offset_r_z_m": [
+      0.12853920630822935,
+      -3.9465485242210284e-09
+    ],
+    "effective_wavelength_r_z_m": [
+      1.863599957121816,
+      2.013366826538857
+    ],
+    "interior_effective_wavelength_r_z_m": [
+      1.8401974127963399,
+      1.9149266189111427
+    ],
+    "half_max_intervals_offset_r_z_m": [
+      [
+        -0.20628382399338302,
+        0.4535187473995216
+      ],
+      [
+        -0.34820008601119734,
+        0.34820008621401205
+      ]
+    ],
+    "half_max_width_r_z_m": [
+      0.6598025713929045,
+      0.6964001722252093
+    ],
+    "wall_to_half_amplitude_m": {
+      "r_lower": 0.25153245801225566,
+      "r_upper": 0.049745534189413104,
+      "z_lower": 0.11188374422101219,
+      "z_upper": 0.11188374402468107
+    }
+  },
+  {
+    "archive": "ritz-R15-n2e19-a0p75-p14.npz",
+    "order": 14,
+    "mode_index": 470,
+    "frequency_hz": 4932864.89344958,
+    "half_width_m": 0.75,
+    "antinode_offset_r_z_m": [
+      0.11096412787753532,
+      -4.404928005565033e-09
+    ],
+    "effective_wavelength_r_z_m": [
+      1.8853036837023294,
+      1.9927867501931595
+    ],
+    "interior_effective_wavelength_r_z_m": [
+      1.8367500425508634,
+      1.882057471369106
+    ],
+    "half_max_intervals_offset_r_z_m": [
+      [
+        -0.22469855807087735,
+        0.43319191618375297
+      ],
+      [
+        -0.34207056145767717,
+        0.3420705615070851
+      ]
+    ],
+    "half_max_width_r_z_m": [
+      0.6578904742546303,
+      0.6841411229647623
+    ],
+    "wall_to_half_amplitude_m": {
+      "r_lower": 0.22777539720076442,
+      "r_upper": 0.06748005919602326,
+      "z_lower": 0.12235873211857565,
+      "z_upper": 0.12235873206547987
+    }
+  },
+  {
+    "archive": "ritz-R15-n2e19-a0p75-p16.npz",
+    "order": 16,
+    "mode_index": 602,
+    "frequency_hz": 4938820.244024322,
+    "half_width_m": 0.75,
+    "antinode_offset_r_z_m": [
+      0.09750544912555548,
+      -4.05856374889248e-09
+    ],
+    "effective_wavelength_r_z_m": [
+      1.9003944606271512,
+      1.9793181052133995
+    ],
+    "interior_effective_wavelength_r_z_m": [
+      1.8285958616673457,
+      1.8586035800239105
+    ],
+    "half_max_intervals_offset_r_z_m": [
+      [
+        -0.241757194307902,
+        0.42326559086305593
+      ],
+      [
+        -0.3411375090614348,
+        0.34113750874552085
+      ]
+    ],
+    "half_max_width_r_z_m": [
+      0.6650227851709579,
+      0.6822750178069557
+    ],
+    "wall_to_half_amplitude_m": {
+      "r_lower": 0.20505626275434202,
+      "r_upper": 0.07584454213239045,
+      "z_lower": 0.12358839035678834,
+      "z_upper": 0.12358839066904248
+    },
+    "grid_scales": [
+      {
+        "cells_per_direction": 20,
+        "spacing_m": 0.075,
+        "cells_per_effective_wavelength_r_z": [
+          25.33859280836202,
+          26.390908069511994
+        ],
+        "cells_per_half_max_width_r_z": [
+          8.866970468946105,
+          9.097000237426075
+        ]
+      }
+    ]
+  }
+]

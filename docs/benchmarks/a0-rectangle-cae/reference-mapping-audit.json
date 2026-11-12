@@ -1,0 +1,140 @@
+[
+  {
+    "grid": 12,
+    "input_mapping": {
+      "magnetic_projection_relative": 0.032336176054463796,
+      "ion_velocity_projection_relative": 0.1081437981900618,
+      "sampled_to_reference_B_overlap": 0.999109800115292,
+      "sampled_to_reference_Bphi_overlap": 0.9996861807592362,
+      "perturbation_discrete_divB_max": 4.079850938286337e-20,
+      "perturbation_discrete_normal_curlB_max": 1.3779828142290836e-18,
+      "perturbation_discrete_normal_velocity_max": 1.1368683772161603e-13
+    },
+    "scope": "Actual production chart and current transfer applied to sampled continuous Ritz mode. This is a frozen spatial diagnostic.",
+    "regions": {
+      "domain": {
+        "B": {
+          "relative": 0.04381138491322842,
+          "absolute_rms": 7.464829214767319e-06
+        },
+        "J": {
+          "relative": 0.3075263510323351,
+          "absolute_rms": 241.59049264198237
+        },
+        "J_perpendicular": {
+          "relative": 0.07329464677087677,
+          "absolute_rms": 55.4877876856957
+        },
+        "J_parallel": {
+          "relative": 1.1205683624897487,
+          "absolute_rms": 235.1320300442772
+        }
+      },
+      "near_wall_lt_0p20m": {
+        "B": {
+          "relative": 0.07348638999681248,
+          "absolute_rms": 9.715958264750124e-06
+        },
+        "J": {
+          "relative": 0.5241152337575687,
+          "absolute_rms": 323.8746810437973
+        },
+        "J_perpendicular": {
+          "relative": 0.13376454698297194,
+          "absolute_rms": 73.77370765252951
+        },
+        "J_parallel": {
+          "relative": 1.131470720744431,
+          "absolute_rms": 315.36050653247713
+        }
+      },
+      "interior_ge_0p20m": {
+        "B": {
+          "relative": 0.013028384214733084,
+          "absolute_rms": 2.716332630540752e-06
+        },
+        "J": {
+          "relative": 0.014995407399310804,
+          "absolute_rms": 14.314766055146595
+        },
+        "J_perpendicular": {
+          "relative": 0.011692310081215712,
+          "absolute_rms": 11.149568783938866
+        },
+        "J_parallel": {
+          "relative": 0.20263671369933584,
+          "absolute_rms": 8.977730400596425
+        }
+      }
+    }
+  },
+  {
+    "grid": 16,
+    "input_mapping": {
+      "magnetic_projection_relative": 0.02350619433784307,
+      "ion_velocity_projection_relative": 0.12712500692103734,
+      "sampled_to_reference_B_overlap": 0.9987800605252217,
+      "sampled_to_reference_Bphi_overlap": 0.9998509121462376,
+      "perturbation_discrete_divB_max": 1.7142741545784674e-19,
+      "perturbation_discrete_normal_curlB_max": 4.337147489887064e-18,
+      "perturbation_discrete_normal_velocity_max": 1.705308348226023e-13
+    },
+    "scope": "Actual production chart and current transfer applied to sampled continuous Ritz mode. This is a frozen spatial diagnostic.",
+    "regions": {
+      "domain": {
+        "B": {
+          "relative": 0.04957815168048834,
+          "absolute_rms": 8.445327696981803e-06
+        },
+        "J": {
+          "relative": 0.21863368855788518,
+          "absolute_rms": 168.58466326630605
+        },
+        "J_perpendicular": {
+          "relative": 0.05759116757069259,
+          "absolute_rms": 43.78718786190221
+        },
+        "J_parallel": {
+          "relative": 1.2675393467399514,
+          "absolute_rms": 162.79886629752764
+        }
+      },
+      "near_wall_lt_0p20m": {
+        "B": {
+          "relative": 0.08408433238604121,
+          "absolute_rms": 1.0780986657701745e-05
+        },
+        "J": {
+          "relative": 0.3477338032267349,
+          "absolute_rms": 215.90065968848342
+        },
+        "J_perpendicular": {
+          "relative": 0.09342284611677001,
+          "absolute_rms": 56.04674721564691
+        },
+        "J_parallel": {
+          "relative": 1.3036210781706528,
+          "absolute_rms": 208.4990575049866
+        }
+      },
+      "interior_ge_0p20m": {
+        "B": {
+          "relative": 0.005109966439153423,
+          "absolute_rms": 1.1269529710494897e-06
+        },
+        "J": {
+          "relative": 0.006656048108376574,
+          "absolute_rms": 6.38678876529319
+        },
+        "J_perpendicular": {
+          "relative": 0.0029518666389141838,
+          "absolute_rms": 2.8288758890741916
+        },
+        "J_parallel": {
+          "relative": 0.11876388220243836,
+          "absolute_rms": 5.726127132424672
+        }
+      }
+    }
+  }
+]

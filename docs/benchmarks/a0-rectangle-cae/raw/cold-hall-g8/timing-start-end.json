@@ -1,0 +1,155 @@
+[
+  {
+    "event": "assembly_start",
+    "elapsed_s": 0.5567195150069892,
+    "host_peak_rss_bytes": 407236608,
+    "estimate_bytes": 10558104,
+    "k": 0,
+    "device_name": "NVIDIA GeForce RTX 5090",
+    "device_total_bytes": 33668726784,
+    "device_free_bytes": 33103347712,
+    "cupy_pool_live_bytes": 0,
+    "cupy_pool_reserved_bytes": 0
+  },
+  {
+    "event": "assembly_end",
+    "elapsed_s": 0.8612577188760042,
+    "host_peak_rss_bytes": 1036730368,
+    "assembly_s": 0.3043662298005074,
+    "operator_arrays": {
+      "I": [
+        {
+          "shape": [
+            208,
+            192
+          ],
+          "bytes": 638976
+        }
+      ],
+      "H": [
+        {
+          "shape": [
+            192,
+            208
+          ],
+          "bytes": 638976
+        }
+      ],
+      "QB": [
+        {
+          "shape": [
+            192,
+            225
+          ],
+          "bytes": 691200
+        }
+      ],
+      "T": [
+        {
+          "shape": [
+            32,
+            192
+          ],
+          "bytes": 98304
+        }
+      ],
+      "G": [
+        {
+          "shape": [
+            208,
+            64
+          ],
+          "bytes": 212992
+        }
+      ],
+      "C": [
+        {
+          "shape": [
+            225,
+            208
+          ],
+          "bytes": 748800
+        }
+      ],
+      "DB": [
+        {
+          "shape": [
+            81,
+            225
+          ],
+          "bytes": 291600
+        }
+      ],
+      "DJ": [
+        {
+          "shape": [
+            64,
+            208
+          ],
+          "bytes": 212992
+        }
+      ],
+      "Cdag": [
+        {
+          "shape": [
+            208,
+            225
+          ],
+          "bytes": 748800
+        }
+      ],
+      "Lphi": [
+        {
+          "shape": [
+            64,
+            64
+          ],
+          "bytes": 65536
+        }
+      ],
+      "Bc": [
+        {
+          "shape": [
+            64,
+            208
+          ],
+          "bytes": 212992
+        }
+      ],
+      "Bc_full": [
+        {
+          "shape": [
+            64,
+            208
+          ],
+          "bytes": 212992
+        }
+      ]
+    },
+    "cells": 64,
+    "edges": 208,
+    "magnetic_dofs": 225,
+    "device_total_bytes": 33668726784,
+    "device_free_bytes": 33036238848,
+    "cupy_pool_live_bytes": 8146944,
+    "cupy_pool_reserved_bytes": 40050688
+  },
+  {
+    "event": "context",
+    "elapsed_s": 0.8696765110362321,
+    "host_peak_rss_bytes": 1039876096,
+    "complete_plan_bytes": 81673088,
+    "host_cap_bytes": 4294967296,
+    "device_cap_bytes": 4294967296,
+    "device_total_bytes": 33668726784,
+    "device_free_bytes": 33036238848,
+    "cupy_pool_live_bytes": 6562816,
+    "cupy_pool_reserved_bytes": 40050688
+  },
+  {
+    "event": "exit",
+    "elapsed_s": 107.05853221495636,
+    "host_peak_rss_bytes": 1250775040,
+    "code": 0
+  }
+]

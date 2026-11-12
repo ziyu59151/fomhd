@@ -70,7 +70,7 @@ wall extraction, and the error envelopes that use absolute matrix
 entries. The timed implementation still keeps these composed matrices.
 [Measured matrix shapes and bytes](raw/11571/guarded-g24-r1.jsonl)
 
-The original and guarded 12×12 runs match identities and PASS status for all 4,215 saved hard checks. The guarded and earlier optimized 12×12 GPU endpoints match bitwise in all ten stored physical arrays and derived E. The guarded CPU run also replays its accepted endpoint exactly from restart. [Original versus guarded](raw/11571/endpoint-comparison.json) · [Optimized versus guarded](raw/11571/guard-followup-comparison.json) · [CPU restart comparison](raw/11571/cpu-guarded-restart-parity.json) · [Guarded CPU suite](raw/11571/cpu-guarded.log)
+The original and guarded 12×12 runs match identities and PASS status for all 4,215 saved hard checks. The guarded and earlier optimized 12×12 GPU endpoints match bitwise in all ten stored physical arrays and derived E. The guarded CPU run also replays its accepted endpoint exactly from restart. A subsequent owned GPU allocation ran the 12 GPU backend, massless and workflow tests on the exact guarded source. [Original versus guarded](raw/11571/endpoint-comparison.json) · [Optimized versus guarded](raw/11571/guard-followup-comparison.json) · [CPU restart comparison](raw/11571/cpu-guarded-restart-parity.json) · [Guarded CPU suite](raw/11571/cpu-guarded.log) · [Guarded GPU suite](raw/guarded/gpu-tests-11587.log)
 
 ## Numerical scope
 

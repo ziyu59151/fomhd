@@ -1,0 +1,45 @@
+{
+  "box": {
+    "order": 16,
+    "mode": 1,
+    "R0": 15,
+    "a": 0.6,
+    "B0": 2,
+    "density": 2e+19,
+    "mass": 3.3452438519e-27,
+    "rank_rtol": 1e-11
+  },
+  "records": [
+    {
+      "order": 12,
+      "index": 354,
+      "MHz": 6.162655649816987,
+      "normalized_omega": 3.368238571326745,
+      "compression": 0.9966946405620651,
+      "relative_wall_Jn": 1.2894369950840038e-11,
+      "skew_relative": 6.048385681215076e-17
+    },
+    {
+      "order": 14,
+      "index": 470,
+      "MHz": 6.170819435632693,
+      "normalized_omega": 3.37270054029516,
+      "compression": 0.9966205290713015,
+      "relative_wall_Jn": 6.744221097362117e-12,
+      "skew_relative": 7.238450447330968e-17,
+      "full_B_overlap_previous": 0.9977473748279374,
+      "B_parallel_overlap_previous": 0.9982386282966698
+    },
+    {
+      "order": 16,
+      "index": 602,
+      "MHz": 6.176966898100754,
+      "normalized_omega": 3.376060474936538,
+      "compression": 0.9965948209491785,
+      "relative_wall_Jn": 3.1888256430206953e-12,
+      "skew_relative": 8.60558848594122e-17,
+      "full_B_overlap_previous": 0.9984535777116943,
+      "B_parallel_overlap_previous": 0.9989440860999743
+    }
+  ]
+}

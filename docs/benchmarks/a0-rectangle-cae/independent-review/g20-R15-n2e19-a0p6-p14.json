@@ -1,0 +1,129 @@
+{
+  "grid": [
+    20,
+    20
+  ],
+  "reference_frequency_hz": 6170819.435632694,
+  "reference_mode_index": 470,
+  "seed": {
+    "magnetic_projection_relative": 0.020066271172567707,
+    "ion_velocity_projection_relative": 0.18683181145002153,
+    "sampled_to_reference_B_overlap": 0.9993654197030676,
+    "sampled_to_reference_Bphi_overlap": 0.9998990998964177,
+    "perturbation_discrete_divB_max": 3.909146525865939e-19,
+    "perturbation_discrete_normal_curlB_max": 7.66646708341687e-18,
+    "perturbation_discrete_normal_velocity_max": 1.797546735911271e-13
+  },
+  "spectra": {
+    "0": {
+      "operator_invariance_defect": 7.480515861559961e-16,
+      "max_wall_reaction_defect": 7.801523119477547e-16,
+      "max_real_s_inv": 4.807322989212023e-07,
+      "max_imag_rad_s": 230884969.4447815,
+      "max_real_positive_s_inv": 3.8400478335691066e-07,
+      "constrained_dim": 1882,
+      "va_m_per_s": 6897570.931304636,
+      "ion_skin_depth_m": 0.07200846729796646
+    },
+    "1": {
+      "operator_invariance_defect": 5.054674795480689e-15,
+      "max_wall_reaction_defect": 4.023212555082672e-15,
+      "max_real_s_inv": 3.2328134862489505e-07,
+      "max_imag_rad_s": 230886880.3453459,
+      "max_real_positive_s_inv": 2.878987254609836e-07,
+      "constrained_dim": 1880,
+      "va_m_per_s": 6897570.931304636,
+      "ion_skin_depth_m": 0.07200846729796646
+    }
+  },
+  "candidates": [
+    {
+      "index": 424,
+      "frequency_hz": 5665783.148431968,
+      "real_s_inv": -3.7928715385983405e-08,
+      "compression": 0.9998251194657385,
+      "deltaB_parallel_overlap": 0.7311655462142852,
+      "all_B_overlap": 0.730986892014474
+    },
+    {
+      "index": 423,
+      "frequency_hz": 5782889.206484058,
+      "real_s_inv": 6.079408548639132e-08,
+      "compression": 0.9998311912508183,
+      "deltaB_parallel_overlap": 0.5208040397069756,
+      "all_B_overlap": 0.520703659272585
+    },
+    {
+      "index": 371,
+      "frequency_hz": 7372353.315522955,
+      "real_s_inv": -2.7297897600438834e-08,
+      "compression": 0.999898170181954,
+      "deltaB_parallel_overlap": 0.5064271953846261,
+      "all_B_overlap": 0.5063307302364071
+    },
+    {
+      "index": 540,
+      "frequency_hz": 2651524.197372485,
+      "real_s_inv": -3.1487514132458383e-09,
+      "compression": 0.9992645722201289,
+      "deltaB_parallel_overlap": 0.21069190175009583,
+      "all_B_overlap": 0.2106331679838592
+    },
+    {
+      "index": 506,
+      "frequency_hz": 3439676.0735960505,
+      "real_s_inv": 1.0735943689610394e-08,
+      "compression": 0.9989049890858716,
+      "deltaB_parallel_overlap": 0.12022332669047982,
+      "all_B_overlap": 0.12005023363401435
+    },
+    {
+      "index": 538,
+      "frequency_hz": 2807870.460030094,
+      "real_s_inv": 4.656612873077393e-10,
+      "compression": 0.9988854670697123,
+      "deltaB_parallel_overlap": 0.11712994356129913,
+      "all_B_overlap": 0.1171479145877303
+    },
+    {
+      "index": 765,
+      "frequency_hz": 1392874.744432441,
+      "real_s_inv": -4.648108137810935e-09,
+      "compression": 0.9577932031608147,
+      "deltaB_parallel_overlap": 0.11476146154754217,
+      "all_B_overlap": 0.1127862640962392
+    },
+    {
+      "index": 342,
+      "frequency_hz": 9164270.20371575,
+      "real_s_inv": 2.8611780558122227e-09,
+      "compression": 0.9998880225127167,
+      "deltaB_parallel_overlap": 0.11213580262363594,
+      "all_B_overlap": 0.11206222443062681
+    },
+    {
+      "index": 349,
+      "frequency_hz": 8020903.986315534,
+      "real_s_inv": 1.2450566205678174e-07,
+      "compression": 0.9998332753144972,
+      "deltaB_parallel_overlap": 0.11105646365723794,
+      "all_B_overlap": 0.11098388200467749
+    },
+    {
+      "index": 343,
+      "frequency_hz": 8971521.76469616,
+      "real_s_inv": -2.0537426482661695e-08,
+      "compression": 0.9998818486471334,
+      "deltaB_parallel_overlap": 0.0831700250006304,
+      "all_B_overlap": 0.08314644820057607
+    }
+  ],
+  "best": {
+    "index": 424,
+    "frequency_hz": 5665783.148431968,
+    "real_s_inv": -3.7928715385983405e-08,
+    "compression": 0.9998251194657385,
+    "deltaB_parallel_overlap": 0.7311655462142852,
+    "all_B_overlap": 0.730986892014474
+  }
+}

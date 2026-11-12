@@ -1,0 +1,89 @@
+{
+  "scope": "Planning extrapolation only. Use initial g12/g16 case guards to infer k_est(h). No fine-grid operator spectrum or nonlinear evolution is inferred.",
+  "k_est_slope": 3.2998409075839987,
+  "k_est_offset_per_m": 0.09799388841334813,
+  "physical_horizon_s": 7.488e-07,
+  "grids": [
+    {
+      "grid": 12,
+      "h_m": 0.09999999999999999,
+      "k_est_per_m": 33.096402964253336,
+      "omega_est_rad_per_s": 902256355.2975917,
+      "guard_steps_min_for_fixed_horizon": 3441,
+      "guard_dt_upper_est_s": 2.1761115954664343e-10,
+      "operator_setup_estimate_bytes": 81251760
+    },
+    {
+      "grid": 16,
+      "h_m": 0.075,
+      "k_est_per_m": 44.0958726562,
+      "omega_est_rad_per_s": 1419225275.9105935,
+      "guard_steps_min_for_fixed_horizon": 5413,
+      "guard_dt_upper_est_s": 1.3833364123406614e-10,
+      "operator_setup_estimate_bytes": 245838288
+    },
+    {
+      "grid": 20,
+      "h_m": 0.06,
+      "k_est_per_m": 55.095342348146666,
+      "omega_est_rad_per_s": 2060997240.8974075,
+      "guard_steps_min_for_fixed_horizon": 7860,
+      "guard_dt_upper_est_s": 9.526717557251909e-11,
+      "operator_setup_estimate_bytes": 584945136
+    },
+    {
+      "grid": 24,
+      "h_m": 0.049999999999999996,
+      "k_est_per_m": 66.09481204009332,
+      "omega_est_rad_per_s": 2827572250.2580323,
+      "guard_steps_min_for_fixed_horizon": 10784,
+      "guard_dt_upper_est_s": 6.943620178041543e-11,
+      "operator_setup_estimate_bytes": 1192557072
+    },
+    {
+      "grid": 28,
+      "h_m": 0.04285714285714286,
+      "k_est_per_m": 77.09428173203997,
+      "omega_est_rad_per_s": 3718950303.99247,
+      "guard_steps_min_for_fixed_horizon": 14183,
+      "guard_dt_upper_est_s": 5.279560036663612e-11,
+      "operator_setup_estimate_bytes": 2183007792
+    },
+    {
+      "grid": 32,
+      "h_m": 0.0375,
+      "k_est_per_m": 88.09375142398665,
+      "omega_est_rad_per_s": 4735131402.10072,
+      "guard_steps_min_for_fixed_horizon": 18058,
+      "guard_dt_upper_est_s": 4.146638608926792e-11,
+      "operator_setup_estimate_bytes": 3690979920
+    },
+    {
+      "grid": 40,
+      "h_m": 0.03,
+      "k_est_per_m": 110.09269080787998,
+      "omega_est_rad_per_s": 7141902731.438657,
+      "guard_steps_min_for_fixed_horizon": 27625,
+      "guard_dt_upper_est_s": 2.7105882352941177e-11,
+      "operator_setup_estimate_bytes": 8899963536
+    },
+    {
+      "grid": 48,
+      "h_m": 0.024999999999999998,
+      "k_est_per_m": 132.0916301917733,
+      "omega_est_rad_per_s": 10047886238.271841,
+      "guard_steps_min_for_fixed_horizon": 41617,
+      "guard_dt_upper_est_s": 1.7992647235504722e-11,
+      "operator_setup_estimate_bytes": 18303947472
+    },
+    {
+      "grid": 60,
+      "h_m": 0.02,
+      "k_est_per_m": 165.0900392676133,
+      "omega_est_rad_per_s": 15342884331.325207,
+      "guard_steps_min_for_fixed_horizon": 69171,
+      "guard_dt_upper_est_s": 1.0825345881944746e-11,
+      "operator_setup_estimate_bytes": 44323999536
+    }
+  ]
+}

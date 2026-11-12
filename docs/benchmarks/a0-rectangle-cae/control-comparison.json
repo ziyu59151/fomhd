@@ -1,0 +1,271 @@
+{
+  "refinement": {
+    "relative_frequency_shift_12_to_16": 0.015950691935336936,
+    "common_support_parallel_shape_overlap": 0.9537723890190904,
+    "inner_parallel_shape_overlap_away_0p2m": 0.9820824054081674
+  },
+  "half_step": {
+    "matched_times": 49,
+    "final_matched_time_s": 3.7439999999999996e-07,
+    "peak_delta_B_T": 8.782500212310373e-15,
+    "peak_delta_u_m_per_s": 1.99451992031207e-08,
+    "peak_relative_delta_B": 4.7036027304932236e-11,
+    "peak_relative_delta_u": 4.7053486429680214e-11,
+    "peak_phase_gap_rad": 4.7040888510479654e-11
+  },
+  "wall_distance": {
+    "narrow_box_radius_m": 0.6,
+    "wide_box_radius_m": 0.75,
+    "common_cell_spacing_m": 0.075,
+    "relative_frequency_shift_observed": -0.1949500114591879,
+    "relative_frequency_shift_independent": -0.20044573242850428
+  },
+  "wall_collar": {
+    "g12": {
+      "thickness_m": 0.2,
+      "reference_parallel_energy_fraction": 0.33429809348186396,
+      "accepted_parallel_energy_fraction": 0.6283810192978435,
+      "parallel_shape_overlap": 0.6850829220439603
+    },
+    "g16": {
+      "thickness_m": 0.2,
+      "reference_parallel_energy_fraction": 0.34469265297868446,
+      "accepted_parallel_energy_fraction": 0.6494656600184145,
+      "parallel_shape_overlap": 0.6495692804451816
+    },
+    "g20_wide": {
+      "thickness_m": 0.2,
+      "reference_parallel_energy_fraction": 0.32111684813056396,
+      "accepted_parallel_energy_fraction": 0.5619845235469066,
+      "parallel_shape_overlap": 0.7401981048110747
+    }
+  },
+  "cases": {
+    "g12": {
+      "omega_rad_s": 34933559.1399635,
+      "frequency_hz": 5559848.616918251,
+      "phase_rms_rad": 1.6255923614750329e-06,
+      "relative_amplitude_drift": -4.334494539959266e-06,
+      "cycles": 4.16321418393009,
+      "reference_relative_frequency_error": -0.09990636041327172,
+      "parallel_shape_overlap_full": 0.7840091600768239,
+      "parallel_shape_overlap_wall_excluded": 0.944980486727103,
+      "all_B_overlap_full": 0.7837297109609339,
+      "all_u_overlap_full": 0.6669176014297473,
+      "parallel_magnetic_fraction": 0.9997981692106939,
+      "independent_parallel_magnetic_fraction": 0.999302632414373,
+      "velocity_field_orthogonal_to_seed": 1.1539042050036255e-05,
+      "interior_modal_magnetic_energy_fraction": 0.37163010425241916,
+      "magnetic_component_fractions_R_phi_Z": [
+        0.00011308274432909264,
+        0.9997981692106939,
+        8.874804497712547e-05
+      ],
+      "reference_magnetic_component_fractions_R_phi_Z": [
+        0.0004610957899315574,
+        0.999302632414373,
+        0.0002362717956953411
+      ],
+      "velocity_component_fractions_R_phi_Z": [
+        0.537693305082261,
+        7.419130688970753e-15,
+        0.4623066949177315
+      ],
+      "reference_velocity_component_fractions_R_phi_Z": [
+        0.5134156708216804,
+        1.059953870804702e-28,
+        0.48658432917831973
+      ],
+      "velocity_phase_relative_to_magnetic_vs_reference_rad": 1.6245879932928038e-07,
+      "local_probe_frequencies_hz": [
+        5559848.703677631,
+        5559849.376308081,
+        5559848.383050757,
+        5559848.847599781,
+        5559847.806801848
+      ],
+      "reference_frequency_hz": 6176966.898100754,
+      "final_saved_time_s": 7.488e-07,
+      "accepted_saved_snapshots": 97,
+      "case_status": "completed",
+      "accepted_steps": 3840,
+      "elapsed_s": 2672.8394333750475,
+      "median_step_plus_output_s": 0.68924303248059,
+      "largest_guard_omega_dt": 0.1757467957140825,
+      "hard_guard_passed": true,
+      "quiet": {}
+    },
+    "g16": {
+      "omega_rad_s": 35490773.58000993,
+      "frequency_hz": 5648532.0494138235,
+      "phase_rms_rad": 1.5854426930698968e-06,
+      "relative_amplitude_drift": -5.063833681595575e-06,
+      "cycles": 4.229620594147082,
+      "reference_relative_frequency_error": -0.08554924405526765,
+      "parallel_shape_overlap_full": 0.7635086628903696,
+      "parallel_shape_overlap_wall_excluded": 0.9517816040906478,
+      "all_B_overlap_full": 0.7630837348953304,
+      "all_u_overlap_full": 0.6414673047844971,
+      "parallel_magnetic_fraction": 0.9998193369233905,
+      "independent_parallel_magnetic_fraction": 0.9988611978912383,
+      "velocity_field_orthogonal_to_seed": 1.7473674982238766e-05,
+      "interior_modal_magnetic_energy_fraction": 0.35053887786101773,
+      "magnetic_component_fractions_R_phi_Z": [
+        0.0001101579950349722,
+        0.9998193369233905,
+        7.050508157451009e-05
+      ],
+      "reference_magnetic_component_fractions_R_phi_Z": [
+        0.0007946060100568418,
+        0.9988611978912383,
+        0.00034419609870462293
+      ],
+      "velocity_component_fractions_R_phi_Z": [
+        0.5986787105696039,
+        7.909012495229536e-15,
+        0.4013212894303882
+      ],
+      "reference_velocity_component_fractions_R_phi_Z": [
+        0.5165280513159946,
+        1.1159023041345608e-28,
+        0.4834719486840054
+      ],
+      "velocity_phase_relative_to_magnetic_vs_reference_rad": 1.1001679188278945e-07,
+      "local_probe_frequencies_hz": [
+        5648531.476214354,
+        5648531.556101991,
+        5648533.351116583,
+        5648532.715016935,
+        5648531.763857968
+      ],
+      "reference_frequency_hz": 6176966.898100754,
+      "final_saved_time_s": 7.487999999999999e-07,
+      "accepted_saved_snapshots": 97,
+      "case_status": "completed",
+      "accepted_steps": 5760,
+      "elapsed_s": 3846.81497375411,
+      "median_step_plus_output_s": 0.6666376335779205,
+      "largest_guard_omega_dt": 0.1844994515110387,
+      "hard_guard_passed": true,
+      "quiet": {
+        "time_s": 7.487999999999999e-07,
+        "accepted_matching_count": 97,
+        "density_peak_quiet_drift": 40960.0,
+        "ion_pressure_peak_quiet_drift": 3.0535574069290305e-12,
+        "electron_perp_peak_quiet_drift": 4.147793219999585e-12,
+        "electron_parallel_peak_quiet_drift": 2.3883117705736367e-12,
+        "velocity_peak_quiet_drift": 9.41628092647111e-08,
+        "B_peak_quiet_drift": 1.3322676295501878e-15,
+        "E_peak_quiet_drift": 1.9596000115008743e-07
+      }
+    },
+    "g16_half": {
+      "omega_rad_s": 35490774.93492089,
+      "frequency_hz": 5648532.2650546,
+      "phase_rms_rad": 1.4423506968784429e-06,
+      "relative_amplitude_drift": -2.7001717286534443e-06,
+      "cycles": 2.114810024138121,
+      "reference_relative_frequency_error": -0.08554920914480424,
+      "parallel_shape_overlap_full": 0.763509245370801,
+      "parallel_shape_overlap_wall_excluded": 0.9517815074063388,
+      "all_B_overlap_full": 0.7630843166488275,
+      "all_u_overlap_full": 0.6414687463306892,
+      "parallel_magnetic_fraction": 0.999819336757746,
+      "independent_parallel_magnetic_fraction": 0.9988611978912383,
+      "velocity_field_orthogonal_to_seed": 1.2844135392751656e-05,
+      "interior_modal_magnetic_energy_fraction": 0.3505404125172892,
+      "magnetic_component_fractions_R_phi_Z": [
+        0.00011015841557651051,
+        0.999819336757746,
+        7.050482667753788e-05
+      ],
+      "reference_magnetic_component_fractions_R_phi_Z": [
+        0.0007946060100568418,
+        0.9988611978912383,
+        0.00034419609870462293
+      ],
+      "velocity_component_fractions_R_phi_Z": [
+        0.5986804606798128,
+        7.184473713421378e-15,
+        0.40131953932017994
+      ],
+      "reference_velocity_component_fractions_R_phi_Z": [
+        0.5165280513159946,
+        1.1159023041345608e-28,
+        0.4834719486840054
+      ],
+      "velocity_phase_relative_to_magnetic_vs_reference_rad": 1.1468725504442591e-07,
+      "local_probe_frequencies_hz": [
+        5648529.408860621,
+        5648530.0885703,
+        5648534.427765998,
+        5648532.653806494,
+        5648529.518267985
+      ],
+      "reference_frequency_hz": 6176966.898100754,
+      "final_saved_time_s": 3.7439999999999996e-07,
+      "accepted_saved_snapshots": 49,
+      "case_status": "completed",
+      "accepted_steps": 5760,
+      "elapsed_s": 3890.893177255057,
+      "median_step_plus_output_s": 0.6746769739547744,
+      "largest_guard_omega_dt": 0.09224971190997668,
+      "hard_guard_passed": true,
+      "quiet": {}
+    },
+    "g20_wide": {
+      "omega_rad_s": 28571846.863891553,
+      "frequency_hz": 4547350.661653008,
+      "phase_rms_rad": 1.6830712503263073e-06,
+      "relative_amplitude_drift": -2.5900237742293446e-06,
+      "cycles": 3.40505650686326,
+      "reference_relative_frequency_error": -0.07926378427013392,
+      "parallel_shape_overlap_full": 0.8396747964512081,
+      "parallel_shape_overlap_wall_excluded": 0.9631832220213435,
+      "all_B_overlap_full": 0.8390146265469268,
+      "all_u_overlap_full": 0.7376410116899214,
+      "parallel_magnetic_fraction": 0.9997248909698199,
+      "independent_parallel_magnetic_fraction": 0.9983517733322227,
+      "velocity_field_orthogonal_to_seed": 1.2468149829691812e-05,
+      "interior_modal_magnetic_energy_fraction": 0.43803752118179073,
+      "magnetic_component_fractions_R_phi_Z": [
+        0.00016753975090452283,
+        0.9997248909698199,
+        0.0001075692792757165
+      ],
+      "reference_magnetic_component_fractions_R_phi_Z": [
+        0.0012312585508993806,
+        0.9983517733322227,
+        0.0004169681168777745
+      ],
+      "velocity_component_fractions_R_phi_Z": [
+        0.5964130732826034,
+        9.361655548476054e-15,
+        0.4035869267173872
+      ],
+      "reference_velocity_component_fractions_R_phi_Z": [
+        0.5180111350365333,
+        1.1242123758856422e-28,
+        0.48198886496346666
+      ],
+      "velocity_phase_relative_to_magnetic_vs_reference_rad": 3.376127089176923e-08,
+      "local_probe_frequencies_hz": [
+        4547350.7019769335,
+        4547351.319492711,
+        4547351.128732093,
+        4547350.83396018,
+        4547350.970079289
+      ],
+      "reference_frequency_hz": 4938820.244024322,
+      "final_saved_time_s": 7.487999999999999e-07,
+      "accepted_saved_snapshots": 97,
+      "case_status": "completed",
+      "accepted_steps": 5760,
+      "elapsed_s": 4123.196761891944,
+      "median_step_plus_output_s": 0.7105952079873532,
+      "largest_guard_omega_dt": 0.18644093814283555,
+      "hard_guard_passed": true,
+      "quiet": {}
+    }
+  }
+}

@@ -1,5 +1,9 @@
 # A0 global fast-branch prototype acceptance
 
+This record covers the earlier circle and EAST campaigns. The
+[rectangular-wall A0 replay](benchmarks/a0-rectangle-cae/README.md) records
+the later fixed-box mode, grid and time controls, and physical wall move.
+
 This is a scoped engineering prototype, not experimental validation or a claim
 of globally fourth-order accuracy. The mainline is Python/Warp/CuPy, RK4,
 massless quasineutral CGL-B electrons (`electron_inertia=0`). Finite electron

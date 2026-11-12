@@ -1,0 +1,103 @@
+{
+  "scope": "Independent weak cold Hall Ritz reference, no solver trajectory",
+  "collar_m": 0.05,
+  "quadrature_order_per_patch_direction": 22,
+  "records": [
+    {
+      "order": 12,
+      "frequency_hz": 6162655.649816986,
+      "J_l2_mu0_over_B_l2_per_m": 6.694003963682205,
+      "J_toroidal_fraction": 0.26841410047516306,
+      "J_squared_fraction": {
+        "corners": 0.006784613826046865,
+        "sides": 0.31549959577026815,
+        "core": 0.6777157904036849
+      },
+      "J_toroidal_fraction_by_region": {
+        "corners": 0.9209196249918498,
+        "sides": 0.8082464686799259,
+        "core": 0.010571662052074307
+      },
+      "strong_momentum_residual_to_force": {
+        "corners": 0.6318263848880524,
+        "sides": 0.538972383554963,
+        "core": 0.05001249740355281,
+        "whole_box": 0.16174510237215223
+      },
+      "wall_normal_force_rms_over_volume_force_rms": 1.0785012760228372,
+      "wall_normal_to_poloidal_tangent_current_peak": 2.5099775325397697e-11
+    },
+    {
+      "order": 14,
+      "frequency_hz": 6170819.435632694,
+      "J_l2_mu0_over_B_l2_per_m": 7.4941339183239615,
+      "J_toroidal_fraction": 0.4177789075114349,
+      "J_squared_fraction": {
+        "corners": 0.010764939636730092,
+        "sides": 0.4374017699645471,
+        "core": 0.5518332903987228
+      },
+      "J_toroidal_fraction_by_region": {
+        "corners": 0.959580577710495,
+        "sides": 0.9098247381422483,
+        "core": 0.017197457746697006
+      },
+      "strong_momentum_residual_to_force": {
+        "corners": 0.5909075982556773,
+        "sides": 0.5572814643987877,
+        "core": 0.04162130546802225,
+        "whole_box": 0.1500659529451167
+      },
+      "wall_normal_force_rms_over_volume_force_rms": 1.1299834005641043,
+      "wall_normal_to_poloidal_tangent_current_peak": 1.7899335303850922e-11
+    },
+    {
+      "order": 16,
+      "frequency_hz": 6176966.898100754,
+      "J_l2_mu0_over_B_l2_per_m": 8.597153668322893,
+      "J_toroidal_fraction": 0.5583306310573968,
+      "J_squared_fraction": {
+        "corners": 0.014416353223845912,
+        "sides": 0.560334807212393,
+        "core": 0.4252488395637611
+      },
+      "J_toroidal_fraction_by_region": {
+        "corners": 0.9793553093913798,
+        "sides": 0.954903948769537,
+        "core": 0.02150735779740809
+      },
+      "strong_momentum_residual_to_force": {
+        "corners": 0.5754759895127952,
+        "sides": 0.5766438724583077,
+        "core": 0.036314095404718014,
+        "whole_box": 0.1418824059102555
+      },
+      "wall_normal_force_rms_over_volume_force_rms": 1.1933383615448518,
+      "wall_normal_to_poloidal_tangent_current_peak": 1.3146327367748466e-11
+    },
+    {
+      "order": 18,
+      "frequency_hz": 6181834.655286489,
+      "J_l2_mu0_over_B_l2_per_m": 9.99051415667503,
+      "J_toroidal_fraction": 0.673305475496206,
+      "J_squared_fraction": {
+        "corners": 0.017596973680635064,
+        "sides": 0.6664084648087895,
+        "core": 0.3159945615105755
+      },
+      "J_toroidal_fraction_by_region": {
+        "corners": 0.9891619434713346,
+        "sides": 0.9751693956099968,
+        "core": 0.019108173650893862
+      },
+      "strong_momentum_residual_to_force": {
+        "corners": 0.5945904421111042,
+        "sides": 0.5882554361034277,
+        "core": 0.0338132658565754,
+        "whole_box": 0.1359486846412755
+      },
+      "wall_normal_force_rms_over_volume_force_rms": 1.2657805197030936,
+      "wall_normal_to_poloidal_tangent_current_peak": 7.934852673664436e-11
+    }
+  ]
+}
