@@ -105,6 +105,7 @@ explicit `1` selects finite-fluid combination.
      + M0/M1/MB/Rbar_r/Rbar_v
      + retained PR/PZ LU originals, factors and pivots
      + finite matrices/factors only when a full-storage massless oracle is used
+     + wall caps and poloidal magnetic norm arrays for the aligned box
 
    wall_temporaries = Nb*W + Ne*W + 5*W*W
    projection_temporaries = 2*rows(T)*3*Nc + rows(T)^2

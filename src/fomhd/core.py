@@ -675,6 +675,9 @@ def massless_matrix_storage(c: Context) -> dict[str, int]:
     box_wall = getattr(c.op, "box_wall", None)
     if box_wall is not None:
         group("rectangular_wall", (*vars(box_wall).values(), c.op.wall_magnetic_divergence))
+    box_norm = getattr(c.op, "box_magnetic_norm", None)
+    if box_norm is not None:
+        group("rectangular_magnetic_norm", box_norm[:-1])
     filter_factors = 0
     for name in ("PR_r", "PZ_r", "PR_z", "PZ_z", "PR_v", "PZ_v"):
         filter_factors = _checked_sum(
@@ -724,6 +727,12 @@ def massless_matrix_storage(c: Context) -> dict[str, int]:
     if box_wall is not None:
         persistent = _checked_sum(
             persistent, storage["rectangular_wall"], "persistent rectangular wall storage"
+        )
+    if box_norm is not None:
+        persistent = _checked_sum(
+            persistent,
+            storage["rectangular_magnetic_norm"],
+            "persistent rectangular magnetic norm storage",
         )
     storage["persistent"] = persistent
 

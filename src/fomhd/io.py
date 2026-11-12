@@ -528,6 +528,14 @@ def _operator_fingerprint(operators, backend):
         array = np.asarray(backend.to_host(getattr(operators, name)))
         digest.update(f"{name}:{array.shape}:".encode("ascii"))
         digest.update(np.ascontiguousarray(array).tobytes())
+    box_norm = getattr(operators, "box_magnetic_norm", None)
+    if box_norm is not None:
+        digest.update(b"rectangle:affine-link-magnetic-norm")
+        for factor in box_norm[:-1]:
+            array = np.asarray(backend.to_host(factor))
+            digest.update(f"{array.shape}:".encode("ascii"))
+            digest.update(np.ascontiguousarray(array).tobytes())
+        digest.update(struct.pack("<d", box_norm[-1]))
     row_groups = (
         ("selected_wall_rows",)
         if not finite_mass_available

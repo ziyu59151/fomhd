@@ -32,7 +32,7 @@ kinetic=[integral(m_i n_i |u_i|^2/2),0]
 ion_internal=integral(p_i/(gamma_i-1))
 electron_perp=integral(p_e_perp)
 electron_parallel=integral(p_e_parallel/2)
-magnetic=integral(|B|^2/(2 mu_0))
+magnetic=2 pi * magnetic_pair(B, B)/(2 mu_0)
 longitudinal=0
 energy=ion kinetic+ion internal+electron pressures+magnetic
 ```
@@ -309,3 +309,7 @@ _fine_electron_work_checks(view,ctx,out,tag,diagnostic_work):
 No complete fine ion RHS, gradient, transport, boundary, or momentum record is
 constructed. If the mixed interval is rejected after these checks, the failure
 retains the actual diagnostic-work counts.
+
+The magnetic interval power uses the same `magnetic_pair(B, Bdot)` as
+state energy, including the aligned-box poloidal line norms. The same
+paired energy and power are used when the interval contains WR field stages.

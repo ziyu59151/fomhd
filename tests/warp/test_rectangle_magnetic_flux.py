@@ -3,9 +3,136 @@
 import numpy as np
 import pytest
 
-from fomhd.geometry import build_geometry
+from fomhd.geometry import build_aligned_box, build_geometry
 from fomhd.operators import apply_t2, build_operators
 from fomhd.types import Context
+
+
+def _sampled_box(nr, nz, modes=0):
+    r = 1.0 + (np.arange(nr) + 0.5) * (1.2 / nr)
+    z = -0.5 + (np.arange(nz) + 0.5) / nz
+    g = build_aligned_box(r, z, [(1.4, -0.15), (1.8, -0.15), (1.6, 0.2)])
+    return g, build_operators(g, modes)
+
+
+def _sample_axisymmetric_flux(g, op, psi, toroidal_flux=1.3):
+    """Use the same integrated flux sampling as the FreeGS input mapping."""
+    hr, hz = g.R[1] - g.R[0], g.Z[1] - g.Z[0]
+    r, z = g.z_faces.R, g.z_faces.Z
+    za = np.maximum(g.Z[0] - hz / 2, z - hz / 2)
+    zb = np.minimum(g.Z[-1] + hz / 2, z + hz / 2)
+    br = -(psi(r, zb) - psi(r, za)) / (r * g.lz)
+    r, z = g.r_faces.R, g.r_faces.Z
+    ra = np.maximum(g.R[0] - hr / 2, r - hr / 2)
+    rb = np.minimum(g.R[-1] + hr / 2, r + hr / 2)
+    bz = (psi(rb, z) - psi(ra, z)) / (g.Rbar_r * g.lr)
+    harmonic = toroidal_flux / g.Rbar_v
+    stored = apply_t2(op, np.r_[br, harmonic, bz].astype(np.complex128))
+    stored[br.size : br.size + harmonic.size] = harmonic
+    caps = np.zeros((2 * op.K + 1, len(g.walls), 2), dtype=np.complex128)
+    for index, wall in enumerate(g.walls):
+        r = g.vertices.R[list(wall.vertices)]
+        z = g.vertices.Z[list(wall.vertices)]
+        sampled = psi(
+            np.array([r[0], r.mean(), r[1]]), np.array([z[0], z.mean(), z[1]])
+        )
+        sign = -wall.sign if wall.component == "r_face" else wall.sign
+        caps[op.K, index] = sign * np.diff(sampled)
+    return stored, caps
+
+
+@pytest.mark.parametrize("direction", ["radial", "axial"])
+def test_box_ampere_recovers_affine_link_means(direction):
+    from fomhd.box_boundary import install_normal_flux, magnetic_divergence
+
+    g, op = _sampled_box(7, 6)
+    if direction == "radial":
+        # B_Z = 0.4 + 0.7 R; B_R = 0.
+        psi = lambda r, z: 0.2 * r**2 + (0.7 / 3) * r**3
+        expected = np.full(op.Nc, -0.7)
+    else:
+        # B_R = R (0.4 + 0.7 Z); B_Z is independent of R.
+        psi = lambda r, z: -r**2 * (0.4 * z + 0.35 * z**2)
+        expected = 0.7 * g.cells.R
+    b, caps = _sample_axisymmetric_flux(g, op, psi)
+    install_normal_flux(op, g, caps)
+    context = Context(None, g, op, op.compute, 1)
+    np.testing.assert_allclose(magnetic_divergence(b, context), 0.0, atol=8e-13)
+    nr, nz = len(g.r_faces.keys), len(g.z_faces.keys)
+    exact = np.r_[np.zeros(nr), expected, np.zeros(nz)]
+    np.testing.assert_allclose(op.Cdag[0] @ b, exact, rtol=0, atol=2e-12)
+
+
+@pytest.mark.parametrize("case", ["mixed_vacuum", "solovev"])
+def test_box_ampere_converges_at_edges_and_corners(case):
+    from fomhd.box_boundary import install_normal_flux, magnetic_divergence
+
+    if case == "mixed_vacuum":
+        psi = lambda r, z: 0.1 * (r**4 - 4 * r**2 * z**2)
+        exact_curl = lambda r: 0 * r
+    else:
+        psi = lambda r, z: -0.1 * ((r**2 - 1.6**2) ** 2 + 4 * r**2 * z**2)
+        exact_curl = lambda r: 1.6 * r
+
+    errors = []
+    for nr, nz in [(7, 6), (14, 12)]:
+        g, op = _sampled_box(nr, nz)
+        b, caps = _sample_axisymmetric_flux(g, op, psi)
+        install_normal_flux(op, g, caps)
+        context = Context(None, g, op, op.compute, 1)
+        np.testing.assert_allclose(magnetic_divergence(b, context), 0.0, atol=8e-13)
+        nr_faces = len(g.r_faces.keys)
+        curl = (op.Cdag[0] @ b)[nr_faces : nr_faces + op.Nc]
+        error = np.abs(curl - exact_curl(g.cells.R))
+        i, j = np.asarray(g.cells.keys).T
+        radial = np.minimum(i, nr - 1 - i)
+        axial = np.minimum(j, nz - 1 - j)
+        layer = np.minimum(radial, axial)
+        corners = (radial == 0) & (axial == 0)
+        regions = [(layer == 0) & ~corners, layer == 1, corners, layer >= 2]
+        errors.append(np.array([np.max(error[region]) for region in regions]))
+    np.testing.assert_array_less(errors[1], errors[0] * [0.6, 0.6, 0.6, 0.3])
+
+
+def test_box_ampere_and_faraday_pair_and_preserve_modal_constraints():
+    from fomhd.box_boundary import install_normal_flux, magnetic_divergence
+    from fomhd.operators import magnetic_weight
+
+    g, op = _sampled_box(7, 6, modes=1)
+    background, caps = _sample_axisymmetric_flux(g, op, lambda r, z: 0.35 * r**2)
+    install_normal_flux(op, g, caps)
+    context = Context(None, g, op, op.compute, 3)
+    rng = np.random.default_rng(12)
+    m1 = rng.normal(size=op.Ne) + 1j * rng.normal(size=op.Ne)
+    e = np.stack((m1.conj(), rng.normal(size=op.Ne), m1))
+    rate = np.stack([-curl @ field for curl, field in zip(op.C, e, strict=True)])
+    b = 0.01 * rate
+    b[op.K] += background
+    np.testing.assert_allclose(magnetic_divergence(b.ravel(), context), 0.0, atol=8e-13)
+    j = np.stack([curl @ field for curl, field in zip(op.Cdag, b, strict=True)])
+    continuity = np.stack([dj @ current for dj, current in zip(op.DJ, j, strict=True)])
+    np.testing.assert_allclose(continuity, 0.0, atol=8e-13)
+    magnetic_power = np.vdot(rate, magnetic_weight(op, b.ravel()))
+    electric_power = np.vdot(e, op.M1 * j)
+    np.testing.assert_allclose(magnetic_power, -electric_power, atol=1e-12)
+    assert np.vdot(b, magnetic_weight(op, b.ravel())).real > 0
+
+
+def test_box_faraday_matches_a_sampled_flux_rate_with_fixed_caps():
+    g, op = _sampled_box(7, 6)
+    r0, r1 = g.R[0] - g.lr.min(), g.R[-1] + g.lr.min()
+    z0, z1 = g.Z[0] - g.lz.min(), g.Z[-1] + g.lz.min()
+
+    def flux_rate(r, z):
+        return (r - r0) * (r1 - r) * (z - z0) * (z1 - z)
+
+    # R E_phi = -partial_t psi. Tangential E vanishes on all four walls.
+    expected, cap_rate = _sample_axisymmetric_flux(g, op, flux_rate, 0.0)
+    e = np.zeros(op.Ne, dtype=np.complex128)
+    start = len(g.r_faces.keys)
+    e[start : start + op.Nc] = -flux_rate(g.cells.R, g.cells.Z) / g.cells.R
+    np.testing.assert_allclose(-op.C[0] @ e, expected, atol=3e-14)
+    np.testing.assert_allclose(cap_rate, 0.0, atol=3e-14)
 
 
 def test_threaded_rectangle_divergence_and_faraday():
