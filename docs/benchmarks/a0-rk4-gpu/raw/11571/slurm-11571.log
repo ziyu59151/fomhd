@@ -1,0 +1,30 @@
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.98 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.59 ms  (cached)
+Completed 6 steps: /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/original-g12-r3
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.50 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.55 ms  (cached)
+Completed 6 steps: /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/guarded-g12-r3
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.51 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.50 ms  (cached)
+Completed 3 steps: /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/guarded-g24-r1

@@ -9,8 +9,9 @@ explicit `1` selects finite-fluid combination.
    have `M*Nc` or `M*3Nc` complex128 entries. Electron parallel pressure is
    likewise `M*Nc`; native ion parallel pressure remains empty.
 2. Magnetic field has `M*len(MB)` entries.
-3. Reject `memory_limit==0`. Apply the same conservative native peak estimate
-   and state/workspace cap before allocating on `Context.compute`.
+3. Reject `memory_limit==0`. Apply the conservative peak estimate for the
+   selected storage layout and the state/workspace cap before allocation on
+   `Context.compute`.
 4. On `cuda`, require a positive `device_memory_limit` and apply both peak and
    state/workspace bounds to that device cap before allocation. The CPU
    reference continues to use the host `memory_limit`.
@@ -32,8 +33,9 @@ explicit `1` selects finite-fluid combination.
 
 ## A0-PY-CORE-03 Spectrum/sample conversion
 
-1. `mode_apply` and `sample_apply` validate layout and call backend matrix-vector
-   products without changing ownership.
+1. `mode_apply` validates layout and applies each retained mode matrix.
+   `sample_apply` uses one backend matrix product with the samples as columns
+   and returns the original sample-major layout on the same backend.
 2. Retained inverse validates shape/input before FFT. Its default is physical:
    only an explicitly requested arbitrary complex trial may pass
    `physical=False`.
@@ -54,7 +56,11 @@ explicit `1` selects finite-fluid combination.
 
 ## A0-PY-CORE-05 Memory plan
 
-1. Use the exact native conservative counts for dense systems, constraint
-   matrices, per-mode workspaces, and resident operator matrices.
-2. Multiply entries by 16 bytes and use checked sums/products. This is a
-   rejection estimate, not a measured allocator result.
+1. Complete operator storage keeps the native conservative estimates.
+2. Massless-only storage bounds modal/sample vectors, resident shared
+   matrices and factors, wall-cache buffers, and the largest live
+   matrix temporary group from wall setup, projection, diagnostics, or
+   the gradient adjoint. It never charges the inactive global Darwin system.
+   Sparse QB resident storage consists of CSR values and index arrays.
+3. Reject a finite-mass context given massless-only storage. All estimates
+   use checked sums/products and guard allocation on both supported backends.

@@ -1,0 +1,40 @@
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.73 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.49 ms  (cached)
+Completed 6 steps: /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/solovev-g12/lean-comparison-dense
+FOMHD error: complete A0 peak storage plan memory budget exceeded: required=15385894016 limit=12884901888
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.53 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.57 ms  (cached)
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.51 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.64 ms  (cached)
+Completed 6 steps: /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/solovev-g12/lean-comparison-lean
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.47 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.46 ms  (cached)
+Completed 3 steps: /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/solovev-g20/lean-comparison-lean

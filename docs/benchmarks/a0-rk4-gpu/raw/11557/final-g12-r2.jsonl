@@ -1,0 +1,2 @@
+{"event": "start", "pid": 912175, "allocation": "11557", "elapsed_s": 0.00012609316036105156, "host_peak_rss_B": 28430336, "source": "/home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/source-final/src/fomhd/io.py", "command": ["run", "/home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/solovev-g12/case.toml", "--output", "/home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/final-g12-r2"]}
+{"event": "exit", "pid": 912175, "allocation": "11557", "elapsed_s": 0.2674612340051681, "host_peak_rss_B": 287223808, "code": 2}

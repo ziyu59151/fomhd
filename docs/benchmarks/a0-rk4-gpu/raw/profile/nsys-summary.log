@@ -1,0 +1,240 @@
+Generating SQLite file solovev-g12/nsys.sqlite from solovev-g12/nsys.nsys-rep
+Processing [solovev-g12/nsys.sqlite] with [/opt/nvidia/nsight-systems/2026.1.3/target-linux-x64/reports/cuda_api_sum.py]...
+
+ ** CUDA API Summary (cuda_api_sum):
+
+ Time (%)  Total Time (ns)  Num Calls  Avg (ns)   Med (ns)   Min (ns)  Max (ns)  StdDev (ns)                Name
+ --------  ---------------  ---------  ---------  ---------  --------  --------  -----------  --------------------------------
+     44.4       4713266288     650681     7243.6     5950.0      1860   6724107      23188.4  cudaMemcpyAsync
+     22.8       2423700273     737694     3285.5     2920.0      2290  12052205      22732.1  cudaLaunchKernel
+     19.5       2073994981     666728     3110.7     2730.0      2150   5765547      11622.5  cuLaunchKernel
+      4.4        467741787     630313      742.1      660.0       500    217435        615.5  cudaStreamSynchronize
+      2.1        224941438        211  1066073.2    83781.0     42341  16119787    2345241.4  cuModuleLoadData
+      1.9        203523684     724313      281.0      230.0       180   5946300       6988.6  cudaStreamIsCapturing
+      0.9         99020308         86  1151398.9    54991.0     24521   3064222    1282618.1  cuModuleUnload
+      0.9         93709620         54  1735363.3  1322347.0     37920   6457161    1446780.3  cuLibraryLoadData
+      0.9         93293690     737694      126.5      100.0        70   3017201       3515.0  cuKernelGetName
+      0.7         73992471      16482     4489.3     3740.0      1430   1078042       9935.8  cudaMemsetAsync
+      0.5         54670641      37139     1472.1      900.0       400   4549033      23928.5  cudaEventRecord
+      0.2         24827436     166536      149.1      100.0        70   3008301       7957.3  cuStreamGetCaptureInfo_v2
+      0.1         12467031       2258     5521.3     3820.0      2730   2650994      55718.7  cudaLaunchKernelExC
+      0.1          9576836       8068     1187.0      410.0       180   3645984      42217.9  cuKernelGetFunction
+      0.1          7950589       6030     1318.5     1030.0       400     32200       1005.2  cudaEventQuery
+      0.1          7114845         17   418520.3   215764.0     18870   2323047     584188.5  cuLibraryUnload
+      0.0          5282905         74    71390.6    67961.0      1140    314186      77215.9  cudaMalloc
+      0.0          5221801       3665     1424.8     1020.0       210      9380       1130.6  cudaEventCreateWithFlags
+      0.0          4589328       3664     1252.5      990.0       200     10021        885.1  cudaEventDestroy
+      0.0          3705706          1  3705706.0  3705706.0   3705706   3705706          0.0  cudaMallocAsync
+      0.0          2635824       2062     1278.3     1150.0       610     12150        569.7  cuStreamSynchronize
+      0.0          1904959          8   238119.9    15070.0      1860   1180874     438484.9  cudaHostAlloc
+      0.0           654182       2691      243.1      210.0        70      3610        157.1  cuGetProcAddress_v2
+      0.0           577041         11    52458.3     6690.0      5310    512320     152521.3  cuMemcpyHtoD_v2
+      0.0           562141          2   281070.5   281070.5    276496    285645       6469.3  cuModuleLoadDataEx
+      0.0           553950          9    61550.0    64501.0     15430     85631      19396.5  cudaMemGetInfo
+      0.0           427908         10    42790.8    10930.0      1280    199064      66146.2  cudaFree
+      0.0           309757         11    28159.7    34741.0     11141     42791      12446.0  cuMemGetInfo_v2
+      0.0           247695          1   247695.0   247695.0    247695    247695          0.0  cuMemFree_v2
+      0.0           213994          1   213994.0   213994.0    213994    213994          0.0  cuMemAlloc_v2
+      0.0           133561        107     1248.2      670.0       250     11190       1906.1  cuLibraryGetKernel
+      0.0           123082          1   123082.0   123082.0    123082    123082          0.0  cuStreamCreateWithPriority
+      0.0            35012          8     4376.5      910.5       650     27701       9435.9  cudaDeviceSynchronize
+      0.0            23370         10     2337.0     2035.0       290      6570       2085.8  cuInit
+      0.0            12040          7     1720.0      400.0       180      5490       2392.1  cuCtxSetCurrent
+      0.0            11870          1    11870.0    11870.0     11870     11870          0.0  cuEventCreate
+      0.0             6370          1     6370.0     6370.0      6370      6370          0.0  cudaFreeAsync
+      0.0             2490          3      830.0      550.0       420      1520        601.1  cudaGetDriverEntryPointByVersion
+      0.0              900          6      150.0      100.0        90       360        106.4  cuModuleGetLoadingMode
+      0.0              410          1      410.0      410.0       410       410          0.0  cudaGetDeviceProperties
+
+Processing [solovev-g12/nsys.sqlite] with [/opt/nvidia/nsight-systems/2026.1.3/target-linux-x64/reports/cuda_gpu_kern_sum.py]...
+
+ ** CUDA GPU Kernel Summary (cuda_gpu_kern_sum):
+
+ Time (%)  Total Time (ns)  Instances  Avg (ns)   Med (ns)   Min (ns)  Max (ns)  StdDev (ns)                                                  Name
+ --------  ---------------  ---------  ---------  ---------  --------  --------  -----------  ----------------------------------------------------------------------------------------------------
+     11.3        294806183       2598   113474.3   109089.0      2912    520386      38634.6  void gebd2_cta<double2, double, (int)32, (int)4>(long, long, T1 *, long, T2 *, T2 *, T1 *, T1 *)
+      9.9        258719829     122576     2110.7     2112.0      1984      7009        170.3  void cuds_gemv_t_kernel<double2, (int)8, (int)1>(int, int, const T1 *, unsigned long, const T1 *, i…
+      7.4        192469768       2297    83791.8    79296.0     54656    800930      44504.3  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_nn_align1>(T1::Params)
+      5.4        141835352       1561    90861.9    90817.0     89280     92641        537.4  void getrf_pivot<getrf_params_<double2, (int)64, (int)1, (int)64, (int)64, (int)1>>(int, int, int, …
+      5.0        131565539      82244     1599.7     1568.0      1504      4928        321.9  void larfg_kernel_fast<double2, double, (int)6>(long, T1 *, long, T1 *, long, long, T1 *, long)
+      3.8        100007931      41380     2416.8     2368.0      1856      5088        221.1  void cuds_gemv_n_tx_ty_kernel<double2, (int)5, (int)2>(int, int, const T1 *, unsigned long, const T…
+      3.4         88907021       2963    30005.7    15680.0     14752    346081      63421.7  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_nn_align1>(T1::Params)
+      3.2         84655098      18739     4517.6     4320.0      4032      7776        488.6  std::enable_if<!T7, void>::type internal::gemvx::kernel<int, int, double2, double2, double2, double…
+      3.0         79103086      41728     1895.7     1888.0      1344      2368        142.9  void labrd_compute_Y_kernel<double2, (int)16, (int)16>(long, long, const T1 *, long, const T1 *, co…
+      3.0         77976702      41728     1868.7     1856.0      1728      2560         79.9  void labrd_compute_X_kernel<double2, (int)16, (int)16>(long, long, const T1 *, long, const T1 *, co…
+      2.8         72837848      39120     1861.9     1856.0      1728      2336         70.6  void labrd_update_colA<double2, (int)16, (int)16>(long, long, const T1 *, long, const T1 *, long, c…
+      2.7         71456228      41728     1712.4     1696.0      1568      2048         77.1  void labrd_update_rowA<double2, (int)16, (int)16>(long, long, const T1 *, long, const T1 *, long, c…
+      2.5         66480381      35562     1869.4     1856.0      1728      2752         47.3  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      2.0         51928576      16646     3119.6     3424.0      2432      4160        467.5  void gemv2T_kernel_val<long, long, double2, double2, double2, double2, (int)128, (int)16, (int)4, (…
+      1.9         50818005      27747     1831.5     1824.0      1632      6048        252.2  void dot_kernel<double2, (int)64, (int)0, cublasDotParams<cublasGemvTensorStridedBatched<const doub…
+      1.8         48395993      79310      610.2      576.0       480      3680         91.9  cupy_copy__complex128_complex128
+      1.7         45805623      27747     1650.8     1664.0      1600      1984         20.8  void reduce_1Block_kernel<double2, (int)64, (int)6, cublasGemvTensorStridedBatched<double2>, cublas…
+      1.7         43514430      12386     3513.2     3520.0      2304      4256         29.5  void gemv2N_kernel<int, int, double2, double2, double2, double2, (int)128, (int)16, (int)4, (int)4,…
+      1.6         41021855       2605    15747.4    15744.0     15584     16481         53.6  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_nh_align1>(T1::Params)
+      1.5         40546252       1688    24020.3    23936.0     23744    144608       2938.2  void trsv_ln_exec_up<double2, (unsigned int)32, (unsigned int)32, (unsigned int)4, (bool)0>(int, co…
+      1.2         32371734      58567      552.7      544.0       448       832         35.0  cupy_copy__float64_float64
+      1.1         29692532      17178     1728.5     1312.0      1152      3360        639.1  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      1.1         28999530      28294     1024.9      960.0       864     12800        571.5  cupy_absolute__complex128_float64
+      1.1         28238455      51263      550.9      544.0       480       928         40.9  cupy_multiply__float64_float64_float64
+      1.0         26506166      41728      635.2      640.0       576       928         25.3  void lacgv_kernel<double2, (int)256>(long, T1 *, long)
+      0.8         21132670      41728      506.4      512.0       448       608         17.8  void labrd_set_D<double2, double>(long, long, T1 *, T2 *)
+      0.8         20873987      41728      500.2      512.0       448       608         17.5  void labrd_set_E<double2, double>(long, T1 *, T2 *)
+      0.8         20694650      26186      790.3      800.0       608      1088         66.1  cupy_cub_all_pass1
+      0.8         20096423       1688    11905.5    11872.0     11648     90529       1915.2  void trsv_ln_exec<double2, (unsigned int)32, (unsigned int)32, (unsigned int)4, (bool)1>(int, const…
+      0.7         19227397      26186      734.3      736.0       608       992         38.6  cupy_cub_all_pass2
+      0.7         18520608      28216      656.4      672.0       544      2816         52.5  cupy_isfinite__complex128_bool
+      0.6         16471568      30723      536.1      544.0       480       736         23.2  cupy_add__float64_float64_float64
+      0.6         16422511      21188      775.1      768.0       704       960         42.4  cupy_sqrt__float64_float64
+      0.6         15048186      28249      532.7      544.0       480       704         26.0  cupy_square__float64_float64
+      0.5         13662194      14333      953.2      992.0       736      1248         75.1  cupy_all
+      0.5         12025896       9587     1254.4     1280.0      1120      1568         64.9  cupy_true_divide__complex128_complex_complex128
+      0.4         10471674      13281      788.5      736.0       672      1280        141.4  cupy_true_divide__float64_float64_float64
+      0.4          9722538      15398      631.4      608.0       576      1248         47.1  cupy_multiply__complex_complex128_complex128
+      0.4          9438587      17460      540.6      544.0       480       832         29.5  cupy_multiply__float_float64_float64
+      0.3          9093651       3374     2695.2     2720.0      1760      3104        274.7  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      0.3          8630300       5691     1516.5      928.0       544      3616       1131.2  cupy_conjugate__complex128_complex128
+      0.3          8612704       8758      983.4      992.0       640      1152         31.8  cupy_any
+      0.3          8390391      11692      717.6      736.0       576      1024         83.3  cupy_multiply__complex128_complex_complex128
+      0.3          8190533      15118      541.8      544.0       480      1376         76.5  cupy_absolute__float64_float64
+      0.3          7449977       5949     1252.3     1248.0      1088      1824         57.6  cupy_true_divide__complex128_float64_complex128
+      0.3          7350041      13905      528.6      544.0       480       704         18.9  cupy_add__float_float64_float64
+      0.3          7220991       1706     4232.7     4128.0      4000     37344       1204.1  void laswp_kernel2<double2, (bool)0, int>(int, T1 *, unsigned long, int, int, const T3 *, int)
+      0.3          7080150      10736      659.5      672.0       544      1856         56.8  cupy_subtract__complex128_complex128_complex128
+      0.3          6979093          4  1744773.3  1031731.0   1006371   3909260    1443076.9  void geqr2_smem_domino_fast<double2, double, (int)8, (int)2048>(int, int, T1 *, int, T1 *, int *, i…
+      0.3          6905399         47   146923.4   174977.0     10080    175873      50055.2  void geqr2_smem<double2, double, (int)8, (int)6, (int)4>(int, int, T1 *, unsigned long, T1 *, int)
+      0.3          6557426       8729      751.2      736.0       640      1888         93.5  cupy_multiply__float64_complex128_complex128
+      0.2          6311698       4315     1462.7     1472.0      1408      1536         23.2  void vector_fft<(unsigned int)5, EPT<(unsigned int)5>, (unsigned int)24, (unsigned int)24, (padding…
+      0.2          6311697       3766     1676.0     1664.0      1632      1856         36.4  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      0.2          5981198       2258     2648.9     2656.0      2592      3584         34.0  void cublasLt::splitKreduce_kernel<(int)32, (int)16, int, double2, double2, double2, double2, (bool…
+      0.2          5939258       1380     4303.8     4320.0      4224      4384         30.8  void vector_fft<(unsigned int)11, EPT<(unsigned int)11>, (unsigned int)32, (unsigned int)32, (paddi…
+      0.2          5326443       9321      571.4      544.0       480       832         55.9  cupy_greater__float64_float_bool
+      0.2          5269776         31   169992.8   168321.0      9920    333633      97779.8  void geqr2_smem<double2, double, (int)8, (int)5, (int)5>(int, int, T1 *, unsigned long, T1 *, int)
+      0.2          5148462        351    14668.0    14816.0      4576     14944       1213.0  void larfg_kernel_fast<double2, double, (int)9>(long, T1 *, long, T1 *, long, long, T1 *, long)
+      0.2          4986733         54    92346.9   112192.0     44128    112416      29165.1  void trsm_left_kernel<int, double2, (int)256, (int)4, (bool)0, (bool)0, (bool)0, (bool)1, (bool)0>(…
+      0.2          4826794       5907      817.1      800.0       672      1504         72.0  cupy_multiply__complex128_complex128_complex128
+      0.2          4732306       1945     2433.1     2464.0      2272      3104        132.0  std::enable_if<!T7, void>::type internal::gemvx::kernel<int, int, double2, double2, double2, double…
+      0.2          4616749       1428     3233.0     3232.0      3136      3296         28.7  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceKernel<cub::CUB_…
+      0.2          4415434       7622      579.3      576.0       480       672         30.3  cupy_where__bool_float64_float_float64
+      0.2          4090346          9   454482.9   457249.0    419041    499970      30569.1  void getrf_pivot<getrf_params_<double2, (int)256, (int)1, (int)256, (int)256, (int)1>>(int, int, in…
+      0.2          3971695       3062     1297.1     1280.0      1152      1888         66.0  cupy_true_divide__complex128_complex128_complex128
+      0.1          3887245        129    30133.7    30145.0     30016     30241         76.2  void cutlass::Kernel2<cutlass_80_tensorop_d884gemm_32x32_16x5_nt_align1>(T1::Params)
+      0.1          3846604       5364      717.1      704.0       576      1280         65.6  cupy_add__complex128_complex128_complex128
+      0.1          3685035       6205      593.9      576.0       512       768         51.5  cupy_isfinite__float64_bool
+      0.1          3374414       4063      830.5      832.0       640      2016         88.0  cupy_multiply__complex128_float64_complex128
+      0.1          3187562       5684      560.8      544.0       480       768         30.2  cupy_invert__bool_bool
+      0.1          2900872       5256      551.9      544.0       480       608         23.2  cupy_multiply__float64_float_float64
+      0.1          2823911        349     8091.4     8160.0      2752      8288        573.5  void larfg_kernel_fast<double2, double, (int)8>(long, T1 *, long, T1 *, long, long, T1 *, long)
+      0.1          2743688       4802      571.4      576.0       480       768         30.7  cupy_bitwise_or__bool_bool_bool
+      0.1          2694085       4546      592.6      608.0       480       800         35.3  cupy_where__bool_float64_float64_float64
+      0.1          2653768          1  2653768.0  2653768.0   2653768   2653768          0.0  void getrf_pivot<getrf_params_<double2, (int)512, (int)1, (int)512, (int)512, (int)1>>(int, int, in…
+      0.1          2605510        512     5088.9     5088.0      5024      5184         34.5  void larfg_kernel_fast<double2, double, (int)7>(long, T1 *, long, T1 *, long, long, T1 *, long)
+      0.1          2590190        830     3120.7     3104.0      2944      3360         98.2  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceKernel<cub::CUB_…
+      0.1          2552838       4802      531.6      544.0       480       576         21.9  cupy_copy__int32_int64
+      0.1          2254221       1561     1444.1     1440.0      1408      1473         18.6  void ipiv_lower_small<double2, (int)64>(int, void *, int, long *, int, int)
+      0.1          2173411       3707      586.3      576.0       512       896         26.7  cupy_greater__float64_float64_bool
+      0.1          1956103       3464      564.7      576.0       480       673         29.4  cupy_less_equal__float64_float_bool
+      0.1          1945450       2640      736.9      704.0       576      3808        207.8  cupy_cub_count_nonzero_pass1
+      0.1          1861865       2566      725.6      736.0       672       896         17.6  void gebrd_set_D_E_A<double2, double, (int)256>(long, long, T1 *, long, T2 *, T2 *)
+      0.1          1833262       2640      694.4      704.0       544       928         41.3  cupy_cub_count_nonzero_pass2
+      0.1          1805187         63    28653.8    40096.0     14560     53280      13752.7  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_hn_align1>(T1::Params)
+      0.1          1782502       3277      543.9      544.0       512       736         19.1  cupy_less__int32_int_bool
+      0.1          1757573         54    32547.6    40368.0     13088     42464      11680.8  void trsm_left_kernel<int, double2, (int)256, (int)4, (bool)0, (bool)0, (bool)0, (bool)0, (bool)1>(…
+      0.1          1591145       2598      612.4      608.0       576       736         17.0  cupy_maximum__float64_float_float64
+      0.1          1576519       4304      366.3      352.0       320       448         16.1  copy_info_kernel(int, int *)
+      0.1          1492135        796     1874.5     1856.0      1792      2016         38.8  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceKernel<cub::CUB_…
+      0.1          1489030       2598      573.1      576.0       544       704         17.1  cupy_less__float64_float_bool
+      0.1          1469833       2597      566.0      576.0       544       768         17.0  cupy_add__float64_float_float64
+      0.1          1455715       1765      824.8      832.0       736       896         31.0  Backend___make_warp_kernels__locals__physical_kernel_1a251f42_cuda_kernel_forward
+      0.1          1384514       1512      915.7      896.0       864      1120         30.8  cupy_concatenate_same_size
+      0.1          1317285        796     1654.9     1664.0      1600      1792         26.0  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      0.0          1288579       1428      902.4      896.0       864       992         27.2  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      0.0          1241511        893     1390.3     1248.0      1184      2432        339.7  cupy_sum
+      0.0          1231362       1561      788.8      800.0       768       832         16.3  void create_pivot_v2<(int)64>(int, int *, long *, int)
+      0.0          1197475       2921      410.0      416.0       352       512         33.7  cupy_fill
+      0.0          1171684        245     4782.4     4512.0      3712      6880        905.7  void gemv2N_kernel<int, int, double2, double2, double2, double2, (int)128, (int)16, (int)4, (int)4,…
+      0.0          1074626       1946      552.2      544.0       480       672         38.6  cupy_subtract__float64_float_float64
+      0.0          1027748       1726      595.5      608.0       544       800         21.6  cupy_multiply__complex_float64_complex128
+      0.0           969060        830     1167.5     1184.0       896      1504        180.8  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      0.0           951969       1571      606.0      608.0       576       672         16.8  cupy_equal__complex128_complex_bool
+      0.0           930624       1706      545.5      544.0       512       576         17.1  cupy_copy__int32_int32
+      0.0           919587       1706      539.0      544.0       480       608         19.8  cupy_add__int32_int_int32
+      0.0           867136        416     2084.5     1952.0      1824      2752        333.0  std::enable_if<!T7, void>::type internal::gemvx::kernel<int, int, double2, double2, double2, double…
+      0.0           856066       1571      544.9      544.0       512       640         17.1  cupy_greater__int32_int_bool
+      0.0           846753       1571      539.0      544.0       480       608         19.3  cupy_subtract__int32_int_int32
+      0.0           839137       1380      608.1      608.0       512       672         24.9  cupy_greater_equal__float64_float_bool
+      0.0           818340       1571      520.9      512.0       480       576         20.0  void ipiv_64_to_32_ker<(int)128>(long, const long *, int *)
+      0.0           795014       1726      460.6      448.0       384       512         18.2  cupy_arange__float_float_float64
+      0.0           769409       1160      663.3      672.0       544       960         42.6  cupy_negative__complex128_complex128
+      0.0           768160         31    24779.4    24768.0     24640     24896         76.0  void larft_T_32<double2, (int)1024>(int, T1 *, int, long, const T1 *, long)
+      0.0           767939       1238      620.3      608.0       544       928         34.8  cupy_bitwise_and__bool_bool_bool
+      0.0           736768       1765      417.4      416.0       352       480         23.5  cupy_copy__int_int32
+      0.0           657248        603     1090.0     1088.0       800      1760        165.9  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceFixedSizeSegmentedRedu…
+      0.0           651778        911      715.5      704.0       640      1056         47.5  cupy_cub_any_pass1
+      0.0           629922       1688      373.2      384.0       352       448         15.3  dtrsv_init(int *)
+      0.0           628225       1688      372.2      384.0       352       448         15.6  dtrsv_init_up(int *, int)
+      0.0           616897        911      677.2      672.0       608       768         38.5  cupy_cub_any_pass2
+      0.0           595682          1   595682.0   595682.0    595682    595682          0.0  void geqr2_smem_domino_fast<double2, double, (int)8, (int)512>(int, int, T1 *, int, T1 *, int *, in…
+      0.0           575106       1571      366.1      352.0       320       544         16.8  xxtrf4_set_info_ker(int, int *)
+      0.0           546336       1561      350.0      352.0       320       352          7.8  void ipiv_lower_diag<double2, (int)64>(int, void *, int, int *, int)
+      0.0           496802          3   165600.7   182720.0    118465    195617      41326.9  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_hn_align1>(T1::Params)
+      0.0           466816        153     3051.1     3040.0      2976      3136         40.4  _magnetic_force_kernel__locals__magnetic_force_kernel_bfee3727_cuda_kernel_forward
+      0.0           445313        610      730.0      736.0       672       928         28.5  cupy_prepare_array_indexing
+      0.0           426752        129     3308.2     3264.0      3200      3808        155.8  std::enable_if<!T7, void>::type internal::gemvx::kernel<int, int, double, double, double, double, (…
+      0.0           416225        588      707.9      704.0       608      1088         48.6  cupy_true_divide__float64_float_float64
+      0.0           376642        394      955.9      992.0       800      6592        296.4  cupy_take
+      0.0           374048        129     2899.6     2880.0      2816      3456        115.7  std::enable_if<!T7, void>::type internal::gemvx::kernel<int, int, double, double, double, double, (…
+      0.0           327010        586      558.0      544.0       512       608         23.1  cupy_not_equal__float64_float_bool
+      0.0           325986        344      947.6      960.0       864      1024         34.9  cupy_scatter_update
+      0.0           303521        715      424.5      416.0       384       480         23.2  cupy_copy__float_float64
+      0.0           276161         98     2818.0     2656.0      2592      3424        302.7  cupy_min
+      0.0           269088        430      625.8      576.0       544      1696        134.4  cupy_copy__float64_complex128
+      0.0           267872        454      590.0      576.0       544       640         21.9  cupy_maximum__float64_float64_float64
+      0.0           258912          3    86304.0    86432.0     86016     86464        249.9  void larft_T_64<double2>(int, T1 *, int, long, const T1 *, long)
+      0.0           234369        549      426.9      416.0       384       512         26.6  cupy_mat_ptrs
+      0.0           216608          1   216608.0   216608.0    216608    216608          0.0  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_64x64_16x3_nn_align1>(T1::Params)
+      0.0           172064        129     1333.8     1344.0      1312      1376         18.3  void dot_kernel<double, (int)128, (int)0, cublasDotParams<cublasGemvTensorStridedBatched<const doub…
+      0.0           159968        129     1240.1     1248.0      1216      1280         19.2  void reduce_1Block_kernel<double, (int)128, (int)7, cublasGemvTensorStridedBatched<double>, cublasG…
+      0.0           150144         43     3491.7     3488.0      3424      3584         29.8  void gemmSN_NN_kernel<double, (int)256, (int)4, (int)2, (int)8, (int)3, (int)4, (bool)0, cublasGemv…
+      0.0           137472        196      701.4      704.0       672       736         17.3  cupy_not_equal__complex128_complex_bool
+      0.0           114848         43     2670.9     2432.0      2400      3328        384.0  void cub::CUB_300102_SM_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel…
+      0.0           112416        144      780.7      768.0       704       896         46.7  Backend___make_warp_kernels__locals__axpy_kernel_d3fbd3e1_cuda_kernel_forward
+      0.0           109600          1   109600.0   109600.0    109600    109600          0.0  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_64x32_16x4_nn_align1>(T1::Params)
+      0.0           100801          3    33600.3    33633.0     31936     35232       1648.2  void gemmcn_skinny_kernel<double2, (int)2, (int)4>(int, int, int, const T1 *, long, long, const T1 …
+      0.0            78880         30     2629.3     2624.0      2592      2688         26.7  cupy_max
+      0.0            70785        129      548.7      544.0       512       576         18.8  cupy_subtract__complex128_float64_complex128
+      0.0            65216        110      592.9      608.0       576       640         16.6  cupy_maximum__float_float64_float64
+      0.0            59648        130      458.8      448.0       416       480         15.7  cupy_arange__int_int_int64
+      0.0            57024         86      663.1      672.0       608       736         40.7  cupy_multiply__float64_int64_float64
+      0.0            49728          3    16576.0    16576.0     16512     16640         64.0  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_16x32_16x3_nn_align1>(T1::Params)
+      0.0            49568          3    16522.7    16512.0     16512     16544         18.5  void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_16x32_16x3_nh_align1>(T1::Params)
+      0.0            47808         31     1542.2     1536.0      1504      1664         29.1  void larft_vtv_32<double2, (int)128>(long, long, const T1 *, long, long, T1 *, long, long)
+      0.0            44992         49      918.2      928.0       704       992         65.7  cupy_count_nonzero
+      0.0            31808         48      662.7      672.0       608       704         33.6  cupy_add__complex_complex128_complex128
+      0.0            31169         49      636.1      608.0       576      1568        139.0  void geqrf_copy_R_kernel<double2, (int)5, (int)3>(long, const T1 *, long, T1 *, long)
+      0.0            30176          9     3352.9     3360.0      3296      3424         38.5  void ipiv_lower_small<double2, (int)256>(int, void *, int, long *, int, int)
+      0.0            28576         43      664.6      672.0       640       704         15.4  cupy_negative__float64_float64
+      0.0            26848         43      624.4      608.0       608       672         20.2  cupy_subtract__float64_float64_float64
+      0.0            25984         48      541.3      544.0       512       576         17.3  cupy_subtract__complex128_complex_complex128
+      0.0            21216         34      624.0      608.0       576       736         39.6  void larfb_set_v1_R_kernel<double2, (int)16>(long, T1 *, long, long, T1 *, long, long)
+      0.0            20480         34      602.4      608.0       576       672         30.0  void larfb_restore_v1_R_kernel<double2, (int)16>(long, T1 *, long, long, T1 *, long, long)
+      0.0            18624         16     1164.0     1152.0      1152      1184         16.0  cupy_true_divide__complex_complex128_complex128
+      0.0            16704          9     1856.0     1856.0      1792      1952         55.4  void create_pivot_v2<(int)256>(int, int *, long *, int)
+      0.0            14912          1    14912.0    14912.0     14912     14912          0.0  void ipiv_lower_small<double2, (int)512>(int, void *, int, long *, int, int)
+      0.0             8576         11      779.6      768.0       768       800         16.1  cupy_true_divide__float_float64_float64
+      0.0             5280          1     5280.0     5280.0      5280      5280          0.0  void create_pivot_v2<(int)512>(int, int *, long *, int)
+      0.0             4832          2     2416.0     2416.0      2240      2592        248.9  void gemv2T_kernel_val<long, long, double2, double2, double2, double2, (int)128, (int)16, (int)4, (…
+      0.0             4768          7      681.1      672.0       672       704         15.6  cupy_less_equal__complex128_complex_bool
+      0.0             3200          9      355.6      352.0       352       384         10.7  void ipiv_lower_diag<double2, (int)256>(int, void *, int, int *, int)
+      0.0              544          1      544.0      544.0       544       544          0.0  cupy_subtract__int_int64_int64
+      0.0              512          1      512.0      512.0       512       512          0.0  void ipiv_lower_diag<double2, (int)512>(int, void *, int, int *, int)
+
+Processing [solovev-g12/nsys.sqlite] with [/opt/nvidia/nsight-systems/2026.1.3/target-linux-x64/reports/cuda_gpu_mem_time_sum.py]...
+
+ ** CUDA GPU MemOps Summary (by Time) (cuda_gpu_mem_time_sum):
+
+ Time (%)  Total Time (ns)  Count   Avg (ns)  Med (ns)  Min (ns)  Max (ns)  StdDev (ns)            Operation
+ --------  ---------------  ------  --------  --------  --------  --------  -----------  ------------------------------
+     93.6        225512319  632888     356.3     352.0       320   1130691       1701.6  [CUDA memcpy Device-to-Host]
+      2.8          6796124   16482     412.3     320.0       224      3872        157.7  [CUDA memset]
+      2.6          6317591   11567     546.2     544.0       448       672         36.5  [CUDA memcpy Device-to-Device]
+      1.0          2338536    6237     374.9     288.0       224    372097       4798.4  [CUDA memcpy Host-to-Device]

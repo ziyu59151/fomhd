@@ -7,6 +7,7 @@ import sys
 from types import SimpleNamespace
 
 from . import core
+from .geometry import Geometry
 from .types import Failure
 
 
@@ -29,6 +30,13 @@ def _scalar(context, value):
 
 def _as_device(context, value, dtype=None):
     return context.compute.xp.asarray(value, dtype=dtype)
+
+
+def _diagnostic_host(context, value, shape):
+    export = getattr(context.compute, "diagnostic_host", None)
+    if export is None:
+        return context.compute.to_host(value)
+    return export(value, shape)
 
 
 def _size(value):
@@ -182,6 +190,15 @@ def _point_segment_distance(point_r, point_z, start_r, start_z, end_r, end_z):
 
 def _entity_wall_distances(table, context):
     geometry = context.geometry
+    cache = None
+    if isinstance(geometry, Geometry):
+        cached = getattr(context, "_diagnostic_wall_distances", None)
+        if cached is None or cached[0] is not geometry:
+            cached = (geometry, {})
+            context._diagnostic_wall_distances = cached
+        cache = cached[1]
+        if id(table) in cache:
+            return cache[id(table)][1]
     wall_vertices = geometry.vertices
     walls = getattr(geometry, "walls", ())
     distances = []
@@ -203,6 +220,9 @@ def _entity_wall_distances(table, context):
                 ),
             )
         distances.append(distance)
+    if cache is not None:
+        distances = tuple(distances)
+        cache[id(table)] = (table, distances)
     return distances
 
 
@@ -256,20 +276,31 @@ def measure(
         raise Failure("DiagnosticShape", "region weights mismatch")
     w = _as_device(context, weights, xp.float64).reshape(-1)
     r = _as_device(context, residual).reshape(-1)
-    if not bool(xp.all(xp.isfinite(w))) or not bool(xp.all(w > 0)):
+    if not bool(xp.all(xp.isfinite(w) & (w > 0))):
         raise Failure("DiagnosticWeight", name)
     reps = nr // nw
     ww = xp.tile(w, reps)
     d = xp.tile(_as_device(context, distances, xp.float64), reps)
     inside = d >= float(context.p.inner_distance)
-    for region in ("all", "inner", "wall"):
-        if region == "inner":
-            mask = inside
-        elif region == "wall":
-            mask = ~inside
-        else:
-            mask = xp.ones(nr, dtype=xp.bool_)
-        selected_count = int(xp.count_nonzero(mask))
+    mask = xp.stack((xp.ones(nr, dtype=xp.bool_), inside, ~inside))
+    finite = xp.isfinite(r)
+    magnitude = xp.where(finite, xp.abs(r), 0.0)
+    selected = xp.where(mask, magnitude, 0.0)
+    weighted = xp.where(mask, xp.sqrt(ww) * magnitude, 0.0)
+    angular = TAU / context.N if samples else TAU
+    packed = xp.stack((
+        xp.count_nonzero(mask, axis=1),
+        xp.min(xp.where(mask & ~finite, xp.arange(nr), nr), axis=1),
+        xp.max(selected, axis=1),
+        xp.sqrt(xp.sum(weighted * weighted, axis=1) * angular),
+        xp.sum(xp.where(mask, ww, 0.0), axis=1),
+        xp.argmax(selected, axis=1),
+    ), axis=1)
+    stats = _diagnostic_host(context, packed, (3, 6))
+    for region, (count, bad, linf, l2, volume, worst) in zip(
+        ("all", "inner", "wall"), stats, strict=True
+    ):
+        selected_count = int(count)
         for norm in ("linf", "weighted_L2"):
             b = budget(context, _budget_key(name, population, norm))
             if b.unit != unit or _norm_name(b.norm) != norm:
@@ -296,27 +327,17 @@ def measure(
                 record.reason = "empty region"
                 out.append(record)
                 continue
-            selected = xp.where(mask, xp.abs(r), 0.0)
-            finite = xp.isfinite(r) | ~mask
-            if not bool(xp.all(finite)):
+            if bad < nr:
                 record.available = False
                 record.reason = "nonfinite residual"
-                bad = xp.where(~finite, xp.arange(nr), nr)
-                record.worst = int(xp.min(bad))
+                record.worst = int(bad)
                 out.append(record)
                 continue
             if norm == "linf":
-                record.raw = _scalar(context, xp.max(selected))
+                record.raw = float(linf)
                 record.reference = float(b.reference)
             else:
-                weighted = xp.where(mask, xp.sqrt(ww) * xp.abs(r), 0.0)
-                angular = TAU / context.N if samples else TAU
-                record.raw = _scalar(
-                    context, xp.sqrt(xp.sum(weighted * weighted) * angular)
-                )
-                volume = _scalar(
-                    context, xp.sum(xp.where(mask, ww, xp.zeros_like(ww)))
-                )
+                record.raw = float(l2)
                 modes = 1 if samples else nr // nw
                 record.reference = float(
                     b.reference * math.sqrt(angular * volume / modes)
@@ -324,7 +345,7 @@ def measure(
             record.threshold = float(b.atol + b.rtol * record.reference)
             record.available = math.isfinite(record.raw)
             record.passed = record.available and record.raw <= record.threshold
-            record.worst = int(xp.argmax(selected))
+            record.worst = int(worst)
             out.append(record)
 
 

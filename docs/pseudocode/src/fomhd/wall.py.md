@@ -100,3 +100,9 @@ constraints as well.
 No physical-real projection is applied: complex unit vectors used to
 materialize the electric response preserve their complex coefficients through
 this operation. The input `r` is never changed.
+
+On a rectangular box with disjoint selected wall rows, build the exact
+normal diagonals together across angular samples. Check their scaled rank
+and solve by division for the original and refinement right-hand sides.
+Use the same full trace, work and multiplier residual checks. The general
+connected-row path retains its existing factorization.

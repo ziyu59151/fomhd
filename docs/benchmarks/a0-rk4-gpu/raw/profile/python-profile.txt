@@ -1,0 +1,58 @@
+Thu Nov 12 14:30:23 2026    /home/lxzeng/runs/fomhd/a0-rk4-gpu-baseline-20261112.cFUCAy/solovev-g12/python.prof
+
+         29428653 function calls (29331416 primitive calls) in 30.786 seconds
+
+   Ordered by: cumulative time
+   List reduced from 3433 to 50 due to restriction <50>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.006    0.006   30.789   30.789 __main__.py:170(_run_command)
+        6    0.001    0.000   27.703    4.617 measure.py:72(advance)
+        6    0.019    0.003   27.700    4.617 time.py:567(advance)
+        6    0.003    0.001   27.682    4.614 time.py:301(_advance)
+    43/31    0.021    0.000   27.228    0.878 massless.py:737(evaluate_stage)
+       30    0.000    0.000   26.317    0.877 stage.py:121(evaluate_stage)
+       43    0.002    0.000   13.034    0.303 massless_checks.py:1272(populate_stage)
+       12    0.003    0.000   10.847    0.904 massless.py:841(_alias_probe)
+       43    3.283    0.076    9.019    0.210 massless_checks.py:484(_boundary)
+      864    0.542    0.001    6.050    0.007 diagnostics.py:209(measure)
+       43    0.020    0.000    5.486    0.128 massless_checks.py:1382(check_stage)
+      110    0.035    0.000    5.344    0.049 massless.py:212(_derive_electron)
+      688    0.004    0.000    5.167    0.008 massless_checks.py:1452(remember)
+      864    0.007    0.000    4.532    0.005 diagnostics.py:99(_region_distances)
+      491    2.063    0.004    4.522    0.009 diagnostics.py:183(_entity_wall_distances)
+   342999    3.960    0.000    4.186    0.000 {method 'item' of 'cupy._core.core._ndarray_base' objects}
+     2598    0.176    0.000    3.366    0.001 backend.py:307(singular_values)
+       67    0.000    0.000    3.242    0.048 massless.py:355(canonicalize_state)
+      196    0.376    0.002    3.197    0.016 massless.py:127(_constraint_project)
+     2598    0.027    0.000    2.689    0.001 _decomposition.py:465(svd)
+     2598    2.571    0.001    2.571    0.001 {built-in method cupy_backends.cuda.libs.cusolver.zgesvd}
+       43    0.139    0.003    2.351    0.055 massless_checks.py:620(momentum)
+  3644736    1.208    0.000    2.136    0.000 diagnostics.py:166(_point_segment_distance)
+    13776    0.874    0.000    2.068    0.000 massless_checks.py:651(traction_at)
+        1    0.001    0.001    1.863    1.863 io.py:1034(load_case)
+      110    0.040    0.000    1.619    0.015 fluid.py:215(build_fluid)
+      110    0.028    0.000    1.597    0.015 fluid.py:457(build_non_electric)
+     6536    0.087    0.000    1.541    0.000 core.py:269(sample_apply)
+      153    0.145    0.001    1.418    0.009 wall.py:26(build_wall)
+       43    0.874    0.020    1.358    0.032 massless_checks.py:374(_wall_trace_data)
+    23703    0.237    0.000    1.283    0.000 backend.py:118(_finite)
+       43    0.013    0.000    1.242    0.029 massless.py:405(_electron_fluid)
+    25043    0.040    0.000    1.142    0.000 join.py:147(stack)
+      263    0.157    0.001    1.118    0.004 fluid.py:373(gradient_adjoint)
+       43    0.004    0.000    1.116    0.026 fluid.py:573(finish_fluid)
+       73    0.001    0.000    1.102    0.015 __init__.py:1(<module>)
+       43    0.062    0.001    1.038    0.024 wall.py:84(project_wall)
+     1765    0.015    0.000    1.017    0.001 core.py:284(inverse)
+    44112    0.860    0.000    1.013    0.000 backend.py:174(mv)
+       24    0.000    0.000    1.004    0.042 time.py:146(_combine)
+       24    0.000    0.000    1.004    0.042 core.py:222(combine)
+       24    0.002    0.000    1.004    0.042 massless.py:936(combine)
+        1    0.000    0.000    0.962    0.962 backend.py:21(__init__)
+    28342    0.358    0.000    0.936    0.000 {built-in method builtins.sum}
+    16141    0.005    0.000    0.931    0.000 backend.py:122(_require_finite)
+        1    0.000    0.000    0.928    0.928 measure.py:90(initialize)
+        1    0.000    0.000    0.927    0.927 __main__.py:88(_initialize_once)
+        1    0.000    0.000    0.927    0.927 stage.py:437(initialize)
+        1    0.000    0.000    0.924    0.924 massless.py:979(initialize)
+       43    0.016    0.000    0.917    0.021 massless_checks.py:192(_electron_ledger)

@@ -75,6 +75,26 @@ def test_mode_and_sample_apply_shapes() -> None:
     np.testing.assert_allclose(samples.reshape(2, 2), np.array([[3.0, 4.0], [7.0, 8.0]]))
 
 
+def test_sample_apply_uses_one_backend_product_for_all_complex_samples(
+    monkeypatch,
+) -> None:
+    backend = Backend("cpu")
+    matrix = backend.array([[2.0 + 1j, 3.0, 1.0j], [0.5, -2.0j, -1.0]])
+    samples = backend.array([[1, 0, 3j], [0, 4, 1], [4j, 7, 3], [2, 0, 0]])
+    calls = []
+    multiply = backend.mm
+
+    def measured(left, right):
+        calls.append((left.shape, right.shape))
+        return multiply(left, right)
+
+    monkeypatch.setattr(backend, "mm", measured)
+    actual = sample_apply(matrix, samples.ravel(), len(samples), backend)
+    expected = np.concatenate([matrix @ row for row in samples])
+    np.testing.assert_allclose(actual, expected, rtol=1e-15, atol=1e-15)
+    assert calls == [((2, 3), (3, 4))]
+
+
 def test_physical_inverse_accepts_hermitian_and_rejects_residue() -> None:
     c = context()
     E = 2

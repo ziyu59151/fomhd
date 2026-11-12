@@ -1,0 +1,443 @@
+{
+  "baseline_commit": "bc809bdd3aa5253e1ffa60c21e7dcf5e7c84d369",
+  "metrics": {
+    "solovev-g12/lean-comparison-dense.jsonl": {
+      "NR": 12,
+      "NZ": 12,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 144,
+        "Ne": 456,
+        "Nb": 481
+      },
+      "solver_code": 0,
+      "job": "11546",
+      "assembly_s_including_inventory": 0.49594345409423113,
+      "last_step": 6,
+      "last_time_s": 3e-10,
+      "warm_step_median_s": 2.7330564118456095,
+      "complete_wall_s": 18.401995569001883,
+      "hard_count": 4104,
+      "host_peak_rss_B": 1309433856,
+      "sampled_process_gpu_peak_MiB": 742,
+      "sampled_cupy_pool_live_peak_B": 81408000,
+      "sampled_cupy_pool_reserved_peak_B": 158852096,
+      "tracked_operator_array_B": 66241104,
+      "QB": {
+        "arrays": [
+          [
+            432,
+            481
+          ]
+        ],
+        "bytes": 3324672,
+        "nonzero": 2832
+      },
+      "input_sha256": {
+        "case.toml": "546dfb5462e33538b67d08b2c823cb06bf750374a7991903f4fc33cec0083c5f",
+        "geometry.npz": "c591200f9e8f588c89e70f18a239b0f675747f9febb9b2d1c86bcf1e499ce32d",
+        "initial.npz": "600a88bafe9092f0d8dfd5bf7cb9186bd71a8742fa1fd1056190296139e1c2e9"
+      }
+    },
+    "solovev-g12/lean-comparison-lean.jsonl": {
+      "NR": 12,
+      "NZ": 12,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 144,
+        "Ne": 456,
+        "Nb": 481
+      },
+      "solver_code": 0,
+      "job": "11546",
+      "assembly_s_including_inventory": 0.39718736289069057,
+      "last_step": 6,
+      "last_time_s": 3e-10,
+      "warm_step_median_s": 2.727168634068221,
+      "complete_wall_s": 18.23607048485428,
+      "hard_count": 4104,
+      "host_peak_rss_B": 1316265984,
+      "sampled_process_gpu_peak_MiB": 686,
+      "sampled_cupy_pool_live_peak_B": 60424192,
+      "sampled_cupy_pool_reserved_peak_B": 100823040,
+      "tracked_operator_array_B": 46331088,
+      "QB": {
+        "arrays": [
+          [
+            432,
+            481
+          ]
+        ],
+        "bytes": 3324672,
+        "nonzero": 2832
+      },
+      "input_sha256": {
+        "case.toml": "546dfb5462e33538b67d08b2c823cb06bf750374a7991903f4fc33cec0083c5f",
+        "geometry.npz": "c591200f9e8f588c89e70f18a239b0f675747f9febb9b2d1c86bcf1e499ce32d",
+        "initial.npz": "600a88bafe9092f0d8dfd5bf7cb9186bd71a8742fa1fd1056190296139e1c2e9"
+      }
+    },
+    "solovev-g12/metrics.jsonl": {
+      "NR": 12,
+      "NZ": 12,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 144,
+        "Ne": 456,
+        "Nb": 481
+      },
+      "solver_code": 0,
+      "job": "11541",
+      "assembly_s_including_inventory": 4.2713589100167155,
+      "last_step": 6,
+      "last_time_s": 3e-10,
+      "warm_step_median_s": 2.7992237601429224,
+      "complete_wall_s": 22.356048922985792,
+      "hard_count": 4104,
+      "host_peak_rss_B": 1334861824,
+      "sampled_process_gpu_peak_MiB": 742,
+      "sampled_cupy_pool_live_peak_B": 81408000,
+      "sampled_cupy_pool_reserved_peak_B": 158852096,
+      "tracked_operator_array_B": 66241104,
+      "QB": {
+        "arrays": [
+          [
+            432,
+            481
+          ]
+        ],
+        "bytes": 3324672,
+        "nonzero": 2832
+      },
+      "input_sha256": {
+        "case.toml": "546dfb5462e33538b67d08b2c823cb06bf750374a7991903f4fc33cec0083c5f",
+        "geometry.npz": "c591200f9e8f588c89e70f18a239b0f675747f9febb9b2d1c86bcf1e499ce32d",
+        "initial.npz": "600a88bafe9092f0d8dfd5bf7cb9186bd71a8742fa1fd1056190296139e1c2e9"
+      }
+    },
+    "solovev-g12/sparse-comparison-lean.jsonl": {
+      "NR": 12,
+      "NZ": 12,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 144,
+        "Ne": 456,
+        "Nb": 481
+      },
+      "solver_code": 0,
+      "job": "11549",
+      "assembly_s_including_inventory": 0.39110087510198355,
+      "last_step": 6,
+      "last_time_s": 3e-10,
+      "warm_step_median_s": 2.7332905889488757,
+      "complete_wall_s": 18.307964042993262,
+      "hard_count": 4104,
+      "host_peak_rss_B": 1306923008,
+      "sampled_process_gpu_peak_MiB": 686,
+      "sampled_cupy_pool_live_peak_B": 60572672,
+      "sampled_cupy_pool_reserved_peak_B": 100823040,
+      "tracked_operator_array_B": 46331088,
+      "QB": {
+        "arrays": [
+          [
+            432,
+            481
+          ]
+        ],
+        "bytes": 3324672,
+        "nonzero": 2832
+      },
+      "input_sha256": {
+        "case.toml": "546dfb5462e33538b67d08b2c823cb06bf750374a7991903f4fc33cec0083c5f",
+        "geometry.npz": "c591200f9e8f588c89e70f18a239b0f675747f9febb9b2d1c86bcf1e499ce32d",
+        "initial.npz": "600a88bafe9092f0d8dfd5bf7cb9186bd71a8742fa1fd1056190296139e1c2e9"
+      }
+    },
+    "solovev-g12/sparse-comparison-sparse.jsonl": {
+      "NR": 12,
+      "NZ": 12,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 144,
+        "Ne": 456,
+        "Nb": 481
+      },
+      "solver_code": 0,
+      "job": "11549",
+      "assembly_s_including_inventory": 0.42264721100218594,
+      "last_step": 6,
+      "last_time_s": 3e-10,
+      "warm_step_median_s": 2.740212036995217,
+      "complete_wall_s": 18.39781928085722,
+      "hard_count": 4104,
+      "host_peak_rss_B": 1345146880,
+      "sampled_process_gpu_peak_MiB": 682,
+      "sampled_cupy_pool_live_peak_B": 57158656,
+      "sampled_cupy_pool_reserved_peak_B": 97671168,
+      "tracked_operator_array_B": 43064788,
+      "QB": {
+        "arrays": [
+          [
+            432,
+            481
+          ]
+        ],
+        "bytes": 58372,
+        "nonzero": 2832,
+        "storage": "csr"
+      },
+      "input_sha256": {
+        "case.toml": "546dfb5462e33538b67d08b2c823cb06bf750374a7991903f4fc33cec0083c5f",
+        "geometry.npz": "c591200f9e8f588c89e70f18a239b0f675747f9febb9b2d1c86bcf1e499ce32d",
+        "initial.npz": "600a88bafe9092f0d8dfd5bf7cb9186bd71a8742fa1fd1056190296139e1c2e9"
+      }
+    },
+    "solovev-g20/lean-comparison-dense.jsonl": {
+      "NR": 20,
+      "NZ": 20,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 400,
+        "Ne": 1240,
+        "Nb": 1281
+      },
+      "solver_code": 4,
+      "job": "11546",
+      "assembly_s_including_inventory": 2.8433455200865865,
+      "last_step": null,
+      "last_time_s": null,
+      "warm_step_median_s": null,
+      "complete_wall_s": 3.9548930029850453,
+      "hard_count": 0,
+      "host_peak_rss_B": 1398652928,
+      "sampled_process_gpu_peak_MiB": 1690,
+      "sampled_cupy_pool_live_peak_B": 565038080,
+      "sampled_cupy_pool_reserved_peak_B": 1107418624,
+      "tracked_operator_array_B": 487300304,
+      "QB": {
+        "arrays": [
+          [
+            1200,
+            1281
+          ]
+        ],
+        "bytes": 24595200,
+        "nonzero": 8528
+      },
+      "input_sha256": {
+        "case.toml": "fa9b6f2c66c9067b70380acf694f9c24706c5498a9bc5527a9c185238846923f",
+        "geometry.npz": "db26fe659b796fe33f32712b49b28900fc08273c6ace5724fcdf893bd414362b",
+        "initial.npz": "dfa47f8a08d03b5018aebdf1f3bda4b91cf41db34d582941b802f3022966c266"
+      }
+    },
+    "solovev-g20/lean-comparison-lean.jsonl": {
+      "NR": 20,
+      "NZ": 20,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 400,
+        "Ne": 1240,
+        "Nb": 1281
+      },
+      "solver_code": 0,
+      "job": "11546",
+      "assembly_s_including_inventory": 0.5816449781414121,
+      "last_step": 3,
+      "last_time_s": 7.5e-11,
+      "warm_step_median_s": 5.449167120968923,
+      "complete_wall_s": 19.04321067291312,
+      "hard_count": 2052,
+      "host_peak_rss_B": 1352687616,
+      "sampled_process_gpu_peak_MiB": 1388,
+      "sampled_cupy_pool_live_peak_B": 406813184,
+      "sampled_cupy_pool_reserved_peak_B": 784875520,
+      "tracked_operator_array_B": 336762704,
+      "QB": {
+        "arrays": [
+          [
+            1200,
+            1281
+          ]
+        ],
+        "bytes": 24595200,
+        "nonzero": 8528
+      },
+      "input_sha256": {
+        "case.toml": "fa9b6f2c66c9067b70380acf694f9c24706c5498a9bc5527a9c185238846923f",
+        "geometry.npz": "db26fe659b796fe33f32712b49b28900fc08273c6ace5724fcdf893bd414362b",
+        "initial.npz": "dfa47f8a08d03b5018aebdf1f3bda4b91cf41db34d582941b802f3022966c266"
+      }
+    },
+    "solovev-g24/sparse-comparison-sparse.jsonl": {
+      "NR": 24,
+      "NZ": 24,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 576,
+        "Ne": 1776,
+        "Nb": 1825
+      },
+      "solver_code": 0,
+      "job": "11549",
+      "assembly_s_including_inventory": 4.604385789949447,
+      "last_step": 3,
+      "last_time_s": 4.5e-11,
+      "warm_step_median_s": 7.41478601412382,
+      "complete_wall_s": 29.71310630394146,
+      "hard_count": 2052,
+      "host_peak_rss_B": 1373384704,
+      "sampled_process_gpu_peak_MiB": 2100,
+      "sampled_cupy_pool_live_peak_B": 779784704,
+      "sampled_cupy_pool_reserved_peak_B": 1553317376,
+      "tracked_operator_array_B": 637633492,
+      "QB": {
+        "arrays": [
+          [
+            1728,
+            1825
+          ]
+        ],
+        "bytes": 257476,
+        "nonzero": 12528,
+        "storage": "csr"
+      },
+      "input_sha256": {
+        "case.toml": "462edb065cda0a1b46285c5de65de468f5b2756d66132b73511a5458e3167dfc",
+        "geometry.npz": "71d327f7e09f465ec5583b2669bd30ee328ff5e56189895a399d82f37f119b13",
+        "initial.npz": "41a45d3bc0c7992e489d4a5a156d939ab87edac5ce75640492f9a9f0c08a123e"
+      }
+    },
+    "solovev-g6/metrics.jsonl": {
+      "NR": 6,
+      "NZ": 6,
+      "K": 1,
+      "dof_counts": {
+        "Nc": 36,
+        "Ne": 120,
+        "Nb": 133
+      },
+      "solver_code": 0,
+      "job": "11541",
+      "assembly_s_including_inventory": 6.517789377830923,
+      "last_step": 6,
+      "last_time_s": 3e-10,
+      "warm_step_median_s": 1.5176250759977847,
+      "complete_wall_s": 17.54724427498877,
+      "hard_count": 4104,
+      "host_peak_rss_B": 1355513856,
+      "sampled_process_gpu_peak_MiB": 602,
+      "sampled_cupy_pool_live_peak_B": 7877120,
+      "sampled_cupy_pool_reserved_peak_B": 35161600,
+      "tracked_operator_array_B": 4653552,
+      "QB": {
+        "arrays": [
+          [
+            108,
+            133
+          ]
+        ],
+        "bytes": 229824,
+        "nonzero": 576
+      },
+      "input_sha256": {
+        "case.toml": "3ad6e6be5014e72ad96abc4bd443cbefa023c28aa9eb3f85a747bcdf174b6147",
+        "geometry.npz": "f87f7088bdeb2fb9b5fca06cafecb3adbc4d63ffdb0ae3f747482c4aaba98a0e",
+        "initial.npz": "12e3789cc1a8161f83e0ddebd90e3951a8310fd74a5089022865449dc276c925"
+      }
+    }
+  },
+  "matched_endpoints": {
+    "dense_lean": {
+      "n_i": {
+        "peak": 2.000000001445567e+19,
+        "max_abs_error": 0.0
+      },
+      "n_e": {
+        "peak": 2.000000001445567e+19,
+        "max_abs_error": 0.0
+      },
+      "mom_i": {
+        "peak": 3.3452438644971313e-06,
+        "max_abs_error": 0.0
+      },
+      "mom_e": {
+        "peak": 2.5676250578272373e-07,
+        "max_abs_error": 0.0
+      },
+      "p_i": {
+        "peak": 600.0000007227834,
+        "max_abs_error": 0.0
+      },
+      "p_perp_e": {
+        "peak": 1797.7650667886708,
+        "max_abs_error": 0.0
+      },
+      "p_parallel_e": {
+        "peak": 1797.7650667566993,
+        "max_abs_error": 0.0
+      },
+      "B_R": {
+        "peak": 0.01632999999297083,
+        "max_abs_error": 0.0
+      },
+      "B_phi": {
+        "peak": 2.47422680377926,
+        "max_abs_error": 0.0
+      },
+      "B_Z": {
+        "peak": 0.017544999993019752,
+        "max_abs_error": 0.0
+      },
+      "derived_E": {
+        "peak": 78.38224610154569,
+        "max_abs_error": 0.0
+      }
+    },
+    "lean_sparse": {
+      "n_i": {
+        "peak": 2.000000001445567e+19,
+        "max_abs_error": 9.287724181114043e-05
+      },
+      "n_e": {
+        "peak": 2.000000001445567e+19,
+        "max_abs_error": 9.287724181114043e-05
+      },
+      "mom_i": {
+        "peak": 3.3452438644971313e-06,
+        "max_abs_error": 1.6088662914156388e-22
+      },
+      "mom_e": {
+        "peak": 2.5676250578272373e-07,
+        "max_abs_error": 6.394975813157198e-26
+      },
+      "p_i": {
+        "peak": 600.0000007227834,
+        "max_abs_error": 4.294439100411067e-21
+      },
+      "p_perp_e": {
+        "peak": 1797.7650667886708,
+        "max_abs_error": 2.838371716087955e-20
+      },
+      "p_parallel_e": {
+        "peak": 1797.7650667566993,
+        "max_abs_error": 5.3954031102716533e-20
+      },
+      "B_R": {
+        "peak": 0.01632999999297083,
+        "max_abs_error": 2.9445071422435617e-23
+      },
+      "B_phi": {
+        "peak": 2.47422680377926,
+        "max_abs_error": 6.932239493825999e-22
+      },
+      "B_Z": {
+        "peak": 0.017544999993019752,
+        "max_abs_error": 3.417356589513198e-23
+      },
+      "derived_E": {
+        "peak": 78.38224610154569,
+        "max_abs_error": 3.296918293926865e-12
+      }
+    }
+  }
+}

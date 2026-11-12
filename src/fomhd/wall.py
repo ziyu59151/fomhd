@@ -23,6 +23,13 @@ def _hermitian(matrix, context):
     return xp.conj(xp.swapaxes(matrix, -1, -2))
 
 
+def _diagonal_constraint_normal(matrix, winv, xp):
+    """Return the normal only when each selected column has one row."""
+    if bool(xp.any(xp.count_nonzero(matrix != 0, axis=0) > 1).item()):
+        return None
+    return winv @ (xp.abs(matrix) ** 2).T
+
+
 def build_wall(n, species, tag, context):
     """Build the fixed-density normal momentum projection for every sample."""
     xp = _xp(context)
@@ -53,6 +60,27 @@ def build_wall(n, species, tag, context):
     col_scale = row_scale / (
         species.mass * n_ref / context.p.ref.length**3
     )
+    if wall_matrix.shape[0] and getattr(context.geometry, "lcfs_polygon", None) is not None:
+        diagonal = _diagonal_constraint_normal(wall_matrix, winv, xp)
+        if diagonal is not None:
+            scaled = diagonal * (col_scale / row_scale)
+            largest = xp.max(scaled, axis=1)
+            smallest = xp.min(scaled, axis=1)
+            if not bool(xp.all(
+                xp.isfinite(largest) & (largest > 0.0)
+                & (smallest > context.p.rank_rtol * largest)
+            )):
+                raise Failure("WallRank", "scaled wall matrix deficient")
+            return SimpleNamespace(
+                samples=[
+                    SimpleNamespace(
+                        S=diagonal[sample], lu=None, winv=winv[sample],
+                        row_scale=row_scale, col_scale=col_scale,
+                    )
+                    for sample in range(context.N)
+                ],
+                tag=tag,
+            )
     samples = []
     for sample in range(context.N):
         weights = winv[sample]
@@ -100,6 +128,9 @@ def project_wall(wall, r, context):
     multiplier_residual = xp.zeros_like(multiplier)
 
     def normal_solve(record, rhs):
+        if record.S.ndim == 1:
+            scaled = record.S * (record.col_scale / record.row_scale)
+            return (rhs / record.row_scale) / scaled * record.col_scale
         if record.lu is not None:
             return xp.asarray(
                 context.compute.solve(record.lu, rhs / record.row_scale),
@@ -171,7 +202,8 @@ def project_wall(wall, r, context):
             )
         reaction[sample] = sample_reaction
         multiplier[sample] = lam
-        multiplier_residual[sample] = record.S @ lam - rhs
+        applied = record.S * lam if record.S.ndim == 1 else record.S @ lam
+        multiplier_residual[sample] = applied - rhs
     if not bool(
         xp.all(xp.isfinite(value))
         and xp.all(xp.isfinite(reaction))

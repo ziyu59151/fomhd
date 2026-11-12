@@ -38,7 +38,7 @@ from .types import (
     field_cache_record,
     stage_result_record,
 )
-from .wall import build_wall
+from .wall import _diagonal_constraint_normal, build_wall
 from .wall_cache import apply_wall_cache, get_wall_cache
 
 
@@ -124,6 +124,98 @@ def _wall_extractions(context):
     ]
 
 
+def _project_diagonal_constraint(
+    source,
+    T,
+    winv,
+    diagonal,
+    row_scale,
+    column_scale,
+    context,
+):
+    """Apply the checked pointwise projection for an isolated-row normal."""
+    xp = _xp(context)
+    scaled = diagonal * (column_scale / row_scale)
+    largest = xp.max(scaled, axis=1)
+    smallest = xp.min(scaled, axis=1)
+    deficient = (
+        ~xp.isfinite(largest)
+        | ~xp.isfinite(smallest)
+        | (largest <= 0.0)
+        | (smallest <= context.p.rank_rtol * largest)
+    )
+    if bool(xp.any(deficient).item()):
+        sample = int(xp.argmax(deficient.astype(xp.int8)).item())
+        raise Failure(
+            "WallRank",
+            "selected wall reconstruction rows are deficient at "
+            f"time row {sample}",
+        )
+
+    right = xp.matmul(source, T.T)
+    multiplier = (
+        (right / row_scale) / scaled
+    ) * column_scale
+    if not bool(xp.all(xp.isfinite(multiplier))):
+        raise Failure("Finite", "wall projection solution contains non-finite values")
+    applied = diagonal * multiplier
+    residual = applied - right
+
+    def active_rows():
+        scale = xp.maximum(
+            xp.maximum(
+                xp.max(xp.abs(right), axis=1),
+                xp.max(xp.abs(applied), axis=1),
+            ),
+            1.0e-300,
+        )
+        return xp.any(
+            xp.abs(residual) > 512.0 * sys.float_info.epsilon * scale[:, None],
+            axis=1,
+        )
+
+    active = active_rows()
+    for _ in range(5):
+        if not bool(xp.any(active).item()):
+            break
+        correction = (
+            (-residual / row_scale) / scaled
+        ) * column_scale
+        multiplier = xp.where(
+            active[:, None],
+            multiplier + correction,
+            multiplier,
+        )
+        applied = diagonal * multiplier
+        residual = applied - right
+        active = active_rows()
+    correction = winv * xp.matmul(multiplier, xp.conj(T))
+    output = source - correction
+    applied = diagonal * multiplier
+    residual = applied - right
+    final_scale = xp.maximum(
+        xp.maximum(
+            xp.max(xp.abs(right), axis=1),
+            xp.max(xp.abs(applied), axis=1),
+        ),
+        1.0e-300,
+    )
+    rejected = xp.any(
+        ~xp.isfinite(residual)
+        | (xp.abs(residual)
+           > 4096.0 * sys.float_info.epsilon * final_scale[:, None]),
+        axis=1,
+    )
+    if bool(xp.any(rejected).item()):
+        sample = int(xp.argmax(rejected.astype(xp.int8)).item())
+        raise Failure(
+            "WallProjection",
+            "electron flux constraint residual is too large at "
+            f"time row {sample}",
+        )
+    return output
+
+
 def _constraint_project(nodal, density, context):
     """Apply Q pointwise using all selected wall rows."""
     xp = _xp(context)
@@ -145,63 +237,88 @@ def _constraint_project(nodal, density, context):
     source = xp.asarray(nodal, dtype=xp.complex128).reshape(
         context.N, entities
     )
-    output = xp.empty_like(source)
     length = float(context.p.ref.length)
     row_scale = 1.0 / length**3
     column_scale = 1.0 / length**3
     if T.shape[0] == 0:
         return source.copy().reshape(-1)
-    for sample in range(context.N):
-        weighted = T * winv[sample][None, :]
-        normal = weighted @ T_h
-        scaled = normal * (column_scale / row_scale)
-        singular = context.compute.singular_values(scaled)
-        if (
-            singular.size == 0
-            or float(singular[0].item()) <= 0.0
-            or float(singular[-1].item())
-            <= context.p.rank_rtol * float(singular[0].item())
-        ):
-            raise Failure("WallRank", "selected wall reconstruction rows are deficient")
-        right = T @ source[sample]
-        factor = context.compute.factor(scaled)
-        multiplier = (
-            context.compute.solve(factor, right / row_scale) * column_scale
+    diagonal = _diagonal_constraint_normal(T, winv, xp)
+    if diagonal is not None:
+        output = _project_diagonal_constraint(
+            source,
+            T,
+            winv,
+            diagonal,
+            row_scale,
+            column_scale,
+            context,
         )
-        for _ in range(5):
-            normal_residual = normal @ multiplier - right
-            residual_scale = max(
+    else:
+        output = xp.empty_like(source)
+        for sample in range(context.N):
+            weighted = T * winv[sample][None, :]
+            normal = weighted @ T_h
+            scaled = normal * (column_scale / row_scale)
+            singular = context.compute.singular_values(scaled)
+            if (
+                singular.size == 0
+                or float(singular[0].item()) <= 0.0
+                or float(singular[-1].item())
+                <= context.p.rank_rtol * float(singular[0].item())
+            ):
+                raise Failure(
+                    "WallRank",
+                    "selected wall reconstruction rows are deficient",
+                )
+            right = T @ source[sample]
+            factor = context.compute.factor(scaled)
+            multiplier = (
+                context.compute.solve(factor, right / row_scale)
+                * column_scale
+            )
+            for _ in range(5):
+                normal_residual = normal @ multiplier - right
+                residual_scale = max(
+                    _max_abs(right, context),
+                    _max_abs(normal @ multiplier, context),
+                    1.0e-300,
+                )
+                if _max_abs(normal_residual, context) <= (
+                    512.0 * sys.float_info.epsilon * residual_scale
+                ):
+                    break
+                correction = (
+                    context.compute.solve(
+                        factor, -normal_residual / row_scale
+                    )
+                    * column_scale
+                )
+                multiplier = multiplier + correction
+            correction = winv[sample] * (T_h @ multiplier)
+            output[sample] = source[sample] - correction
+            residual = normal @ multiplier - right
+            limit = 4096.0 * sys.float_info.epsilon * max(
                 _max_abs(right, context),
                 _max_abs(normal @ multiplier, context),
                 1.0e-300,
             )
-            if _max_abs(normal_residual, context) <= (
-                512.0 * sys.float_info.epsilon * residual_scale
-            ):
-                break
-            correction = (
-                context.compute.solve(factor, -normal_residual / row_scale)
-                * column_scale
-            )
-            multiplier = multiplier + correction
-        correction = winv[sample] * (T_h @ multiplier)
-        output[sample] = source[sample] - correction
-        residual = normal @ multiplier - right
-        limit = 4096.0 * sys.float_info.epsilon * max(
-            _max_abs(right, context),
-            _max_abs(normal @ multiplier, context),
-            1.0e-300,
-        )
-        if _max_abs(residual, context) > limit:
-            raise Failure("WallProjection", "electron flux constraint residual is too large")
+            if _max_abs(residual, context) > limit:
+                raise Failure(
+                    "WallProjection",
+                    "electron flux constraint residual is too large",
+                )
     full = sample_apply(
         context.op.T_full,
         output.reshape(-1),
         context.N,
         context.compute,
     )
-    if _max_abs(full, context) > 4096.0 * sys.float_info.epsilon * max(
-        _max_abs(output, context),
+    full_norm = _max_abs(full, context)
+    output_norm = _max_abs(output, context)
+    if not math.isfinite(full_norm) or not math.isfinite(output_norm):
+        raise Failure("Finite", "wall projection output contains non-finite values")
+    if full_norm > 4096.0 * sys.float_info.epsilon * max(
+        output_norm,
         _max_abs(source, context),
         1.0e-300,
     ):

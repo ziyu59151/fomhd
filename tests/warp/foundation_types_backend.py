@@ -164,6 +164,32 @@ def test_cpu_backend_is_explicit_and_preserves_complex_contiguous_storage() -> N
     assert backend.scalar(np.float64(3.5)) == 3.5
 
 
+def test_csr_backend_rejects_incompatible_storage() -> None:
+    from scipy.sparse import csr_matrix
+
+    backend = Backend("cpu")
+    matrix = backend.csr(csr_matrix(np.eye(2, dtype=np.complex128)))
+    vector = backend.array([1, 2])
+    np.testing.assert_array_equal(backend.mv(matrix, vector), vector)
+    matrix.data = matrix.data.astype(np.complex64)
+    with pytest.raises(Failure, match="complex128"):
+        backend.mv(matrix, vector)
+    with pytest.raises(Failure, match="complex128"):
+        backend.mm(matrix, vector.reshape(2, 1))
+    with pytest.raises(Failure, match="complex128"):
+        backend.to_host(matrix)
+
+
+def test_diagnostic_host_checks_shape_and_float64() -> None:
+    backend = Backend("cpu")
+    pack = np.arange(18, dtype=np.float64).reshape(3, 6)
+    np.testing.assert_array_equal(backend.diagnostic_host(pack, (3, 6)), pack)
+    with pytest.raises(Failure, match="diagnostic.*shape"):
+        backend.diagnostic_host(pack, (6, 3))
+    with pytest.raises(Failure, match="float64"):
+        backend.diagnostic_host(pack.astype(np.float32), (3, 6))
+
+
 def test_cpu_import_does_not_eagerly_load_warp_or_cupy() -> None:
     script = (
         "import sys; import fomhd.backend; "

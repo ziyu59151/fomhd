@@ -1,0 +1,27 @@
+{
+  "provider_name": "Direct analytic rectangular equilibrium",
+  "provider_version": "v1",
+  "units": "SI",
+  "conversion_method": "Exact difference of poloidal flux on dual links and wall half faces; T2 chart; no current or RHS override",
+  "input_hashes": {
+    "case": "546dfb5462e33538b67d08b2c823cb06bf750374a7991903f4fc33cec0083c5f",
+    "initial": "600a88bafe9092f0d8dfd5bf7cb9186bd71a8742fa1fd1056190296139e1c2e9",
+    "geometry": "c591200f9e8f588c89e70f18a239b0f675747f9febb9b2d1c86bcf1e499ce32d"
+  },
+  "continuous_residual_status": "Stationary constant-F Solov'ev solution of the continuous massless model with isotropic electron pressure",
+  "physical": {
+    "kind": "solovev",
+    "R0": 3.0,
+    "F": 6.0,
+    "C": 0.001,
+    "n0": 2e+19,
+    "pi_Pa": 600.0,
+    "p_axis_Pa": 2400.0,
+    "mu0": 1.25663706127e-06,
+    "toroidal_seed_m_s": 100.0,
+    "mu0_tau": 0.0
+  },
+  "fixed_wall_flux_max_Wb_per_rad": 0.0032183937499999996,
+  "raw_DB_plus_independent_cap_max_T_per_m": 4.538036613155327e-15,
+  "source_paper": "Cerfon and Freidberg, Phys. Plasmas 17, 032502 (2010), DOI 10.1063/1.3328818"
+}

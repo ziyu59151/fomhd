@@ -1,0 +1,92 @@
+{
+  "input_sha256": {
+    "case.toml": "32bd3f00e76b17be09b186ec3072c57e613be389d1aa8afd73cef6fff3c8fca4",
+    "geometry.npz": "c591200f9e8f588c89e70f18a239b0f675747f9febb9b2d1c86bcf1e499ce32d",
+    "initial.npz": "600a88bafe9092f0d8dfd5bf7cb9186bd71a8742fa1fd1056190296139e1c2e9"
+  },
+  "endpoint": {
+    "step": 6,
+    "time_s": 3e-10
+  },
+  "fields": {
+    "n_i": {
+      "left_max_abs": 2.000000001445567e+19,
+      "max_abs_delta": 0.0
+    },
+    "n_e": {
+      "left_max_abs": 2.000000001445567e+19,
+      "max_abs_delta": 0.0
+    },
+    "mom_i": {
+      "left_max_abs": 3.3452438644971313e-06,
+      "max_abs_delta": 0.0
+    },
+    "mom_e": {
+      "left_max_abs": 2.5676250578272373e-07,
+      "max_abs_delta": 0.0
+    },
+    "p_i": {
+      "left_max_abs": 600.0000007227834,
+      "max_abs_delta": 0.0
+    },
+    "p_perp_e": {
+      "left_max_abs": 1797.7650667886705,
+      "max_abs_delta": 0.0
+    },
+    "p_parallel_e": {
+      "left_max_abs": 1797.7650667566993,
+      "max_abs_delta": 0.0
+    },
+    "B_R": {
+      "left_max_abs": 0.01632999999297083,
+      "max_abs_delta": 0.0
+    },
+    "B_phi": {
+      "left_max_abs": 2.47422680377926,
+      "max_abs_delta": 0.0
+    },
+    "B_Z": {
+      "left_max_abs": 0.017544999993019752,
+      "max_abs_delta": 0.0
+    },
+    "derived_E": {
+      "left_max_abs": 78.38224610161919,
+      "max_abs_delta": 0.0
+    }
+  },
+  "hard_checks": {
+    "same_and_all_pass": true,
+    "left_status_counts": {
+      "PASS": 4215
+    },
+    "right_status_counts": {
+      "PASS": 4215
+    },
+    "mismatched_common_row_count": 0,
+    "first_mismatch": null,
+    "threshold_float_difference_count": 0,
+    "max_threshold_relative_difference": 0.0,
+    "left_max_abs_raw_per_positive_threshold": {
+      "ct_divergence": 3.708485028971059e-13,
+      "divB_update": 1.3101446941293335e-08,
+      "wall_ion_flux": 1.8335893408783164e-12,
+      "wall_electron_flux": 5.116524505097601e-07,
+      "wall_current": 4.263256417631509e-06,
+      "wall_field_original_rows": 3.0854595383568043e-10,
+      "field_exchange_interval": 1.2087347075268184e-08,
+      "wall_field_reaction_work": 1.2399241220886117e-10,
+      "total_energy_interval": 2.1656461947943304e-05
+    },
+    "right_max_abs_raw_per_positive_threshold": {
+      "ct_divergence": 3.708485028971059e-13,
+      "divB_update": 1.3101446941293335e-08,
+      "wall_ion_flux": 1.8335893408783164e-12,
+      "wall_electron_flux": 5.116524505097601e-07,
+      "wall_current": 4.263256417631509e-06,
+      "wall_field_original_rows": 3.0854595383568043e-10,
+      "field_exchange_interval": 1.2087347075268184e-08,
+      "wall_field_reaction_work": 1.2399241220886117e-10,
+      "total_energy_interval": 2.1656461947943304e-05
+    }
+  }
+}

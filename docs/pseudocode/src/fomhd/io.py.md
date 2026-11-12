@@ -47,6 +47,11 @@ load_case(path,overrides):
     continuous residual status; manifest hashes equal actual file bytes
   load geometry NPZ with safe-key/dtype/zip limits
   build host geometry and selected-backend operators
+  effective electron_inertia=0 selects shared operators without finite
+    Poisson/Darwin storage; electron_inertia=1 builds complete storage
+  record the reduced layout in the operator fingerprint; initial NPZ
+    representation and physical wall flux are the same
+  hash the aligned-box sparse QB shape, values, and indices directly
   compute config_hash over canonical resolved config
   compute semantic_hash excluding only stop step, paths and display timing;
     include model, physics, effective electron_inertia, integrator,

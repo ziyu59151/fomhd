@@ -23,8 +23,10 @@
 4. Assemble `DB2` in vertex rows and apply `T3` after the bounded inverse T2
    block action. Never replace transforms with commuting approximations.
 5. `DJ=-diag(1/M0) G^H diag(M1)`.
-6. Compute each Poisson matrix `Lphi=-DJ G`, require full numerical rank, keep
-   its complete singular spectrum, and factor the original matrix.
+6. When `include_finite_mass` is true, compute each Poisson matrix
+   `Lphi=-DJ G`, require full numerical rank, keep its complete singular
+   spectrum, and factor the original matrix. This remains the direct
+   builder default for finite-mass callers and reference tests.
 
 ## A0-PY-OP-03 Couplings and complete constraint rows
 
@@ -34,10 +36,17 @@
 2. `I=blockdiag(I_r,I,I_z)` and
    `H=diag(1/node_weights) I^H diag(M1)`.
 3. Build `QB` with fourth-order tensor-product averages when all required
-   support exists, otherwise the native two-point/patch fallback.
-4. Keep every mode in `DJ`; `Bc_full=blockdiag(DJ_m)` and select deterministic
-   independent rows into `Bc`. Keep every wall row in `T_full` and select
-   deterministic independent rows into `T`.
+   support exists, otherwise the native two-point/patch fallback. Emit the
+   same coefficients directly into a CSR matrix for massless aligned boxes,
+   and keep the dense matrix in the complete reference builder and legacy
+   geometry path.
+4. Keep every mode in `DJ` and every wall row in `T_full`. Select
+   deterministic independent rows into `T`. Finite storage also builds
+   `Bc_full=blockdiag(DJ_m)` and selects independent rows into `Bc`.
+   Massless-only storage omits the finite matrices and their workspaces,
+   stores zero-row constraint placeholders, and records unavailable finite
+   storage. The shared matrix actions and all wall and topology checks run
+   in either layout.
 5. Build the topology flux row by solving with an adjoint T2 factor; do not
    form an inverse.
 
