@@ -1,0 +1,38 @@
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 341.49 ms  (compiled)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 199.54 ms  (compiled)
+Completed 6 steps: /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/original-g12-r1
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.59 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.55 ms  (cached)
+Completed 6 steps: /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/final-g12-r1
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, Driver 13.0
+   Devices:
+     "cpu"      : "CPU"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/warp-cache/1.19.0
+Module fomhd.backend 04342b4 load on device 'cuda:0' took 0.50 ms  (cached)
+Module fomhd.fluid 82d246d load on device 'cuda:0' took 0.53 ms  (cached)
+Completed 6 steps: /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/original-g12-r2
+Warp CUDA error 100: no CUDA-capable device is detected (in function init_cuda_driver, /builds/omniverse/warp/warp/native/cuda_util.cpp:333)
+FOMHD error: CUDA device setup failed: Invalid device identifier: cuda:0
+Warp 1.19.0 initialized:
+   CUDA Toolkit 13.4, CUDA driver not available (NVRTC compilation available)
+   Devices:
+     "cpu"      : "CPU"
+   Kernel cache:
+     /home/lxzeng/runs/fomhd/a0-rk4-scaling-20261112.bRJOoM/warp-cache/1.19.0

@@ -1,0 +1,1030 @@
+"schema_version" = 1
+"model" = "A0"
+"units" = "SI"
+"layout_version" = 1
+"case_name" = "rectangle-solovev-g6-k1"
+
+["species"]
+"ion_id" = "ion"
+"electron_id" = "electron"
+"qi" = 1.602176634e-19
+"mi" = 3.3452438519e-27
+"qe" = -1.602176634e-19
+"me" = 9.1093837139e-31
+"gamma_i" = 1.6666666666666667
+"electron_inertia" = 0
+
+["grid"]
+"R0" = 2.5
+"Z0" = -0.49999999999999994
+"hR" = 0.20000000000000018
+"hZ" = 0.20000000000000018
+"NR" = 6
+"NZ" = 6
+"K" = 1
+"Nphi" = 5
+
+["time"]
+"start_time" = 0.0
+"dt" = 5e-11
+"nsteps" = 6
+"initial_kind" = "non_equilibrium"
+"integrator" = "rk4"
+"dt_guard" = "error"
+"minimum_samples_per_cycle" = 32.0
+"max_amplitude_error" = 0.01
+"max_phase_error_rad" = 0.1
+
+["boundary"]
+"kind" = "fixed_outer_wall_static"
+"potential" = 0.0
+"version" = "rectangle_relative_v1"
+
+["solver"]
+"backend" = "cuda"
+"precision" = "fp64"
+"complex_precision" = "complex128"
+"memory_limit_bytes" = 12884901888
+"device_memory_limit_bytes" = 12884901888
+"rank_rtol" = 1e-12
+"device_ordinal" = 0
+"cpu_threads" = 1
+
+["solver"."constants"]
+"epsilon0_Fpm" = 8.8541878188e-12
+"mu0_Hpm" = 1.25663706127e-06
+"version" = "A0-SI-v1"
+
+["solver"."references"]
+"L_m" = 0.6
+"t_s" = 8.69871446014276e-08
+"n_i_m3" = 2e+19
+"n_e_m3" = 2e+19
+"u_mps" = 6897570.931304636
+"E_Vpm" = 13795141.862609273
+"B_T" = 2.0
+"J_Apm2" = 2652582.38521515
+"rho_Cpm3" = 3.2043532679999998
+"p_Pa" = 2400.0
+
+["budgets"]
+
+["budgets"."domain"]
+"n_min_i" = 0.0
+"n_min_e" = 0.0
+"n_face_min_i" = 0.0
+"n_face_min_e" = 0.0
+"p_min_i" = 0.0
+"p_min_perp_e" = 0.0
+"p_min_parallel_e" = 0.0
+"B_min" = 1e-10
+
+["budgets"."checks"]
+
+["budgets"."checks"."quasineutrality.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 3.2043532679999998
+"unit" = "C/m^3"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."quasineutrality.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 3.2043532679999998
+"unit" = "C/m^3"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_density_compatibility.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_density_compatibility.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_momentum_compatibility.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1444.6415178931009
+"unit" = "kg/(m^2*s^2)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_momentum_compatibility.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1444.6415178931009
+"unit" = "kg/(m^2*s^2)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."current_definition.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."current_definition.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_flux_definition.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_flux_definition.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_flux_continuity.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_flux_continuity.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."djj.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 4420970.642025251
+"unit" = "A/m^3"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."djj.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 4420970.642025251
+"unit" = "A/m^3"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."djj_interval.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 4420970.642025251
+"unit" = "A/m^3"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."djj_interval.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 4420970.642025251
+"unit" = "A/m^3"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."ct_divergence.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 38319838.50724798
+"unit" = "T/(m*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."ct_divergence.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 38319838.50724798
+"unit" = "T/(m*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."ct_update.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 22991903.104348786
+"unit" = "T/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."ct_update.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 22991903.104348786
+"unit" = "T/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."divB_update.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 3.3333333333333335
+"unit" = "T/m"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."divB_update.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 3.3333333333333335
+"unit" = "T/m"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_current.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_current.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_current_interval.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_current_interval.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_ion_flux.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_ion_flux.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_electron_flux.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_electron_flux.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_ion_flux_interval.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_ion_flux_interval.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_electron_flux_interval.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_electron_flux_interval.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 1.3795141862609272e+26
+"unit" = "1/(m^2*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_field_original_rows.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 38319838.507247984
+"unit" = "V/m^3"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_field_original_rows.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 38319838.507247984
+"unit" = "V/m^3"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."drift_ohm_residual.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 13795141.862609273
+"unit" = "V/m"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."drift_ohm_residual.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 13795141.862609273
+"unit" = "V/m"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_cgl_perp.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_cgl_perp.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_cgl_parallel.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_cgl_parallel.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."theta_consistency.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 11495951.552174393
+"unit" = "1/s"
+"norm" = "linf"
+"gate" = "observe"
+
+["budgets"."checks"."theta_consistency.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 11495951.552174393
+"unit" = "1/s"
+"norm" = "weighted_L2"
+"gate" = "observe"
+
+["budgets"."checks"."electron_pressure_adjoint.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_pressure_adjoint.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_electric_pairing.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."electron_electric_pairing.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."initial_divB.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 3.3333333333333335
+"unit" = "T/m"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."initial_divB.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 3.3333333333333335
+"unit" = "T/m"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."wall_initial_current.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."wall_initial_current.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2652582.38521515
+"unit" = "A/m^2"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."species_continuity.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."species_continuity.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."species_continuity.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."species_continuity.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."species_continuity.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."species_continuity.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."quasineutrality_interval.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 36837089.92497969
+"unit" = "C/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."quasineutrality_interval.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 36837089.92497969
+"unit" = "C/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_n.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_n.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_n.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_n.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_mom.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_mom.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_mom.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_mom.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_perp.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_perp.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_perp.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_perp.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_parallel.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_parallel.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."alias_B.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 22991903.104348786
+"unit" = "T/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."alias_B.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 22991903.104348786
+"unit" = "T/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_n.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_n.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_n.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_n.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 2.2991903104348786e+26
+"unit" = "1/(m^3*s)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_mom.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_mom.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_mom.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_mom.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5305164.7704302985
+"unit" = "kg/(m^2*s^2)"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_perp.ion.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_perp.ion.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_perp.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_perp.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_parallel.electron.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_parallel.electron.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 27590283725.218544
+"unit" = "Pa/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_B.linf"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 22991903.104348786
+"unit" = "T/s"
+"norm" = "linf"
+"gate" = "hard"
+
+["budgets"."checks"."equilibrium_B.weighted_L2"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 22991903.104348786
+"unit" = "T/s"
+"norm" = "weighted_L2"
+"gate" = "hard"
+
+["budgets"."checks"."electron_pressure_adjoint.electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."electron_electric_pairing.electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."electron_magnetic_work.electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."pressure_pairing.electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."electric_pairing.electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."electron_pressure_only_pairing.electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."wall_field_reaction_work.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."wall_field_reaction_work_ion.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."wall_field_reaction_work_electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."wall_field_reaction_work_current.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."kinetic_energy.ion.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 688067.7542477668
+"unit" = "J"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."ion_internal.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 688067.7542477668
+"unit" = "J"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."electron_perp.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 688067.7542477668
+"unit" = "J"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."electron_parallel.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 688067.7542477668
+"unit" = "J"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."field_energy_B_interval.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 688067.7542477668
+"unit" = "J"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."field_exchange_interval.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 5959501284.647205
+"unit" = "W"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."total_energy_interval.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 688067.7542477668
+"unit" = "J"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."total_charge_balance_interval.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 0.6921403058879998
+"unit" = "C"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."total_number_balance.ion.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 4.3199999999999995e+18
+"unit" = "1"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."total_number_balance.electron.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 4.3199999999999995e+18
+"unit" = "1"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."momentum_balance_interval_x.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 0.09967992516428106
+"unit" = "kg*m/s"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."momentum_balance_interval_y.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 0.09967992516428106
+"unit" = "kg*m/s"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."momentum_balance_interval_z.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 0.09967992516428106
+"unit" = "kg*m/s"
+"norm" = "value"
+"gate" = "hard"
+
+["budgets"."checks"."angular_momentum_interval.value"]
+"atol" = 0.0
+"rtol" = 1e-09
+"reference" = 0.05980795509856864
+"unit" = "kg*m^2/s"
+"norm" = "value"
+"gate" = "hard"
+
+["diagnostics"]
+"inner_distance_m" = 0.13
+"alias_policy" = "initial_midpoint_restart"
+"timing_repetitions" = 1
+"timing_warmup" = 0
+"mode_observations" = []
+
+["io"]
+"geometry_file" = "geometry.npz"
+"initial_file" = "initial.npz"
+"output_dir" = "run"
+"snapshot_stride" = 6
+"checkpoint_stride" = 6
+"max_input_bytes" = 16777216
+"max_uncompressed_bytes" = 33554432
+"max_entries" = 4096
+"max_header_bytes" = 1048576
+"source_manifest_file" = "source.json"
+"write_residual_arrays" = true

@@ -3,7 +3,8 @@
 [Visual branch history](docs/BRANCH_GRAPH.md) · [Development policy](docs/development.md)
 
 [Rectangular conducting-wall baseline](docs/benchmarks/rectangular-wall/README.md) ·
-[Complete fields and comparison figures](docs/benchmarks/rectangular-wall/GALLERY.md)
+[Complete fields and comparison figures](docs/benchmarks/rectangular-wall/GALLERY.md) ·
+[Synchronous GPU scaling](docs/benchmarks/a0-rk4-gpu/README.md)
 
 The default development baseline uses E/B vectors on the grid-aligned RZ
 conductor with the paired FOMHD Ampère closure and synchronous RK4. The
