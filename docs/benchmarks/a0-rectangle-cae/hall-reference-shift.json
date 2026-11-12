@@ -1,0 +1,51 @@
+{
+  "reference": "Independent constrained cold Hall Ritz, fixed normal traces and same box",
+  "box": {
+    "order": 16,
+    "mode": 1,
+    "R0": 15,
+    "a": 0.6,
+    "B0": 2,
+    "density": 2e+19,
+    "mass": 3.3452438519e-27,
+    "rank_rtol": 1e-11
+  },
+  "steps": [
+    {
+      "hall_multiplier": 1.0,
+      "mode_index": 602,
+      "frequency_hz": 6176966.898100754,
+      "overlap_previous": 1.0,
+      "overlap_full_hall": 1.0
+    },
+    {
+      "hall_multiplier": 0.75,
+      "mode_index": 602,
+      "frequency_hz": 6177531.572579672,
+      "overlap_previous": 0.9998464719058473,
+      "overlap_full_hall": 0.9998464719058484
+    },
+    {
+      "hall_multiplier": 0.5,
+      "mode_index": 602,
+      "frequency_hz": 6177936.388440726,
+      "overlap_previous": 0.999844438586089,
+      "overlap_full_hall": 0.9993818916456164
+    },
+    {
+      "hall_multiplier": 0.25,
+      "mode_index": 602,
+      "frequency_hz": 6178179.873854068,
+      "overlap_previous": 0.999843059978313,
+      "overlap_full_hall": 0.9986023274443052
+    },
+    {
+      "hall_multiplier": 0.0,
+      "mode_index": 602,
+      "frequency_hz": 6178261.13546278,
+      "overlap_previous": 0.999842363629664,
+      "overlap_full_hall": 0.9975067003245336
+    }
+  ],
+  "hall_relative_frequency_shift": -0.00020948246337415544
+}

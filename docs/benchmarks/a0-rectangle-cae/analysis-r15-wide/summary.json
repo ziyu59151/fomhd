@@ -1,0 +1,54 @@
+{
+  "omega_rad_s": 28571846.863891553,
+  "frequency_hz": 4547350.661653008,
+  "phase_rms_rad": 1.6830712503263073e-06,
+  "relative_amplitude_drift": -2.5900237742293446e-06,
+  "cycles": 3.40505650686326,
+  "reference_relative_frequency_error": -0.07926378427013392,
+  "parallel_shape_overlap_full": 0.8396747964512081,
+  "parallel_shape_overlap_wall_excluded": 0.9631832220213435,
+  "all_B_overlap_full": 0.8390146265469268,
+  "all_u_overlap_full": 0.7376410116899214,
+  "parallel_magnetic_fraction": 0.9997248909698199,
+  "independent_parallel_magnetic_fraction": 0.9983517733322227,
+  "velocity_field_orthogonal_to_seed": 1.2468149829691812e-05,
+  "interior_modal_magnetic_energy_fraction": 0.43803752118179073,
+  "magnetic_component_fractions_R_phi_Z": [
+    0.00016753975090452283,
+    0.9997248909698199,
+    0.0001075692792757165
+  ],
+  "reference_magnetic_component_fractions_R_phi_Z": [
+    0.0012312585508993806,
+    0.9983517733322227,
+    0.0004169681168777745
+  ],
+  "velocity_component_fractions_R_phi_Z": [
+    0.5964130732826034,
+    9.361655548476054e-15,
+    0.4035869267173872
+  ],
+  "reference_velocity_component_fractions_R_phi_Z": [
+    0.5180111350365333,
+    1.1242123758856422e-28,
+    0.48198886496346666
+  ],
+  "velocity_phase_relative_to_magnetic_vs_reference_rad": 3.376127089176923e-08,
+  "local_probe_frequencies_hz": [
+    4547350.7019769335,
+    4547351.319492711,
+    4547351.128732093,
+    4547350.83396018,
+    4547350.970079289
+  ],
+  "reference_frequency_hz": 4938820.244024322,
+  "final_saved_time_s": 7.487999999999999e-07,
+  "accepted_saved_snapshots": 97,
+  "case_status": "completed",
+  "accepted_steps": 5760,
+  "elapsed_s": 4123.196761891944,
+  "median_step_plus_output_s": 0.7105952079873532,
+  "largest_guard_omega_dt": 0.18644093814283555,
+  "hard_guard_passed": true,
+  "quiet": {}
+}

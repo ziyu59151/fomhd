@@ -1,0 +1,64 @@
+{
+  "omega_rad_s": 35490773.58000993,
+  "frequency_hz": 5648532.0494138235,
+  "phase_rms_rad": 1.5854426930698968e-06,
+  "relative_amplitude_drift": -5.063833681595575e-06,
+  "cycles": 4.229620594147082,
+  "reference_relative_frequency_error": -0.08554924405526765,
+  "parallel_shape_overlap_full": 0.7635086628903696,
+  "parallel_shape_overlap_wall_excluded": 0.9517816040906478,
+  "all_B_overlap_full": 0.7630837348953304,
+  "all_u_overlap_full": 0.6414673047844971,
+  "parallel_magnetic_fraction": 0.9998193369233905,
+  "independent_parallel_magnetic_fraction": 0.9988611978912383,
+  "velocity_field_orthogonal_to_seed": 1.7473674982238766e-05,
+  "interior_modal_magnetic_energy_fraction": 0.35053887786101773,
+  "magnetic_component_fractions_R_phi_Z": [
+    0.0001101579950349722,
+    0.9998193369233905,
+    7.050508157451009e-05
+  ],
+  "reference_magnetic_component_fractions_R_phi_Z": [
+    0.0007946060100568418,
+    0.9988611978912383,
+    0.00034419609870462293
+  ],
+  "velocity_component_fractions_R_phi_Z": [
+    0.5986787105696039,
+    7.909012495229536e-15,
+    0.4013212894303882
+  ],
+  "reference_velocity_component_fractions_R_phi_Z": [
+    0.5165280513159946,
+    1.1159023041345608e-28,
+    0.4834719486840054
+  ],
+  "velocity_phase_relative_to_magnetic_vs_reference_rad": 1.1001679188278945e-07,
+  "local_probe_frequencies_hz": [
+    5648531.476214354,
+    5648531.556101991,
+    5648533.351116583,
+    5648532.715016935,
+    5648531.763857968
+  ],
+  "reference_frequency_hz": 6176966.898100754,
+  "final_saved_time_s": 7.487999999999999e-07,
+  "accepted_saved_snapshots": 97,
+  "case_status": "completed",
+  "accepted_steps": 5760,
+  "elapsed_s": 3846.81497375411,
+  "median_step_plus_output_s": 0.6666376335779205,
+  "largest_guard_omega_dt": 0.1844994515110387,
+  "hard_guard_passed": true,
+  "quiet": {
+    "time_s": 7.487999999999999e-07,
+    "accepted_matching_count": 97,
+    "density_peak_quiet_drift": 40960.0,
+    "ion_pressure_peak_quiet_drift": 3.0535574069290305e-12,
+    "electron_perp_peak_quiet_drift": 4.147793219999585e-12,
+    "electron_parallel_peak_quiet_drift": 2.3883117705736367e-12,
+    "velocity_peak_quiet_drift": 9.41628092647111e-08,
+    "B_peak_quiet_drift": 1.3322676295501878e-15,
+    "E_peak_quiet_drift": 1.9596000115008743e-07
+  }
+}

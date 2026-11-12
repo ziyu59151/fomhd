@@ -1,0 +1,2 @@
+Absolute maximum spectrum difference (rad/s): 4.3818727135658264e-07
+Tolerance: rtol=1e-12, atol=1e-6 rad/s; the near-zero eigenspace is included.

@@ -1,0 +1,7 @@
+{
+  "complete_recorded_wall_s": 2672.8928651008755,
+  "sampled_advance_median_s": 0.6731824590824544,
+  "sampled_step_records": 270,
+  "sampled_cupy_pool_peak_reserved_bytes": 97671168,
+  "sampled_host_peak_rss_bytes": 1297911808
+}

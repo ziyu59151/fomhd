@@ -1,0 +1,37 @@
+{
+  "provider_name": "Independent same-box constrained cold Hall Ritz eigenmode",
+  "provider_version": "v1",
+  "units": "SI",
+  "conversion_method": "Same-branch frozen solver mode as initial data, independently compared to the same-box Ritz mode",
+  "continuous_residual_status": "Vacuum toroidal guide field with uniform pressure and density is an exact static equilibrium",
+  "reference_mode_index": 602,
+  "reference_order": 16,
+  "reference_frequency_hz": 4938820.244024322,
+  "total_axis_beta": 1e-05,
+  "source_box_bounds_m": [
+    14.25,
+    15.75,
+    -0.75,
+    0.75
+  ],
+  "amplitude": 0.0001,
+  "reference_compression": 0.9950557754914113,
+  "background_normal_cap_max_Wb_per_rad": 0.0,
+  "background_current_max_A_per_m2": 1.4135798586148684e-08,
+  "background_divergence_max_T_per_m": 0.0,
+  "initial_divergence_max_T_per_m": 3.3869205801054463e-19,
+  "projection_receipt": {
+    "discrete_seed_file": "discrete-r15-wide-g20-tracked.npz",
+    "discrete_seed_eigenfrequency_hz": 4547325.79284945,
+    "discrete_seed_eigenvalue_real_s_inv": -1.2204724155677298e-09,
+    "reference_Bphi_overlap": 0.8396732557920491,
+    "normal_current_residual": 2.171695186422834e-09,
+    "normal_velocity_residual": 4.601719643932854e-11,
+    "divergence_residual": 8.523872813847093e-16
+  },
+  "input_hashes": {
+    "case": "3fb155204f20b919b2a5ef8bfd8a65c8dd245b1af2cae5bf003c5286cf1348a0",
+    "initial": "f9c0e8ad59bf8a7d7bef4d61260917389c8b33b0a2ce821eef14b51533669ae7",
+    "geometry": "4acf21f6265f5f27e1117644eb2b177d89f70d89662c9355a9167632f75be1ec"
+  }
+}

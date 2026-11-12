@@ -38,7 +38,10 @@ dependency. The implementation-level pseudocode under
 [`docs/pseudocode/src/fomhd`](docs/pseudocode/src/fomhd) is synchronized with
 the active source and tests.
 
-The scoped global fast-branch prototype evidence and limits are in
+The current [rectangular-wall compressional mode replay](docs/benchmarks/a0-rectangle-cae/README.md)
+contains accepted multi-cycle trajectories, the independent same-box Ritz
+reference, and the measured resolution and wall-distance comparisons.
+The earlier global fast-branch prototype evidence is in
 [A0_TOKAMAK_CAE_EVIDENCE.md](docs/A0_TOKAMAK_CAE_EVIDENCE.md); retained debugging
 leads are in [A0_KNOWN_ISSUES.md](docs/A0_KNOWN_ISSUES.md).
 

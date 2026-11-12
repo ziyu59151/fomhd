@@ -1,0 +1,24 @@
+{
+  "order": 18,
+  "frequency_hz": 6181834.655286489,
+  "J_l2_mu0_over_B_l2_per_m": 9.990514156675985,
+  "J_toroidal_fraction": 0.6733054754962278,
+  "J_squared_fraction": {
+    "corners": 0.01759697368062987,
+    "sides": 0.6664084648088915,
+    "core": 0.31599456151047856
+  },
+  "J_toroidal_fraction_by_region": {
+    "corners": 0.9891619434713463,
+    "sides": 0.9751693956098895,
+    "core": 0.019108173650895236
+  },
+  "strong_momentum_residual_to_force": {
+    "corners": 0.5945904421200504,
+    "sides": 0.5882554361006491,
+    "core": 0.03381326585517619,
+    "whole_box": 0.13594868464070425
+  },
+  "wall_normal_force_rms_over_volume_force_rms": 1.2657805197057022,
+  "wall_normal_to_poloidal_tangent_current_peak": 1.8122274891088664e-10
+}

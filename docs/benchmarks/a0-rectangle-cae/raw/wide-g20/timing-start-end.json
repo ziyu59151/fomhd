@@ -1,0 +1,217 @@
+[
+  {
+    "event": "assembly_start",
+    "elapsed_s": 0.553340527927503,
+    "host_peak_rss_bytes": 403742720,
+    "estimate_bytes": 746994072,
+    "k": 1,
+    "device_name": "NVIDIA GeForce RTX 5090",
+    "device_total_bytes": 33668726784,
+    "device_free_bytes": 33103347712,
+    "cupy_pool_live_bytes": 0,
+    "cupy_pool_reserved_bytes": 0
+  },
+  {
+    "event": "assembly_end",
+    "elapsed_s": 1.1017281231470406,
+    "host_peak_rss_bytes": 1042653184,
+    "assembly_s": 0.5481961700133979,
+    "operator_arrays": {
+      "I": [
+        {
+          "shape": [
+            1240,
+            1200
+          ],
+          "bytes": 23808000
+        }
+      ],
+      "H": [
+        {
+          "shape": [
+            1200,
+            1240
+          ],
+          "bytes": 23808000
+        }
+      ],
+      "QB": [
+        {
+          "shape": [
+            1200,
+            1281
+          ],
+          "bytes": 175364
+        }
+      ],
+      "T": [
+        {
+          "shape": [
+            80,
+            1200
+          ],
+          "bytes": 1536000
+        }
+      ],
+      "G": [
+        {
+          "shape": [
+            1240,
+            400
+          ],
+          "bytes": 7936000
+        },
+        {
+          "shape": [
+            1240,
+            400
+          ],
+          "bytes": 7936000
+        },
+        {
+          "shape": [
+            1240,
+            400
+          ],
+          "bytes": 7936000
+        }
+      ],
+      "C": [
+        {
+          "shape": [
+            1281,
+            1240
+          ],
+          "bytes": 25415040
+        },
+        {
+          "shape": [
+            1281,
+            1240
+          ],
+          "bytes": 25415040
+        },
+        {
+          "shape": [
+            1281,
+            1240
+          ],
+          "bytes": 25415040
+        }
+      ],
+      "DB": [
+        {
+          "shape": [
+            441,
+            1281
+          ],
+          "bytes": 9038736
+        },
+        {
+          "shape": [
+            441,
+            1281
+          ],
+          "bytes": 9038736
+        },
+        {
+          "shape": [
+            441,
+            1281
+          ],
+          "bytes": 9038736
+        }
+      ],
+      "DJ": [
+        {
+          "shape": [
+            400,
+            1240
+          ],
+          "bytes": 7936000
+        },
+        {
+          "shape": [
+            400,
+            1240
+          ],
+          "bytes": 7936000
+        },
+        {
+          "shape": [
+            400,
+            1240
+          ],
+          "bytes": 7936000
+        }
+      ],
+      "Cdag": [
+        {
+          "shape": [
+            1240,
+            1281
+          ],
+          "bytes": 25415040
+        },
+        {
+          "shape": [
+            1240,
+            1281
+          ],
+          "bytes": 25415040
+        },
+        {
+          "shape": [
+            1240,
+            1281
+          ],
+          "bytes": 25415040
+        }
+      ],
+      "Lphi": [],
+      "Bc": [
+        {
+          "shape": [
+            0,
+            3720
+          ],
+          "bytes": 0
+        }
+      ],
+      "Bc_full": [
+        {
+          "shape": [
+            0,
+            3720
+          ],
+          "bytes": 0
+        }
+      ]
+    },
+    "cells": 400,
+    "edges": 1240,
+    "magnetic_dofs": 1281,
+    "device_total_bytes": 33668726784,
+    "device_free_bytes": 32363053056,
+    "cupy_pool_live_bytes": 382393856,
+    "cupy_pool_reserved_bytes": 646699008
+  },
+  {
+    "event": "context",
+    "elapsed_s": 1.3277347669936717,
+    "host_peak_rss_bytes": 1119895552,
+    "complete_plan_bytes": 685293964,
+    "host_cap_bytes": 21474836480,
+    "device_cap_bytes": 21474836480,
+    "device_total_bytes": 33668726784,
+    "device_free_bytes": 32363053056,
+    "cupy_pool_live_bytes": 330420736,
+    "cupy_pool_reserved_bytes": 646699008
+  },
+  {
+    "event": "exit",
+    "elapsed_s": 4123.259160295129,
+    "host_peak_rss_bytes": 1317900288,
+    "code": 0
+  }
+]

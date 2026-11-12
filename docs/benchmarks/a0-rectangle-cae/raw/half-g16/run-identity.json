@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "model": "A0",
+  "model_variant": "massless_quasineutral_cgl_b",
+  "units": "SI",
+  "integrator": "rk4",
+  "time_guard": {
+    "policy": "error",
+    "minimum_samples_per_cycle": 32.0,
+    "max_amplitude_error": 0.01,
+    "max_phase_error_rad": 0.1
+  },
+  "semantic_hash": "6a7e419b39c2dbfe3a5cf050123aded7ed2e39bfb4c33bb07146aefa1647b27f",
+  "geometry_hash": "10d14d825c6a22caabdfa03eed540df0359e1779733e298532e1e843eb07cf9c",
+  "matrix_fingerprint": "c13e871cb5a2eba5eab0731e45e9d7e501e8de56198ad4e9f6d5af7a446539e3",
+  "input_hashes": {
+    "case": "bc58dc491473963b7ac1d48aac51b51e440fde1c6e1da047c2c9b12aa644b6c5",
+    "geometry": "305997319bae29ebf0d7cb80580e7894a874126e6385d14eda4cf726e224bf96",
+    "initial": "7e0a9169fad551d728547e04542a01f763dfddf98afaa6a7a0387a4656e2c7d6",
+    "source": "21de0a5937cbbdaad272bb007a1f025235555598a22bec2bc532d75504f5c400"
+  },
+  "precision": "fp64/complex128",
+  "backend": "cuda"
+}

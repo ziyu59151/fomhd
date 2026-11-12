@@ -1,0 +1,61 @@
+{
+  "cases": {
+    "case-r15-g12-verifiedinput": {
+      "allocation": 11565,
+      "accepted_steps": 3840,
+      "physical_time_s": 7.488e-07,
+      "accepted_hard_records": 2626671,
+      "last_snapshot_sha256": "aeef0b5be07be7ced30836b18a28901333018d19a4a6ef6aea366fe7ff52a301",
+      "assembly_s": 0.3940567229874432,
+      "elapsed_s": 2672.8394333750475,
+      "median_sampled_advance_s": 0.6707150608999655,
+      "peak_sampled_cupy_reservation_bytes": 97671168
+    },
+    "case-r15-g16-verifiedinput-pulse": {
+      "allocation": 11566,
+      "accepted_steps": 5760,
+      "physical_time_s": 7.487999999999999e-07,
+      "accepted_hard_records": 3939951,
+      "last_snapshot_sha256": "51e51a233bf214cc59c750794a4446f0f825e635731821f83baad0ce8e32914d",
+      "assembly_s": 0.48006570315919816,
+      "elapsed_s": 3846.81497375411,
+      "median_sampled_advance_s": 0.6508132835151628,
+      "peak_sampled_cupy_reservation_bytes": 308227584
+    },
+    "case-r15-g16-verifiedinput-quiet": {
+      "allocation": 11567,
+      "accepted_steps": 5760,
+      "physical_time_s": 7.487999999999999e-07,
+      "accepted_hard_records": 3939999,
+      "last_snapshot_sha256": "29ca54a2213b74ce6d334cd9172441fa156ca545ac200eea240895a607cc1537",
+      "assembly_s": 0.47587186680175364,
+      "elapsed_s": 3897.474681358086,
+      "median_sampled_advance_s": 0.6631503299577162,
+      "peak_sampled_cupy_reservation_bytes": 308227584
+    },
+    "case-r15-g16-half-verifiedinput": {
+      "allocation": 11568,
+      "accepted_steps": 5760,
+      "physical_time_s": 3.7439999999999996e-07,
+      "accepted_hard_records": 3939951,
+      "last_snapshot_sha256": "ed99dba76203d38bed156bfbc8d0c0664ca52977d7259b62e72b30233d9659f1",
+      "assembly_s": 0.5187219129875302,
+      "elapsed_s": 3890.893177255057,
+      "median_sampled_advance_s": 0.6597735263640061,
+      "peak_sampled_cupy_reservation_bytes": 308227584
+    },
+    "case-r15-wide-g20-matchedwindow": {
+      "allocation": 11572,
+      "accepted_steps": 5760,
+      "physical_time_s": 7.487999999999999e-07,
+      "accepted_hard_records": 3939951,
+      "last_snapshot_sha256": "ae70762f2a7b00c3d4ef2ec1d2257714a4e227c9e5b9c093708fb6d92311db18",
+      "assembly_s": 0.5481961700133979,
+      "elapsed_s": 4123.196761891944,
+      "median_sampled_advance_s": 0.692303866497241,
+      "peak_sampled_cupy_reservation_bytes": 761067520
+    }
+  },
+  "verified_gallery_links": 47,
+  "allocated_single_card_seconds": 18648
+}

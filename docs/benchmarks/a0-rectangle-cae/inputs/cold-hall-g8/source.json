@@ -1,0 +1,21 @@
+{
+  "provider_name": "Independent axial cold Hall box analytic mode",
+  "provider_version": "v1",
+  "units": "SI",
+  "conversion_method": "Direct physical flux integration for the uniform axial vacuum and the Hall wave at phase zero",
+  "continuous_residual_status": "Uniform axial vacuum is exact; perturbation matches a linear cold solution, solver uses positive pressure and nonlinear equations",
+  "input_hashes": {
+    "case": "9ed036b831d06eb20b01baf0a9dc0c346f89361c46c2afdfc89b63e9159ebdc8",
+    "initial": "83716ff01f6758927e706058cbe842f18a92d23a30f3b5da283e4dd74335912d",
+    "geometry": "4df3abfe92ea7362c4ae201b9646bb9db0600b67a10c37c3a9c814845d230bc7"
+  },
+  "background_map_max_T": 0.0,
+  "background_nodal_max_T": 0.002757352941170854,
+  "background_current_max_A_m2": 1.0177774982027053e-07,
+  "initial_divB_max_T_m": 3.197442310920451e-13,
+  "analytic_angular_frequency_per_s": 69060970.05804439,
+  "analytic_period_s": 9.098026427805303e-08,
+  "density_m3": 3.6211302828646313e+18,
+  "ion_mass": 3.343583719e-27,
+  "amplitude": 0.0001
+}

@@ -1,0 +1,74 @@
+{
+  "physical_input_hashes": {
+    "case": "408d349e35bbd96472637dd3ba38d661eac1fe522ced95821152cbd0dd49c8be",
+    "geometry": "305997319bae29ebf0d7cb80580e7894a874126e6385d14eda4cf726e224bf96",
+    "initial": "7e0a9169fad551d728547e04542a01f763dfddf98afaa6a7a0387a4656e2c7d6",
+    "source": "a39c61649b6c678702068bd380cb7d4d74d3e058cfaddfe1aef860a4869fc211"
+  },
+  "comparison": {
+    "n_i": {
+      "absolute": 0.03125,
+      "dimensionless": 1.5625e-21
+    },
+    "n_e": {
+      "absolute": 0.03125,
+      "dimensionless": 1.5625e-21
+    },
+    "mom_i": {
+      "absolute": 1.6940658945086007e-21,
+      "dimensionless": 3.669639750868207e-21
+    },
+    "mom_e": {
+      "absolute": 1.6575892500781904e-24,
+      "dimensionless": 1.3186426945783756e-20
+    },
+    "p_i": {
+      "absolute": 1.3552527156068805e-20,
+      "dimensionless": 1.7030066795763766e-21
+    },
+    "p_perp_e": {
+      "absolute": 5.421010862427522e-20,
+      "dimensionless": 6.812026718305506e-21
+    },
+    "p_parallel_e": {
+      "absolute": 2.710505431213761e-20,
+      "dimensionless": 3.406013359152753e-21
+    },
+    "B_R": {
+      "absolute": 4.622748271423987e-22,
+      "dimensionless": 2.3113741357119933e-22
+    },
+    "B_phi": {
+      "absolute": 3.394742784160134e-21,
+      "dimensionless": 1.697371392080067e-21
+    },
+    "B_Z": {
+      "absolute": 3.9400202474223863e-22,
+      "dimensionless": 1.9700101237111931e-22
+    }
+  },
+  "time_s": 9.2e-10,
+  "archived": {
+    "allocation": 11559,
+    "same_device_model_distinct_allocation": "NVIDIA GeForce RTX 5090",
+    "assembly_s": 0.6497017368674278,
+    "elapsed_s": 32.75218674307689,
+    "complete_plan_bytes": 6408996992,
+    "median_full_advance_s": 3.720250374521129,
+    "host_peak_rss_bytes": 1322029056,
+    "cupy_pool_reserved_bytes": 480914432,
+    "cupy_pool_live_bytes": 235998208
+  },
+  "provisional_optimized": {
+    "allocation": 11558,
+    "same_device_model_distinct_allocation": "NVIDIA GeForce RTX 5090",
+    "assembly_s": 0.4405505950562656,
+    "elapsed_s": 7.107436618069187,
+    "complete_plan_bytes": 331116748,
+    "median_full_advance_s": 0.6326492624357343,
+    "host_peak_rss_bytes": 1320542208,
+    "cupy_pool_reserved_bytes": 308227584,
+    "cupy_pool_live_bytes": 160589312
+  },
+  "advance_speedup": 5.880431062541607
+}

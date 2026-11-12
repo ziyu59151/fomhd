@@ -1,0 +1,77 @@
+{
+  "scope": "Independent reference resolution check only. Same physical points and fixed 0.20 m collar.",
+  "orders": {
+    "12": {
+      "B_domain_relative_RMS": 0.10971539290099022,
+      "B_inner_relative_RMS": 0.10257175181155583,
+      "B_collar_relative_RMS": 0.12234796790156957,
+      "J_domain_relative_RMS": 0.44024590626589655,
+      "J_parallel_domain_relative_RMS": 0.5762013539733336,
+      "J_perpendicular_domain_relative_RMS": 0.13828739534103152,
+      "J_inner_relative_RMS": 0.11959925268805642,
+      "J_parallel_inner_relative_RMS": 1.385986142867533,
+      "J_perpendicular_inner_relative_RMS": 0.08914906695635655,
+      "J_collar_relative_RMS": 0.5137215601444705,
+      "J_parallel_collar_relative_RMS": 0.5738885906712623,
+      "J_perpendicular_collar_relative_RMS": 0.19610492431601903
+    },
+    "14": {
+      "B_domain_relative_RMS": 0.05439388907384163,
+      "B_inner_relative_RMS": 0.049530608007515464,
+      "B_collar_relative_RMS": 0.06273526035088584,
+      "J_domain_relative_RMS": 0.25052639825051726,
+      "J_parallel_domain_relative_RMS": 0.32768033512985256,
+      "J_perpendicular_domain_relative_RMS": 0.0798069561998949,
+      "J_inner_relative_RMS": 0.11209814408741477,
+      "J_parallel_inner_relative_RMS": 1.696226015307782,
+      "J_perpendicular_inner_relative_RMS": 0.05491720794906655,
+      "J_collar_relative_RMS": 0.286991025112877,
+      "J_parallel_collar_relative_RMS": 0.3205273318714922,
+      "J_perpendicular_collar_relative_RMS": 0.110318312403852
+    },
+    "18": {
+      "B_domain_relative_RMS": 0.04593794943974789,
+      "B_inner_relative_RMS": 0.04082318899228086,
+      "B_collar_relative_RMS": 0.05448058359663877,
+      "J_domain_relative_RMS": 0.2804329055193297,
+      "J_parallel_domain_relative_RMS": 0.3700963056552174,
+      "J_perpendicular_domain_relative_RMS": 0.07005134354194538,
+      "J_inner_relative_RMS": 0.12222656200723961,
+      "J_parallel_inner_relative_RMS": 1.9561816862609824,
+      "J_perpendicular_inner_relative_RMS": 0.04724209500033863,
+      "J_collar_relative_RMS": 0.32173985171856373,
+      "J_parallel_collar_relative_RMS": 0.3616556308415967,
+      "J_perpendicular_collar_relative_RMS": 0.09764975794423693
+    }
+  },
+  "concentration": {
+    "12": {
+      "frequency_hz": 6162655.649816986,
+      "d50_J_energy_from_wall_m": 0.19096082401815406,
+      "J_energy_within_0p05m_fraction": 0.3205145854047735,
+      "J_energy_within_0p20m_fraction": 0.5514778745113118,
+      "J_perpendicular_fraction": 0.7315858995248311
+    },
+    "14": {
+      "frequency_hz": 6170819.435632694,
+      "d50_J_energy_from_wall_m": 0.11630258623550005,
+      "J_energy_within_0p05m_fraction": 0.4465276585793565,
+      "J_energy_within_0p20m_fraction": 0.6373790107031231,
+      "J_perpendicular_fraction": 0.5822210924885572
+    },
+    "16": {
+      "frequency_hz": 6176966.898100754,
+      "d50_J_energy_from_wall_m": 0.00812656426161451,
+      "J_energy_within_0p05m_fraction": 0.5725512086754954,
+      "J_energy_within_0p20m_fraction": 0.7191837429559877,
+      "J_perpendicular_fraction": 0.4416693689426145
+    },
+    "18": {
+      "frequency_hz": 6181834.655286489,
+      "d50_J_energy_from_wall_m": 0.00812656426161451,
+      "J_energy_within_0p05m_fraction": 0.6827748154346805,
+      "J_energy_within_0p20m_fraction": 0.7896174739200991,
+      "J_perpendicular_fraction": 0.3266945245035822
+    }
+  }
+}

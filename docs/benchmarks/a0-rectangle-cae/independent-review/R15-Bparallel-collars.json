@@ -1,0 +1,42 @@
+{
+  "10": {
+    "delta_B_parallel_overlap_full": 0.7621653091699997,
+    "delta_B_parallel_overlap_d_gt_0p15m": 0.8310602285993265,
+    "delta_B_parallel_overlap_d_lt_0p15m": 0.5499420031370641,
+    "wall_collar_m": 0.15,
+    "reference_collar_energy_fraction": 0.26427440810139047,
+    "computed_collar_energy_fraction": 0.2199932690880138
+  },
+  "12": {
+    "delta_B_parallel_overlap_full": 0.7817345184768281,
+    "delta_B_parallel_overlap_d_gt_0p15m": 0.8281858583015348,
+    "delta_B_parallel_overlap_d_lt_0p15m": 0.7112941106071061,
+    "wall_collar_m": 0.15,
+    "reference_collar_energy_fraction": 0.26072156258766555,
+    "computed_collar_energy_fraction": 0.3973558004355018
+  },
+  "14": {
+    "delta_B_parallel_overlap_full": 0.7791356987947594,
+    "delta_B_parallel_overlap_d_gt_0p15m": 0.9151050407299319,
+    "delta_B_parallel_overlap_d_lt_0p15m": 0.6786675694332684,
+    "wall_collar_m": 0.15,
+    "reference_collar_energy_fraction": 0.3134675305790334,
+    "computed_collar_energy_fraction": 0.5848361616152554
+  },
+  "16": {
+    "delta_B_parallel_overlap_full": 0.7601305131250993,
+    "delta_B_parallel_overlap_d_gt_0p15m": 0.8869049800909715,
+    "delta_B_parallel_overlap_d_lt_0p15m": 0.6552839565646914,
+    "wall_collar_m": 0.15,
+    "reference_collar_energy_fraction": 0.2945774827269571,
+    "computed_collar_energy_fraction": 0.5604092675133843
+  },
+  "20": {
+    "delta_B_parallel_overlap_full": 0.7311655462142848,
+    "delta_B_parallel_overlap_d_gt_0p15m": 0.8661553821982989,
+    "delta_B_parallel_overlap_d_lt_0p15m": 0.6021288577926704,
+    "wall_collar_m": 0.15,
+    "reference_collar_energy_fraction": 0.27462432318641766,
+    "computed_collar_energy_fraction": 0.5431456200633458
+  }
+}

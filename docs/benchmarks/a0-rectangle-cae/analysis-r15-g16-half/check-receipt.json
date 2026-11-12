@@ -1,0 +1,111 @@
+{
+  "counts": {
+    "hard_PASS": 3939951
+  },
+  "worst": {
+    "ct_divergence": {
+      "raw": 1.0449444760354847e-12,
+      "unit": "T/(m*s)",
+      "threshold": 0.446416748463732,
+      "step": 2518,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "wall_current": {
+      "raw": 1.4614978509343904e-06,
+      "unit": "A/m^2",
+      "threshold": 0.05319230406054748,
+      "step": 5631,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "wall_ion_flux": {
+      "raw": 116990042.55193584,
+      "unit": "1/(m^2*s)",
+      "threshold": 2.766343411628973e+18,
+      "step": 5540,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "wall_electron_flux": {
+      "raw": 9121952200793.312,
+      "unit": "1/(m^2*s)",
+      "threshold": 2.766343411628973e+18,
+      "step": 5631,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "pressure_pairing": {
+      "raw": -8.267661296123949e-10,
+      "unit": "W",
+      "threshold": 0.039520170330805585,
+      "step": 5740,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "electric_pairing": {
+      "raw": -3.3185480346901017e-09,
+      "unit": "W",
+      "threshold": 0.039520170330805585,
+      "step": 4096,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "initial_divB": {
+      "raw": 1.2340985149544277e-18,
+      "unit": "T/m",
+      "threshold": 3.883251825111379e-08,
+      "step": 0,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "time_step_estimate": {
+      "raw": 0.46982392477683443,
+      "unit": "1",
+      "threshold": 1.0,
+      "step": 5711,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "field_energy_B_interval": {
+      "raw": -1.1920031599090455e-07,
+      "unit": "J",
+      "threshold": 0.0006875527919945381,
+      "step": 5389,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "field_exchange_interval": {
+      "raw": -2.2977582128692726e-09,
+      "unit": "W",
+      "threshold": 0.039520170330805585,
+      "step": 4954,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "total_energy_interval": {
+      "raw": 1.192092895508607e-07,
+      "unit": "J",
+      "threshold": 0.0006875527919945381,
+      "step": 5381,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "ct_update": {
+      "raw": 2.0763653529160856e-05,
+      "unit": "T/s",
+      "threshold": 0.4639298938133278,
+      "step": 264,
+      "status": "PASS",
+      "gate": "hard"
+    },
+    "divB_update": {
+      "raw": 7.650962051892022e-21,
+      "unit": "T/m",
+      "threshold": 3.883251825111379e-08,
+      "step": 416,
+      "status": "PASS",
+      "gate": "hard"
+    }
+  }
+}

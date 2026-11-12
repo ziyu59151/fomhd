@@ -1,0 +1,86 @@
+{
+  "omega_rad_s": 69060968.86419842,
+  "period_s": 9.098026585081437e-08,
+  "density_m^-3": 3.621130345462534e+18,
+  "vA_m_s": 16214250.565690016,
+  "di_m": 0.16918766630949184,
+  "kR_m^-1": 2.6341132960621114,
+  "kZ_m^-1": [
+    2.6179938779914944,
+    7.853981633974483
+  ],
+  "peak_delta_Bphi_over_B0": 9.999973902041804e-05,
+  "relative_pde_residuals": {
+    "0.002": {
+      "div_B": 1.5794295060333573e-05,
+      "ampere": 3.996242404707362e-05,
+      "faraday": 3.989386578172786e-05,
+      "ion_momentum": 6.666665611441304e-07,
+      "ion_continuity": 5.172540123164723e-06,
+      "electron_continuity": 3.281922973746207e-05,
+      "electron_velocity": 0.0,
+      "ohm": 0.0
+    },
+    "0.001": {
+      "div_B": 3.948484484087148e-06,
+      "ampere": 9.990732313381941e-06,
+      "faraday": 9.973589907418067e-06,
+      "ion_momentum": 1.666666189328044e-07,
+      "ion_continuity": 1.2931362904514877e-06,
+      "electron_continuity": 8.204906950055274e-06,
+      "electron_velocity": 0.0,
+      "ohm": 0.0
+    },
+    "0.0005": {
+      "div_B": 9.871155351495106e-07,
+      "ampere": 2.497691118047958e-06,
+      "faraday": 2.493405161940689e-06,
+      "ion_momentum": 4.1666747370091704e-08,
+      "ion_continuity": 3.2328420205120623e-07,
+      "electron_continuity": 2.0512333662647377e-06,
+      "electron_velocity": 0.0,
+      "ohm": 0.0
+    }
+  },
+  "wave_energy_J_per_rad": [
+    0.052263181612131504,
+    0.05226318161213134,
+    0.05226318161213117,
+    0.05226318161213134,
+    0.052263181612131504
+  ],
+  "wall_traces": {
+    "R_lo": {
+      "delta_B_normal": 0.0,
+      "B_normal_minus_initial": 0.0,
+      "E_tangential": 0.0,
+      "J_normal": 0.0,
+      "u_i_normal": 0.0,
+      "u_e_normal": 0.0
+    },
+    "R_hi": {
+      "delta_B_normal": 5.396058791316738e-16,
+      "B_normal_minus_initial": 9.99350309911585e-20,
+      "E_tangential": 4.1154729776164253e-16,
+      "J_normal": 5.200857164881647e-16,
+      "u_i_normal": 5.396058791316739e-16,
+      "u_e_normal": 4.1154729776164253e-16
+    },
+    "Z_lo": {
+      "delta_B_normal": 0.0,
+      "B_normal_minus_initial": 0.0,
+      "E_tangential": 0.0,
+      "J_normal": 0.0,
+      "u_i_normal": 0.0,
+      "u_e_normal": 0.0
+    },
+    "Z_hi": {
+      "delta_B_normal": 1.92986765632377e-16,
+      "B_normal_minus_initial": 0.0,
+      "E_tangential": 2.6189217027392155e-16,
+      "J_normal": 0.0,
+      "u_i_normal": 0.0,
+      "u_e_normal": 0.0
+    }
+  }
+}

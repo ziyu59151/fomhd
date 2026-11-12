@@ -1,0 +1,44 @@
+{
+  "scope": "Bilinear reconstruction of frozen A0 modes against the same order-16 analytic Ritz field.",
+  "box_width_m": 1.2,
+  "common_support_inset_m": 0.05,
+  "midpoint_spacing_m": 0.0025,
+  "results": [
+    {
+      "grid": [
+        12,
+        12
+      ],
+      "archive": "discrete-r15-g12-tracked.npz",
+      "overlap": {
+        "all_common_centers_support": 0.8033506342653864,
+        "interior_ge_0p20m": 0.9430521599192003,
+        "wall_band_0p05_to_0p20m": 0.6740517354582747
+      }
+    },
+    {
+      "grid": [
+        16,
+        16
+      ],
+      "archive": "discrete-r15-g16-tracked.npz",
+      "overlap": {
+        "all_common_centers_support": 0.7718556041826117,
+        "interior_ge_0p20m": 0.9359138533155045,
+        "wall_band_0p05_to_0p20m": 0.6149283459712616
+      }
+    },
+    {
+      "grid": [
+        20,
+        20
+      ],
+      "archive": "g20-R15-n2e19-a0p6-p14-tracked.npz",
+      "overlap": {
+        "all_common_centers_support": 0.7412910818056867,
+        "interior_ge_0p20m": 0.9204705685508309,
+        "wall_band_0p05_to_0p20m": 0.570454278763352
+      }
+    }
+  ]
+}
