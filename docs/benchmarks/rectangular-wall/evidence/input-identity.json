@@ -1,0 +1,30 @@
+{
+  "A0_pre_repair_commit": "60a2252fdce390780139bf18e7279fe850706188",
+  "A0_repair_commit": "bc809bdd3aa5253e1ffa60c21e7dcf5e7c84d369",
+  "A1_pre_repair_commit": "e318e6a899a1fc1a56a2c903eba81c1b82e53a76",
+  "A1_repair_commit": "e8fb707507a8f7a018193e848c5420b79f2171ad",
+  "external_reference_sha256": "6854964d218a3a9d2f121c0437fc10a302fd7636fdc8431c1b829cc12a8923db",
+  "case_hashes": {
+    "a0-repaired-14x20-quiet": {
+      "case": "43a1477f4a7ee480f62f8cdec2e45d082dcad30ed3f0582cdbacf534bc849130",
+      "geometry": "1b5860e2e6142118cae7b6d73210624555d073a26e09e354959ecbb556f6ebb1",
+      "initial": "ec595f4f3d2b3e4188866097714b97e0db38244858d06c2c0d65aa62f32a85ec"
+    },
+    "a0-repaired-14x20-pulse": {
+      "case": "646255efbab641c260a26e55956bb5d41afa0e6902ea35914edf399e03494ca3",
+      "geometry": "1b5860e2e6142118cae7b6d73210624555d073a26e09e354959ecbb556f6ebb1",
+      "initial": "5736a96a134db1987719d846a66077fcbf4fbff45f768c0f4406c1fa4d3ef714"
+    },
+    "a1-repaired-10x14-sync-pulse": {
+      "case": "052e1d893e59b582c39659ef035d02d0738ba40fb632b8a3c31fd15e07f89f5b",
+      "geometry": "388b6ffaa64bdad60cce65e535a0e1d3c7b9325245193515a64c83a03db45414",
+      "initial": "82f50663debe0ea5d6cea1b252d7c7f9ebb40ca18bb97a8e33c235de61ee0ee7"
+    },
+    "a1-repaired-10x14-wr3-pulse": {
+      "case": "788afc0cd0f9aa10c44bc2484f51aca5ce56069882ea2681033bf1ce6edfcdd1",
+      "geometry": "388b6ffaa64bdad60cce65e535a0e1d3c7b9325245193515a64c83a03db45414",
+      "initial": "82f50663debe0ea5d6cea1b252d7c7f9ebb40ca18bb97a8e33c235de61ee0ee7"
+    }
+  },
+  "scope": "Case TOML, geometry and initial NPZ are byte-identical to the archived inputs. Paths in the descriptive source manifests were made portable."
+}

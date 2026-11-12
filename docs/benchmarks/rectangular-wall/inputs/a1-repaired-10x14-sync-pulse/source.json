@@ -1,0 +1,52 @@
+{
+  "provider_name": "Imported external free-boundary Grad-Shafranov equilibrium",
+  "provider_version": "D075-halo-v1",
+  "external_file": "../../reference/freegs-equilibrium.npz",
+  "external_sha256": "6854964d218a3a9d2f121c0437fc10a302fd7636fdc8431c1b829cc12a8923db",
+  "units": "SI",
+  "continuous_residual_status": "Finite equilibrium interpolation errors audited independently; full model uses constant ion pressure, isotropic electron pressure and zero resistivity",
+  "conversion_method": "External separatrix and flux spline; exact poloidal link and wall-half differences, existing harmonic F/R chart",
+  "input_hashes": {
+    "case": "052e1d893e59b582c39659ef035d02d0738ba40fb632b8a3c31fd15e07f89f5b",
+    "geometry": "388b6ffaa64bdad60cce65e535a0e1d3c7b9325245193515a64c83a03db45414",
+    "initial": "82f50663debe0ea5d6cea1b252d7c7f9ebb40ca18bb97a8e33c235de61ee0ee7"
+  },
+  "topology": {
+    "axis_RZ_m": [
+      1.3102853540204769,
+      0.0968308461050195
+    ],
+    "xpoint_RZ_m": [
+      1.1055050725101436,
+      -0.5963748431058875
+    ],
+    "psi_axis_Wb_rad": 0.08646453339391058,
+    "psi_sep_Wb_rad": 0.03197276196102179,
+    "lower_left_anchor_psi_Wb_rad": 0.02361828200914023
+  },
+  "physics": {
+    "n_core_m3": 2e+19,
+    "n_halo_m3": 8e+18,
+    "transition_normalized_flux_width": 0.5,
+    "ion_pressure_Pa": 100.0,
+    "electron_pressure_offset_Pa": 200.0,
+    "resistivity_ohm_m": 0.0,
+    "F_T_m": 2.0,
+    "perturbation_amplitude_over_vA": 0.015,
+    "initial_max_speed_m_s": 78962.61959435184,
+    "perturbation_wall_buffer_m": 0.21,
+    "minimum_electron_pressure_Pa": 1299.8357256144104,
+    "maximum_electron_pressure_Pa": 21197.868624806146
+  },
+  "external_audit": {
+    "coil_free_box": true,
+    "source_current_Apm2_max": 1500733.8491397547,
+    "strong_current_defect_Apm2_rms": 896.0609967029035,
+    "strong_current_relative_rms": 0.003309385629471027,
+    "pressure_force_balance_defect_Pa_m_rms": 13.320966796030687,
+    "pressure_force_balance_relative_rms": 0.0005126475246762357,
+    "near_axis_field_T": 1.5263850686136453,
+    "max_b_poloidal_T": 0.13861263344654406
+  },
+  "physical_input_case": "a0-coarse-pulse"
+}

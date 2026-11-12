@@ -1,0 +1,6 @@
+11529|debug|FAILED|billing=4,cpu=4,mem=4G,node=1|00:00:01|2:0
+11530|debug|FAILED|billing=4,cpu=4,mem=4G,node=1|00:00:00|2:0
+11531|debug|COMPLETED|billing=4,cpu=4,mem=4G,node=1|00:05:51|0:0
+11532|debug|COMPLETED|billing=4,cpu=4,mem=4G,node=1|00:05:49|0:0
+11534|debug|COMPLETED|billing=4,cpu=4,mem=4G,node=1|00:01:26|0:0
+11535|debug|COMPLETED|billing=4,cpu=4,mem=4G,node=1|00:03:33|0:0

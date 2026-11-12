@@ -1,5 +1,7 @@
 # A0 case generation
 
+Use the [rectangular conductor replays](../docs/benchmarks/rectangular-wall/README.md) for the current physical baseline.
+
 The documented default example is
 [`massless-example.toml`](massless-example.toml). It uses the strict A0 v1
 schema, sets `species.electron_inertia = 0`, keeps the physical electron mass

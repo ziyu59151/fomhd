@@ -1,0 +1,54 @@
+{
+  "source": "src/fomhd/operators.py",
+  "operators_sha256": "0eb4a6654b21f39d61b64c0505b69b42a8c5f31f50e6874c44c607c4524f48a3",
+  "scope": "Frozen uniform axial cold Hall operator assembled from production interpolation, Ampere, Faraday, and wall constraints; excludes pressure and nonlinear evolution, treats reference current as zero, K=0.",
+  "n_m_inv3": 3.6211302828646313e+18,
+  "b0_T": 2.0,
+  "alfven_speed_m_per_s": 16214250.845983185,
+  "reference_low_mode_omega_rad_per_s": 69060970.05804439,
+  "grids": {
+    "6x6": {
+      "grid": [
+        6,
+        6
+      ],
+      "full_dimension": 241,
+      "constrained_dimension": 146,
+      "wall_projection_relative_defect": 3.213272967547745e-16,
+      "invariant_subspace_relative_defect": 7.835484469968276e-16,
+      "spectrum_max_abs_real_s_inv": 5.342177288991736e-08,
+      "spectrum_max_abs_imag_rad_per_s": 459101707.3558849,
+      "relative_max_real": 1.1636152084380303e-16,
+      "ideal_imaginary_axis_rk4_dt_s": 6.160785463064418e-09
+    },
+    "8x8": {
+      "grid": [
+        8,
+        8
+      ],
+      "full_dimension": 417,
+      "constrained_dimension": 274,
+      "wall_projection_relative_defect": 5.3448273576306255e-16,
+      "invariant_subspace_relative_defect": 1.2616065260462408e-15,
+      "spectrum_max_abs_real_s_inv": 9.121140465140343e-08,
+      "spectrum_max_abs_imag_rad_per_s": 781885094.0696523,
+      "relative_max_real": 1.1665576610068752e-16,
+      "ideal_imaginary_axis_rk4_dt_s": 3.617446023973219e-09
+    },
+    "10x10": {
+      "grid": [
+        10,
+        10
+      ],
+      "full_dimension": 641,
+      "constrained_dimension": 442,
+      "wall_projection_relative_defect": 3.987444640644603e-16,
+      "invariant_subspace_relative_defect": 1.1048484534549012e-15,
+      "spectrum_max_abs_real_s_inv": 2.3841855067985307e-07,
+      "spectrum_max_abs_imag_rad_per_s": 1201566793.1938415,
+      "relative_max_real": 1.9842305232663871e-16,
+      "ideal_imaginary_axis_rk4_dt_s": 2.3539491443734474e-09
+    }
+  },
+  "source_commit": "bc809bdd3aa5253e1ffa60c21e7dcf5e7c84d369"
+}
