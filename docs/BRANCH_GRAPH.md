@@ -7,7 +7,7 @@ Main-branch pushes refresh it automatically; other branch updates are also polle
 For the live GitHub interface, use [Network](https://github.com/ziyu59151/fomhd/network)
 (private-repository plan restrictions may apply).
 
-<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-rect-wall-curl": "ac8b48003416357fbc8312d19bdfaa1deebcaa0d", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a050-clt-intercept-wall": "f6175c2876802160cec4f901ac080fa657654198", "codex/a050-polygon-wall-research": "d323f875c76b7e6934af423dcf6b21653c3b4f47", "codex/a050-two-fluid-experiments": "0ec6b9320a937d7a7e4453c17a0a560b09ad1d53", "codex/a1-benchmark-report": "ece24d48046895abc48985b2a9515be6f5311e20", "codex/a1-multirate-ion": "b54c31e1ff47d318ce0b86c862c76e1aa0d156a1", "codex/a1-rect-wall-curl": "01f1c9857d132158f8cfcbd15886768540a6991c", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "codex/a1-t1-waveform": "4c75394ec2f540cf224b91b0cb08766c34d0a506", "codex/a1-t2-electron-field": "be5f1c07913409bfd377f22e9ea9d69ac614b158", "main": "a2d55c4b78a770fb4b70fe0f29de8ce409039d94", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "30e44557474bb51ac755d9921a6a1530e0dab1ae", "release/a1-t0": "fc9a19e26fc2fb6d601c39e18a11a095386e3038"} -->
+<!-- branch-graph-refs: {"codex/a0-benchmark-gallery": "0f094115c385781c0356b333dc545539c2ed43d8", "codex/a0-grid-convergence": "81e89dbb9f58e36ff73be89e2e1912e7354920c4", "codex/a0-nl-cellplots": "0ff316a7ac35d7508b426fac3b268d99713dd1cb", "codex/a0-rect-wall-curl": "ac8b48003416357fbc8312d19bdfaa1deebcaa0d", "codex/a0-report-closeout": "b74e85782de736522730d95b2f329be40134fe7a", "codex/a0-rk4-scaling": "95e5b56f23be59f46bbf6f47206d23b23c34645c", "codex/a0-runtime-guidance": "f514d38fd4f51a92ca93f68035896675b11dffe1", "codex/a0-tokamak-cae": "f487d8c5fecb54fc26dfe5600a72cf0b1933b844", "codex/a0-warp": "b2dc5797fbe11ef32bb0e42d1b52a411591370e8", "codex/a050-clt-intercept-wall": "f6175c2876802160cec4f901ac080fa657654198", "codex/a050-polygon-wall-research": "d323f875c76b7e6934af423dcf6b21653c3b4f47", "codex/a050-two-fluid-experiments": "0ec6b9320a937d7a7e4453c17a0a560b09ad1d53", "codex/a1-benchmark-report": "ece24d48046895abc48985b2a9515be6f5311e20", "codex/a1-multirate-ion": "b54c31e1ff47d318ce0b86c862c76e1aa0d156a1", "codex/a1-rect-wall-curl": "01f1c9857d132158f8cfcbd15886768540a6991c", "codex/a1-t0": "b9af715ab2cb75f661b2254a2ea05d2179334599", "codex/a1-t1-waveform": "4c75394ec2f540cf224b91b0cb08766c34d0a506", "codex/a1-t2-electron-field": "be5f1c07913409bfd377f22e9ea9d69ac614b158", "main": "58bc6d907690a9106bd3c68d2f3264a99403a38d", "reference/a0-native": "1840cfa60e3b29401c9ea55a4ee8876351f582c1", "release/a0": "30e44557474bb51ac755d9921a6a1530e0dab1ae", "release/a1-t0": "fc9a19e26fc2fb6d601c39e18a11a095386e3038"} -->
 
 ```mermaid
 flowchart LR
@@ -326,27 +326,37 @@ flowchart LR
   cd962c9ce0b81263cdae9ce8ce55ac3ae0df7d234 --> ca2d55c4b78a770fb4b70fe0f29de8ce409039d94
   c01f1c9857d132158f8cfcbd15886768540a6991c --> ca2d55c4b78a770fb4b70fe0f29de8ce409039d94
   click ca2d55c4b78a770fb4b70fe0f29de8ce409039d94 "https://github.com/ziyu59151/fomhd/commit/a2d55c4b78a770fb4b70fe0f29de8ce409039d94"
+  c58bc6d907690a9106bd3c68d2f3264a99403a38d["58bc6d90 · docs: update branch graph [skip ci]"]
+  ca2d55c4b78a770fb4b70fe0f29de8ce409039d94 --> c58bc6d907690a9106bd3c68d2f3264a99403a38d
+  click c58bc6d907690a9106bd3c68d2f3264a99403a38d "https://github.com/ziyu59151/fomhd/commit/58bc6d907690a9106bd3c68d2f3264a99403a38d"
+  c803b332ce45750b8c6e759f7405ba76ed87ee213["803b332c · Scale complete synchronous A0 steps on GPU"]
+  cbc809bdd3aa5253e1ffa60c21e7dcf5e7c84d369 --> c803b332ce45750b8c6e759f7405ba76ed87ee213
+  click c803b332ce45750b8c6e759f7405ba76ed87ee213 "https://github.com/ziyu59151/fomhd/commit/803b332ce45750b8c6e759f7405ba76ed87ee213"
+  c95e5b56f23be59f46bbf6f47206d23b23c34645c["95e5b56f · Preserve finite-solution and final wall projection gates"]
+  c803b332ce45750b8c6e759f7405ba76ed87ee213 --> c95e5b56f23be59f46bbf6f47206d23b23c34645c
+  click c95e5b56f23be59f46bbf6f47206d23b23c34645c "https://github.com/ziyu59151/fomhd/commit/95e5b56f23be59f46bbf6f47206d23b23c34645c"
   b0(["codex/a0-benchmark-gallery"]) -.-> c0f094115c385781c0356b333dc545539c2ed43d8
   b1(["codex/a0-grid-convergence"]) -.-> c81e89dbb9f58e36ff73be89e2e1912e7354920c4
   b2(["codex/a0-nl-cellplots"]) -.-> c0ff316a7ac35d7508b426fac3b268d99713dd1cb
   b3(["codex/a0-rect-wall-curl"]) -.-> cac8b48003416357fbc8312d19bdfaa1deebcaa0d
   b4(["codex/a0-report-closeout"]) -.-> cb74e85782de736522730d95b2f329be40134fe7a
-  b5(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
-  b6(["codex/a0-tokamak-cae"]) -.-> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
-  b7(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
-  b8(["codex/a050-clt-intercept-wall"]) -.-> cf6175c2876802160cec4f901ac080fa657654198
-  b9(["codex/a050-polygon-wall-research"]) -.-> cd323f875c76b7e6934af423dcf6b21653c3b4f47
-  b10(["codex/a050-two-fluid-experiments"]) -.-> c0ec6b9320a937d7a7e4453c17a0a560b09ad1d53
-  b11(["codex/a1-benchmark-report"]) -.-> cece24d48046895abc48985b2a9515be6f5311e20
-  b12(["codex/a1-multirate-ion"]) -.-> cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1
-  b13(["codex/a1-rect-wall-curl"]) -.-> c01f1c9857d132158f8cfcbd15886768540a6991c
-  b14(["codex/a1-t0"]) -.-> cb9af715ab2cb75f661b2254a2ea05d2179334599
-  b15(["codex/a1-t1-waveform"]) -.-> c4c75394ec2f540cf224b91b0cb08766c34d0a506
-  b16(["codex/a1-t2-electron-field"]) -.-> cbe5f1c07913409bfd377f22e9ea9d69ac614b158
-  b17(["main"]) -.-> ca2d55c4b78a770fb4b70fe0f29de8ce409039d94
-  b18(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
-  b19(["release/a0"]) -.-> c30e44557474bb51ac755d9921a6a1530e0dab1ae
-  b20(["release/a1-t0"]) -.-> cfc9a19e26fc2fb6d601c39e18a11a095386e3038
+  b5(["codex/a0-rk4-scaling"]) -.-> c95e5b56f23be59f46bbf6f47206d23b23c34645c
+  b6(["codex/a0-runtime-guidance"]) -.-> cf514d38fd4f51a92ca93f68035896675b11dffe1
+  b7(["codex/a0-tokamak-cae"]) -.-> cf487d8c5fecb54fc26dfe5600a72cf0b1933b844
+  b8(["codex/a0-warp"]) -.-> cb2dc5797fbe11ef32bb0e42d1b52a411591370e8
+  b9(["codex/a050-clt-intercept-wall"]) -.-> cf6175c2876802160cec4f901ac080fa657654198
+  b10(["codex/a050-polygon-wall-research"]) -.-> cd323f875c76b7e6934af423dcf6b21653c3b4f47
+  b11(["codex/a050-two-fluid-experiments"]) -.-> c0ec6b9320a937d7a7e4453c17a0a560b09ad1d53
+  b12(["codex/a1-benchmark-report"]) -.-> cece24d48046895abc48985b2a9515be6f5311e20
+  b13(["codex/a1-multirate-ion"]) -.-> cb54c31e1ff47d318ce0b86c862c76e1aa0d156a1
+  b14(["codex/a1-rect-wall-curl"]) -.-> c01f1c9857d132158f8cfcbd15886768540a6991c
+  b15(["codex/a1-t0"]) -.-> cb9af715ab2cb75f661b2254a2ea05d2179334599
+  b16(["codex/a1-t1-waveform"]) -.-> c4c75394ec2f540cf224b91b0cb08766c34d0a506
+  b17(["codex/a1-t2-electron-field"]) -.-> cbe5f1c07913409bfd377f22e9ea9d69ac614b158
+  b18(["main"]) -.-> c58bc6d907690a9106bd3c68d2f3264a99403a38d
+  b19(["reference/a0-native"]) -.-> c1840cfa60e3b29401c9ea55a4ee8876351f582c1
+  b20(["release/a0"]) -.-> c30e44557474bb51ac755d9921a6a1530e0dab1ae
+  b21(["release/a1-t0"]) -.-> cfc9a19e26fc2fb6d601c39e18a11a095386e3038
 ```
 
 Regenerate after fetching:
