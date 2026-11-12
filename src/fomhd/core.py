@@ -62,19 +62,89 @@ def repeat_weights(weights: Any, count: int, backend: Any) -> Any:
     return backend.real_array(backend.xp.tile(weights, count))
 
 
+def _massless_peak_bytes(c: Context, vector_entries: int) -> int:
+    """Bound the live A0 massless operators, wall solves, and diagnostics."""
+    name = "massless A0 memory plan"
+
+    def product(left: int, right: int) -> int:
+        return _checked_product(left, right, name)
+
+    def add(left: int, right: int) -> int:
+        return _checked_sum(left, right, name)
+
+    op = c.op
+    modes = 2 * c.p.K + 1
+    mode_groups = (op.G, op.C, op.DB, op.DJ, op.Cdag)
+    if any(len(group) != modes for group in mode_groups):
+        raise Failure("Shape", "massless resident operator mode count mismatch")
+    fixed_names = (
+        "I", "H", "T", "T_full", "DR", "DZ", "topology_flux_row",
+        "M0", "M1", "MB", "Rbar_r", "Rbar_v", "b1r", "b1z", "b2r", "b2z",
+        "PR_r", "PZ_r", "PR_z", "PZ_z", "PR_v", "PZ_v",
+        "wall_magnetic_divergence",
+    )
+    resident = 0
+    for matrix in (matrix for group in mode_groups for matrix in group):
+        resident = add(resident, int(matrix.nbytes))
+    for attribute in fixed_names:
+        resident = add(resident, int(getattr(getattr(op, attribute), "nbytes", 0)))
+    qb = op.QB
+    if c.compute.is_csr(qb):
+        for array in (qb.data, qb.indices, qb.indptr):
+            resident = add(resident, int(array.nbytes))
+    else:
+        resident = add(resident, int(qb.nbytes))
+    for axis in ("PR_r", "PZ_r", "PR_z", "PZ_z", "PR_v", "PZ_v"):
+        factor = getattr(op, f"{axis}_factor")
+        # Count originals even when they alias a retained transform.
+        for array in (factor.original, factor.factors, factor.pivots):
+            resident = add(resident, int(array.nbytes))
+    if op.box_wall is not None:
+        for array in vars(op.box_wall).values():
+            resident = add(resident, int(getattr(array, "nbytes", 0)))
+    if op.box_magnetic_norm is not None:
+        for array in op.box_magnetic_norm[:-1]:
+            resident = add(resident, int(array.nbytes))
+
+    walls = len(c.geometry.walls)
+    wall_square = product(walls, walls)
+    cache_terms = add(
+        add(product(64, product(op.Ne, walls)), product(128, wall_square)),
+        add(product(64, walls), product(32, product(op.Nb, walls))),
+    )
+    cache = product(modes, cache_terms)
+    # Hold the previous accepted frame and five RK4 evaluations, plus at most
+    # one padded alias evaluation at a time. Include solve factors and vectors.
+    retained_samples = add(product(6, c.N), add(product(2, c.N), 1))
+    wall_per_sample = add(
+        product(16, wall_square), product(32, add(walls, 3 * op.Nc))
+    )
+    wall_history = product(16, product(retained_samples, wall_per_sample))
+    projection = product(
+        16, add(product(2, product(op.T.shape[0], 3 * op.Nc)), wall_square)
+    )
+    cdag_entries = 0
+    for matrix in op.Cdag:
+        cdag_entries = add(cdag_entries, int(matrix.size))
+    absolute = add(product(8, op.I.size), product(24, cdag_entries))
+    absolute = add(absolute, product(8, op.T_full.size))
+    adjoint = product(16, add(op.I.size, add(op.DR.size, op.DZ.size)))
+    temporary = max(projection, absolute, adjoint)
+    return add(add(resident, cache), add(wall_history, add(temporary, product(vector_entries, 16))))
+
+
 def estimated_peak_bytes(c: Context) -> int:
     product = lambda left, right: _checked_product(left, right, "host memory plan")
     add = lambda left, right: _checked_sum(left, right, "host memory plan")
     modes = 2 * c.p.K + 1
+    entries = product(256, product(c.N, add(add(3 * c.op.Nc, c.op.Ne), c.op.Nb)))
+    entries = add(entries, product(32, product(modes, add(11 * c.op.Nc, c.op.Nb))))
+    if not getattr(c.op, "finite_mass_available", True):
+        return _massless_peak_bytes(c, entries)
     edges = product(modes, c.op.Ne)
     system = add(edges, c.op.Bc.shape[0])
-    entries = product(32, product(system, system))
+    entries = add(entries, product(32, product(system, system)))
     entries = add(entries, product(4, c.op.Bc_full.size))
-    entries = add(
-        entries,
-        product(256, product(c.N, add(add(3 * c.op.Nc, c.op.Ne), c.op.Nb))),
-    )
-    entries = add(entries, product(32, product(modes, add(11 * c.op.Nc, c.op.Nb))))
     resident = 0
     for group in (
         c.op.G,
@@ -105,6 +175,10 @@ def estimated_peak_bytes(c: Context) -> int:
 
 
 def preflight_memory(c: Context) -> int:
+    if int(getattr(c.p, "electron_inertia", 0)) != 0 and not getattr(
+        c.op, "finite_mass_available", True
+    ):
+        raise Failure("Model", "finite-mass model requires complete operator storage")
     if c.p.memory_limit == 0:
         raise Failure("Memory", "a positive host memory cap is required")
     peak_bytes = estimated_peak_bytes(c)
@@ -274,11 +348,10 @@ def sample_apply(matrix: Any, values: Any, N: int, backend: Any) -> Any:
         or values.size != N * matrix.shape[1]
     ):
         raise Failure("Shape", "sample operator shape")
-    samples = [
-        backend.mv(matrix, values.reshape(N, matrix.shape[1])[sample])
-        for sample in range(N)
-    ]
-    return backend.array(backend.xp.stack(samples)).reshape(-1)
+    columns = matrix.shape[1]
+    return backend.array(
+        backend.mm(matrix, values.reshape(N, columns).T).T
+    ).reshape(-1)
 
 
 def inverse(

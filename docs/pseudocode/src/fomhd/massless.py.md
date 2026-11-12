@@ -194,3 +194,8 @@ under the `candidate` evidence prefix when canonicalization raises a `Failure`.
 The preserved evidence includes the candidate stage identity, B, both densities,
 momenta, and pressures. The original exception is re-raised without changing
 the accepted state or ledger.
+
+For disjoint selected wall-row supports, the density-weighted normal is
+exactly diagonal. Form its positive entries across all angular samples and
+solve and check the paired projection on the owning backend. Connected
+rows use the existing checked dense solve. Validate every full wall row.

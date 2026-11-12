@@ -28,7 +28,10 @@ measure(out,name,residual,weights,unit,tag,context,population="",
     return
   require residual and weights nonempty and residual.size divisible by weight.size
   derive the entity-space wall distance or use exact local adapter distances
+  cache static physical wall distances per geometry and entity table
   require every weight finite and positive
+  compute all three region summaries on the active backend and transfer
+  the packed counts, bad/worst indices, maxima, norms and volumes to host
   for region in all,inner,wall; norm in linf,weighted_L2:
     require budget key name[.population].norm with exact unit and norm
     select active residual entries whose location region matches

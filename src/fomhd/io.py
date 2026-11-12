@@ -471,6 +471,11 @@ def _operator_fingerprint(operators, backend):
     existing = getattr(operators, "matrix_fingerprint", None)
     if existing:
         return str(existing)
+    finite_mass_available = getattr(
+        operators, "finite_mass_available", True
+    )
+    if type(finite_mass_available) is not bool:
+        raise ValueError("operator finite-mass availability must be boolean")
     digest = hashlib.sha256()
     digest.update(RULE_HASH_TEXT.encode("ascii"))
     groups = (
@@ -482,6 +487,8 @@ def _operator_fingerprint(operators, backend):
         "Lphi",
     )
     for name in groups:
+        if not finite_mass_available and name == "Lphi":
+            continue
         matrix_group = getattr(operators, name)
         for matrix in matrix_group:
             array = np.asarray(backend.to_host(matrix))
@@ -505,7 +512,16 @@ def _operator_fingerprint(operators, backend):
         "PR_v",
         "PZ_v",
     ):
+        if not finite_mass_available and name in ("Bc_full", "Bc"):
+            continue
         value = getattr(operators, name)
+        if backend.is_csr(value):
+            digest.update(f"{name}:csr:{value.shape}:".encode("ascii"))
+            for array in (value.data, value.indices, value.indptr):
+                host = np.ascontiguousarray(backend.to_host(array))
+                digest.update(f"{host.dtype.str}:{host.shape}:".encode("ascii"))
+                digest.update(host.tobytes())
+            continue
         array = np.asarray(backend.to_host(value))
         digest.update(f"{name}:{array.shape}:".encode("ascii"))
         digest.update(np.ascontiguousarray(array).tobytes())
@@ -521,12 +537,21 @@ def _operator_fingerprint(operators, backend):
             digest.update(f"{array.shape}:".encode("ascii"))
             digest.update(np.ascontiguousarray(array).tobytes())
         digest.update(struct.pack("<d", box_norm[-1]))
-    for name in ("selected_wall_rows", "selected_constraint_rows"):
+    row_groups = (
+        ("selected_wall_rows",)
+        if not finite_mass_available
+        else ("selected_wall_rows", "selected_constraint_rows")
+    )
+    if not finite_mass_available:
+        digest.update(b"finite-mass-storage:unavailable-v1")
+    for name in row_groups:
         digest.update(
             (name + ":" + ",".join(map(str, getattr(operators, name)))).encode(
                 "ascii"
             )
         )
+    if not finite_mass_available:
+        digest.update(b"selected_constraint_rows:unavailable-v1")
     return digest.hexdigest()
 
 
@@ -1432,7 +1457,11 @@ def load_case(path, overrides=None, backend=None):
     operators = operators_module.build_operators(
         geometry,
         K,
-        {"rank_rtol": rank_rtol, "memory_cap_bytes": memory},
+        {
+            "rank_rtol": rank_rtol,
+            "memory_cap_bytes": memory,
+            "include_finite_mass": parameters.electron_inertia != 0,
+        },
         backend,
     )
     geometry_identity = (

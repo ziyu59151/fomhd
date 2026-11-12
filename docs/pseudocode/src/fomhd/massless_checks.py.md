@@ -222,3 +222,10 @@ boundary records, interval records, and the cumulative ledger.
 
 The magnetic interval power uses the same `magnetic_pair(B, Bdot)` as
 state energy, including the aligned-box poloidal line norms.
+
+Wall diagnostics gather the physical electric and magnetic traces, species
+interpolates and face fluxes for all samples and wall segments on the owning
+backend. The rectangular path uses the supplied normal magnetic trace.
+A single FP64 wall-only pack transfers the existing diagnostic record fields
+to the host. The trace records preserve the sample-major wall order and the
+same signed flux and traction integrals. Interior stage arrays stay on device.

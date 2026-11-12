@@ -16,10 +16,19 @@
 ## A0-PY-BACK-02 Basic algebra
 
 1. `mv(A,x) = A @ x`; `mm(A,B) = A @ B`.
+   The left matrix can be an owning-backend CSR. Build it once from host
+   sparse coefficients via SciPy on CPU or CuPy on CUDA. Products with dense
+   sample vectors stay on the owning backend. Explicit host observation of
+   a CSR transfers its compact representation before materializing it.
+   Validate complex128 data, integer pointer/index arrays, their extents
+   and contiguous storage, and the selected CUDA device.
 2. `axpy(a,b,alpha) = a + alpha*b`.
 3. On CUDA, `axpy` launches a Warp FP64 kernel over two-component FP64 complex
    storage. It uses an explicit Warp stream wrapping the current CuPy stream.
    The launch is retained in that stream; no whole-array host transfer occurs.
+4. `diagnostic_host(pack, expected_shape)` accepts an exact-shape FP64
+   diagnostics pack on the selected device. CUDA copies it with a blocking
+   transfer in current-stream order. The state array transfer API is separate.
 
 ## A0-PY-BACK-03 Fourier transform
 

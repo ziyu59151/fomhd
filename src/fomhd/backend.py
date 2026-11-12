@@ -96,8 +96,68 @@ class Backend:
         return self.xp.ascontiguousarray(result)
 
     def to_host(self, value: Any) -> np.ndarray:
+        if self.is_csr(value):
+            self._validate_csr(value)
+            if self._cuda:
+                return value.get(stream=self.xp.cuda.get_current_stream()).toarray()
+            return value.toarray()
         self._require_array(value)
         return np.asarray(value) if not self._cuda else self.xp.asnumpy(value)
+
+    def diagnostic_host(
+        self, value: Any, expected_shape: tuple[int, ...]
+    ) -> np.ndarray:
+        """Read a caller-sized FP64 diagnostic pack in current-stream order."""
+        self._require_array(value)
+        if value.shape != expected_shape:
+            raise Failure("Shape", "diagnostic pack has an unexpected shape")
+        if value.dtype != self.xp.float64:
+            raise Failure("Backend", "diagnostic pack must use float64")
+        self._require_current_device(value)
+        if self._cuda:
+            return self.xp.asnumpy(
+                value, stream=self.xp.cuda.get_current_stream(), blocking=True
+            )
+        return np.asarray(value)
+
+    def csr(self, host_matrix: Any) -> Any:
+        """Install a compact host CSR on the backend selected by the caller."""
+        if self._cuda:
+            from cupyx.scipy.sparse import csr_matrix
+
+            matrix = csr_matrix(host_matrix)
+        else:
+            matrix = host_matrix
+        if not self.is_csr(matrix):
+            raise Failure("Backend", f"expected {self.name} CSR matrix")
+        self._validate_csr(matrix)
+        return matrix
+
+    def is_csr(self, value: Any) -> bool:
+        return getattr(value, "format", None) == "csr" and isinstance(
+            value.data, self.xp.ndarray
+        )
+
+    def _validate_csr(self, matrix: Any) -> None:
+        if matrix.ndim != 2:
+            raise Failure("Shape", "CSR matrix must be two-dimensional")
+        for array in (matrix.data, matrix.indices, matrix.indptr):
+            self._require_array(array, 1)
+            self._require_current_device(array)
+            if not array.flags.c_contiguous:
+                raise Failure("Backend", "CSR storage must be C-contiguous")
+        if matrix.data.dtype != self.xp.complex128:
+            raise Failure("Backend", "CSR values must use complex128")
+        if (
+            matrix.indices.dtype not in (self.xp.int32, self.xp.int64)
+            or matrix.indptr.dtype != matrix.indices.dtype
+        ):
+            raise Failure("Backend", "CSR indices must share an int32 or int64 dtype")
+        if (
+            matrix.indices.size != matrix.data.size
+            or matrix.indptr.size != matrix.shape[0] + 1
+        ):
+            raise Failure("Shape", "CSR buffer extents do not match the matrix")
 
     def scalar(self, value: Any) -> Any:
         if isinstance(value, (int, float, complex, np.number)):
@@ -114,6 +174,12 @@ class Backend:
             raise Failure("Backend", f"expected {self.name} array")
         if ndim is not None and value.ndim != ndim:
             raise Failure("Shape", f"expected {ndim}D array, got shape {value.shape}")
+
+    def _require_current_device(self, value: Any) -> None:
+        if self._cuda:
+            expected = int(self._wp_device.ordinal)
+            if value.device.id != expected or self.xp.cuda.runtime.getDevice() != expected:
+                raise Failure("Backend", f"expected storage on current backend cuda:{expected}")
 
     def _finite(self, value: Any) -> bool:
         self._require_array(value)
@@ -172,15 +238,23 @@ class Backend:
         return warp_array, storage
 
     def mv(self, matrix: Any, vector: Any) -> Any:
-        self._require_array(matrix)
         self._require_array(vector)
+        if self.is_csr(matrix):
+            self._validate_csr(matrix)
+            self._require_current_device(vector)
+        else:
+            self._require_array(matrix)
         if matrix.ndim != 2 or vector.ndim != 1 or matrix.shape[1] != vector.size:
             raise Failure("Shape", "matrix-vector shape mismatch")
         return self.asarray(matrix @ vector)
 
     def mm(self, left: Any, right: Any) -> Any:
-        self._require_array(left)
         self._require_array(right)
+        if self.is_csr(left):
+            self._validate_csr(left)
+            self._require_current_device(right)
+        else:
+            self._require_array(left)
         if left.ndim != 2 or right.ndim != 2 or left.shape[1] != right.shape[0]:
             raise Failure("Shape", "matrix-matrix shape mismatch")
         return self.asarray(left @ right)

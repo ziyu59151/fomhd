@@ -373,119 +373,104 @@ def _electron_ledger(stage, context):
 
 def _wall_trace_data(state, stage, context):
     xp = _xp(context)
-    nc = context.op.Nc
-    nr = len(context.geometry.r_faces.keys)
-    ne = context.op.Ne
-    nz = len(context.geometry.z_faces.keys)
-    nv = len(context.geometry.vertices.keys)
+    geometry = context.geometry
+    walls = geometry.walls
+    if not walls:
+        return []
+    nc, ne = context.op.Nc, context.op.Ne
+    nr, nz = len(geometry.r_faces.keys), len(geometry.z_faces.keys)
+    nv = len(geometry.vertices.keys)
+    radial = np.array([wall.component == "r_face" for wall in walls])
+    faces = np.array([wall.face for wall in walls])
+    directions = np.where(radial, 0, 2)
+    edges = np.where(radial, faces, nr + nc + faces)
+    wall_edges = xp.asarray(edges)
     electric = inverse(
-        stage.cache.E,
-        ne,
-        context,
-        True,
-        context.p.ref.electric,
-    ).reshape(context.N, ne)
-    magnetic = inverse(state.B, context.op.Nb, context, True).reshape(
-        context.N, context.op.Nb
-    )
-    traces = []
-    physical_wall_B = (
-        wall_magnetic_trace(state.B, context)
-        if getattr(context.op, "box_wall", None) is not None else None
-    )
-    for wall_id, wall in enumerate(context.geometry.walls):
-        radial = wall.component == "r_face"
-        edge = wall.face if radial else nr + nc + wall.face
-        direction = 0 if radial else 2
-        sigma = wall.sign
-        normal_row = xp.asarray(context.op.I[edge]).reshape(3, nc)[direction]
-        area = wall.area_per_radian * 2.0 * math.pi / context.N
-        bvectors = [
-            xp.zeros(context.N, dtype=xp.float64) for _ in range(3)
+        stage.cache.E, ne, context, True, context.p.ref.electric
+    ).real.reshape(context.N, ne)[:, wall_edges]
+    box = getattr(context.op, "box_wall", None)
+    if box is not None:
+        rows = box.interpolation
+        magnetic = wall_magnetic_trace(state.B, context)
+    else:
+        rows = xp.asarray(context.op.I)[wall_edges].reshape(len(walls), 3, nc)
+        rows = rows[xp.arange(len(walls)), xp.asarray(directions)]
+        stored = inverse(
+            state.B, context.op.Nb, context, True
+        ).real.reshape(context.N, context.op.Nb)
+        magnetic = xp.zeros((context.N, 3, len(walls)), dtype=xp.float64)
+        vertices = xp.asarray([wall.vertices for wall in walls]) + nz
+        magnetic[:, 1] = stored[:, vertices].mean(axis=-1)
+        magnetic[:, xp.asarray(2 - directions), xp.arange(len(walls))] = stored[
+            :, xp.asarray(np.where(radial, nz + nv + faces, faces))
         ]
-        bvectors[1] = 0.5 * (
-            xp.real(magnetic[:, nz + wall.vertices[0]])
-            + xp.real(magnetic[:, nz + wall.vertices[1]])
-        )
-        if radial:
-            bvectors[2] = xp.real(magnetic[:, nz + nv + wall.face])
+
+    fields = [magnetic, electric[:, None, :]]
+    for species, fluid in enumerate(stage.fluid):
+        parameters = context.p.species[species]
+        density = xp.asarray(fluid.n).reshape(context.N, nc)
+        density_trace = (density @ rows.T).real
+        if not bool(xp.all(density_trace > parameters.face_min)):
+            raise Failure("WallDensity", "wall trace below density floor")
+        if species == 0:
+            momentum = xp.asarray(fluid.mom).reshape(context.N, 3, nc)
+            denominator = parameters.mass * density_trace
         else:
-            bvectors[0] = xp.real(magnetic[:, wall.face])
-        if physical_wall_B is not None:
-            bvectors = [physical_wall_B[:, d, wall_id] for d in range(3)]
-        density = []
-        velocity = []
-        perp = []
-        parallel = []
-        for species in range(2):
-            fluid = stage.fluid[species]
-            density_trace = xp.real(
-                xp.asarray(fluid.n).reshape(context.N, nc)
-                @ normal_row
+            momentum = density.real[:, None, :] * xp.asarray(fluid.u).reshape(
+                context.N, 3, nc
             )
-            if not bool(xp.all(density_trace > context.p.species[species].face_min)):
-                raise Failure("WallDensity", "wall trace below density floor")
-            if species == 0:
-                momentum = xp.asarray(fluid.mom).reshape(
-                    context.N, 3, nc
-                )
-            else:
-                momentum = (
-                    xp.real(xp.asarray(fluid.n)).reshape(
-                        context.N, 1, nc
-                    )
-                    * xp.asarray(fluid.u).reshape(context.N, 3, nc)
-                )
-            momentum_to_number_velocity = (
-                context.p.species[species].mass if species == 0 else 1.0
-            )
-            velocity_trace = xp.stack(
-                [
-                    xp.real(momentum[:, component, :] @ normal_row)
-                    / (momentum_to_number_velocity * density_trace)
-                    for component in range(3)
-                ],
-                axis=1,
-            )
-            perp_trace = xp.real(
-                xp.asarray(fluid.perp).reshape(context.N, nc)
-                @ normal_row
-            )
-            parallel_trace = (
-                xp.real(
-                    xp.asarray(fluid.parallel).reshape(context.N, nc)
-                    @ normal_row
-                )
-                if species
-                else perp_trace
-            )
-            density.append(density_trace)
-            velocity.append(velocity_trace)
-            perp.append(perp_trace)
-            parallel.append(parallel_trace)
-        traces.append(
-            SimpleNamespace(
-                wall=wall,
-                edge=edge,
-                direction=direction,
-                sigma=sigma,
-                area=area,
-                B=bvectors,
-                density=density,
-                velocity=velocity,
-                perp=perp,
-                parallel=parallel,
-                electric=electric[:, edge],
-            )
+            denominator = density_trace
+        velocity = (momentum @ rows.T).real / denominator[:, None, :]
+        perp = (xp.asarray(fluid.perp).reshape(context.N, nc) @ rows.T).real
+        parallel = (
+            (xp.asarray(fluid.parallel).reshape(context.N, nc) @ rows.T).real
+            if species else perp
         )
+        number_flux = xp.asarray(fluid.flux).real.reshape(context.N, ne)
+        pressure_flux = xp.asarray(fluid.pressure_flux).real.reshape(context.N, ne)
+        number_flux, pressure_flux = number_flux[:, wall_edges], pressure_flux[:, wall_edges]
+        parallel_flux = (
+            xp.asarray(fluid.parallel_flux).real.reshape(context.N, ne)[:, wall_edges]
+            if species else xp.zeros_like(pressure_flux)
+        )
+        fields.extend((
+            velocity,
+            xp.stack(
+                (density_trace, perp, parallel, number_flux, pressure_flux, parallel_flux),
+                axis=1,
+            ),
+        ))
+
+    # The trace records and traction integrals consume only these wall samples.
+    host = diagnostics._diagnostic_host(
+        context, xp.concatenate(fields, axis=1), (context.N, 22, len(walls))
+    )
+    b, e, ui, scalars_i, ue, scalars_e = np.split(host, (3, 4, 7, 13, 16), axis=1)
+    traces = []
+    for index, wall in enumerate(walls):
+        ni, pi, pai, fi, qpi, qai = scalars_i[:, :, index].T
+        n_e, pe, pae, fe, qpe, qae = scalars_e[:, :, index].T
+        traces.append(SimpleNamespace(
+            wall=wall,
+            edge=int(edges[index]),
+            direction=int(directions[index]),
+            sigma=wall.sign,
+            area=wall.area_per_radian * 2.0 * math.pi / context.N,
+            B=b[:, :, index].T,
+            density=(ni, n_e),
+            velocity=(ui[:, :, index], ue[:, :, index]),
+            perp=(pi, pe),
+            parallel=(pai, pae),
+            electric=e[:, 0, index],
+            flux=(fi, fe),
+            pressure_flux=(qpi, qpe),
+            parallel_flux=(qai, qae),
+        ))
     return traces
 
 
 def _boundary(state, stage, context):
     """Integrate actual per-wall traces; electron kinetic transport is absent."""
-    xp = _xp(context)
-    nc = context.op.Nc
-    ne = context.op.Ne
     result = SimpleNamespace(
         traces=[],
         number=[0.0, 0.0],
@@ -502,12 +487,11 @@ def _boundary(state, stage, context):
     for sample in range(context.N):
         for data in trace_data:
             wall = data.wall
-            edge = data.edge
             direction = data.direction
             area = data.area
             trace = SimpleNamespace(
                 B=[
-                    float(xp.real(value[sample]).item())
+                    float(value[sample])
                     for value in data.B
                 ],
                 EL=[0.0, 0.0, 0.0],
@@ -523,18 +507,9 @@ def _boundary(state, stage, context):
             )
             trace.EL = [0.0, 0.0, 0.0]
             for species in range(2):
-                fluid = stage.fluid[species]
                 density = float(data.density[species][sample].item())
-                normal_flux = wall.sign * float(
-                    xp.real(xp.asarray(fluid.flux)).reshape(
-                        context.N, ne
-                    )[sample, edge]
-                )
-                pressure_flux = wall.sign * float(
-                    xp.real(xp.asarray(fluid.pressure_flux)).reshape(
-                        context.N, ne
-                    )[sample, edge]
-                )
+                normal_flux = wall.sign * float(data.flux[species][sample])
+                pressure_flux = wall.sign * float(data.pressure_flux[species][sample])
                 perp = float(data.perp[species][sample].item())
                 parallel = float(data.parallel[species][sample].item())
                 velocity = data.velocity[species][sample]
@@ -543,7 +518,7 @@ def _boundary(state, stage, context):
                     0.5
                     * context.p.species[species].mass
                     * density
-                    * float(xp.sum(xp.abs(velocity) ** 2).item())
+                    * float(np.sum(np.abs(velocity) ** 2))
                     if species == 0
                     else 0.0
                 )
@@ -565,9 +540,7 @@ def _boundary(state, stage, context):
                 )
                 if species:
                     parallel_flux = wall.sign * float(
-                        xp.real(xp.asarray(fluid.parallel_flux)).reshape(
-                            context.N, ne
-                        )[sample, edge]
+                        data.parallel_flux[species][sample]
                     )
                     result.internal_parallel[species] += (
                         area * 0.5 * parallel_flux
@@ -580,7 +553,7 @@ def _boundary(state, stage, context):
                 pressure_work = perp * un
                 if species:
                     direction_b = float(
-                        xp.real(data.B[direction][sample]).item()
+                        data.B[direction][sample]
                     )
                     parallel_b = float(
                         sum(
@@ -590,11 +563,7 @@ def _boundary(state, stage, context):
                         ).real.item()
                     )
                     bmag = float(
-                        xp.sqrt(
-                            xp.sum(
-                                xp.stack(data.B)[:, sample] ** 2
-                            )
-                        ).item()
+                        np.sqrt(np.sum(data.B[:, sample] ** 2))
                     )
                     pressure_work += (
                         (parallel - perp)
@@ -652,7 +621,7 @@ def momentum(state, result, context):
         direction = data.direction
         sigma = data.sigma
         b = [
-            float(xp.real(component[sample]).item())
+            float(component[sample])
             for component in data.B
         ]
         b2 = sum(component * component for component in b)

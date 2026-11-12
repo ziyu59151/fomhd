@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from fomhd import io
+from fomhd import core, io
 from fomhd.backend import Backend
 from fomhd.geometry import (
     Point2,
@@ -197,6 +197,48 @@ def _formal_case(tmp_path):
 
 def _digest_for(geometry_hash_input: str, version: str) -> str:
     return hashlib.sha256((geometry_hash_input + version).encode()).hexdigest()
+
+
+def test_massless_case_omits_finite_storage_without_changing_wall_operators(
+    tmp_path,
+) -> None:
+    case = io.load_case(_formal_case(tmp_path))
+    lean = case.operators
+    full = build_operators(case.geometry, 0, backend=case.compute)
+    assert not lean.finite_mass_available
+    assert full.finite_mass_available
+    assert not lean.Lphi and not lean.phi_factor and not lean.poisson_spectra
+    assert lean.Bc.shape == lean.Bc_full.shape == (0, lean.Ne)
+    assert full.Bc.size and full.Lphi
+    assert lean.QB.format == "csr"
+    assert lean.QB.nnz <= 16 * lean.QB.shape[0]
+    assert lean.QB.data.dtype == np.complex128
+    assert isinstance(full.QB, np.ndarray)
+    np.testing.assert_array_equal(case.compute.to_host(lean.QB), full.QB)
+    rng = np.random.default_rng(19)
+    values = rng.normal(size=3 * lean.Nb) + 1j * rng.normal(size=3 * lean.Nb)
+    np.testing.assert_allclose(
+        core.sample_apply(lean.QB, values, 3, case.compute),
+        core.sample_apply(full.QB, values, 3, case.compute),
+        rtol=2e-15,
+        atol=2e-15,
+    )
+    for name in ("G", "C", "DB", "DJ", "Cdag"):
+        np.testing.assert_array_equal(getattr(lean, name)[0], getattr(full, name)[0])
+    for name in ("I", "H", "T", "T_full", "topology_flux_row"):
+        np.testing.assert_array_equal(getattr(lean, name), getattr(full, name))
+    assert io._operator_fingerprint(lean, case.compute) == case.operator_hash
+    assert io._operator_fingerprint(full, case.compute) != case.operator_hash
+    lean.QB.data[0] += 0.125
+    assert io._operator_fingerprint(lean, case.compute) != case.operator_hash
+    context = Context(case.parameters, case.geometry, lean, case.compute, case.parameters.Nphi)
+    memory = core.preflight_memory(context)
+    assert memory < core.estimated_peak_bytes(
+        Context(case.parameters, case.geometry, full, case.compute, case.parameters.Nphi)
+    )
+    context.p.memory_limit = memory - 1
+    with pytest.raises(Failure, match="peak storage plan"):
+        core.preflight_memory(context)
 
 
 def test_formal_rectangle_identity_is_distinct_from_same_historical_input(
