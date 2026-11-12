@@ -407,13 +407,35 @@ class Backend:
     ) -> SimpleNamespace:
         self._require_array(matrix, 2)
         self._require_array(rhs, 1)
+        if rhs.size != matrix.shape[0]:
+            raise Failure(
+                "Linear", "checked solve shape, threshold, or tolerance is invalid"
+            )
+        prepared = self.prepare_linear(
+            matrix,
+            row_scale,
+            column_scale,
+            rank_rtol,
+            residual_rtol,
+        )
+        return self.linear_prepared(prepared, rhs)
+
+    def prepare_linear(
+        self,
+        matrix: Any,
+        row_scale: Any,
+        column_scale: Any,
+        rank_rtol: float,
+        residual_rtol: float = 1e-10,
+    ) -> SimpleNamespace:
+        """Validate and factor a fixed scaled dense system for later solves."""
+        self._require_array(matrix, 2)
         self._require_array(row_scale, 1)
         self._require_array(column_scale, 1)
         n = matrix.shape[0]
         if (
             n == 0
             or n != matrix.shape[1]
-            or rhs.size != n
             or row_scale.size != n
             or column_scale.size != matrix.shape[1]
             or not (0.0 < rank_rtol < 1.0)
@@ -422,7 +444,6 @@ class Backend:
         ):
             raise Failure("Linear", "checked solve shape, threshold, or tolerance is invalid")
         self._require_finite(matrix, "checked solve matrix contains non-finite values")
-        self._require_finite(rhs, "checked solve right-hand side contains non-finite values")
         if bool(self.xp.any(self.xp.imag(row_scale) != 0.0).item()):
             raise Failure("Linear", "row scale must be real")
         if bool(self.xp.any(self.xp.imag(column_scale) != 0.0).item()):
@@ -436,8 +457,7 @@ class Backend:
         scaled_matrix = self.asarray(
             matrix * column_scale[None, :] / row_scale[:, None]
         )
-        scaled_rhs = self.asarray(rhs / row_scale)
-        if not self._finite(scaled_matrix) or not self._finite(scaled_rhs):
+        if not self._finite(scaled_matrix):
             raise Failure("Linear", "scaled linear system contains non-finite values")
         singular = self.singular_values(scaled_matrix)
         if (
@@ -448,6 +468,71 @@ class Backend:
         ):
             raise Failure("Linear", "scaled linear system is singular or ill-conditioned")
         factor = self.factor(scaled_matrix)
+        return SimpleNamespace(
+            original=self.asarray(matrix),
+            scaled_matrix=scaled_matrix,
+            row_scale=self.asarray(row_scale, np.float64),
+            column_scale=self.asarray(column_scale, np.float64),
+            rank_rtol=float(rank_rtol),
+            residual_rtol=float(residual_rtol),
+            singular_values=self.asarray(singular, np.float64),
+            factor=factor,
+        )
+
+    def linear_prepared(
+        self,
+        prepared: SimpleNamespace,
+        rhs: Any,
+    ) -> SimpleNamespace:
+        """Solve one right-hand side using an existing checked scaling and LU."""
+        if prepared is None:
+            raise Failure("Linear", "prepared scaled system is absent")
+        try:
+            original = prepared.original
+            scaled_matrix = prepared.scaled_matrix
+            row_scale = prepared.row_scale
+            column_scale = prepared.column_scale
+            singular = prepared.singular_values
+            factor = prepared.factor
+            residual_rtol = float(prepared.residual_rtol)
+        except (AttributeError, TypeError, ValueError) as error:
+            raise Failure("Linear", "prepared scaled system is invalid") from error
+        self._require_array(scaled_matrix, 2)
+        self._require_array(original, 2)
+        self._require_array(row_scale, 1)
+        self._require_array(column_scale, 1)
+        self._require_array(singular, 1)
+        self._require_array(rhs, 1)
+        n = scaled_matrix.shape[0]
+        if (
+            n == 0
+            or n != scaled_matrix.shape[1]
+            or original.shape != scaled_matrix.shape
+            or row_scale.size != n
+            or column_scale.size != n
+            or rhs.size != n
+            or not math.isfinite(residual_rtol)
+            or residual_rtol <= 0.0
+            or factor is None
+            or not getattr(factor, "valid", False)
+        ):
+            raise Failure(
+                "Linear", "checked solve shape, threshold, or tolerance is invalid"
+            )
+        if not self._finite(scaled_matrix):
+            raise Failure("Linear", "scaled linear system contains non-finite values")
+        if not self._finite(row_scale) or bool(
+            self.xp.any(row_scale <= 0.0).item()
+        ):
+            raise Failure("Linear", "row scale must be finite and positive")
+        if not self._finite(column_scale) or bool(
+            self.xp.any(column_scale <= 0.0).item()
+        ):
+            raise Failure("Linear", "column scale must be finite and positive")
+        self._require_finite(rhs, "checked solve right-hand side contains non-finite values")
+        scaled_rhs = self.asarray(rhs / row_scale)
+        if not self._finite(scaled_rhs):
+            raise Failure("Linear", "scaled linear system contains non-finite values")
         y = self.solve(factor, scaled_rhs)
         previous_error = math.inf
         refinement_steps = 0
@@ -482,7 +567,7 @@ class Backend:
             y = following
             refinement_steps += 1
         x = self.asarray(column_scale * y)
-        residual = self.asarray(matrix @ x - rhs)
+        residual = self.asarray(original @ x - rhs)
         if (
             not self._finite(x)
             or not self._finite(residual)
@@ -499,8 +584,8 @@ class Backend:
             singular_values=singular,
             scaled_residual=scaled_residual,
             backward_error=backward_error,
-            row_scale=self.asarray(row_scale, np.float64),
-            column_scale=self.asarray(column_scale, np.float64),
+            row_scale=row_scale,
+            column_scale=column_scale,
             refinement_steps=refinement_steps,
         )
 

@@ -173,3 +173,8 @@ finite-electron default therefore cannot match or resume as the new massless
 default. Ambiguous legacy omitted-integrator checkpoints are rejected for the
 same reason. run.json anchors the exact resolved.json bytes with
 resolved_config_sha256, independent of JSON serialization ordering.
+
+The aligned-box operator fingerprint includes the two stored-chart magnetic
+norm blocks and their transverse factors. Archived initial fields and
+wall-flux arrays use the same chart. A checkpoint from the prior metric has
+a different operator identity.

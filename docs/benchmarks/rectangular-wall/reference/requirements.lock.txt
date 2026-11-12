@@ -1,0 +1,17 @@
+contourpy==1.4.0
+cycler==0.12.1
+fonttools==4.68.0
+fortranformat==2.0.3
+freegs==0.8.2
+freeqdsk==0.5.2
+h5py==3.16.0
+kiwisolver==1.5.1
+matplotlib==3.11.2
+numpy==2.5.4
+packaging==26.3
+pillow==13.0.0
+pyparsing==3.3.3
+python-dateutil==4.0.0
+scipy==1.18.1
+shapely==2.2.0
+tzdata==2026.6

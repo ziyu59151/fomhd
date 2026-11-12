@@ -1,0 +1,54 @@
+{
+  "source": "src/fomhd/operators.py",
+  "operators_sha256": "a4c5aba69643a56bde2ef9006303f11ee310ce329de43811d7bc6a847b06b577",
+  "scope": "Frozen uniform axial cold Hall operator assembled from production interpolation, Ampere, Faraday, and wall constraints; excludes pressure and nonlinear evolution, treats reference current as zero, K=0.",
+  "n_m_inv3": 3.6211302828646313e+18,
+  "b0_T": 2.0,
+  "alfven_speed_m_per_s": 16214250.845983185,
+  "reference_low_mode_omega_rad_per_s": 69060970.05804439,
+  "grids": {
+    "6x6": {
+      "grid": [
+        6,
+        6
+      ],
+      "full_dimension": 241,
+      "constrained_dimension": 146,
+      "wall_projection_relative_defect": 3.213272967547745e-16,
+      "invariant_subspace_relative_defect": 7.499734363185089e-16,
+      "spectrum_max_abs_real_s_inv": 3.090826794505119e-08,
+      "spectrum_max_abs_imag_rad_per_s": 431299739.33222,
+      "relative_max_real": 7.166308051311685e-17,
+      "ideal_imaginary_axis_rk4_dt_s": 6.557915219530238e-09
+    },
+    "8x8": {
+      "grid": [
+        8,
+        8
+      ],
+      "full_dimension": 417,
+      "constrained_dimension": 274,
+      "wall_projection_relative_defect": 5.3448273576306255e-16,
+      "invariant_subspace_relative_defect": 1.075791795104979e-15,
+      "spectrum_max_abs_real_s_inv": 5.960464477539063e-08,
+      "spectrum_max_abs_imag_rad_per_s": 745445809.538091,
+      "relative_max_real": 7.995838733378101e-17,
+      "ideal_imaginary_axis_rk4_dt_s": 3.794275973593306e-09
+    },
+    "10x10": {
+      "grid": [
+        10,
+        10
+      ],
+      "full_dimension": 641,
+      "constrained_dimension": 442,
+      "wall_projection_relative_defect": 3.987444640644603e-16,
+      "invariant_subspace_relative_defect": 1.005416158777472e-15,
+      "spectrum_max_abs_real_s_inv": 7.4593761275911e-08,
+      "spectrum_max_abs_imag_rad_per_s": 1148979725.8328989,
+      "relative_max_real": 6.492173847701077e-17,
+      "ideal_imaginary_axis_rk4_dt_s": 2.4616858427992322e-09
+    }
+  },
+  "source_commit": "60a2252fdce390780139bf18e7279fe850706188"
+}

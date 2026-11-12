@@ -2,11 +2,20 @@
 
 [Visual branch history](docs/BRANCH_GRAPH.md) · [Development policy](docs/development.md)
 
+[Rectangular conducting-wall baseline](docs/benchmarks/rectangular-wall/README.md) ·
+[Complete fields and comparison figures](docs/benchmarks/rectangular-wall/GALLERY.md)
+
+The default development baseline uses E/B vectors on the grid-aligned RZ
+conductor with the paired FOMHD Ampère closure and synchronous RK4. The
+next acceptance is a reproducible GPU A0 with measured capacity and a
+matched independent n_phi=1 compressional Alfvén mode. A2 passive particle
+development follows that acceptance.
+
 [Physical simulation prototype workflow](docs/RESEARCH_PROTOTYPE_WORKFLOW.md)
 records how verification, independent physical comparisons, and retained known
 issues determine prototype development priorities.
 
-The active `main` implementation is the FP64/complex128 Python solver under
+The A0 maintenance implementation is the FP64/complex128 Python solver under
 [`src/fomhd/`](src/fomhd), using NVIDIA Warp 1.19.0, CuPy CUDA13x 14.2.0, and
 an explicit NumPy/SciPy CPU reference. The fully explicit RK4 fluid path is
 the default; `time.integrator = "midpoint"` remains available when a test or

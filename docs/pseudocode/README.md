@@ -1,6 +1,6 @@
 # A0 实现级伪代码与维护说明书
 
-> Status: active Python/Warp implementation specification for `main`.
+> Status: Python/Warp source reading guide for the active implementation.
 > `reference/a0-native` owns the frozen native implementation and its mirrored
 > pseudocode. Acceptance evidence is recorded separately from implementation
 > contracts.
@@ -94,3 +94,7 @@ Pseudocode is an executable implementation guide, not proof. MMS, convergence,
 conservation, restart, independent-array, and CPU/GPU evidence remain separate.
 Fourth-order claims apply only to measured smooth regions; the staircase wall,
 global spatial order, scientific validation, and performance remain unclaimed.
+
+[D075 rectangular outer wall](src/fomhd/box_boundary.py.md) explains the
+formal geometry entry, fixed magnetic flux, shared stress and work trace,
+and restart identity.

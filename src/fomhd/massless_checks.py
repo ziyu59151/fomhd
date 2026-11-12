@@ -9,9 +9,11 @@ from types import SimpleNamespace
 import numpy as np
 
 from . import core, diagnostics
+from .box_boundary import wall_magnetic_trace
 from .core import forward, inverse, mode_apply, sample_apply
 from .fluid import power_ledger
 from .massless import MODEL_NAME
+from .operators import magnetic_pair
 from .types import Failure
 
 
@@ -150,17 +152,9 @@ def state_totals(state, result, context):
         ).item()
     )
     mb = xp.real(xp.asarray(context.op.MB)).astype(xp.float64)
-    magnetic = float(
-        (
-            xp.sum(
-                2.0
-                * math.pi
-                * xp.tile(mb, state.B.size // mb.size)
-                * xp.abs(xp.asarray(state.B)) ** 2
-                / (2.0 * context.p.mu0)
-            )
-        ).item()
-    )
+    magnetic = math.pi * float(
+        magnetic_pair(context.op, state.B, state.B, context.compute).item()
+    ) / context.p.mu0
     b0_start = context.p.K * mb.size
     b0 = xp.asarray(state.B)[b0_start : b0_start + mb.size]
     topology_row = xp.asarray(context.op.topology_flux_row).reshape(-1)
@@ -395,7 +389,11 @@ def _wall_trace_data(state, stage, context):
         context.N, context.op.Nb
     )
     traces = []
-    for wall in context.geometry.walls:
+    physical_wall_B = (
+        wall_magnetic_trace(state.B, context)
+        if getattr(context.op, "box_wall", None) is not None else None
+    )
+    for wall_id, wall in enumerate(context.geometry.walls):
         radial = wall.component == "r_face"
         edge = wall.face if radial else nr + nc + wall.face
         direction = 0 if radial else 2
@@ -413,6 +411,8 @@ def _wall_trace_data(state, stage, context):
             bvectors[2] = xp.real(magnetic[:, nz + nv + wall.face])
         else:
             bvectors[0] = xp.real(magnetic[:, wall.face])
+        if physical_wall_B is not None:
+            bvectors = [physical_wall_B[:, d, wall_id] for d in range(3)]
         density = []
         velocity = []
         perp = []
@@ -493,9 +493,11 @@ def _boundary(state, stage, context):
         internal_perp=[0.0, 0.0],
         internal_parallel=[0.0, 0.0],
         field_energy=0.0,
+        electron_pressure_work=0.0,
         total_energy=0.0,
         applicability=_applicability(),
     )
+    box = getattr(context.op, "box_wall", None) is not None
     trace_data = _wall_trace_data(state, stage, context)
     for sample in range(context.N):
         for data in trace_data:
@@ -599,8 +601,10 @@ def _boundary(state, stage, context):
                         * parallel_b
                         * wall.sign
                         * direction_b
-                        / bmag
+                        / (bmag * bmag)
                     )
+                    if box:
+                        result.electron_pressure_work += area * pressure_work
                 result.total_energy += (
                     area
                     * (
@@ -1215,10 +1219,12 @@ def _stage_residuals(state, result, context):
     residuals["electron_pressure_adjoint"] = (
         xp.asarray(result.ledger[1].pressure_kinetic)
         + xp.asarray(result.ledger[1].pressure_internal_full)
+        + xp.asarray(result.boundary.electron_pressure_work)
     ).reshape(1)
     residuals["electron_electric_pairing"] = xp.asarray(
         result.ledger[1].pressure_internal
         - result.ledger[1].electric_edge
+        + result.boundary.electron_pressure_work
     ).reshape(1)
     residuals["electron_pressure_only_pairing"] = xp.asarray(
         result.ledger[1].pressure_kinetic
@@ -2205,15 +2211,11 @@ def check_step(
     )
     pb = 0.0
     for state, stage, weight in quadrature:
-        mb = xp.real(xp.asarray(context.op.MB)).astype(xp.float64)
-        state_b = xp.asarray(state.B)
-        rhs_b = xp.asarray(stage.rhs.B)
         power = (
             2.0
             * math.pi
-            * xp.sum(
-                xp.tile(mb, state_b.size // mb.size)
-                * xp.real(xp.conj(state_b) * rhs_b)
+            * magnetic_pair(
+                context.op, state.B, stage.rhs.B, context.compute
             ).item()
             / context.p.mu0
         )

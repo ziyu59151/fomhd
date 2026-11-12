@@ -32,7 +32,7 @@ kinetic=[integral(m_i n_i |u_i|^2/2),0]
 ion_internal=integral(p_i/(gamma_i-1))
 electron_perp=integral(p_e_perp)
 electron_parallel=integral(p_e_parallel/2)
-magnetic=integral(|B|^2/(2 mu_0))
+magnetic=2 pi * magnetic_pair(B, B)/(2 mu_0)
 longitudinal=0
 energy=ion kinetic+ion internal+electron pressures+magnetic
 ```
@@ -219,3 +219,6 @@ The result is accepted only by the existing time transaction after all hard
 gates pass. Diagnostics do not mutate the trial state, cumulative ledger, or
 committed state. Applicability metadata is attached to stage totals, ledgers,
 boundary records, interval records, and the cumulative ledger.
+
+The magnetic interval power uses the same `magnetic_pair(B, Bdot)` as
+state energy, including the aligned-box poloidal line norms.

@@ -1,0 +1,636 @@
+{
+  "scope": "Accepted repaired A1 pulse states on the same grid and physical input. Both use the same field microstep. No A1 quiet subtraction.",
+  "grid_R_Z": [
+    10,
+    14
+  ],
+  "exact_common_times_s": [
+    0.0,
+    1.6e-09,
+    3.2e-09
+  ],
+  "sync_h_s": 5e-11,
+  "WR_H_s": 2e-10,
+  "WR_M": 4,
+  "WR_ion_nodes": 3,
+  "WR_rtol": 1e-12,
+  "budgets": [
+    {
+      "run": "archived-campaign/cases/a1-repaired-10x14-sync-pulse/run",
+      "matched_endpoint_s": 3.2e-09,
+      "matched_endpoint_step": 64,
+      "hard_checks_count": 43887,
+      "hard_failures": [],
+      "peak_interval_energy_residual_J": 7.75597103623309e-09,
+      "delta_total_energy_J": 4.0978193283081055e-08,
+      "delta_total_ion_number": 0.0,
+      "endpoint_elapsed_including_setup_s": 84.8035541321151,
+      "guard": {
+        "policy": "error",
+        "minimum_samples_per_cycle": 32.0,
+        "max_amplitude_error": 0.01,
+        "max_phase_error_rad": 0.1
+      }
+    },
+    {
+      "run": "archived-campaign/cases/a1-repaired-10x14-wr3-pulse/run",
+      "matched_endpoint_s": 3.2e-09,
+      "matched_endpoint_step": 16,
+      "hard_checks_count": 40127,
+      "hard_failures": [],
+      "peak_interval_energy_residual_J": 5.171895484212313e-09,
+      "delta_total_energy_J": 4.0978193283081055e-08,
+      "delta_total_ion_number": 0.0,
+      "endpoint_elapsed_including_setup_s": 211.55816557095386,
+      "guard": {
+        "policy": "error",
+        "minimum_samples_per_cycle": 32.0,
+        "max_amplitude_error": 0.01,
+        "max_phase_error_rad": 0.1
+      }
+    }
+  ],
+  "WR_final_work": {
+    "sweeps": 4,
+    "waveform_residual_scaled": 1.114115691548174e-14,
+    "final_normalized_residual_max": 0.01114115691548174,
+    "work": {
+      "full_stage_attempts": 14,
+      "full_stage_calls": 14,
+      "full_stage_failures": 0,
+      "full_ion_power_ledger_values": 15,
+      "full_electron_power_ledger_values": 15,
+      "coarse_transport_calls": 13,
+      "coarse_transport_wall_projections": 13,
+      "coarse_grid_wall_projections": 13,
+      "field_callback_calls": 65,
+      "field_evaluations": 97,
+      "alias_field_evaluations": 32,
+      "feedback_calls": 65,
+      "electromagnetic_rates": 65,
+      "wall_projections": 65,
+      "fine_full_stage_calls": 0,
+      "split_validations": 13,
+      "exchange_diagnostics": 65,
+      "endpoint_reconstruction_calls": 1,
+      "endpoint_full_stage_calls": 1,
+      "fine_ion_power_ledger_calls": 0,
+      "full_mixed_ledger_calls": 0,
+      "adapter_full_stage_attempts": 14,
+      "adapter_full_stage_calls": 14,
+      "adapter_full_stage_failures": 0,
+      "base_full_stage_attempts": 1,
+      "base_full_stage_calls": 1,
+      "base_full_stage_failures": 0,
+      "total_full_stage_attempts": 15,
+      "total_full_stage_calls": 15,
+      "total_full_stage_failures": 0,
+      "accepted_endpoint_full_stage_calls": 1
+    }
+  },
+  "samples": [
+    {
+      "time_s": 0.0,
+      "fields": {
+        "density_m3": {
+          "domain": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "core": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "halo": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          }
+        },
+        "ion_velocity_m_s": {
+          "domain": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "core": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "halo": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          }
+        },
+        "nodal_B_T": {
+          "domain": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "core": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "halo": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          }
+        },
+        "psi_Wb_per_rad": {
+          "domain": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_first_layer": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "core": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          },
+          "halo": {
+            "peak_SI": 0.0,
+            "R_weighted_rms_SI": 0.0,
+            "sync_change_peak_SI": 0.0,
+            "peak_gap_relative_to_sync_change": null
+          }
+        }
+      }
+    },
+    {
+      "time_s": 1.6e-09,
+      "fields": {
+        "density_m3": {
+          "domain": {
+            "peak_SI": 833536.0,
+            "R_weighted_rms_SI": 233224.59004224616,
+            "sync_change_peak_SI": 1.274439431476224e+16,
+            "peak_gap_relative_to_sync_change": 6.540412823185239e-11
+          },
+          "first_layer": {
+            "peak_SI": 590848.0,
+            "R_weighted_rms_SI": 118975.37735859452,
+            "sync_change_peak_SI": 132776898468864.0,
+            "peak_gap_relative_to_sync_change": 4.449930724496875e-09
+          },
+          "beyond_first_layer": {
+            "peak_SI": 833536.0,
+            "R_weighted_rms_SI": 269882.1721618578,
+            "sync_change_peak_SI": 1.274439431476224e+16,
+            "peak_gap_relative_to_sync_change": 6.540412823185239e-11
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 833536.0,
+            "R_weighted_rms_SI": 141440.38353975173,
+            "sync_change_peak_SI": 2476669205583872.0,
+            "peak_gap_relative_to_sync_change": 3.3655524044984234e-10
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 824320.0,
+            "R_weighted_rms_SI": 291606.1587758946,
+            "sync_change_peak_SI": 1.274439431476224e+16,
+            "peak_gap_relative_to_sync_change": 6.468098676491544e-11
+          },
+          "core": {
+            "peak_SI": 824320.0,
+            "R_weighted_rms_SI": 360666.8893640863,
+            "sync_change_peak_SI": 1.274439431476224e+16,
+            "peak_gap_relative_to_sync_change": 6.468098676491544e-11
+          },
+          "halo": {
+            "peak_SI": 390144.0,
+            "R_weighted_rms_SI": 167427.36610952544,
+            "sync_change_peak_SI": 1.051992547569152e+16,
+            "peak_gap_relative_to_sync_change": 3.708619427975122e-11
+          }
+        },
+        "ion_velocity_m_s": {
+          "domain": {
+            "peak_SI": 1.6095605415361817e-06,
+            "R_weighted_rms_SI": 2.508448613461938e-07,
+            "sync_change_peak_SI": 1865.9428431295005,
+            "peak_gap_relative_to_sync_change": 8.625990594849506e-10
+          },
+          "first_layer": {
+            "peak_SI": 4.4523422294962874e-07,
+            "R_weighted_rms_SI": 8.846658317385157e-08,
+            "sync_change_peak_SI": 435.70194634949166,
+            "peak_gap_relative_to_sync_change": 1.021877975712532e-09
+          },
+          "beyond_first_layer": {
+            "peak_SI": 1.6095605415361817e-06,
+            "R_weighted_rms_SI": 2.969441836236284e-07,
+            "sync_change_peak_SI": 1865.9428431295005,
+            "peak_gap_relative_to_sync_change": 8.625990594849506e-10
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 1.161635206798721e-06,
+            "R_weighted_rms_SI": 1.710226589842208e-07,
+            "sync_change_peak_SI": 1143.1480461655817,
+            "peak_gap_relative_to_sync_change": 1.0161721490887816e-09
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 1.6095605415361817e-06,
+            "R_weighted_rms_SI": 3.048400624046005e-07,
+            "sync_change_peak_SI": 1865.9428431295005,
+            "peak_gap_relative_to_sync_change": 8.625990594849506e-10
+          },
+          "core": {
+            "peak_SI": 5.653749024804127e-07,
+            "R_weighted_rms_SI": 2.0285727360984793e-07,
+            "sync_change_peak_SI": 1807.304717824981,
+            "peak_gap_relative_to_sync_change": 3.128276581720092e-10
+          },
+          "halo": {
+            "peak_SI": 1.6095605415361817e-06,
+            "R_weighted_rms_SI": 3.9805253616318866e-07,
+            "sync_change_peak_SI": 1865.9428431295005,
+            "peak_gap_relative_to_sync_change": 8.625990594849506e-10
+          }
+        },
+        "nodal_B_T": {
+          "domain": {
+            "peak_SI": 3.778774200735418e-14,
+            "R_weighted_rms_SI": 6.940285852399714e-15,
+            "sync_change_peak_SI": 0.0010084712607573618,
+            "peak_gap_relative_to_sync_change": 3.747032114626211e-11
+          },
+          "first_layer": {
+            "peak_SI": 1.8701907924194142e-14,
+            "R_weighted_rms_SI": 4.3642108396337435e-15,
+            "sync_change_peak_SI": 5.585057139354006e-05,
+            "peak_gap_relative_to_sync_change": 3.348561609587631e-10
+          },
+          "beyond_first_layer": {
+            "peak_SI": 3.778774200735418e-14,
+            "R_weighted_rms_SI": 7.843137050884953e-15,
+            "sync_change_peak_SI": 0.0010084712607573618,
+            "peak_gap_relative_to_sync_change": 3.747032114626211e-11
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 2.4016244574329623e-14,
+            "R_weighted_rms_SI": 4.764871808573147e-15,
+            "sync_change_peak_SI": 0.0007731311479908621,
+            "peak_gap_relative_to_sync_change": 3.106361014782641e-11
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 3.778774200735418e-14,
+            "R_weighted_rms_SI": 8.417596536104277e-15,
+            "sync_change_peak_SI": 0.0010084712607573618,
+            "peak_gap_relative_to_sync_change": 3.747032114626211e-11
+          },
+          "core": {
+            "peak_SI": 3.778774200735418e-14,
+            "R_weighted_rms_SI": 9.67768190045178e-15,
+            "sync_change_peak_SI": 0.0010084712607573618,
+            "peak_gap_relative_to_sync_change": 3.747032114626211e-11
+          },
+          "halo": {
+            "peak_SI": 3.11086223123116e-14,
+            "R_weighted_rms_SI": 6.480938683728135e-15,
+            "sync_change_peak_SI": 0.00087045097994814,
+            "peak_gap_relative_to_sync_change": 3.5738511448588406e-11
+          }
+        },
+        "psi_Wb_per_rad": {
+          "domain": {
+            "peak_SI": 2.636779683484747e-16,
+            "R_weighted_rms_SI": 5.956671763375826e-17,
+            "sync_change_peak_SI": 2.1412600822168226e-05,
+            "peak_gap_relative_to_sync_change": 1.2314149529910996e-11
+          },
+          "first_layer": {
+            "peak_SI": 7.979727989493313e-17,
+            "R_weighted_rms_SI": 4.68285831566487e-17,
+            "sync_change_peak_SI": 7.273448056344112e-07,
+            "peak_gap_relative_to_sync_change": 1.097103867062495e-10
+          },
+          "beyond_first_layer": {
+            "peak_SI": 2.636779683484747e-16,
+            "R_weighted_rms_SI": 6.457060300330344e-17,
+            "sync_change_peak_SI": 2.1412600822168226e-05,
+            "peak_gap_relative_to_sync_change": 1.2314149529910996e-11
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 2.1510571102112408e-16,
+            "R_weighted_rms_SI": 5.357863041987872e-17,
+            "sync_change_peak_SI": 1.7364917055118223e-06,
+            "peak_gap_relative_to_sync_change": 1.2387373365409928e-10
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 2.636779683484747e-16,
+            "R_weighted_rms_SI": 6.443505759136596e-17,
+            "sync_change_peak_SI": 2.1412600822168226e-05,
+            "peak_gap_relative_to_sync_change": 1.2314149529910996e-11
+          },
+          "core": {
+            "peak_SI": 2.636779683484747e-16,
+            "R_weighted_rms_SI": 6.460237413447186e-17,
+            "sync_change_peak_SI": 2.1412600822168226e-05,
+            "peak_gap_relative_to_sync_change": 1.2314149529910996e-11
+          },
+          "halo": {
+            "peak_SI": 1.1102230246251565e-16,
+            "R_weighted_rms_SI": 6.422270878607562e-17,
+            "sync_change_peak_SI": 1.6368234803665338e-05,
+            "peak_gap_relative_to_sync_change": 6.782790190525275e-12
+          }
+        }
+      }
+    },
+    {
+      "time_s": 3.2e-09,
+      "fields": {
+        "density_m3": {
+          "domain": {
+            "peak_SI": 1639424.0,
+            "R_weighted_rms_SI": 463651.1765698413,
+            "sync_change_peak_SI": 2.537770855101645e+16,
+            "peak_gap_relative_to_sync_change": 6.460094679960128e-11
+          },
+          "first_layer": {
+            "peak_SI": 1080320.0,
+            "R_weighted_rms_SI": 233405.45893560362,
+            "sync_change_peak_SI": 216781533169664.0,
+            "peak_gap_relative_to_sync_change": 4.983450316104591e-09
+          },
+          "beyond_first_layer": {
+            "peak_SI": 1639424.0,
+            "R_weighted_rms_SI": 537152.0301103697,
+            "sync_change_peak_SI": 2.537770855101645e+16,
+            "peak_gap_relative_to_sync_change": 6.460094679960128e-11
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 1525760.0,
+            "R_weighted_rms_SI": 284837.8200220307,
+            "sync_change_peak_SI": 4946451588312064.0,
+            "peak_gap_relative_to_sync_change": 3.084554599918066e-10
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 1639424.0,
+            "R_weighted_rms_SI": 578122.327294203,
+            "sync_change_peak_SI": 2.537770855101645e+16,
+            "peak_gap_relative_to_sync_change": 6.460094679960128e-11
+          },
+          "core": {
+            "peak_SI": 1639424.0,
+            "R_weighted_rms_SI": 715423.3302600646,
+            "sync_change_peak_SI": 2.537770855101645e+16,
+            "peak_gap_relative_to_sync_change": 6.460094679960128e-11
+          },
+          "halo": {
+            "peak_SI": 772096.0,
+            "R_weighted_rms_SI": 330880.8683375414,
+            "sync_change_peak_SI": 2.091417896446669e+16,
+            "peak_gap_relative_to_sync_change": 3.691734690191738e-11
+          }
+        },
+        "ion_velocity_m_s": {
+          "domain": {
+            "peak_SI": 3.3113956596414074e-06,
+            "R_weighted_rms_SI": 5.036212970835054e-07,
+            "sync_change_peak_SI": 4085.3835119277037,
+            "peak_gap_relative_to_sync_change": 8.105470759289653e-10
+          },
+          "first_layer": {
+            "peak_SI": 8.88759714868741e-07,
+            "R_weighted_rms_SI": 1.769899388494714e-07,
+            "sync_change_peak_SI": 973.9974164079938,
+            "peak_gap_relative_to_sync_change": 9.124867272712067e-10
+          },
+          "beyond_first_layer": {
+            "peak_SI": 3.3113956596414074e-06,
+            "R_weighted_rms_SI": 5.962600298831179e-07,
+            "sync_change_peak_SI": 4085.3835119277037,
+            "peak_gap_relative_to_sync_change": 8.105470759289653e-10
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 2.347072252671845e-06,
+            "R_weighted_rms_SI": 3.446028723035796e-07,
+            "sync_change_peak_SI": 2556.987062045824,
+            "peak_gap_relative_to_sync_change": 9.17905408091495e-10
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 3.3113956596414074e-06,
+            "R_weighted_rms_SI": 6.114058737298317e-07,
+            "sync_change_peak_SI": 4085.3835119277037,
+            "peak_gap_relative_to_sync_change": 8.105470759289653e-10
+          },
+          "core": {
+            "peak_SI": 1.11615775199651e-06,
+            "R_weighted_rms_SI": 4.069326128469005e-07,
+            "sync_change_peak_SI": 3562.0876647756795,
+            "peak_gap_relative_to_sync_change": 3.1334370656674996e-10
+          },
+          "halo": {
+            "peak_SI": 3.3113956596414074e-06,
+            "R_weighted_rms_SI": 7.983135858675637e-07,
+            "sync_change_peak_SI": 4085.3835119277037,
+            "peak_gap_relative_to_sync_change": 8.105470759289653e-10
+          }
+        },
+        "nodal_B_T": {
+          "domain": {
+            "peak_SI": 8.622463892040627e-14,
+            "R_weighted_rms_SI": 1.499590282194569e-14,
+            "sync_change_peak_SI": 0.0019851443722141556,
+            "peak_gap_relative_to_sync_change": 4.343494615670423e-11
+          },
+          "first_layer": {
+            "peak_SI": 3.785022476626771e-14,
+            "R_weighted_rms_SI": 9.845904827836258e-15,
+            "sync_change_peak_SI": 0.00012759700774343598,
+            "peak_gap_relative_to_sync_change": 2.9663881180015253e-10
+          },
+          "beyond_first_layer": {
+            "peak_SI": 8.622463892040627e-14,
+            "R_weighted_rms_SI": 1.6837876808350438e-14,
+            "sync_change_peak_SI": 0.0019851443722141556,
+            "peak_gap_relative_to_sync_change": 4.343494615670423e-11
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 5.0650038737100955e-14,
+            "R_weighted_rms_SI": 1.0799623603780949e-14,
+            "sync_change_peak_SI": 0.0015306283346106183,
+            "peak_gap_relative_to_sync_change": 3.309101079066721e-11
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 8.622463892040627e-14,
+            "R_weighted_rms_SI": 1.7925540340992725e-14,
+            "sync_change_peak_SI": 0.0019851443722141556,
+            "peak_gap_relative_to_sync_change": 4.343494615670423e-11
+          },
+          "core": {
+            "peak_SI": 8.622463892040627e-14,
+            "R_weighted_rms_SI": 2.0368470986282807e-14,
+            "sync_change_peak_SI": 0.0019851443722141556,
+            "peak_gap_relative_to_sync_change": 4.343494615670423e-11
+          },
+          "halo": {
+            "peak_SI": 6.933297415338954e-14,
+            "R_weighted_rms_SI": 1.4245925275782952e-14,
+            "sync_change_peak_SI": 0.00171858630802864,
+            "peak_gap_relative_to_sync_change": 4.03430271901329e-11
+          }
+        },
+        "psi_Wb_per_rad": {
+          "domain": {
+            "peak_SI": 5.134781488891349e-16,
+            "R_weighted_rms_SI": 1.0321286936237198e-16,
+            "sync_change_peak_SI": 4.2753753324298316e-05,
+            "peak_gap_relative_to_sync_change": 1.2010130315209284e-11
+          },
+          "first_layer": {
+            "peak_SI": 1.3530843112619095e-16,
+            "R_weighted_rms_SI": 6.175638168767262e-17,
+            "sync_change_peak_SI": 1.5391465435637963e-06,
+            "peak_gap_relative_to_sync_change": 8.791133741748388e-11
+          },
+          "beyond_first_layer": {
+            "peak_SI": 5.134781488891349e-16,
+            "R_weighted_rms_SI": 1.1742001117778786e-16,
+            "sync_change_peak_SI": 4.2753753324298316e-05,
+            "peak_gap_relative_to_sync_change": 1.2010130315209284e-11
+          },
+          "fixed_wall_collar": {
+            "peak_SI": 4.2327252813834093e-16,
+            "R_weighted_rms_SI": 8.39463687725611e-17,
+            "sync_change_peak_SI": 3.6301845920613807e-06,
+            "peak_gap_relative_to_sync_change": 1.1659807301919815e-10
+          },
+          "beyond_fixed_wall_collar": {
+            "peak_SI": 5.134781488891349e-16,
+            "R_weighted_rms_SI": 1.1775314397774007e-16,
+            "sync_change_peak_SI": 4.2753753324298316e-05,
+            "peak_gap_relative_to_sync_change": 1.2010130315209284e-11
+          },
+          "core": {
+            "peak_SI": 5.134781488891349e-16,
+            "R_weighted_rms_SI": 1.2158068412669109e-16,
+            "sync_change_peak_SI": 4.2753753324298316e-05,
+            "peak_gap_relative_to_sync_change": 1.2010130315209284e-11
+          },
+          "halo": {
+            "peak_SI": 1.8735013540549517e-16,
+            "R_weighted_rms_SI": 1.1272360760043624e-16,
+            "sync_change_peak_SI": 3.234962310171702e-05,
+            "peak_gap_relative_to_sync_change": 5.791416327059192e-12
+          }
+        }
+      }
+    }
+  ]
+}
