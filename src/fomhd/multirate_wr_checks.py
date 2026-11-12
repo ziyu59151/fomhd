@@ -716,7 +716,7 @@ def _boundary_summands(state, stage, context):
                         * parallel_b
                         * wall.sign
                         * direction_b
-                        / bmag
+                        / (bmag * bmag)
                     )
                 energy[species] += area * (
                     (kinetic_density + internal_density) * un + pressure_work

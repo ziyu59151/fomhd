@@ -1,0 +1,569 @@
+{
+  "source": "src/fomhd/operators.py",
+  "operators_sha256": "0eb4a6654b21f39d61b64c0505b69b42a8c5f31f50e6874c44c607c4524f48a3",
+  "physical_box_m": [
+    1.0,
+    2.2,
+    -0.5,
+    0.5
+  ],
+  "mu0_H_per_m": 1.25663706127e-06,
+  "grids": {
+    "7x6": {
+      "curl_pair": {
+        "lambda_max_A_C_m_inv2": 435.5738579068286,
+        "singular_curl_m_inv": 20.870406270765997,
+        "ritz_relative_residual": 2.2504867220309944e-15
+      },
+      "build_s": 0.0071690198965370655,
+      "cases": {
+        "constant_axial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 4.216251642456822e-09,
+              "max": 7.067899293074343e-09
+            },
+            "second": {
+              "rms": 2.7633329887302406e-09,
+              "max": 4.240739575844605e-09
+            },
+            "corners": {
+              "rms": 5.217814122200827e-09,
+              "max": 7.067899293074343e-09
+            },
+            "core": {
+              "rms": 4.018977664553079e-09,
+              "max": 4.240739575844605e-09
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 3.881278498805691e-09,
+            "max": 7.067899293074343e-09
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 0.0,
+            "max": 0.0
+          },
+          "divB_plus_caps_max_T_per_m": 4.263256414560601e-14,
+          "cap_abs_max_Wb_per_rad": 0.129428571428571,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 4.263256414560601e-14,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 273463080.78235054,
+          "magnetic_plus_electric_power_relative": 1.686352748508829e-16
+        },
+        "affine_radial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 1.0417310371006054e-08,
+              "max": 1.9208528101444244e-08
+            },
+            "second": {
+              "rms": 4.227060328126713e-09,
+              "max": 9.313225746154785e-09
+            },
+            "corners": {
+              "rms": 1.4690718794423154e-08,
+              "max": 1.9208528101444244e-08
+            },
+            "core": {
+              "rms": 5.800941727729977e-09,
+              "max": 9.313225746154785e-09
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 8.821906401235569e-09,
+            "max": 1.9208528101444244e-08
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 557042.3008951815,
+            "max": 557042.3008951815
+          },
+          "divB_plus_caps_max_T_per_m": 1.2079226507921703e-13,
+          "cap_abs_max_Wb_per_rad": 0.3531918367346929,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 1.2434497875801753e-13,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 273463080.78235054,
+          "magnetic_plus_electric_power_relative": 1.6440448720177912e-16
+        },
+        "affine_axial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 3.33193314689031e-09,
+              "max": 7.799826562404633e-09
+            },
+            "second": {
+              "rms": 3.654853155410463e-09,
+              "max": 6.868503987789154e-09
+            },
+            "corners": {
+              "rms": 4.728812727050367e-09,
+              "max": 6.984919309616089e-09
+            },
+            "core": {
+              "rms": 2.0269865522037535e-09,
+              "max": 2.3283064365386963e-09
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 3.453576687290229e-09,
+            "max": 7.799826562404633e-09
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 911500.7987306233,
+            "max": 1177746.5790355268
+          },
+          "divB_plus_caps_max_T_per_m": 1.2434497875801753e-14,
+          "cap_abs_max_Wb_per_rad": 0.29073611111111086,
+          "signed_cap_sum_Wb_per_rad": -2.220446049250313e-16,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 1.1546319456101628e-14,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 273463080.78235054,
+          "magnetic_plus_electric_power_relative": 3.5437414403396677e-16
+        },
+        "mixed_vacuum": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 4783.820000265161,
+              "max": 7040.111454305482
+            },
+            "second": {
+              "rms": 1642.7282039857846,
+              "max": 2402.8019257432156
+            },
+            "corners": {
+              "rms": 7002.114804654744,
+              "max": 7040.111454306895
+            },
+            "core": {
+              "rms": 517.0502049625994,
+              "max": 559.2916698039878
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 3926.197372947344,
+            "max": 7040.111454306895
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 0.0,
+            "max": 0.0
+          },
+          "divB_plus_caps_max_T_per_m": 1.1723955140041653e-13,
+          "cap_abs_max_Wb_per_rad": 0.3073079550187412,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 1.1368683772161603e-13,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 273463080.78235054,
+          "magnetic_plus_electric_power_relative": 0.0
+        },
+        "solovev": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 4783.820000261889,
+              "max": 7040.111454311293
+            },
+            "second": {
+              "rms": 1642.7282039838226,
+              "max": 2402.801925742533
+            },
+            "corners": {
+              "rms": 7002.114804651344,
+              "max": 7040.11145431269
+            },
+            "core": {
+              "rms": 517.0502049650337,
+              "max": 559.2916698046029
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 3926.1973729448296,
+            "max": 7040.11145431269
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 2083430.3970985676,
+            "max": 2691992.180652633
+          },
+          "divB_plus_caps_max_T_per_m": 4.39648317751562e-14,
+          "cap_abs_max_Wb_per_rad": 0.1919316284881294,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 4.3076653355456074e-14,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 273463080.78235054,
+          "magnetic_plus_electric_power_relative": 0.0
+        }
+      }
+    },
+    "14x12": {
+      "curl_pair": {
+        "lambda_max_A_C_m_inv2": 1722.360290643673,
+        "singular_curl_m_inv": 41.5013287816628,
+        "ritz_relative_residual": 2.0715113714396991e-13
+      },
+      "build_s": 0.12872219597920775,
+      "cases": {
+        "constant_axial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 9.142001587435146e-08,
+              "max": 1.9083328091300724e-07
+            },
+            "second": {
+              "rms": 1.0168936269997686e-08,
+              "max": 2.4030857596452765e-08
+            },
+            "corners": {
+              "rms": 1.3494320900297172e-07,
+              "max": 1.9083328091300724e-07
+            },
+            "core": {
+              "rms": 1.3032562350433574e-08,
+              "max": 2.4030857596452765e-08
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 5.2229919417747494e-08,
+            "max": 1.9083328091300724e-07
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 0.0,
+            "max": 0.0
+          },
+          "divB_plus_caps_max_T_per_m": 2.2737367544323206e-13,
+          "cap_abs_max_Wb_per_rad": 0.06535714285714311,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 2.2737367544323206e-13,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 928885589.9391754,
+          "magnetic_plus_electric_power_relative": 1.7808024251371292e-16
+        },
+        "affine_radial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 2.5541028983098376e-07,
+              "max": 5.337642505764961e-07
+            },
+            "second": {
+              "rms": 3.303055764579659e-08,
+              "max": 4.866160452365875e-08
+            },
+            "corners": {
+              "rms": 3.7793646591835836e-07,
+              "max": 5.337642505764961e-07
+            },
+            "core": {
+              "rms": 1.7440476168539008e-08,
+              "max": 3.050081431865692e-08
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 1.445360501662299e-07,
+            "max": 5.337642505764961e-07
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 557042.3008951814,
+            "max": 557042.3008951815
+          },
+          "divB_plus_caps_max_T_per_m": 4.618527782440651e-13,
+          "cap_abs_max_Wb_per_rad": 0.17973673469387874,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 4.618527782440651e-13,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 928885589.9391754,
+          "magnetic_plus_electric_power_relative": 0.0
+        },
+        "affine_axial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 4.374523731291342e-08,
+              "max": 1.0803341865539551e-07
+            },
+            "second": {
+              "rms": 7.509758322857535e-09,
+              "max": 2.0721927285194397e-08
+            },
+            "corners": {
+              "rms": 1.3076565754693012e-07,
+              "max": 2.50060111284256e-07
+            },
+            "core": {
+              "rms": 5.179729645231545e-09,
+              "max": 1.3154931366443634e-08
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 3.057010582310544e-08,
+            "max": 2.50060111284256e-07
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 911813.3787923398,
+            "max": 1201619.820502463
+          },
+          "divB_plus_caps_max_T_per_m": 9.237055564881302e-14,
+          "cap_abs_max_Wb_per_rad": 0.14830902777777788,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 9.947598300641403e-14,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 928885589.9391754,
+          "magnetic_plus_electric_power_relative": 0.0
+        },
+        "mixed_vacuum": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 2357.688718406149,
+              "max": 3466.977948854731
+            },
+            "second": {
+              "rms": 770.1435929484738,
+              "max": 1144.4133865274098
+            },
+            "corners": {
+              "rms": 3461.049227647264,
+              "max": 3466.977948840595
+            },
+            "core": {
+              "rms": 127.57932255719611,
+              "max": 148.68648079537277
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 1374.7836192216935,
+            "max": 3466.977948854731
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 0.0,
+            "max": 0.0
+          },
+          "divB_plus_caps_max_T_per_m": 5.755396159656812e-13,
+          "cap_abs_max_Wb_per_rad": 0.15859872969596123,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 5.755396159656812e-13,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 928885589.9391754,
+          "magnetic_plus_electric_power_relative": 1.7808144468327576e-16
+        },
+        "solovev": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 2357.688718512283,
+              "max": 3466.9779491019435
+            },
+            "second": {
+              "rms": 770.1435929701923,
+              "max": 1144.41338653001
+            },
+            "corners": {
+              "rms": 3461.049227752556,
+              "max": 3466.9779490414076
+            },
+            "core": {
+              "rms": 127.57932255961606,
+              "max": 148.68648078804836
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 1374.7836192786792,
+            "max": 3466.9779491019435
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 2084144.8658110625,
+            "max": 2746559.5897199158
+          },
+          "divB_plus_caps_max_T_per_m": 1.7408297026122455e-13,
+          "cap_abs_max_Wb_per_rad": 0.10033750520616469,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 1.7319479184152442e-13,
+          "wall_Jn_max_A_per_m2": 1.4135798586148685e-09,
+          "wall_Jdot_n_max_A_per_m2": 928885589.9391754,
+          "magnetic_plus_electric_power_relative": 3.656574945309118e-16
+        }
+      }
+    },
+    "28x24": {
+      "curl_pair": {
+        "lambda_max_A_C_m_inv2": 6876.877764346297,
+        "singular_curl_m_inv": 82.92694233086311,
+        "ritz_relative_residual": 7.383967501326904e-14
+      },
+      "build_s": 5.045916744042188,
+      "cases": {
+        "constant_axial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 7.864371140438196e-07,
+              "max": 1.6369254762760178e-06
+            },
+            "second": {
+              "rms": 1.308784204810748e-07,
+              "max": 2.487974061578787e-07
+            },
+            "corners": {
+              "rms": 1.1573956474978998e-06,
+              "max": 1.6369254762760178e-06
+            },
+            "core": {
+              "rms": 6.579069723121012e-08,
+              "max": 1.7729351851636134e-07
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 3.190065056807539e-07,
+            "max": 1.6369254762760178e-06
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 0.0,
+            "max": 0.0
+          },
+          "divB_plus_caps_max_T_per_m": 2.9558577807620168e-12,
+          "cap_abs_max_Wb_per_rad": 0.03283928571428585,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 2.9700686354772188e-12,
+          "wall_Jn_max_A_per_m2": 5.654319434459474e-09,
+          "wall_Jdot_n_max_A_per_m2": 4025810472.83128,
+          "magnetic_plus_electric_power_relative": 1.5402124910420484e-16
+        },
+        "affine_radial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 2.1239955910562092e-06,
+              "max": 4.430650733411312e-06
+            },
+            "second": {
+              "rms": 3.224197725578825e-07,
+              "max": 6.469199433922768e-07
+            },
+            "corners": {
+              "rms": 3.1370534958961824e-06,
+              "max": 4.442059434950352e-06
+            },
+            "core": {
+              "rms": 8.594762480746389e-08,
+              "max": 2.398155629634857e-07
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 8.500387672009694e-07,
+            "max": 4.442059434950352e-06
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 557042.3008951814,
+            "max": 557042.3008951815
+          },
+          "divB_plus_caps_max_T_per_m": 7.275957614183426e-12,
+          "cap_abs_max_Wb_per_rad": 0.09066045918367305,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 7.290168468898628e-12,
+          "wall_Jn_max_A_per_m2": 5.654319434459474e-09,
+          "wall_Jdot_n_max_A_per_m2": 4025810472.83128,
+          "magnetic_plus_electric_power_relative": 1.5398269854636438e-16
+        },
+        "affine_axial": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 4.6277433576067726e-07,
+              "max": 1.0456424206495285e-06
+            },
+            "second": {
+              "rms": 5.621570540886696e-08,
+              "max": 1.9208528101444244e-07
+            },
+            "corners": {
+              "rms": 1.152336428014849e-06,
+              "max": 2.2007152438163757e-06
+            },
+            "core": {
+              "rms": 2.1443277516284354e-08,
+              "max": 1.4528632164001465e-07
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 1.981399176272605e-07,
+            "max": 2.2007152438163757e-06
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 911891.5070660751,
+            "max": 1213556.4412359311
+          },
+          "divB_plus_caps_max_T_per_m": 9.876544027065393e-13,
+          "cap_abs_max_Wb_per_rad": 0.07488975694444444,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 9.876544027065393e-13,
+          "wall_Jn_max_A_per_m2": 5.654319434459474e-09,
+          "wall_Jdot_n_max_A_per_m2": 4025810472.83128,
+          "magnetic_plus_electric_power_relative": 0.0
+        },
+        "mixed_vacuum": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 1169.1519561971486,
+              "max": 1719.5656302395394
+            },
+            "second": {
+              "rms": 382.4807227302598,
+              "max": 566.4205808557048
+            },
+            "corners": {
+              "rms": 1718.593848934644,
+              "max": 1719.5656293857373
+            },
+            "core": {
+              "rms": 31.603631406896362,
+              "max": 38.02640675027264
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 483.3176224154185,
+            "max": 1719.5656302395394
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 0.0,
+            "max": 0.0
+          },
+          "divB_plus_caps_max_T_per_m": 7.929656931082718e-12,
+          "cap_abs_max_Wb_per_rad": 0.08056108678675566,
+          "signed_cap_sum_Wb_per_rad": 7.632783294297951e-17,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 7.929656931082718e-12,
+          "wall_Jn_max_A_per_m2": 5.654319434459474e-09,
+          "wall_Jdot_n_max_A_per_m2": 4025810472.83128,
+          "magnetic_plus_electric_power_relative": 1.5402134850517393e-16
+        },
+        "solovev": {
+          "Jphi_error_A_per_m2": {
+            "first_excluding_corners": {
+              "rms": 1169.1519554717424,
+              "max": 1719.565627742093
+            },
+            "second": {
+              "rms": 382.48072265446086,
+              "max": 566.4205809039995
+            },
+            "corners": {
+              "rms": 1718.5938482761953,
+              "max": 1719.5656283041462
+            },
+            "core": {
+              "rms": 31.603631403447327,
+              "max": 38.02640659920871
+            }
+          },
+          "Jphi_error_whole_A_per_m2": {
+            "rms": 483.3176221424277,
+            "max": 1719.5656283041462
+          },
+          "Jphi_exact_whole_A_per_m2": {
+            "rms": 2084323.4447224576,
+            "max": 2773843.2942535575
+          },
+          "divB_plus_caps_max_T_per_m": 4.543920795185841e-12,
+          "cap_abs_max_Wb_per_rad": 0.051287209235735265,
+          "signed_cap_sum_Wb_per_rad": 0.0,
+          "cap_div_after_algebraic_faraday_update_max_T_per_m": 4.547473508864641e-12,
+          "wall_Jn_max_A_per_m2": 5.654319434459474e-09,
+          "wall_Jdot_n_max_A_per_m2": 4025810472.83128,
+          "magnetic_plus_electric_power_relative": 0.0
+        }
+      }
+    }
+  },
+  "source_commit": "bc809bdd3aa5253e1ffa60c21e7dcf5e7c84d369"
+}

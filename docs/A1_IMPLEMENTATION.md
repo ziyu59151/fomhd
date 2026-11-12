@@ -262,3 +262,16 @@ h and fixed h with longer H are distinct tests. Main-memory and device-memory
 peaks, synchronized times, cold setup/compilation/warmup and rejected work remain
 separate measurements. No logarithmic-span or CPU/GPU ratio is an algorithmic
 speedup qualification.
+
+## Rectangular outer wall on the common A0/A1 spatial path
+
+The D075 rectangle uses the regular RZ field complex and preserves prescribed
+normal magnetic flux. It is available through the formal case loader for
+synchronous RK4, predictor, complete waveform and few-node WR.
+The LCFS is a non-masking interior marker. The input and restart identity
+include the physical geometry and signed initial wall data.
+See the [source reading guide](pseudocode/src/fomhd/box_boundary.py.md) for
+full/fine pressure-force ownership and wall energy quadrature.
+[The matched comparison](/home/lxzeng/runs/fomhd/a0-hym-rectangle__20261111T060300Z.X6egNI/REPORT.md)
+records the implemented scope and completed A0/A1 verification.
+Historical staircase and research-branch outcomes keep their input geometry.

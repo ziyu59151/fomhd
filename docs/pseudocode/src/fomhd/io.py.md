@@ -221,7 +221,7 @@ read_restart(path,case):
   enforce file limit and NPZ safety
   compare semantic/model/integrator/geometry/operator fingerprints, dt/start
   if current massless storage is reduced and its fingerprint differs:
-    fail explicitly with pre-0.5 full-storage incompatibility before decode
+    reject an incompatible storage layout or changed operator before decode
   decode state; validate scheduler endpoint and cumulative baseline/counters
   validate latest hash when pointer names file
   return state/cumulative/parent/trial/source without creating output
@@ -240,6 +240,11 @@ reduced set. Restart detects that actual fingerprint difference and rejects the
 legacy checkpoint as pre-0.5 full storage before state decode or upload. No
 migration is attempted. A checkpoint and case made with the same selected
 storage still restart normally.
+
+The aligned-box operator fingerprint includes the affine-link magnetic norm
+identity, both line matrices, and the transverse measures. Historical initial
+arrays use the same sampling chart. Historical checkpoints with the old
+operator fingerprint cannot resume with the revised norm.
 
 Ambiguous legacy omitted-integrator checkpoints are rejected for the same
 reason. run.json anchors the exact resolved.json bytes with

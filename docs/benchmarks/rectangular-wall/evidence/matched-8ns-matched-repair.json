@@ -1,0 +1,4579 @@
+{
+  "scope": "Legacy and repaired accepted nonlinear states with byte-identical inputs and exact matched time. Each metric's energy drift uses its own accepted initial value.",
+  "grid_R_Z": [
+    14,
+    20
+  ],
+  "exact_common_times_s": [
+    0.0,
+    1.6e-09,
+    3.2e-09,
+    4.8e-09,
+    6.4e-09,
+    8e-09
+  ],
+  "same_initial_hashes": true,
+  "R_volume_by_region_m3_per_rad": {
+    "domain": 2.8378710937499987,
+    "first_layer": 0.6486562499999997,
+    "beyond_first_layer": 2.189214843749999,
+    "fixed_wall_collar": 1.33715625,
+    "beyond_fixed_wall_collar": 1.5007148437499986,
+    "core": 0.8763661741918443,
+    "halo": 0.6243486695581544
+  },
+  "trace": [
+    {
+      "time_s": 0.0,
+      "regions": {
+        "domain": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 42488.105361873066
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 42488.105361873066
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          }
+        },
+        "first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          }
+        },
+        "beyond_first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 48374.83597577971
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 48374.83597577971
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          }
+        },
+        "fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 78.88340695254054
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 78.88340695254054
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          }
+        },
+        "beyond_fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 58427.08989803702
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 58427.08989803702
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          }
+        },
+        "core": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 70222.0095795928
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 70222.0095795928
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          }
+        },
+        "halo": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 35830.43706925982
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78962.61959435184,
+              "R_weighted_rms_SI": 35830.43706925982
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.0,
+              "R_weighted_rms_SI": 0.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "time_s": 1.6e-09,
+      "regions": {
+        "domain": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 41287578787840.0,
+              "R_weighted_rms_SI": 5410715108713.118
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 53714889244672.0,
+              "R_weighted_rms_SI": 6529954036756.462
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1.7220700539308032e+16,
+              "R_weighted_rms_SI": 4618565742284303.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1.72206961122816e+16,
+              "R_weighted_rms_SI": 4618564100068628.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 16130885416960.0,
+              "R_weighted_rms_SI": 2259349427624.886
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 24872517632.0,
+              "R_weighted_rms_SI": 3839402400.3828506
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 305.0970757811539,
+              "R_weighted_rms_SI": 38.93889769749811
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 169.477069105498,
+              "R_weighted_rms_SI": 31.207948273418424
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79046.34512353163,
+              "R_weighted_rms_SI": 42440.23029443588
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79046.34731123764,
+              "R_weighted_rms_SI": 42440.21854832317
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 292.15687448566484,
+              "R_weighted_rms_SI": 31.75031118816605
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.19940153047617215,
+              "R_weighted_rms_SI": 0.045018426248474325
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.926659441488014e-05,
+              "R_weighted_rms_SI": 6.2662017098927765e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.425707799931238e-05,
+              "R_weighted_rms_SI": 2.8374554179744257e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.001473680921586773,
+              "R_weighted_rms_SI": 0.0004313577497654561
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.001473670482059909,
+              "R_weighted_rms_SI": 0.0004313572745945121
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.8607722849007056e-05,
+              "R_weighted_rms_SI": 5.626823898912623e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.021715748870255e-08,
+              "R_weighted_rms_SI": 7.32380964768638e-09
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.8675795241703845e-08,
+              "R_weighted_rms_SI": 7.811023234009794e-09
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.8272105129234504e-08,
+              "R_weighted_rms_SI": 5.0028531288355125e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.4257070382595336e-05,
+              "R_weighted_rms_SI": 7.184070832956799e-06
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.425706254430976e-05,
+              "R_weighted_rms_SI": 7.18406748074071e-06
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.6879068321681316e-08,
+              "R_weighted_rms_SI": 7.184035796142215e-09
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.0457323895707304e-10,
+              "R_weighted_rms_SI": 1.3112171451861761e-11
+            }
+          }
+        },
+        "first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 17828244508672.0,
+              "R_weighted_rms_SI": 3484947525292.6514
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1697359091712.0,
+              "R_weighted_rms_SI": 440517726139.7867
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 41983686480896.0,
+              "R_weighted_rms_SI": 15155054934624.82
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 41984394116096.0,
+              "R_weighted_rms_SI": 15155349662666.754
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 16130885416960.0,
+              "R_weighted_rms_SI": 3267590338116.4707
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1553328128.0,
+              "R_weighted_rms_SI": 455360801.0293831
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 305.0970757811539,
+              "R_weighted_rms_SI": 60.521241665336156
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 22.82728868726,
+              "R_weighted_rms_SI": 5.691639157491118
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 317.13671718087096,
+              "R_weighted_rms_SI": 96.07018567525584
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 317.13963402301573,
+              "R_weighted_rms_SI": 96.0719706134713
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 292.15687448566484,
+              "R_weighted_rms_SI": 60.12999425000855
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.01761337924008493,
+              "R_weighted_rms_SI": 0.005659296116685752
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.926659441488014e-05,
+              "R_weighted_rms_SI": 8.341605623852316e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.8335718817070712e-06,
+              "R_weighted_rms_SI": 6.365478934143991e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.359528004231386e-05,
+              "R_weighted_rms_SI": 2.1332564492120096e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.359543590195777e-05,
+              "R_weighted_rms_SI": 2.1332489648851865e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.8607722849007056e-05,
+              "R_weighted_rms_SI": 8.453632824944467e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.2861226184812827e-09,
+              "R_weighted_rms_SI": 1.1992056587722954e-09
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.8675795241703845e-08,
+              "R_weighted_rms_SI": 9.930114214185173e-09
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 3.227877312661498e-09,
+              "R_weighted_rms_SI": 1.1507281006669227e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.2604322619246275e-07,
+              "R_weighted_rms_SI": 1.0899934720998607e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.2604432224626603e-07,
+              "R_weighted_rms_SI": 1.0899890764398232e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.6879068321681316e-08,
+              "R_weighted_rms_SI": 1.0469132762382372e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.846934048037156e-12,
+              "R_weighted_rms_SI": 1.663006958488667e-12
+            }
+          }
+        },
+        "beyond_first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 41287578787840.0,
+              "R_weighted_rms_SI": 5861030927947.451
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 53714889244672.0,
+              "R_weighted_rms_SI": 7430811837754.346
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1.7220700539308032e+16,
+              "R_weighted_rms_SI": 5258461948233585.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1.72206961122816e+16,
+              "R_weighted_rms_SI": 5258460078234806.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 12427310456832.0,
+              "R_weighted_rms_SI": 1858373654986.5178
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 24872517632.0,
+              "R_weighted_rms_SI": 4364318919.54044
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 130.45391717568376,
+              "R_weighted_rms_SI": 29.668386869388286
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 169.477069105498,
+              "R_weighted_rms_SI": 35.39648611451159
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79046.34512353163,
+              "R_weighted_rms_SI": 48320.299516456485
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79046.34731123764,
+              "R_weighted_rms_SI": 48320.28614185952
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 70.12876679394162,
+              "R_weighted_rms_SI": 15.345344873862354
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.19940153047617215,
+              "R_weighted_rms_SI": 0.05116307750923641
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.361857997336479e-05,
+              "R_weighted_rms_SI": 5.502948234544736e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.425707799931238e-05,
+              "R_weighted_rms_SI": 3.211950013158917e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.001473680921586773,
+              "R_weighted_rms_SI": 0.0004909851081483338
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.001473670482059909,
+              "R_weighted_rms_SI": 0.000490984567954637
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.410188939325843e-05,
+              "R_weighted_rms_SI": 4.457323927750698e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.021715748870255e-08,
+              "R_weighted_rms_SI": 8.31293462856572e-09
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.3131655387957926e-08,
+              "R_weighted_rms_SI": 7.0620676654937404e-09
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.8272105129234504e-08,
+              "R_weighted_rms_SI": 5.6614534147231085e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.4257070382595336e-05,
+              "R_weighted_rms_SI": 8.17920926584567e-06
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.425706254430976e-05,
+              "R_weighted_rms_SI": 8.179205450814992e-06
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.258276027803819e-08,
+              "R_weighted_rms_SI": 5.867490582415207e-09
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.0457323895707304e-10,
+              "R_weighted_rms_SI": 1.4901394005451174e-11
+            }
+          }
+        },
+        "fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 17828244508672.0,
+              "R_weighted_rms_SI": 2514027807671.3926
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1697359091712.0,
+              "R_weighted_rms_SI": 633975983848.6241
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 845456951585792.0,
+              "R_weighted_rms_SI": 622417395322405.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 845454299462656.0,
+              "R_weighted_rms_SI": 622417105965057.9
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 16130885416960.0,
+              "R_weighted_rms_SI": 2327680388922.7344
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 4391309312.0,
+              "R_weighted_rms_SI": 1181357126.92623
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 305.0970757811539,
+              "R_weighted_rms_SI": 44.42537338844448
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 22.82728868726,
+              "R_weighted_rms_SI": 6.112933018884315
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 872.2109126335523,
+              "R_weighted_rms_SI": 285.1421801531335
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 872.2197057801595,
+              "R_weighted_rms_SI": 285.15167766007846
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 292.15687448566484,
+              "R_weighted_rms_SI": 43.76849138754263
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.05520845763763846,
+              "R_weighted_rms_SI": 0.02278012885418751
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.926659441488014e-05,
+              "R_weighted_rms_SI": 7.812027747442855e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 3.002894317666997e-06,
+              "R_weighted_rms_SI": 9.606229588450335e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00011718823543412574,
+              "R_weighted_rms_SI": 0.00015161535945206936
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00011717769257298086,
+              "R_weighted_rms_SI": 0.00015161523228666334
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.8607722849007056e-05,
+              "R_weighted_rms_SI": 7.877337767798024e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.3678944263843977e-08,
+              "R_weighted_rms_SI": 4.013440559867051e-09
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.8675795241703845e-08,
+              "R_weighted_rms_SI": 9.520391077335272e-09
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 5.218914016225096e-09,
+              "R_weighted_rms_SI": 1.6804690654752866e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.063973878375374e-07,
+              "R_weighted_rms_SI": 2.966854263502225e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.064014935220797e-07,
+              "R_weighted_rms_SI": 2.9668499654230347e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.6879068321681316e-08,
+              "R_weighted_rms_SI": 1.0136629455496126e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.492021783899844e-11,
+              "R_weighted_rms_SI": 5.589052549196364e-12
+            }
+          }
+        },
+        "beyond_fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 41287578787840.0,
+              "R_weighted_rms_SI": 7051913641814.567
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 53714889244672.0,
+              "R_weighted_rms_SI": 8959644803288.38
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1.7220700539308032e+16,
+              "R_weighted_rms_SI": 6323946313682611.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1.72206961122816e+16,
+              "R_weighted_rms_SI": 6323944071054907.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 12427310456832.0,
+              "R_weighted_rms_SI": 2196675712144.363
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 24872517632.0,
+              "R_weighted_rms_SI": 5160614255.978928
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 130.45391717568376,
+              "R_weighted_rms_SI": 33.297294285099156
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 169.477069105498,
+              "R_weighted_rms_SI": 42.52564237446293
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79046.34512353163,
+              "R_weighted_rms_SI": 58360.68171459272
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79046.34731123764,
+              "R_weighted_rms_SI": 58360.6655205125
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 39.02320738457814,
+              "R_weighted_rms_SI": 14.120915015548702
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.19940153047617215,
+              "R_weighted_rms_SI": 0.05805222290864596
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.874549526142361e-05,
+              "R_weighted_rms_SI": 4.458096207062548e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.425707799931238e-05,
+              "R_weighted_rms_SI": 3.7950771967711576e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.001473680921586773,
+              "R_weighted_rms_SI": 0.0005756543490462225
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.001473670482059909,
+              "R_weighted_rms_SI": 0.0005756537055707377
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.6944336060176343e-05,
+              "R_weighted_rms_SI": 2.1405851470419988e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.021715748870255e-08,
+              "R_weighted_rms_SI": 9.331577093124089e-09
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 2.5887458489359805e-08,
+              "R_weighted_rms_SI": 5.88346396851211e-09
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.8272105129234504e-08,
+              "R_weighted_rms_SI": 6.694258070551026e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.4257070382595336e-05,
+              "R_weighted_rms_SI": 9.875140396685303e-06
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.425706254430976e-05,
+              "R_weighted_rms_SI": 9.875135796567714e-06
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.0367138814082466e-08,
+              "R_weighted_rms_SI": 2.4582884320618656e-09
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.0457323895707304e-10,
+              "R_weighted_rms_SI": 1.724201283618075e-11
+            }
+          }
+        },
+        "core": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 41287578787840.0,
+              "R_weighted_rms_SI": 9175467356378.244
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 53714889244672.0,
+              "R_weighted_rms_SI": 11655062182513.555
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1.7220700539308032e+16,
+              "R_weighted_rms_SI": 7794976049841326.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1.72206961122816e+16,
+              "R_weighted_rms_SI": 7794973335812496.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 12427310456832.0,
+              "R_weighted_rms_SI": 2812615496628.183
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 24872517632.0,
+              "R_weighted_rms_SI": 6436967078.351837
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 130.45391717568376,
+              "R_weighted_rms_SI": 43.03616177385788
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 169.477069105498,
+              "R_weighted_rms_SI": 55.04808675706357
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79046.34512353163,
+              "R_weighted_rms_SI": 70143.16106028343
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79046.34731123764,
+              "R_weighted_rms_SI": 70143.14127901432
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 39.02320738457814,
+              "R_weighted_rms_SI": 16.708364936306957
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.19940153047617215,
+              "R_weighted_rms_SI": 0.05898701860988996
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.4735125207344554e-05,
+              "R_weighted_rms_SI": 5.16666192816481e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.425707799931238e-05,
+              "R_weighted_rms_SI": 4.711533649855563e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.001473680921586773,
+              "R_weighted_rms_SI": 0.0005633774116738065
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.001473670482059909,
+              "R_weighted_rms_SI": 0.0005633766714716276
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 2.794289073053538e-06,
+              "R_weighted_rms_SI": 1.1611569910461006e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.985610708299126e-08,
+              "R_weighted_rms_SI": 7.717803400331397e-09
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 2.5887458489359805e-08,
+              "R_weighted_rms_SI": 7.360968176004923e-09
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.8272105129234504e-08,
+              "R_weighted_rms_SI": 8.499281893223258e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.4257070382595336e-05,
+              "R_weighted_rms_SI": 1.201321501808422e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.425706254430976e-05,
+              "R_weighted_rms_SI": 1.2013208707352455e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.0367138814082466e-08,
+              "R_weighted_rms_SI": 2.5882470778739993e-09
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.0457323895707304e-10,
+              "R_weighted_rms_SI": 1.772439073588985e-11
+            }
+          }
+        },
+        "halo": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4575708833792.0,
+              "R_weighted_rms_SI": 1166255936087.2803
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6356789359616.0,
+              "R_weighted_rms_SI": 1510351282234.8196
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1.0151046479301632e+16,
+              "R_weighted_rms_SI": 3292327466014423.5
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1.015103617951232e+16,
+              "R_weighted_rms_SI": 3292326131436475.5
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 2238576510976.0,
+              "R_weighted_rms_SI": 703232592334.5985
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 10299789312.0,
+              "R_weighted_rms_SI": 2419562329.99131
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 27.788744232694896,
+              "R_weighted_rms_SI": 8.076843928039182
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 42.96931077666283,
+              "R_weighted_rms_SI": 9.662601384827088
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78867.088140676,
+              "R_weighted_rms_SI": 35787.055367039815
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78867.10980414333,
+              "R_weighted_rms_SI": 35787.04631094819
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 30.87200938302617,
+              "R_weighted_rms_SI": 9.35052324013229
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.14723359762154872,
+              "R_weighted_rms_SI": 0.05671411200854918
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.874549526142361e-05,
+              "R_weighted_rms_SI": 3.2096815392430663e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 7.812831878866543e-06,
+              "R_weighted_rms_SI": 1.860067854930738e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0013822950933129715,
+              "R_weighted_rms_SI": 0.0005924578483168822
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0013822982863644984,
+              "R_weighted_rms_SI": 0.0005924573334815062
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.6944336060176343e-05,
+              "R_weighted_rms_SI": 3.0201408546780108e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.021715748870255e-08,
+              "R_weighted_rms_SI": 1.1211516317602851e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.955042503199339e-09,
+              "R_weighted_rms_SI": 2.673492619858335e-09
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.0325065545602197e-08,
+              "R_weighted_rms_SI": 2.5136518154103873e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1.3695295652572936e-05,
+              "R_weighted_rms_SI": 5.6417313194989044e-06
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1.369528812945539e-05,
+              "R_weighted_rms_SI": 5.641730827376045e-06
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.0914224700735495e-09,
+              "R_weighted_rms_SI": 2.2633187545198162e-09
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 4.602114175855654e-11,
+              "R_weighted_rms_SI": 1.6541210238600053e-11
+            }
+          }
+        }
+      }
+    },
+    {
+      "time_s": 3.2e-09,
+      "regions": {
+        "domain": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 164617844330496.0,
+              "R_weighted_rms_SI": 21614172333141.766
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 214247812009984.0,
+              "R_weighted_rms_SI": 26028726268980.29
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 3.417944096380109e+16,
+              "R_weighted_rms_SI": 9206546413963362.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 3.4179402246352896e+16,
+              "R_weighted_rms_SI": 9206533427698782.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 64845884646400.0,
+              "R_weighted_rms_SI": 9103249887281.059
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 198577938432.0,
+              "R_weighted_rms_SI": 30590112016.73207
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 605.6388242735785,
+              "R_weighted_rms_SI": 78.33488986775845
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 337.67569995417324,
+              "R_weighted_rms_SI": 62.085740235763474
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79287.25938128847,
+              "R_weighted_rms_SI": 42298.89541300968
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79287.27016457274,
+              "R_weighted_rms_SI": 42298.84988405005
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 580.6745493991546,
+              "R_weighted_rms_SI": 64.1830663429019
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.8196322617104203,
+              "R_weighted_rms_SI": 0.17942388896748615
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.821163368262725e-05,
+              "R_weighted_rms_SI": 1.2400940428839592e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.9733975286009364e-05,
+              "R_weighted_rms_SI": 5.80561798908847e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00289058120457969,
+              "R_weighted_rms_SI": 0.0008545047476149129
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.002890534932533902,
+              "R_weighted_rms_SI": 0.0008545016658327166
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.645389592177077e-05,
+              "R_weighted_rms_SI": 1.1090509263905007e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.29818190761138e-07,
+              "R_weighted_rms_SI": 2.938681284527249e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.930816160497506e-07,
+              "R_weighted_rms_SI": 3.125733268263009e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.1225938231773647e-07,
+              "R_weighted_rms_SI": 1.9955558327147912e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4.847257101686653e-05,
+              "R_weighted_rms_SI": 1.4365396983732901e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4.847250995106134e-05,
+              "R_weighted_rms_SI": 1.4365370249115032e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.8549985621174603e-07,
+              "R_weighted_rms_SI": 2.873723212762694e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 8.500554218859868e-10,
+              "R_weighted_rms_SI": 1.046873109079012e-10
+            }
+          }
+        },
+        "first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 71624099035136.0,
+              "R_weighted_rms_SI": 14079764878545.422
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6778214388736.0,
+              "R_weighted_rms_SI": 1755534312045.8962
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 165770808790016.0,
+              "R_weighted_rms_SI": 55925096891357.04
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 165776691582976.0,
+              "R_weighted_rms_SI": 55927248577900.586
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 64845884646400.0,
+              "R_weighted_rms_SI": 13216954166038.566
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 12002040832.0,
+              "R_weighted_rms_SI": 3625080874.0777464
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 605.6388242735785,
+              "R_weighted_rms_SI": 121.0957295850319
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 45.25793831142271,
+              "R_weighted_rms_SI": 11.329622790710756
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 783.2285804583468,
+              "R_weighted_rms_SI": 240.3920824408114
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 783.2490294554946,
+              "R_weighted_rms_SI": 240.40262825276707
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 580.6745493991546,
+              "R_weighted_rms_SI": 120.34411450201239
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.06751400878938274,
+              "R_weighted_rms_SI": 0.023373789804179108
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.821163368262725e-05,
+              "R_weighted_rms_SI": 1.6481707936334083e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 3.5574137254968803e-06,
+              "R_weighted_rms_SI": 1.271137691671797e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00013247271974002256,
+              "R_weighted_rms_SI": 3.801307507455024e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0001324725162129107,
+              "R_weighted_rms_SI": 3.801247467260879e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.645389592177077e-05,
+              "R_weighted_rms_SI": 1.6718140476663682e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.3186880183004553e-08,
+              "R_weighted_rms_SI": 5.017770361047872e-09
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.930816160497506e-07,
+              "R_weighted_rms_SI": 3.962209272955753e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.276021083934653e-08,
+              "R_weighted_rms_SI": 4.587819678777089e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4.4652656094185117e-07,
+              "R_weighted_rms_SI": 2.045490226581042e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4.4653434989189167e-07,
+              "R_weighted_rms_SI": 2.0454563406717496e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.8549985621174603e-07,
+              "R_weighted_rms_SI": 4.176943633680202e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 4.762344685271813e-11,
+              "R_weighted_rms_SI": 1.3302696847730667e-11
+            }
+          }
+        },
+        "beyond_first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 164617844330496.0,
+              "R_weighted_rms_SI": 23384956675539.59
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 214247812009984.0,
+              "R_weighted_rms_SI": 29619597795132.633
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 3.417944096380109e+16,
+              "R_weighted_rms_SI": 1.0482069999138138e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 3.4179402246352896e+16,
+              "R_weighted_rms_SI": 1.0482055210161616e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 49629967679488.0,
+              "R_weighted_rms_SI": 7460805061421.985
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 198577938432.0,
+              "R_weighted_rms_SI": 34772431433.81279
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 259.92617942498373,
+              "R_weighted_rms_SI": 60.0798906953114
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 337.67569995417324,
+              "R_weighted_rms_SI": 70.41819185755385
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79287.25938128847,
+              "R_weighted_rms_SI": 48159.233203336036
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79287.27016457274,
+              "R_weighted_rms_SI": 48159.181350546256
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 167.38406647871358,
+              "R_weighted_rms_SI": 32.3863614521889
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.8196322617104203,
+              "R_weighted_rms_SI": 0.2038864921350901
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 6.470512737686607e-05,
+              "R_weighted_rms_SI": 1.0902331981597548e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.9733975286009364e-05,
+              "R_weighted_rms_SI": 6.573672743050165e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00289058120457969,
+              "R_weighted_rms_SI": 0.0009726763912841479
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.002890534932533902,
+              "R_weighted_rms_SI": 0.0009726728886792688
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 6.53226143924828e-05,
+              "R_weighted_rms_SI": 8.753854352495487e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.29818190761138e-07,
+              "R_weighted_rms_SI": 3.334668775096953e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.3871846203314386e-07,
+              "R_weighted_rms_SI": 2.830812458104059e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.1225938231773647e-07,
+              "R_weighted_rms_SI": 2.258274174702581e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4.847257101686653e-05,
+              "R_weighted_rms_SI": 1.6355344969681952e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4.847250995106134e-05,
+              "R_weighted_rms_SI": 1.635531454283201e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.3558895502197021e-07,
+              "R_weighted_rms_SI": 2.352816386985774e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 8.500554218859868e-10,
+              "R_weighted_rms_SI": 1.189715906536925e-10
+            }
+          }
+        },
+        "fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 71624099035136.0,
+              "R_weighted_rms_SI": 10182242692625.66
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6778214388736.0,
+              "R_weighted_rms_SI": 2527911817781.2114
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1592945674884096.0,
+              "R_weighted_rms_SI": 1230875086892209.8
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1592924882969600.0,
+              "R_weighted_rms_SI": 1230872903039916.8
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 64845884646400.0,
+              "R_weighted_rms_SI": 9445252417012.557
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 35452595200.0,
+              "R_weighted_rms_SI": 9402864130.97513
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 605.6388242735785,
+              "R_weighted_rms_SI": 89.8645450020469
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 45.25793831142271,
+              "R_weighted_rms_SI": 12.146754486849407
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2221.0756226317317,
+              "R_weighted_rms_SI": 699.0465441695703
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2221.134358445957,
+              "R_weighted_rms_SI": 699.08863486165
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 580.6745493991546,
+              "R_weighted_rms_SI": 88.5944703911604
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.21141343652488204,
+              "R_weighted_rms_SI": 0.09070009866478054
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.821163368262725e-05,
+              "R_weighted_rms_SI": 1.5388876794778023e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 5.862492665547359e-06,
+              "R_weighted_rms_SI": 1.9285306471433656e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00023118883027286948,
+              "R_weighted_rms_SI": 0.0002999222763838852
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00023114318643540076,
+              "R_weighted_rms_SI": 0.0002999213612433787
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.645389592177077e-05,
+              "R_weighted_rms_SI": 1.552708254748586e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.8661541258858836e-08,
+              "R_weighted_rms_SI": 1.632244157842162e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.930816160497506e-07,
+              "R_weighted_rms_SI": 3.812684300669572e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.0596109949477803e-08,
+              "R_weighted_rms_SI": 6.692203310061388e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1.3841184349702718e-06,
+              "R_weighted_rms_SI": 5.966567082644821e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1.3841476870432579e-06,
+              "R_weighted_rms_SI": 5.966537953528849e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.8549985621174603e-07,
+              "R_weighted_rms_SI": 4.055447693058903e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.2005029609296614e-10,
+              "R_weighted_rms_SI": 4.459710560975248e-11
+            }
+          }
+        },
+        "beyond_fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 164617844330496.0,
+              "R_weighted_rms_SI": 28125622096004.047
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 214247812009984.0,
+              "R_weighted_rms_SI": 35713542560555.19
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 3.417944096380109e+16,
+              "R_weighted_rms_SI": 1.2606873476804698e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 3.4179402246352896e+16,
+              "R_weighted_rms_SI": 1.2606855733162228e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 49629967679488.0,
+              "R_weighted_rms_SI": 8787314623821.784
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 198577938432.0,
+              "R_weighted_rms_SI": 41118691414.44772
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 259.92617942498373,
+              "R_weighted_rms_SI": 66.3960104399894
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 337.67569995417324,
+              "R_weighted_rms_SI": 84.60324439806453
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79287.25938128847,
+              "R_weighted_rms_SI": 58163.20411711864
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79287.27016457274,
+              "R_weighted_rms_SI": 58163.141053593004
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 77.75032621968681,
+              "R_weighted_rms_SI": 28.220929258240716
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.8196322617104203,
+              "R_weighted_rms_SI": 0.23140294802520894
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.8120094913702875e-05,
+              "R_weighted_rms_SI": 8.93301613273655e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.9733975286009364e-05,
+              "R_weighted_rms_SI": 7.773228764629942e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00289058120457969,
+              "R_weighted_rms_SI": 0.0011404503826920231
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.002890534932533902,
+              "R_weighted_rms_SI": 0.0011404462306206275
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.4139554193260394e-05,
+              "R_weighted_rms_SI": 4.216501648473026e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.29818190761138e-07,
+              "R_weighted_rms_SI": 3.735859202047166e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.0279462250156746e-07,
+              "R_weighted_rms_SI": 2.3501758373641675e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.1225938231773647e-07,
+              "R_weighted_rms_SI": 2.6704732941214187e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4.847257101686653e-05,
+              "R_weighted_rms_SI": 1.974641672989382e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4.847250995106134e-05,
+              "R_weighted_rms_SI": 1.9746380029496662e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.08691510148107e-08,
+              "R_weighted_rms_SI": 9.809899101171224e-09
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 8.500554218859868e-10,
+              "R_weighted_rms_SI": 1.376673233100302e-10
+            }
+          }
+        },
+        "core": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 164617844330496.0,
+              "R_weighted_rms_SI": 36583694242758.61
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 214247812009984.0,
+              "R_weighted_rms_SI": 46456202082910.68
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 3.417944096380109e+16,
+              "R_weighted_rms_SI": 1.55460270020792e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 3.4179402246352896e+16,
+              "R_weighted_rms_SI": 1.5546005644274454e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 49629967679488.0,
+              "R_weighted_rms_SI": 11212753991643.207
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 198577938432.0,
+              "R_weighted_rms_SI": 51162005601.68601
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 259.92617942498373,
+              "R_weighted_rms_SI": 85.71645806650942
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 337.67569995417324,
+              "R_weighted_rms_SI": 109.51641761614098
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79287.25938128847,
+              "R_weighted_rms_SI": 69911.90340657301
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79287.27016457274,
+              "R_weighted_rms_SI": 69911.82575702941
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 77.75032621968681,
+              "R_weighted_rms_SI": 33.25133963169056
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.8196322617104203,
+              "R_weighted_rms_SI": 0.23515657800609963
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.001805226718791e-05,
+              "R_weighted_rms_SI": 1.0421531989862867e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.9733975286009364e-05,
+              "R_weighted_rms_SI": 9.671650167683764e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00289058120457969,
+              "R_weighted_rms_SI": 0.0011145322103515366
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.002890534932533902,
+              "R_weighted_rms_SI": 0.0011145279919876916
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 5.885219352744816e-06,
+              "R_weighted_rms_SI": 2.4009546890775304e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.2198929058269878e-07,
+              "R_weighted_rms_SI": 3.0882676328881e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.0279462250156746e-07,
+              "R_weighted_rms_SI": 2.939939630378716e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.1225938231773647e-07,
+              "R_weighted_rms_SI": 3.3912123320708117e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4.847257101686653e-05,
+              "R_weighted_rms_SI": 2.400158658191849e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4.847250995106134e-05,
+              "R_weighted_rms_SI": 2.4001535933958416e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.08691510148107e-08,
+              "R_weighted_rms_SI": 1.0305890259022129e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 8.500554218859868e-10,
+              "R_weighted_rms_SI": 1.4227506763096887e-10
+            }
+          }
+        },
+        "halo": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 18122899270656.0,
+              "R_weighted_rms_SI": 4776102462140.548
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 25401622262784.0,
+              "R_weighted_rms_SI": 6035407567481.239
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.0370216623783936e+16,
+              "R_weighted_rms_SI": 6541205735671561.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.037012956872499e+16,
+              "R_weighted_rms_SI": 6541194785923230.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 9487429810176.0,
+              "R_weighted_rms_SI": 3021153797203.2295
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 87055058944.0,
+              "R_weighted_rms_SI": 19744354704.135513
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 57.27690178874482,
+              "R_weighted_rms_SI": 16.830741147127608
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 81.84671688122702,
+              "R_weighted_rms_SI": 19.22165619945211
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78590.61515778981,
+              "R_weighted_rms_SI": 35649.20503722383
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78590.7075860476,
+              "R_weighted_rms_SI": 35649.17147008652
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 60.40721976013105,
+              "R_weighted_rms_SI": 19.036006283676766
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.5876054905125419,
+              "R_weighted_rms_SI": 0.2260290378013584
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.8120094913702875e-05,
+              "R_weighted_rms_SI": 6.273777843426795e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.4751319154413269e-05,
+              "R_weighted_rms_SI": 3.7332862050087093e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0027130440556211396,
+              "R_weighted_rms_SI": 0.0011758670672956356
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0027130548251691673,
+              "R_weighted_rms_SI": 0.0011758630000202634
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.4139554193260394e-05,
+              "R_weighted_rms_SI": 5.885808873745352e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.29818190761138e-07,
+              "R_weighted_rms_SI": 4.489957028765805e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.3922223127702544e-08,
+              "R_weighted_rms_SI": 1.0696059794427808e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.126237198795457e-08,
+              "R_weighted_rms_SI": 9.99517958329303e-09
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.804512766398093e-05,
+              "R_weighted_rms_SI": 1.1341274080423711e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.80450591591333e-05,
+              "R_weighted_rms_SI": 1.1341270940723747e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.058664654886911e-08,
+              "R_weighted_rms_SI": 9.068051700225664e-09
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.3511220881576875e-10,
+              "R_weighted_rms_SI": 1.3092639665666828e-10
+            }
+          }
+        }
+      }
+    },
+    {
+      "time_s": 4.8e-09,
+      "regions": {
+        "domain": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 368269252382720.0,
+              "R_weighted_rms_SI": 48527041491294.95
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 479483618873344.0,
+              "R_weighted_rms_SI": 58218637597163.92
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 5.066337164167782e+16,
+              "R_weighted_rms_SI": 1.373565815858784e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 5.066324010490266e+16,
+              "R_weighted_rms_SI": 1.3735615160599362e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 146957682256896.0,
+              "R_weighted_rms_SI": 20730917046707.184
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 667077910528.0,
+              "R_weighted_rms_SI": 102485828428.27107
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 903.5710048919912,
+              "R_weighted_rms_SI": 118.77489249619178
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 502.5058189510896,
+              "R_weighted_rms_SI": 92.30209931331181
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79659.271097611,
+              "R_weighted_rms_SI": 42077.772910311964
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79659.29800356191,
+              "R_weighted_rms_SI": 42077.67568194137
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 867.420763139515,
+              "R_weighted_rms_SI": 98.07836925387632
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.8733938076636785,
+              "R_weighted_rms_SI": 0.40076425444702746
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00011400821414609286,
+              "R_weighted_rms_SI": 1.8307130068382398e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.624566054973547e-05,
+              "R_weighted_rms_SI": 9.026635835279584e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00420051104972649,
+              "R_weighted_rms_SI": 0.0012617472828633756
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.004200396029947257,
+              "R_weighted_rms_SI": 0.0012617378288528073
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.00011084101663378219,
+              "R_weighted_rms_SI": 1.6263782576454736e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.085704461319814e-07,
+              "R_weighted_rms_SI": 6.632204383332905e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.2728980252648707e-07,
+              "R_weighted_rms_SI": 7.016940340969328e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.503355062757895e-07,
+              "R_weighted_rms_SI": 4.4669153693289334e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.259584126024371e-05,
+              "R_weighted_rms_SI": 2.1530857680624543e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.259563816766623e-05,
+              "R_weighted_rms_SI": 2.1530768156404156e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.0955641494866413e-07,
+              "R_weighted_rms_SI": 6.448264085778459e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.8778407851204335e-09,
+              "R_weighted_rms_SI": 3.505796031183694e-10
+            }
+          }
+        },
+        "first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 162193900775424.0,
+              "R_weighted_rms_SI": 32187435505590.812
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 15236218518528.0,
+              "R_weighted_rms_SI": 3936144724859.7505
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 445085134486528.0,
+              "R_weighted_rms_SI": 143757383180455.8
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 445105398827008.0,
+              "R_weighted_rms_SI": 143764405549475.53
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 146957682256896.0,
+              "R_weighted_rms_SI": 30258865071348.254
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 40389411840.0,
+              "R_weighted_rms_SI": 12157440967.704683
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 903.5710048919912,
+              "R_weighted_rms_SI": 182.00614409843013
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 67.37784002909876,
+              "R_weighted_rms_SI": 16.90959892690514
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1449.2860560207023,
+              "R_weighted_rms_SI": 452.3511403875626
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1449.3433831312548,
+              "R_weighted_rms_SI": 452.37813516371625
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 867.420763139515,
+              "R_weighted_rms_SI": 180.91630479329072
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.14963385750868907,
+              "R_weighted_rms_SI": 0.05471627365384156
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00011400821414609286,
+              "R_weighted_rms_SI": 2.4228888061902836e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 5.0391329611350045e-06,
+              "R_weighted_rms_SI": 1.8950573168341365e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00015915959775114272,
+              "R_weighted_rms_SI": 4.651170901622657e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00015915748860868275,
+              "R_weighted_rms_SI": 4.650973873279018e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.00011084101663378219,
+              "R_weighted_rms_SI": 2.461194763974016e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.9537666929090474e-08,
+              "R_weighted_rms_SI": 1.197883990149772e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.2728980252648707e-07,
+              "R_weighted_rms_SI": 8.864447979539882e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.832826995896598e-08,
+              "R_weighted_rms_SI": 1.0265127967459473e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 6.394156874395263e-07,
+              "R_weighted_rms_SI": 2.7723335658921825e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 6.394379316668197e-07,
+              "R_weighted_rms_SI": 2.772226735473504e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.0955641494866413e-07,
+              "R_weighted_rms_SI": 9.34674624239697e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.6229132621115028e-10,
+              "R_weighted_rms_SI": 4.489681875854693e-11
+            }
+          }
+        },
+        "beyond_first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 368269252382720.0,
+              "R_weighted_rms_SI": 52398873829081.7
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 479483618873344.0,
+              "R_weighted_rms_SI": 66250198000007.82
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 5.066337164167782e+16,
+              "R_weighted_rms_SI": 1.5638538990267996e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 5.066324010490266e+16,
+              "R_weighted_rms_SI": 1.5638490015164296e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 111214366490624.0,
+              "R_weighted_rms_SI": 16906267666013.838
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 667077910528.0,
+              "R_weighted_rms_SI": 116497440606.91248
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 386.81658731671223,
+              "R_weighted_rms_SI": 92.04502443857429
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 502.5058189510896,
+              "R_weighted_rms_SI": 104.68669969831966
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79659.271097611,
+              "R_weighted_rms_SI": 47907.0191585583
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79659.29800356191,
+              "R_weighted_rms_SI": 47906.90838220054
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 308.3738755400242,
+              "R_weighted_rms_SI": 52.64561932534229
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.8733938076636785,
+              "R_weighted_rms_SI": 0.4553170894559154
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 9.094043843251514e-05,
+              "R_weighted_rms_SI": 1.614055538903277e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.624566054973547e-05,
+              "R_weighted_rms_SI": 1.0225377779354011e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00420051104972649,
+              "R_weighted_rms_SI": 0.0014363393606388842
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.004200396029947257,
+              "R_weighted_rms_SI": 0.0014363286140063381
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 9.139475438312692e-05,
+              "R_weighted_rms_SI": 1.2782928570045998e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.085704461319814e-07,
+              "R_weighted_rms_SI": 7.522891770504728e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 3.2187040962389224e-07,
+              "R_weighted_rms_SI": 6.367403410977772e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.503355062757895e-07,
+              "R_weighted_rms_SI": 5.0550188625177654e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.259584126024371e-05,
+              "R_weighted_rms_SI": 2.4513495353122264e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.259563816766623e-05,
+              "R_weighted_rms_SI": 2.4513393459179822e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 3.1282945766458736e-07,
+              "R_weighted_rms_SI": 5.292939103846766e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.8778407851204335e-09,
+              "R_weighted_rms_SI": 3.9840358467518777e-10
+            }
+          }
+        },
+        "fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 162193900775424.0,
+              "R_weighted_rms_SI": 23380362268301.793
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 15236218518528.0,
+              "R_weighted_rms_SI": 5662837427178.997
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2142345050855424.0,
+              "R_weighted_rms_SI": 1814467231591651.2
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2142276975639552.0,
+              "R_weighted_rms_SI": 1814460605262287.8
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 146957682256896.0,
+              "R_weighted_rms_SI": 21742737359015.008
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 120241500160.0,
+              "R_weighted_rms_SI": 31464357728.1724
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 903.5710048919912,
+              "R_weighted_rms_SI": 137.55673636487302
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 67.37784002909876,
+              "R_weighted_rms_SI": 18.104453052003205
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4192.967964847872,
+              "R_weighted_rms_SI": 1319.7416658016361
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4193.127386126472,
+              "R_weighted_rms_SI": 1319.8413730518103
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 867.420763139515,
+              "R_weighted_rms_SI": 135.67912116281295
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.46076332450671537,
+              "R_weighted_rms_SI": 0.20251488978011786
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00011400821414609286,
+              "R_weighted_rms_SI": 2.2544681548579946e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 8.499218247166544e-06,
+              "R_weighted_rms_SI": 2.90896136244902e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00033785693016324427,
+              "R_weighted_rms_SI": 0.000442234496135504
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00033774664134760555,
+              "R_weighted_rms_SI": 0.00044223168606539277
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.00011084101663378219,
+              "R_weighted_rms_SI": 2.2770030419744625e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.3930326633127593e-07,
+              "R_weighted_rms_SI": 3.748010661751615e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.2728980252648707e-07,
+              "R_weighted_rms_SI": 8.56265389153671e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.5511815691123836e-08,
+              "R_weighted_rms_SI": 1.4948375999917073e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.1513295913148933e-06,
+              "R_weighted_rms_SI": 9.098065112535644e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.1514850133061425e-06,
+              "R_weighted_rms_SI": 9.09799714164224e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.0955641494866413e-07,
+              "R_weighted_rms_SI": 9.100728827920726e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 4.0217535898778856e-10,
+              "R_weighted_rms_SI": 1.5000047694476112e-10
+            }
+          }
+        },
+        "beyond_fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 368269252382720.0,
+              "R_weighted_rms_SI": 62976441013021.56
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 479483618873344.0,
+              "R_weighted_rms_SI": 79880189966604.53
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 5.066337164167782e+16,
+              "R_weighted_rms_SI": 1.8810654435626616e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 5.066324010490266e+16,
+              "R_weighted_rms_SI": 1.8810595632247056e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 111214366490624.0,
+              "R_weighted_rms_SI": 19785828613695.066
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 667077910528.0,
+              "R_weighted_rms_SI": 137767386471.0635
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 386.81658731671223,
+              "R_weighted_rms_SI": 99.08481191011815
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 502.5058189510896,
+              "R_weighted_rms_SI": 125.77269795512333
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79659.271097611,
+              "R_weighted_rms_SI": 57849.4607023283
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79659.29800356191,
+              "R_weighted_rms_SI": 57849.32494177647
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 115.89176857784537,
+              "R_weighted_rms_SI": 42.2829373332645
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.8733938076636785,
+              "R_weighted_rms_SI": 0.5168915424723659
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 5.546708076137801e-05,
+              "R_weighted_rms_SI": 1.3450141182287793e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.624566054973547e-05,
+              "R_weighted_rms_SI": 1.2105379808728547e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00420051104972649,
+              "R_weighted_rms_SI": 0.0016841162798817916
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.004200396029947257,
+              "R_weighted_rms_SI": 0.0016841035433425471
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.916921263634602e-05,
+              "R_weighted_rms_SI": 6.182696093234783e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.085704461319814e-07,
+              "R_weighted_rms_SI": 8.40605552487565e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 2.2918480941519492e-07,
+              "R_weighted_rms_SI": 5.270715799716117e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.503355062757895e-07,
+              "R_weighted_rms_SI": 5.978378212732077e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.259584126024371e-05,
+              "R_weighted_rms_SI": 2.9595508383923233e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.259563816766623e-05,
+              "R_weighted_rms_SI": 2.9595385409852528e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 9.029481631839253e-08,
+              "R_weighted_rms_SI": 2.198164487257481e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.8778407851204335e-09,
+              "R_weighted_rms_SI": 4.6083513463796887e-10
+            }
+          }
+        },
+        "core": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 368269252382720.0,
+              "R_weighted_rms_SI": 81862193674517.0
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 479483618873344.0,
+              "R_weighted_rms_SI": 103904532365834.08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 5.066337164167782e+16,
+              "R_weighted_rms_SI": 2.321398820674352e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 5.066324010490266e+16,
+              "R_weighted_rms_SI": 2.3213917820995964e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 111214366490624.0,
+              "R_weighted_rms_SI": 25086396604940.453
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 667077910528.0,
+              "R_weighted_rms_SI": 170931141755.43335
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 386.81658731671223,
+              "R_weighted_rms_SI": 127.6661641067574
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 502.5058189510896,
+              "R_weighted_rms_SI": 162.7730445985466
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 79659.271097611,
+              "R_weighted_rms_SI": 69540.80377751753
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 79659.29800356191,
+              "R_weighted_rms_SI": 69540.6345199672
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 115.89176857784537,
+              "R_weighted_rms_SI": 49.455535628925716
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.8733938076636785,
+              "R_weighted_rms_SI": 0.5242677463731633
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.567136597720239e-05,
+              "R_weighted_rms_SI": 1.5848257481176887e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.624566054973547e-05,
+              "R_weighted_rms_SI": 1.5098283727844748e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00420051104972649,
+              "R_weighted_rms_SI": 0.001642283775535028
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.004200396029947257,
+              "R_weighted_rms_SI": 0.001642271693370545
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 9.22001362354206e-06,
+              "R_weighted_rms_SI": 3.8049303552166103e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.74207209982911e-07,
+              "R_weighted_rms_SI": 6.926638890841775e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 2.2918480941519492e-07,
+              "R_weighted_rms_SI": 6.591910239636736e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.503355062757895e-07,
+              "R_weighted_rms_SI": 7.592953105801166e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.259584126024371e-05,
+              "R_weighted_rms_SI": 3.593432412878641e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.259563816766623e-05,
+              "R_weighted_rms_SI": 3.593415387866263e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 9.029481631839253e-08,
+              "R_weighted_rms_SI": 2.3022113853841106e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.8778407851204335e-09,
+              "R_weighted_rms_SI": 4.770162715345049e-10
+            }
+          }
+        },
+        "halo": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 40187267691520.0,
+              "R_weighted_rms_SI": 11247681567907.328
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 56886360928256.0,
+              "R_weighted_rms_SI": 13539012268557.47
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 3.055657160064512e+16,
+              "R_weighted_rms_SI": 9700391820217672.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 3.055626237313741e+16,
+              "R_weighted_rms_SI": 9700354164120218.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 23166455882752.0,
+              "R_weighted_rms_SI": 7591020560801.588
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 309227507712.0,
+              "R_weighted_rms_SI": 67895918920.50965
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 88.18706359205397,
+              "R_weighted_rms_SI": 26.850776852929915
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 116.34098208033683,
+              "R_weighted_rms_SI": 28.861875895337572
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 78140.71441995203,
+              "R_weighted_rms_SI": 35440.33465341101
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 78140.93673110385,
+              "R_weighted_rms_SI": 35440.268172648444
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 88.32918488965,
+              "R_weighted_rms_SI": 29.397983909466063
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.31520207233761,
+              "R_weighted_rms_SI": 0.5063567133830643
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 5.546708076137801e-05,
+              "R_weighted_rms_SI": 9.071085108203495e-06
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.0661846171631855e-05,
+              "R_weighted_rms_SI": 5.679614607531952e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.003945893721799338,
+              "R_weighted_rms_SI": 0.0017411397600618527
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.003945913322414306,
+              "R_weighted_rms_SI": 0.0017411261447637172
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 4.916921263634602e-05,
+              "R_weighted_rms_SI": 8.459309109656145e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.085704461319814e-07,
+              "R_weighted_rms_SI": 1.0124295240474837e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 8.13837888503921e-08,
+              "R_weighted_rms_SI": 2.40443140487818e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 9.252013508619095e-08,
+              "R_weighted_rms_SI": 2.232566617984268e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4.2971327586786845e-05,
+              "R_weighted_rms_SI": 1.711269652219873e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4.29710644740712e-05,
+              "R_weighted_rms_SI": 1.711268712803156e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.341272182867509e-08,
+              "R_weighted_rms_SI": 2.0432005327229443e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.0408049144761122e-09,
+              "R_weighted_rms_SI": 4.3711319845294534e-10
+            }
+          }
+        }
+      }
+    },
+    {
+      "time_s": 6.4e-09,
+      "regions": {
+        "domain": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 649316739059712.0,
+              "R_weighted_rms_SI": 86000896781654.53
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 845742822465536.0,
+              "R_weighted_rms_SI": 102638485590621.4
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 6.64458258430976e+16,
+              "R_weighted_rms_SI": 1.818127796180034e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 6.644551441332019e+16,
+              "R_weighted_rms_SI": 1.8181178715667364e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 263541882868736.0,
+              "R_weighted_rms_SI": 37433390433504.07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1569512509440.0,
+              "R_weighted_rms_SI": 240402241610.9942
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1200.5616985405975,
+              "R_weighted_rms_SI": 160.60045018695135
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 661.9353941185694,
+              "R_weighted_rms_SI": 121.542552517536
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80123.14711914053,
+              "R_weighted_rms_SI": 41797.69788622251
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80123.19637691122,
+              "R_weighted_rms_SI": 41797.53718165222
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1153.934364238161,
+              "R_weighted_rms_SI": 133.89739099528782
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.3480628991464387,
+              "R_weighted_rms_SI": 0.7050275281763476
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00014410229675464176,
+              "R_weighted_rms_SI": 2.391700148800443e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.35964362262145e-05,
+              "R_weighted_rms_SI": 1.259172967160998e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.005393307363346206,
+              "R_weighted_rms_SI": 0.0016463965297695443
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.005393374003488639,
+              "R_weighted_rms_SI": 0.0016463755945024332
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0001393856990661862,
+              "R_weighted_rms_SI": 2.1049605905161897e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.708162195740336e-07,
+              "R_weighted_rms_SI": 1.1824963535176048e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.41212995022944e-07,
+              "R_weighted_rms_SI": 1.2412012826810289e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.403854673845631e-07,
+              "R_weighted_rms_SI": 7.881913278304207e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 9.658045596143416e-05,
+              "R_weighted_rms_SI": 2.8667890477224186e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 9.657997497734827e-05,
+              "R_weighted_rms_SI": 2.8667680895375623e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.089103646398809e-07,
+              "R_weighted_rms_SI": 1.1400082760296863e-07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 6.758682516427861e-09,
+              "R_weighted_rms_SI": 8.199785712803431e-10
+            }
+          }
+        },
+        "first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 290610000366592.0,
+              "R_weighted_rms_SI": 58396516657289.33
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 27519219111936.0,
+              "R_weighted_rms_SI": 6974005967257.561
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 943459304669184.0,
+              "R_weighted_rms_SI": 299191638565039.2
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 943508154681344.0,
+              "R_weighted_rms_SI": 299207949866231.2
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 263541882868736.0,
+              "R_weighted_rms_SI": 54986843700313.28
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 95095153664.0,
+              "R_weighted_rms_SI": 28620242556.90472
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1200.5616985405975,
+              "R_weighted_rms_SI": 243.44173153480787
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 89.24537050096153,
+              "R_weighted_rms_SI": 22.427905786981547
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2312.4788104352956,
+              "R_weighted_rms_SI": 732.4658233157592
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2312.5940735872286,
+              "R_weighted_rms_SI": 732.5159282211787
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1153.934364238161,
+              "R_weighted_rms_SI": 242.0307412367064
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.2579521410523968,
+              "R_weighted_rms_SI": 0.10142822331134008
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00014410229675464176,
+              "R_weighted_rms_SI": 3.142082584155629e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.195125872025017e-06,
+              "R_weighted_rms_SI": 2.4999504293126084e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0001722883391576204,
+              "R_weighted_rms_SI": 4.735913180192102e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00017227574954081708,
+              "R_weighted_rms_SI": 4.735502720214632e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0001393856990661862,
+              "R_weighted_rms_SI": 3.1980700352820566e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.6666020154282484e-08,
+              "R_weighted_rms_SI": 2.2718904240051174e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.41212995022944e-07,
+              "R_weighted_rms_SI": 1.5620498271942055e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.961184052465484e-08,
+              "R_weighted_rms_SI": 1.810700638223066e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.823552639826814e-07,
+              "R_weighted_rms_SI": 3.2085117749690023e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.823967488190808e-07,
+              "R_weighted_rms_SI": 3.2082898953344693e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.089103646398809e-07,
+              "R_weighted_rms_SI": 1.647837477218601e-07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.8550117958946473e-10,
+              "R_weighted_rms_SI": 1.0643427739307846e-10
+            }
+          }
+        },
+        "beyond_first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 649316739059712.0,
+              "R_weighted_rms_SI": 92613128697359.12
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 845742822465536.0,
+              "R_weighted_rms_SI": 116797380944430.34
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 6.64458258430976e+16,
+              "R_weighted_rms_SI": 2.069965491415339e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 6.644551441332019e+16,
+              "R_weighted_rms_SI": 2.0699541844105092e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 196426083405824.0,
+              "R_weighted_rms_SI": 30341043791811.566
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1569512509440.0,
+              "R_weighted_rms_SI": 273266277393.50104
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 514.2765339197906,
+              "R_weighted_rms_SI": 125.99627387016571
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 661.9353941185694,
+              "R_weighted_rms_SI": 137.84272235559064
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80123.14711914053,
+              "R_weighted_rms_SI": 47587.102264093504
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80123.19637691122,
+              "R_weighted_rms_SI": 47586.91905895102
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 498.2189904037317,
+              "R_weighted_rms_SI": 76.7069600416291
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.3480628991464387,
+              "R_weighted_rms_SI": 0.8008082043959649
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.000110401581335756,
+              "R_weighted_rms_SI": 2.1189320540099234e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.35964362262145e-05,
+              "R_weighted_rms_SI": 1.4271585272464962e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.005393307363346206,
+              "R_weighted_rms_SI": 0.001874327638108423
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.005393374003488639,
+              "R_weighted_rms_SI": 0.0018743038307324283
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.00011049680946029723,
+              "R_weighted_rms_SI": 1.6472069790829377e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.708162195740336e-07,
+              "R_weighted_rms_SI": 1.340639676298708e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 5.816180909876123e-07,
+              "R_weighted_rms_SI": 1.1287542222293619e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.403854673845631e-07,
+              "R_weighted_rms_SI": 8.919662836230174e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 9.658045596143416e-05,
+              "R_weighted_rms_SI": 3.263936188253177e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 9.657997497734827e-05,
+              "R_weighted_rms_SI": 3.263912332430818e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 5.623031316230598e-07,
+              "R_weighted_rms_SI": 9.381564589357407e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 6.758682516427861e-09,
+              "R_weighted_rms_SI": 9.317872902301461e-10
+            }
+          }
+        },
+        "fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 290610000366592.0,
+              "R_weighted_rms_SI": 42661358283355.32
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 27519219111936.0,
+              "R_weighted_rms_SI": 10010522399039.61
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2400344453358592.0,
+              "R_weighted_rms_SI": 2368496171111339.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2400189661389824.0,
+              "R_weighted_rms_SI": 2368482929872409.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 263541882868736.0,
+              "R_weighted_rms_SI": 39786693204684.414
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 285121973248.0,
+              "R_weighted_rms_SI": 73723975920.67847
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1200.5616985405975,
+              "R_weighted_rms_SI": 188.25487443223383
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 89.24537050096153,
+              "R_weighted_rms_SI": 24.000485888048157
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 6810.120321319971,
+              "R_weighted_rms_SI": 2142.8513082171644
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 6810.4668403605765,
+              "R_weighted_rms_SI": 2143.029756606
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1153.934364238161,
+              "R_weighted_rms_SI": 185.7478224154135
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.790314481544876,
+              "R_weighted_rms_SI": 0.3564791054434886
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00014410229675464176,
+              "R_weighted_rms_SI": 2.9127533397658793e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.0835350695622406e-05,
+              "R_weighted_rms_SI": 3.905951200548581e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0004902174835758564,
+              "R_weighted_rms_SI": 0.000576994777256743
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0004902237747090415,
+              "R_weighted_rms_SI": 0.0005769888659244376
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0001393856990661862,
+              "R_weighted_rms_SI": 2.9460339682652976e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.578252350673223e-07,
+              "R_weighted_rms_SI": 6.816134267363748e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.41212995022944e-07,
+              "R_weighted_rms_SI": 1.5146752028141994e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 7.909142118664447e-08,
+              "R_weighted_rms_SI": 2.6308360228025887e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2.9838404540689922e-06,
+              "R_weighted_rms_SI": 1.2562169677491343e-06
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2.984223615755399e-06,
+              "R_weighted_rms_SI": 1.2562104271726742e-06
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 7.089103646398809e-07,
+              "R_weighted_rms_SI": 1.6089691898150838e-07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 9.385043141935112e-10,
+              "R_weighted_rms_SI": 3.5410821638159127e-10
+            }
+          }
+        },
+        "beyond_fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 649316739059712.0,
+              "R_weighted_rms_SI": 111196164798435.78
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 845742822465536.0,
+              "R_weighted_rms_SI": 140825730606748.2
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 6.64458258430976e+16,
+              "R_weighted_rms_SI": 2.490166049746565e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 6.644551441332019e+16,
+              "R_weighted_rms_SI": 2.4901524593253144e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 196426083405824.0,
+              "R_weighted_rms_SI": 35204287613375.59
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1569512509440.0,
+              "R_weighted_rms_SI": 323179364566.92267
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 509.57464090054026,
+              "R_weighted_rms_SI": 131.13562856714802
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 661.9353941185694,
+              "R_weighted_rms_SI": 165.59564496991166
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80123.14711914053,
+              "R_weighted_rms_SI": 57442.127808491045
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80123.19637691122,
+              "R_weighted_rms_SI": 57441.90074839052
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 154.51260053190563,
+              "R_weighted_rms_SI": 56.22360345563793
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.3480628991464387,
+              "R_weighted_rms_SI": 0.9092450264357894
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 6.841797521670397e-05,
+              "R_weighted_rms_SI": 1.8048703440287523e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.35964362262145e-05,
+              "R_weighted_rms_SI": 1.6918319233433135e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.005393307363346206,
+              "R_weighted_rms_SI": 0.0021975398898037924
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.005393374003488639,
+              "R_weighted_rms_SI": 0.002197511612779688
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 5.993361737203089e-05,
+              "R_weighted_rms_SI": 8.034969499603966e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.708162195740336e-07,
+              "R_weighted_rms_SI": 1.4933978132095395e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.0300522076430756e-07,
+              "R_weighted_rms_SI": 9.322336355763562e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.403854673845631e-07,
+              "R_weighted_rms_SI": 1.0550420432641614e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 9.658045596143416e-05,
+              "R_weighted_rms_SI": 3.940455500323419e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 9.657997497734827e-05,
+              "R_weighted_rms_SI": 3.9404266853956695e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.5705421077538695e-07,
+              "R_weighted_rms_SI": 3.885332034963855e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 6.758682516427861e-09,
+              "R_weighted_rms_SI": 1.0769048964936728e-09
+            }
+          }
+        },
+        "core": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 649316739059712.0,
+              "R_weighted_rms_SI": 144408029591387.25
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 845742822465536.0,
+              "R_weighted_rms_SI": 183172391306149.4
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 6.64458258430976e+16,
+              "R_weighted_rms_SI": 3.0764564745337508e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 6.644551441332019e+16,
+              "R_weighted_rms_SI": 3.076440300902698e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 196426083405824.0,
+              "R_weighted_rms_SI": 44243759146785.55
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1569512509440.0,
+              "R_weighted_rms_SI": 399679099040.9077
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 509.57464090054026,
+              "R_weighted_rms_SI": 168.53653441372643
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 661.9353941185694,
+              "R_weighted_rms_SI": 214.21573343885268
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80123.14711914053,
+              "R_weighted_rms_SI": 69049.23303317021
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80123.19637691122,
+              "R_weighted_rms_SI": 69048.94502090587
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 154.51260053190563,
+              "R_weighted_rms_SI": 65.15474662866032
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.3480628991464387,
+              "R_weighted_rms_SI": 0.9187159100562561
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 6.151711242638214e-05,
+              "R_weighted_rms_SI": 2.1515009745954972e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.35964362262145e-05,
+              "R_weighted_rms_SI": 2.1150630073169636e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.005393307363346206,
+              "R_weighted_rms_SI": 0.002136718905489684
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.005393374003488639,
+              "R_weighted_rms_SI": 0.0021366933817544816
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.3811350418235988e-05,
+              "R_weighted_rms_SI": 5.438620404203573e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 4.766015696150616e-07,
+              "R_weighted_rms_SI": 1.22419641138487e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 4.0300522076430756e-07,
+              "R_weighted_rms_SI": 1.1655589678898587e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 4.403854673845631e-07,
+              "R_weighted_rms_SI": 1.340081394561173e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 9.658045596143416e-05,
+              "R_weighted_rms_SI": 4.778175355021518e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 9.657997497734827e-05,
+              "R_weighted_rms_SI": 4.778135451406499e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.5705421077538695e-07,
+              "R_weighted_rms_SI": 4.0529282296853816e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 6.758682516427861e-09,
+              "R_weighted_rms_SI": 1.1123745256500022e-09
+            }
+          }
+        },
+        "halo": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 70077362748416.0,
+              "R_weighted_rms_SI": 21186895064009.137
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 100284821378048.0,
+              "R_weighted_rms_SI": 23947691907589.164
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 4.060526642749338e+16,
+              "R_weighted_rms_SI": 1.272752331169694e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 4.06044984925481e+16,
+              "R_weighted_rms_SI": 1.2727432930825752e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 62076829235200.0,
+              "R_weighted_rms_SI": 15208083817220.916
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 767934945280.0,
+              "R_weighted_rms_SI": 163784198010.77295
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 120.24137589448523,
+              "R_weighted_rms_SI": 38.268059173619996
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 146.23013647278472,
+              "R_weighted_rms_SI": 38.7490879589395
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 77837.8068198154,
+              "R_weighted_rms_SI": 35196.06709008541
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 77837.54698776192,
+              "R_weighted_rms_SI": 35195.96946698396
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 114.41715144779758,
+              "R_weighted_rms_SI": 40.49039234062754
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.3218767897026438,
+              "R_weighted_rms_SI": 0.8957823304722694
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 6.841797521670397e-05,
+              "R_weighted_rms_SI": 1.154380313268983e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.6770304259402103e-05,
+              "R_weighted_rms_SI": 7.750753331848972e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.005040159839974399,
+              "R_weighted_rms_SI": 0.002280176055864678
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.005040186346844999,
+              "R_weighted_rms_SI": 0.002280144123412899
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 5.993361737203089e-05,
+              "R_weighted_rms_SI": 1.0661302593573286e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.708162195740336e-07,
+              "R_weighted_rms_SI": 1.8047488915474948e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.526131945053799e-07,
+              "R_weighted_rms_SI": 4.2663594425971003e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.6349982200764002e-07,
+              "R_weighted_rms_SI": 3.9349276034798296e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 5.838758799507626e-05,
+              "R_weighted_rms_SI": 2.2967939228486955e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 5.83868796305842e-05,
+              "R_weighted_rms_SI": 2.2967916191471104e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.3767623484664537e-07,
+              "R_weighted_rms_SI": 3.6370812011313404e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 2.541491007229668e-09,
+              "R_weighted_rms_SI": 1.0250496212107782e-09
+            }
+          }
+        }
+      }
+    },
+    {
+      "time_s": 8e-09,
+      "regions": {
+        "domain": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1003681546604544.0,
+              "R_weighted_rms_SI": 133801510266779.39
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1307842751807488.0,
+              "R_weighted_rms_SI": 158651939843189.88
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 8.133078315136614e+16,
+              "R_weighted_rms_SI": 2.252382721095065e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 8.133018036621312e+16,
+              "R_weighted_rms_SI": 2.2523639839741604e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 415702512614400.0,
+              "R_weighted_rms_SI": 59523912653734.06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3034033086464.0,
+              "R_weighted_rms_SI": 463308612888.7439
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1497.6045847046505,
+              "R_weighted_rms_SI": 203.83307089601286
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 814.0235557018034,
+              "R_weighted_rms_SI": 149.51683213064405
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80628.64828671144,
+              "R_weighted_rms_SI": 41483.91942706302
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80628.72282304039,
+              "R_weighted_rms_SI": 41483.69064871351
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1441.0729428552115,
+              "R_weighted_rms_SI": 171.707318388588
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.2083139012885455,
+              "R_weighted_rms_SI": 1.0873906978595749
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00016651956395860368,
+              "R_weighted_rms_SI": 2.9202856294092934e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 8.158400867308364e-05,
+              "R_weighted_rms_SI": 1.655598015603173e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.006485158064171401,
+              "R_weighted_rms_SI": 0.0020031835996108588
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00648525072277731,
+              "R_weighted_rms_SI": 0.002003145139733921
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.00016117260562315745,
+              "R_weighted_rms_SI": 2.5392869879517803e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 9.149992896712329e-07,
+              "R_weighted_rms_SI": 1.8529126572985676e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.1216306926992159e-06,
+              "R_weighted_rms_SI": 1.9243177553057838e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.798348950731725e-07,
+              "R_weighted_rms_SI": 1.2195450044455526e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00012038432924581233,
+              "R_weighted_rms_SI": 3.576493543737392e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00012038337643546781,
+              "R_weighted_rms_SI": 3.576453289608021e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.0706285737266397e-06,
+              "R_weighted_rms_SI": 1.7663784839150752e-07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.2921117259478976e-08,
+              "R_weighted_rms_SI": 1.5721634791728184e-09
+            }
+          }
+        },
+        "first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 457959453024256.0,
+              "R_weighted_rms_SI": 93367537486678.69
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 44203257601024.0,
+              "R_weighted_rms_SI": 10859694520797.828
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 1730076560118784.0,
+              "R_weighted_rms_SI": 540858234966330.6
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 1730135696997376.0,
+              "R_weighted_rms_SI": 540889470211255.2
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 415702512614400.0,
+              "R_weighted_rms_SI": 88064995838075.06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 182463382528.0,
+              "R_weighted_rms_SI": 55546352421.02264
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1497.6045847046505,
+              "R_weighted_rms_SI": 305.4557939647417
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 110.87121348162948,
+              "R_weighted_rms_SI": 27.880490777455517
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 3399.729747776739,
+              "R_weighted_rms_SI": 1073.8608856043168
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 3399.934943191117,
+              "R_weighted_rms_SI": 1073.9397243330975
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1441.0729428552115,
+              "R_weighted_rms_SI": 303.7416082987882
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 0.3841948346947709,
+              "R_weighted_rms_SI": 0.1650185117356605
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00016651956395860368,
+              "R_weighted_rms_SI": 3.79363369119963e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 7.000666403585939e-06,
+              "R_weighted_rms_SI": 3.07842727261054e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00020723746456633132,
+              "R_weighted_rms_SI": 5.46196521783403e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00020724716461507385,
+              "R_weighted_rms_SI": 5.4615477660622764e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.00016117260562315745,
+              "R_weighted_rms_SI": 3.870820188329673e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 9.613011749335462e-08,
+              "R_weighted_rms_SI": 3.785437827307691e-08
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.1216306926992159e-06,
+              "R_weighted_rms_SI": 2.411955916297543e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 7.624589087873446e-08,
+              "R_weighted_rms_SI": 2.801168663229194e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 9.279355826299907e-07,
+              "R_weighted_rms_SI": 3.3734594761766744e-07
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 9.279849948543029e-07,
+              "R_weighted_rms_SI": 3.37313783429295e-07
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.0706285737266397e-06,
+              "R_weighted_rms_SI": 2.546364754346641e-07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 7.493025436233758e-10,
+              "R_weighted_rms_SI": 2.0799261801432268e-10
+            }
+          }
+        },
+        "beyond_first_layer": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1003681546604544.0,
+              "R_weighted_rms_SI": 143612076350232.7
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1307842751807488.0,
+              "R_weighted_rms_SI": 180536429773992.2
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 8.133078315136614e+16,
+              "R_weighted_rms_SI": 2.564281540196799e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 8.133018036621312e+16,
+              "R_weighted_rms_SI": 2.5642601861190948e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 304161205202944.0,
+              "R_weighted_rms_SI": 47906088022855.34
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3034033086464.0,
+              "R_weighted_rms_SI": 526632815334.50525
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 748.4226990876177,
+              "R_weighted_rms_SI": 161.90432601778986
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 814.0235557018034,
+              "R_weighted_rms_SI": 169.55457266740137
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80628.64828671144,
+              "R_weighted_rms_SI": 47227.90275708172
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80628.72282304039,
+              "R_weighted_rms_SI": 47227.6417303522
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 740.0664588469615,
+              "R_weighted_rms_SI": 104.32275322491603
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.2083139012885455,
+              "R_weighted_rms_SI": 1.2347859264003205
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00012182567174532047,
+              "R_weighted_rms_SI": 2.6058988130398377e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 8.158400867308364e-05,
+              "R_weighted_rms_SI": 1.8775183627508648e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.006485158064171401,
+              "R_weighted_rms_SI": 0.0022805310641262878
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00648525072277731,
+              "R_weighted_rms_SI": 0.002280487301532579
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.0001273044596596071,
+              "R_weighted_rms_SI": 1.979648797961474e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 9.149992896712329e-07,
+              "R_weighted_rms_SI": 2.0995468901086324e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 9.10916817746521e-07,
+              "R_weighted_rms_SI": 1.7539870779664255e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.798348950731725e-07,
+              "R_weighted_rms_SI": 1.3801157621198546e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00012038432924581233,
+              "R_weighted_rms_SI": 4.0719756248395626e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00012038337643546781,
+              "R_weighted_rms_SI": 4.071929800926145e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 8.763287765445327e-07,
+              "R_weighted_rms_SI": 1.4571848239099476e-07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.2921117259478976e-08,
+              "R_weighted_rms_SI": 1.7864027867982994e-09
+            }
+          }
+        },
+        "fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 457959453024256.0,
+              "R_weighted_rms_SI": 68639292859739.89
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 44203257601024.0,
+              "R_weighted_rms_SI": 15533200027061.545
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 2353677094007808.0,
+              "R_weighted_rms_SI": 2897089537220399.0
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 2353122713487360.0,
+              "R_weighted_rms_SI": 2897069767717296.0
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 415702512614400.0,
+              "R_weighted_rms_SI": 64201794371625.125
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 554380520448.0,
+              "R_weighted_rms_SI": 141993842991.3449
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1497.6045847046505,
+              "R_weighted_rms_SI": 242.09895243964013
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 110.87121348162948,
+              "R_weighted_rms_SI": 29.860684983509955
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 10084.058128457387,
+              "R_weighted_rms_SI": 3145.220251366655
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 10084.589254371302,
+              "R_weighted_rms_SI": 3145.494088178009
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1441.0729428552115,
+              "R_weighted_rms_SI": 238.935339910527
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.1693195856564176,
+              "R_weighted_rms_SI": 0.5508890214788184
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 0.00016651956395860368,
+              "R_weighted_rms_SI": 3.50359930072969e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.3166566995602415e-05,
+              "R_weighted_rms_SI": 4.921965188146897e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.0006687163792215581,
+              "R_weighted_rms_SI": 0.000704243622942465
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.0006687184841789771,
+              "R_weighted_rms_SI": 0.0007042337870946579
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 0.00016117260562315745,
+              "R_weighted_rms_SI": 3.550111723120827e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 4.143250628447553e-07,
+              "R_weighted_rms_SI": 1.0906808771282112e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1.1216306926992159e-06,
+              "R_weighted_rms_SI": 2.3474479512232212e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1.2022558940755212e-07,
+              "R_weighted_rms_SI": 4.0582506803897e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 3.8061722260757103e-06,
+              "R_weighted_rms_SI": 1.6679658163119792e-06
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 3.8069456383856004e-06,
+              "R_weighted_rms_SI": 1.6679741046137898e-06
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 1.0706285737266397e-06,
+              "R_weighted_rms_SI": 2.4928349226016943e-07
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.8537805908380722e-09,
+              "R_weighted_rms_SI": 6.885589166511497e-10
+            }
+          }
+        },
+        "beyond_fixed_wall_collar": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1003681546604544.0,
+              "R_weighted_rms_SI": 172211013150881.34
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1307842751807488.0,
+              "R_weighted_rms_SI": 217675535012344.5
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 8.133078315136614e+16,
+              "R_weighted_rms_SI": 3.0852480415718252e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 8.133018036621312e+16,
+              "R_weighted_rms_SI": 3.085222339776362e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 304161205202944.0,
+              "R_weighted_rms_SI": 55021821964500.74
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3034033086464.0,
+              "R_weighted_rms_SI": 622856563759.153
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 626.7255860852064,
+              "R_weighted_rms_SI": 162.30740315229238
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 814.0235557018034,
+              "R_weighted_rms_SI": 203.665527745077
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80628.64828671144,
+              "R_weighted_rms_SI": 56968.93222992464
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80628.72282304039,
+              "R_weighted_rms_SI": 56968.6037291841
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 192.16144267410849,
+              "R_weighted_rms_SI": 69.89623612198432
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.2083139012885455,
+              "R_weighted_rms_SI": 1.4019861709366315
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.738055770270535e-05,
+              "R_weighted_rms_SI": 2.278007518268444e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 8.158400867308364e-05,
+              "R_weighted_rms_SI": 2.2287711585011342e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.006485158064171401,
+              "R_weighted_rms_SI": 0.0026732462769341464
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00648525072277731,
+              "R_weighted_rms_SI": 0.002673194087245371
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 6.493577187049153e-05,
+              "R_weighted_rms_SI": 9.815872988323032e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 9.149992896712329e-07,
+              "R_weighted_rms_SI": 2.3307619758317476e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 6.217197840163724e-07,
+              "R_weighted_rms_SI": 1.4465411891414164e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.798348950731725e-07,
+              "R_weighted_rms_SI": 1.6327094392566612e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00012038432924581233,
+              "R_weighted_rms_SI": 4.915662267366708e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00012038337643546781,
+              "R_weighted_rms_SI": 4.915606858815872e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 2.392332687506382e-07,
+              "R_weighted_rms_SI": 6.026446720101131e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.2921117259478976e-08,
+              "R_weighted_rms_SI": 2.061933953130714e-09
+            }
+          }
+        },
+        "core": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 1003681546604544.0,
+              "R_weighted_rms_SI": 223389588485920.34
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 1307842751807488.0,
+              "R_weighted_rms_SI": 283118703074321.1
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 8.133078315136614e+16,
+              "R_weighted_rms_SI": 3.8170209045146184e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 8.133018036621312e+16,
+              "R_weighted_rms_SI": 3.816990497479389e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 304161205202944.0,
+              "R_weighted_rms_SI": 68421409062817.87
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3034033086464.0,
+              "R_weighted_rms_SI": 767465772849.2385
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 626.7255860852064,
+              "R_weighted_rms_SI": 208.01292443074112
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 814.0235557018034,
+              "R_weighted_rms_SI": 263.28591096664525
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 80628.64828671144,
+              "R_weighted_rms_SI": 68461.18433156684
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 80628.72282304039,
+              "R_weighted_rms_SI": 68460.75824132332
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 192.16144267410849,
+              "R_weighted_rms_SI": 80.19044667880273
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.2083139012885455,
+              "R_weighted_rms_SI": 1.408740687492789
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.738055770270535e-05,
+              "R_weighted_rms_SI": 2.7469260016352522e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 8.158400867308364e-05,
+              "R_weighted_rms_SI": 2.7921340314134145e-05
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.006485158064171401,
+              "R_weighted_rms_SI": 0.0025897615431473135
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00648525072277731,
+              "R_weighted_rms_SI": 0.002589716408604796
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 2.004541571139488e-05,
+              "R_weighted_rms_SI": 7.3416625961488565e-06
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 7.122684496702239e-07,
+              "R_weighted_rms_SI": 1.8988777046990603e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 6.217197840163724e-07,
+              "R_weighted_rms_SI": 1.8078703714866362e-07
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 6.798348950731725e-07,
+              "R_weighted_rms_SI": 2.073848646059496e-07
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.00012038432924581233,
+              "R_weighted_rms_SI": 5.9515987621028696e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.00012038337643546781,
+              "R_weighted_rms_SI": 5.9515222488049016e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 2.392332687506382e-07,
+              "R_weighted_rms_SI": 6.25488539517759e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1.2921117259478976e-08,
+              "R_weighted_rms_SI": 2.117204773850323e-09
+            }
+          }
+        },
+        "halo": {
+          "density_m3": {
+            "legacy_quiet_drift": {
+              "peak_SI": 133489021578240.0,
+              "R_weighted_rms_SI": 35184882825265.87
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 154799688728576.0,
+              "R_weighted_rms_SI": 37149331565744.97
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 5.040949952052224e+16,
+              "R_weighted_rms_SI": 1.558549367035103e+16
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 5.040793609338266e+16,
+              "R_weighted_rms_SI": 1.5585316022796368e+16
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 127179188228096.0,
+              "R_weighted_rms_SI": 26563923431823.633
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 1563427139584.0,
+              "R_weighted_rms_SI": 325179864608.0786
+            }
+          },
+          "ion_velocity_m_s": {
+            "legacy_quiet_drift": {
+              "peak_SI": 166.71986856428077,
+              "R_weighted_rms_SI": 50.85253164484768
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 171.3570630041537,
+              "R_weighted_rms_SI": 49.01342565530594
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 77866.46774187557,
+              "R_weighted_rms_SI": 34959.05402370531
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 77866.04528095199,
+              "R_weighted_rms_SI": 34958.938535439826
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 138.5099130113185,
+              "R_weighted_rms_SI": 52.123057035864264
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 3.609052309586222,
+              "R_weighted_rms_SI": 1.392449931507163
+            }
+          },
+          "nodal_B_T": {
+            "legacy_quiet_drift": {
+              "peak_SI": 7.521547369362934e-05,
+              "R_weighted_rms_SI": 1.3718320170934527e-05
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 3.597233098425187e-05,
+              "R_weighted_rms_SI": 9.985349783904368e-06
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 0.005962560302269705,
+              "R_weighted_rms_SI": 0.0027862128307729584
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 0.005962588715244906,
+              "R_weighted_rms_SI": 0.0027861513573772963
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 6.493577187049153e-05,
+              "R_weighted_rms_SI": 1.2487519654279515e-05
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 9.149992896712329e-07,
+              "R_weighted_rms_SI": 2.827811387367291e-07
+            }
+          },
+          "psi_Wb_per_rad": {
+            "legacy_quiet_drift": {
+              "peak_SI": 2.488019843274736e-07,
+              "R_weighted_rms_SI": 6.647642326344595e-08
+            },
+            "repaired_quiet_drift": {
+              "peak_SI": 2.533106773852656e-07,
+              "R_weighted_rms_SI": 6.087879977847547e-08
+            },
+            "legacy_pulse_minus_quiet": {
+              "peak_SI": 7.420127682819175e-05,
+              "R_weighted_rms_SI": 2.8916691440241142e-05
+            },
+            "repaired_pulse_minus_quiet": {
+              "peak_SI": 7.4199710500919e-05,
+              "R_weighted_rms_SI": 2.8916637862158602e-05
+            },
+            "repaired_minus_legacy_quiet_drift": {
+              "peak_SI": 2.243973291626844e-07,
+              "R_weighted_rms_SI": 5.690349717357071e-08
+            },
+            "repaired_minus_legacy_pulse_response": {
+              "peak_SI": 5.065555162830915e-09,
+              "R_weighted_rms_SI": 1.981754436064431e-09
+            }
+          }
+        }
+      }
+    }
+  ],
+  "budget": [
+    {
+      "run": "archived-comparison/cases/a0-fine-quiet/run",
+      "matched_endpoint_s": 8e-09,
+      "matched_endpoint_step": 160,
+      "hard_checks_count": 109551,
+      "hard_failures": [],
+      "peak_interval_energy_residual_J": 9.74100437251119e-09,
+      "delta_total_energy_J": 2.139061689376831e-05,
+      "delta_total_ion_number": 32768.0,
+      "endpoint_elapsed_including_setup_s": 339.5003810049966,
+      "guard": {
+        "policy": "error",
+        "minimum_samples_per_cycle": 32.0,
+        "max_amplitude_error": 0.01,
+        "max_phase_error_rad": 0.1
+      }
+    },
+    {
+      "run": "archived-comparison/cases/a0-fine-pulse/run",
+      "matched_endpoint_s": 8e-09,
+      "matched_endpoint_step": 160,
+      "hard_checks_count": 109551,
+      "hard_failures": [],
+      "peak_interval_energy_residual_J": 1.0108833543901142e-08,
+      "delta_total_energy_J": 2.125650644302368e-05,
+      "delta_total_ion_number": 32768.0,
+      "endpoint_elapsed_including_setup_s": 335.3492736190092,
+      "guard": {
+        "policy": "error",
+        "minimum_samples_per_cycle": 32.0,
+        "max_amplitude_error": 0.01,
+        "max_phase_error_rad": 0.1
+      }
+    },
+    {
+      "run": "archived-campaign/cases/a0-repaired-14x20-quiet/run",
+      "matched_endpoint_s": 8e-09,
+      "matched_endpoint_step": 160,
+      "hard_checks_count": 109551,
+      "hard_failures": [],
+      "peak_interval_energy_residual_J": 8.444543219862246e-09,
+      "delta_total_energy_J": 2.8312206268310547e-07,
+      "delta_total_ion_number": 32768.0,
+      "endpoint_elapsed_including_setup_s": 349.15369038516656,
+      "guard": {
+        "policy": "error",
+        "minimum_samples_per_cycle": 32.0,
+        "max_amplitude_error": 0.01,
+        "max_phase_error_rad": 0.1
+      }
+    },
+    {
+      "run": "archived-campaign/cases/a0-repaired-14x20-pulse/run",
+      "matched_endpoint_s": 8e-09,
+      "matched_endpoint_step": 160,
+      "hard_checks_count": 109551,
+      "hard_failures": [],
+      "peak_interval_energy_residual_J": 7.649750922268229e-09,
+      "delta_total_energy_J": -4.470348358154297e-08,
+      "delta_total_ion_number": 32768.0,
+      "endpoint_elapsed_including_setup_s": 349.1620440420229,
+      "guard": {
+        "policy": "error",
+        "minimum_samples_per_cycle": 32.0,
+        "max_amplitude_error": 0.01,
+        "max_phase_error_rad": 0.1
+      }
+    }
+  ]
+}

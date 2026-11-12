@@ -1,0 +1,157 @@
+{
+  "solver_backend": "cpu",
+  "case": "archived-freegs-refinement/fine-quiet/case.toml",
+  "initial_full_rhs": {
+    "current_error_A_m2": {
+      "whole_box": {
+        "rms": 1262.5319861208907,
+        "linf": 10416.147114198086
+      },
+      "core": {
+        "rms": 1888.892672600113,
+        "linf": 7535.672727358062
+      },
+      "halo_interior": {
+        "rms": 355.60173847687264,
+        "linf": 1905.3993768631703
+      },
+      "wall_first_layer": {
+        "rms": 1859.7441255240437,
+        "linf": 10416.147114198086
+      }
+    },
+    "external_current_A_m2": {
+      "whole_box": {
+        "rms": 270726.58309063246,
+        "linf": 1526057.7023693337
+      },
+      "core": {
+        "rms": 484435.90075955755,
+        "linf": 1526057.7023693337
+      },
+      "halo_interior": {
+        "rms": 51.9065352374599,
+        "linf": 411.17326577804386
+      },
+      "wall_first_layer": {
+        "rms": 0.023295736653297223,
+        "linf": 0.1385492482084755
+      }
+    },
+    "ion_acceleration_m_s2": {
+      "whole_box": {
+        "rms": 3771903608.7907395,
+        "linf": 21107778576.869915
+      },
+      "core": {
+        "rms": 6304780257.247188,
+        "linf": 21107778576.869915
+      },
+      "halo_interior": {
+        "rms": 1345632491.465574,
+        "linf": 7603854415.716103
+      },
+      "wall_first_layer": {
+        "rms": 2574155984.15471,
+        "linf": 13399320413.48734
+      }
+    },
+    "ion_density_rate_m3_s": {
+      "whole_box": {
+        "rms": 0.0,
+        "linf": 0.0
+      },
+      "core": {
+        "rms": 0.0,
+        "linf": 0.0
+      },
+      "halo_interior": {
+        "rms": 0.0,
+        "linf": 0.0
+      },
+      "wall_first_layer": {
+        "rms": 0.0,
+        "linf": 0.0
+      }
+    },
+    "electron_perp_rate_Pa_s": {
+      "whole_box": {
+        "rms": 1402423.3455971158,
+        "linf": 16102951.176850742
+      },
+      "core": {
+        "rms": 2324875.468972417,
+        "linf": 16102951.176850742
+      },
+      "halo_interior": {
+        "rms": 463104.9680580333,
+        "linf": 3620046.3524416997
+      },
+      "wall_first_layer": {
+        "rms": 1152407.1556460252,
+        "linf": 3445353.584966138
+      }
+    },
+    "electron_parallel_rate_Pa_s": {
+      "whole_box": {
+        "rms": 2804846.6912138597,
+        "linf": 32205902.35289142
+      },
+      "core": {
+        "rms": 4649750.937973614,
+        "linf": 32205902.35289142
+      },
+      "halo_interior": {
+        "rms": 926209.936131472,
+        "linf": 7240092.704829173
+      },
+      "wall_first_layer": {
+        "rms": 2304814.311310936,
+        "linf": 6890707.170145154
+      }
+    }
+  },
+  "magnetic_rate_T_s_stored_linf": 6151.48396321855,
+  "initial_E_V_m_stored_linf": 3347.4468136320907,
+  "resolved_frequency_estimate": {
+    "omega_pe": 252293771128.43295,
+    "omega_pi": 4163294529.784934,
+    "omega_plasma": 252328119660.78583,
+    "omega_ce": 527663856007.2576,
+    "omega_ci": 143687358.8033389,
+    "fpe_Hz": 40153800786.385414,
+    "fpi_Hz": 662608903.9627204,
+    "fce_Hz": 83980310974.48515,
+    "fci_Hz": 22868553.413370147,
+    "electron_skin_depth_m": 0.0011882673783777577,
+    "omega_whistler_massless": 10808273279.061485,
+    "omega_whistler_finite": 4288174998.9522653,
+    "electron_pressure_rate": 7314309940.635691,
+    "ion_pressure_rate": 6011471.560863536,
+    "alfven_rate": 1246199117.5943947,
+    "whistler_scope": "cold parallel Hall asymptote; not a complete CGL/Darwin spectrum",
+    "omega_estimate": 12355465800.33428,
+    "electron_inertia": 0,
+    "active_limits": [
+      "hall",
+      "ion_cyclotron",
+      "alfven",
+      "bulk_pressure",
+      "advection"
+    ],
+    "k_estimate_per_m": 76.17549871066495,
+    "density_min": [
+      8e+18,
+      8e+18
+    ],
+    "density_max": [
+      2e+19,
+      2e+19
+    ],
+    "magnetic_max_T": 3.0001015083622717,
+    "speed_max_m_per_s": 478596.8483599455,
+    "bulk_pressure_rate": 120848691.2698899,
+    "advection_rate": 36457353.60517134,
+    "scope": "operator-resolution estimate; not a rigorous full-spectrum or nonlinear bound"
+  }
+}

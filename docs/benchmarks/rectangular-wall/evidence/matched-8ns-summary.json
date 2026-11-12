@@ -1,0 +1,703 @@
+{
+  "working_directory": "archived-campaign",
+  "argv": [
+    "fomhd/.venv/bin/python",
+    "analysis/analyze.py",
+    "--output",
+    "analysis/matched-8ns",
+    "--capture-time-ns",
+    "1.6",
+    "--capture-time-ns",
+    "3.2",
+    "--capture-time-ns",
+    "4.8",
+    "--capture-time-ns",
+    "6.4",
+    "--capture-time-ns",
+    "8",
+    "--pair",
+    "14×20 legacy",
+    "archived-comparison/cases/a0-fine-quiet",
+    "archived-comparison/cases/a0-fine-pulse",
+    "--pair",
+    "14×20 repaired",
+    "archived-campaign/cases/a0-repaired-14x20-quiet",
+    "archived-campaign/cases/a0-repaired-14x20-pulse"
+  ],
+  "fixed_collar_m": 0.2,
+  "reference": {
+    "source_file": "reference/freegs-equilibrium.npz",
+    "sha256": "6854964d218a3a9d2f121c0437fc10a302fd7636fdc8431c1b829cc12a8923db",
+    "cut_Z_m": 0.0968308461050195,
+    "radial_interval_m": [
+      1.310285354,
+      1.83
+    ],
+    "axis_rz_m": [
+      1.3102702849349304,
+      0.0968247758292761
+    ],
+    "saddle_rz_m": [
+      1.1055050725138658,
+      -0.5963748424891909
+    ],
+    "source_lcfs_crossing_r_m": 1.6353250821491128,
+    "separatrix_crossing_r_m": 1.6353250821474996,
+    "critical_minus_source_flux_Wb_per_rad": 3.3489183648427456e-13,
+    "tagged_crossing_r_m": 1.5976378731107985,
+    "gradient_peak_r_m": 1.5716222380853468,
+    "gradient_peak_m_minus_4": 1.852017294024004e+20,
+    "gradient_centroid_r_m": 1.5725811248477373,
+    "positive_drop_m_minus_3": 1.2000000000000002e+19,
+    "gradient_saturation_r_m": 1.5121610171909001,
+    "n_core_m3": 2e+19,
+    "n_halo_m3": 8e+18,
+    "scope": "Continuous evaluation of the declared FreeGS spline and initial smoothstep, including the declared initial core-side selection."
+  },
+  "grids": [
+    {
+      "label": "14×20 legacy",
+      "n_r_n_z": [
+        14,
+        20
+      ],
+      "dt_s": 5e-11,
+      "quiet_run": "archived-comparison/cases/a0-fine-quiet/run",
+      "pulse_run": "archived-comparison/cases/a0-fine-pulse/run",
+      "quiet_status": "completed",
+      "pulse_status": "completed",
+      "quiet_last_accepted_s": 1.6e-08,
+      "pulse_last_accepted_s": 1.6e-08,
+      "quiet_captured_steps": [
+        0,
+        32,
+        64,
+        96,
+        128,
+        160
+      ],
+      "pulse_captured_steps": [
+        0,
+        32,
+        64,
+        96,
+        128,
+        160
+      ],
+      "pulse_seed": {
+        "perturbation_amplitude_over_vA": 0.015,
+        "perturbation_wall_buffer_m": 0.21
+      },
+      "normalization_SI": {
+        "density_m3": 2e+19,
+        "ion_velocity_m_s": 5264174.639623457,
+        "nodal_B_T": 1.5263850686136453,
+        "psi_Wb_per_rad": 0.05449177143288879
+      },
+      "initial": {
+        "source": {
+          "separatrix": 1.6353250821474996,
+          "tracked_surface": 1.5976378731107985,
+          "density": 1.5716222380853468,
+          "density_centroid": 1.5725811248477373
+        },
+        "discrete": {
+          "separatrix": 1.635329808513548,
+          "tracked_surface": 1.5976113984172888,
+          "density": 1.5511043978959003,
+          "density_centroid": 1.5648375813496092
+        },
+        "critical_points": {
+          "axis": {
+            "source_rz_m": [
+              1.3102702849349304,
+              0.0968247758292761
+            ],
+            "discrete_rz_m": [
+              1.3104043131553917,
+              0.09707198621568887
+            ],
+            "error_rz_m": [
+              0.00013402822046137963,
+              0.0002472103864127745
+            ]
+          },
+          "saddle": {
+            "source_rz_m": [
+              1.1055050725138658,
+              -0.5963748424891909
+            ],
+            "discrete_rz_m": [
+              1.1055172600241194,
+              -0.5963814068393589
+            ],
+            "error_rz_m": [
+              1.2187510253669487e-05,
+              -6.564350167992394e-06
+            ]
+          }
+        },
+        "error_m": {
+          "separatrix": 4.726366048313224e-06,
+          "tracked_surface": -2.647469350969267e-05,
+          "density": -0.02051784018944658,
+          "density_centroid": -0.007743543498128114
+        },
+        "initial_source_mapping_error_Wb_per_rad": 5.134781488891349e-16
+      },
+      "times_exact_within_pair_s": [
+        0.0,
+        1.6e-09,
+        3.2e-09,
+        4.8e-09,
+        6.4e-09,
+        8e-09
+      ],
+      "trace": [
+        {
+          "time_s": 0.0,
+          "step": 0,
+          "quiet_raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000000.npz",
+          "quiet_sha256": "5ad9f1b300a77b6c5505dd60c7691bb9142331b65986910df8ae43857eab6d3a",
+          "pulse_raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000000.npz",
+          "pulse_sha256": "2bb57ef81bd16bb9b94741ddc77fb7e6d9ffcdc7dd57d7c834442efa9069d677",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            },
+            "tracked_surface": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            },
+            "density": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            },
+            "density_centroid": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            }
+          }
+        },
+        {
+          "time_s": 1.6e-09,
+          "step": 32,
+          "quiet_raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000032.npz",
+          "quiet_sha256": "7d92b81eb45df37238d18ae1c023d724c6539f4f667377d2ebfdfbdf5c29c255",
+          "pulse_raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000032.npz",
+          "pulse_sha256": "8a7dedaed5a33e60c096d46a0adb1b33c9acaf583b6d586f5ab4ab0ca3732de9",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 9.229918096487211e-08,
+              "pulse_m": 4.7231242176204447e-05,
+              "pulse_minus_quiet_m": 4.7138942995239574e-05
+            },
+            "tracked_surface": {
+              "quiet_m": 1.1769556240714962e-07,
+              "pulse_m": 8.200406718583686e-05,
+              "pulse_minus_quiet_m": 8.188637162342971e-05
+            },
+            "density": {
+              "quiet_m": -8.916151594817734e-09,
+              "pulse_m": 2.269817151034914e-05,
+              "pulse_minus_quiet_m": 2.270708766194396e-05
+            },
+            "density_centroid": {
+              "quiet_m": -6.548021307395402e-07,
+              "pulse_m": 0.00010168110521102669,
+              "pulse_minus_quiet_m": 0.00010233590734176623
+            }
+          }
+        },
+        {
+          "time_s": 3.2e-09,
+          "step": 64,
+          "quiet_raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000064.npz",
+          "quiet_sha256": "7913d09fade003bd8c3c35ad4032ccf174d887a1a2d02980d68cc713a6c69b60",
+          "pulse_raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000064.npz",
+          "pulse_sha256": "80ce0e5f1a0ca6adce77a71c78a8dbde153ed1a57ad67541c42b1cb46ee33e3c",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 3.6875667697167103e-07,
+              "pulse_m": 9.514314547010017e-05,
+              "pulse_minus_quiet_m": 9.47743887931285e-05
+            },
+            "tracked_surface": {
+              "quiet_m": 4.708768026606691e-07,
+              "pulse_m": 0.00016462141982764855,
+              "pulse_minus_quiet_m": 0.00016415054302498788
+            },
+            "density": {
+              "quiet_m": -3.5577247592399885e-08,
+              "pulse_m": 4.531267403273809e-05,
+              "pulse_minus_quiet_m": 4.534825128033049e-05
+            },
+            "density_centroid": {
+              "quiet_m": -2.6096208811665633e-06,
+              "pulse_m": 0.00020206074868389656,
+              "pulse_minus_quiet_m": 0.00020467036956506313
+            }
+          }
+        },
+        {
+          "time_s": 4.8e-09,
+          "step": 96,
+          "quiet_raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000096.npz",
+          "quiet_sha256": "83d758a1e14c11acc28df3b870d56dba62a0a621ee4e512f8e881c391d6d5519",
+          "pulse_raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000096.npz",
+          "pulse_sha256": "b7e725d058396ecc704106b9204f2d9999489186825493d342e2f2553e842076",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 8.274200904434537e-07,
+              "pulse_m": 0.0001442025340574471,
+              "pulse_minus_quiet_m": 0.00014337511396700364
+            },
+            "tracked_surface": {
+              "quiet_m": 1.0579090750084674e-06,
+              "pulse_m": 0.0002481215584857477,
+              "pulse_minus_quiet_m": 0.0002470636494107392
+            },
+            "density": {
+              "quiet_m": -7.938581725319693e-08,
+              "pulse_m": 6.766634825350337e-05,
+              "pulse_minus_quiet_m": 6.774573407075657e-05
+            },
+            "density_centroid": {
+              "quiet_m": -5.8345815878713125e-06,
+              "pulse_m": 0.00030121911375169397,
+              "pulse_minus_quiet_m": 0.0003070536953395653
+            }
+          }
+        },
+        {
+          "time_s": 6.4e-09,
+          "step": 128,
+          "quiet_raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000128.npz",
+          "quiet_sha256": "150c9cf9d9dba643b1815aab547ff94904ea2037dc53211fff219d3a7378f8e7",
+          "pulse_raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000128.npz",
+          "pulse_sha256": "ef3943b4a6c02bf7211d435ff5bdd2fe9481a81c9e6768439cb50ef943ca953d",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 1.4647122752453612e-06,
+              "pulse_m": 0.00019484281797232939,
+              "pulse_minus_quiet_m": 0.00019337810569708402
+            },
+            "tracked_surface": {
+              "quiet_m": 1.8747718428802074e-06,
+              "pulse_m": 0.00033274227241242293,
+              "pulse_minus_quiet_m": 0.00033086750056954273
+            },
+            "density": {
+              "quiet_m": -1.3914345164955932e-07,
+              "pulse_m": 8.958288624638655e-05,
+              "pulse_minus_quiet_m": 8.972202969803611e-05
+            },
+            "density_centroid": {
+              "quiet_m": -1.0279534148560643e-05,
+              "pulse_m": 0.00039920819968264354,
+              "pulse_minus_quiet_m": 0.0004094877338312042
+            }
+          }
+        },
+        {
+          "time_s": 8e-09,
+          "step": 160,
+          "quiet_raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000160.npz",
+          "quiet_sha256": "eec3fafe9c45099a8b2602e55d6748093dede93bf4b8d89f83ca874853d986ef",
+          "pulse_raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000160.npz",
+          "pulse_sha256": "b5ff4e2a1b2dcf91a5c14f920d6682284cc7ee5aeb906a018ea9902c4867379a",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 2.275539501495061e-06,
+              "pulse_m": 0.0002474545851509635,
+              "pulse_minus_quiet_m": 0.00024517904564946846
+            },
+            "tracked_surface": {
+              "quiet_m": 2.915059986507984e-06,
+              "pulse_m": 0.00041868016205004466,
+              "pulse_minus_quiet_m": 0.0004157651020635367
+            },
+            "density": {
+              "quiet_m": -2.130881977535637e-07,
+              "pulse_m": 0.00011088956701765795,
+              "pulse_minus_quiet_m": 0.00011110265521541152
+            },
+            "density_centroid": {
+              "quiet_m": -1.5874873714460946e-05,
+              "pulse_m": 0.000496063643024236,
+              "pulse_minus_quiet_m": 0.000511938516738697
+            }
+          }
+        }
+      ],
+      "cells_by_region": {
+        "domain": 280,
+        "first_layer": 64,
+        "beyond_first_layer": 216,
+        "fixed_wall_collar": 120,
+        "beyond_fixed_wall_collar": 160,
+        "core": 92,
+        "halo": 68
+      },
+      "region_volumes_per_rad_m3": {
+        "domain": 2.8378710937499987,
+        "first_layer": 0.6486562499999997,
+        "beyond_first_layer": 2.189214843749999,
+        "fixed_wall_collar": 1.33715625,
+        "beyond_fixed_wall_collar": 1.5007148437499986,
+        "core": 0.8763661741918443,
+        "halo": 0.6243486695581544
+      }
+    },
+    {
+      "label": "14×20 repaired",
+      "n_r_n_z": [
+        14,
+        20
+      ],
+      "dt_s": 5e-11,
+      "quiet_run": "archived-campaign/cases/a0-repaired-14x20-quiet/run",
+      "pulse_run": "archived-campaign/cases/a0-repaired-14x20-pulse/run",
+      "quiet_status": "completed",
+      "pulse_status": "completed",
+      "quiet_last_accepted_s": 8e-09,
+      "pulse_last_accepted_s": 8e-09,
+      "quiet_captured_steps": [
+        0,
+        32,
+        64,
+        96,
+        128,
+        160
+      ],
+      "pulse_captured_steps": [
+        0,
+        32,
+        64,
+        96,
+        128,
+        160
+      ],
+      "pulse_seed": {
+        "perturbation_amplitude_over_vA": 0.015,
+        "perturbation_wall_buffer_m": 0.21
+      },
+      "normalization_SI": {
+        "density_m3": 2e+19,
+        "ion_velocity_m_s": 5264174.639623457,
+        "nodal_B_T": 1.5263850686136453,
+        "psi_Wb_per_rad": 0.05449177143288879
+      },
+      "initial": {
+        "source": {
+          "separatrix": 1.6353250821474996,
+          "tracked_surface": 1.5976378731107985,
+          "density": 1.5716222380853468,
+          "density_centroid": 1.5725811248477373
+        },
+        "discrete": {
+          "separatrix": 1.635329808513548,
+          "tracked_surface": 1.5976113984172888,
+          "density": 1.5511043978959003,
+          "density_centroid": 1.5648375813496092
+        },
+        "critical_points": {
+          "axis": {
+            "source_rz_m": [
+              1.3102702849349304,
+              0.0968247758292761
+            ],
+            "discrete_rz_m": [
+              1.3104043131553917,
+              0.09707198621568887
+            ],
+            "error_rz_m": [
+              0.00013402822046137963,
+              0.0002472103864127745
+            ]
+          },
+          "saddle": {
+            "source_rz_m": [
+              1.1055050725138658,
+              -0.5963748424891909
+            ],
+            "discrete_rz_m": [
+              1.1055172600241194,
+              -0.5963814068393589
+            ],
+            "error_rz_m": [
+              1.2187510253669487e-05,
+              -6.564350167992394e-06
+            ]
+          }
+        },
+        "error_m": {
+          "separatrix": 4.726366048313224e-06,
+          "tracked_surface": -2.647469350969267e-05,
+          "density": -0.02051784018944658,
+          "density_centroid": -0.007743543498128114
+        },
+        "initial_source_mapping_error_Wb_per_rad": 5.134781488891349e-16
+      },
+      "times_exact_within_pair_s": [
+        0.0,
+        1.6e-09,
+        3.2e-09,
+        4.8e-09,
+        6.4e-09,
+        8e-09
+      ],
+      "trace": [
+        {
+          "time_s": 0.0,
+          "step": 0,
+          "quiet_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000000.npz",
+          "quiet_sha256": "588853c3eee603f16499090d3ccae111246f1273a96fa19eef11747ce8a93311",
+          "pulse_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000000.npz",
+          "pulse_sha256": "ac514ffa49715bd5f5e1887ae4bd2606cb8f36fa126ce685d29cdfd0bff2b72e",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            },
+            "tracked_surface": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            },
+            "density": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            },
+            "density_centroid": {
+              "quiet_m": 0.0,
+              "pulse_m": 0.0,
+              "pulse_minus_quiet_m": 0.0
+            }
+          }
+        },
+        {
+          "time_s": 1.6e-09,
+          "step": 32,
+          "quiet_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000032.npz",
+          "quiet_sha256": "c0f7e28ba4962e354b22d4afe9180e461cd46cd56e1be5c8c5ca5cde4c0a9a3a",
+          "pulse_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000032.npz",
+          "pulse_sha256": "9de0feab2ae14e7564eddba70d5c241ddf497e4ce8d9b164569b68d7407eec25",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 9.014231894255431e-08,
+              "pulse_m": 4.722928303491081e-05,
+              "pulse_minus_quiet_m": 4.713914071596825e-05
+            },
+            "tracked_surface": {
+              "quiet_m": 1.2428853168877652e-07,
+              "pulse_m": 8.201084571002326e-05,
+              "pulse_minus_quiet_m": 8.188655717833448e-05
+            },
+            "density": {
+              "quiet_m": -2.4446221047469407e-08,
+              "pulse_m": 2.2695639824155123e-05,
+              "pulse_minus_quiet_m": 2.2720086045202592e-05
+            },
+            "density_centroid": {
+              "quiet_m": -8.903944257454555e-07,
+              "pulse_m": 0.00010152302693944293,
+              "pulse_minus_quiet_m": 0.00010241342136518838
+            }
+          }
+        },
+        {
+          "time_s": 3.2e-09,
+          "step": 64,
+          "quiet_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000064.npz",
+          "quiet_sha256": "7fca6245abcd4fd85881a730e31356a76e5872e5b86ec881ec4eebf20ba270d8",
+          "pulse_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000064.npz",
+          "pulse_sha256": "0d9653adf635a074871f716b543e863055359ba5e9fb78fab3fe0120b7ed104a",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 3.6067212305646024e-07,
+              "pulse_m": 9.513660510984678e-05,
+              "pulse_minus_quiet_m": 9.477593298679032e-05
+            },
+            "tracked_surface": {
+              "quiet_m": 4.974818144098947e-07,
+              "pulse_m": 0.0001646494646432295,
+              "pulse_minus_quiet_m": 0.0001641519828288196
+            },
+            "density": {
+              "quiet_m": -9.749392226865439e-08,
+              "pulse_m": 4.53025011928343e-05,
+              "pulse_minus_quiet_m": 4.5399995115102953e-05
+            },
+            "density_centroid": {
+              "quiet_m": -3.5476864905792382e-06,
+              "pulse_m": 0.0002014335679043633,
+              "pulse_minus_quiet_m": 0.00020498125439494252
+            }
+          }
+        },
+        {
+          "time_s": 4.8e-09,
+          "step": 96,
+          "quiet_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000096.npz",
+          "quiet_sha256": "30092226e42fae522c6c1ad2206193ec51b9ec7da9e6767f8ce26533f7d426cb",
+          "pulse_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000096.npz",
+          "pulse_sha256": "11ad812c374fe63cd413cc3f14fc143dce3bba835687a2587b72861b26debeaf",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 8.110142175610235e-07,
+              "pulse_m": 0.0001441911422446207,
+              "pulse_minus_quiet_m": 0.00014338012802705968
+            },
+            "tracked_surface": {
+              "quiet_m": 1.1185969872595791e-06,
+              "pulse_m": 0.00024818687004568574,
+              "pulse_minus_quiet_m": 0.00024706827305842616
+            },
+            "density": {
+              "quiet_m": -2.1797693761094195e-07,
+              "pulse_m": 6.764338267961634e-05,
+              "pulse_minus_quiet_m": 6.786135961722728e-05
+            },
+            "density_centroid": {
+              "quiet_m": -7.930300693459458e-06,
+              "pulse_m": 0.00029980813307783905,
+              "pulse_minus_quiet_m": 0.0003077384337712985
+            }
+          }
+        },
+        {
+          "time_s": 6.4e-09,
+          "step": 128,
+          "quiet_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000128.npz",
+          "quiet_sha256": "8cf4934ea5bef264fd8c3e8c4424282278714bd1477508b1c887ea9901bf15bd",
+          "pulse_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000128.npz",
+          "pulse_sha256": "83174c69c2ef9b3cfa6c2ddba15cff15a9728911a99612c07b775f1e2865aa65",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 1.4395808365375018e-06,
+              "pulse_m": 0.00019482894622013802,
+              "pulse_minus_quiet_m": 0.00019338936538360052
+            },
+            "tracked_surface": {
+              "quiet_m": 1.9846295247205603e-06,
+              "pulse_m": 0.0003328623403799913,
+              "pulse_minus_quiet_m": 0.00033087771085527073
+            },
+            "density": {
+              "quiet_m": -3.83782051471826e-07,
+              "pulse_m": 8.954198033039873e-05,
+              "pulse_minus_quiet_m": 8.992576238187056e-05
+            },
+            "density_centroid": {
+              "quiet_m": -1.3969604994334972e-05,
+              "pulse_m": 0.0003967345059883165,
+              "pulse_minus_quiet_m": 0.00041070411098265147
+            }
+          }
+        },
+        {
+          "time_s": 8e-09,
+          "step": 160,
+          "quiet_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000160.npz",
+          "quiet_sha256": "509791c7579934c6fb245dd079e6c19e4f29a487b164d8cab073e10181899995",
+          "pulse_raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000160.npz",
+          "pulse_sha256": "051450430aff730eb07d8f0d4c780dbb0015cc8c9231ed7b00849f1eec48ad29",
+          "quantities": {
+            "separatrix": {
+              "quiet_m": 2.243710430560597e-06,
+              "pulse_m": 0.00024744324346448465,
+              "pulse_minus_quiet_m": 0.00024519953303392406
+            },
+            "tracked_surface": {
+              "quiet_m": 3.0904891925587208e-06,
+              "pulse_m": 0.00041887372252635835,
+              "pulse_minus_quiet_m": 0.00041578323333379963
+            },
+            "density": {
+              "quiet_m": -5.918955454653485e-07,
+              "pulse_m": 0.0001108256363977489,
+              "pulse_minus_quiet_m": 0.00011141753194321424
+            },
+            "density_centroid": {
+              "quiet_m": -2.1571081058269215e-05,
+              "pulse_m": 0.0004922595773917404,
+              "pulse_minus_quiet_m": 0.0005138306584500096
+            }
+          }
+        }
+      ],
+      "cells_by_region": {
+        "domain": 280,
+        "first_layer": 64,
+        "beyond_first_layer": 216,
+        "fixed_wall_collar": 120,
+        "beyond_fixed_wall_collar": 160,
+        "core": 92,
+        "halo": 68
+      },
+      "region_volumes_per_rad_m3": {
+        "domain": 2.8378710937499987,
+        "first_layer": 0.6486562499999997,
+        "beyond_first_layer": 2.189214843749999,
+        "fixed_wall_collar": 1.33715625,
+        "beyond_fixed_wall_collar": 1.5007148437499986,
+        "core": 0.8763661741918443,
+        "halo": 0.6243486695581544
+      }
+    }
+  ],
+  "reference_regions": {
+    "labels": {
+      "core": "CORE",
+      "halo": "HALO",
+      "fixed_wall_collar": "NEAR-WALL"
+    },
+    "scope": "Static analysis labels only. The physical wall collar takes precedence. The remaining cell volume is assigned to core or halo by its center relative to the initial LCFS polygon. The LCFS volume split is a center-label approximation and is independent of the evolved magnetic topology."
+  },
+  "capture_times_ns": [
+    "1.6",
+    "3.2",
+    "4.8",
+    "6.4",
+    "8"
+  ],
+  "half_capture_times_ns": [],
+  "exact_common_times_s": [
+    0.0,
+    1.6e-09,
+    3.2e-09,
+    4.8e-09,
+    6.4e-09,
+    8e-09
+  ],
+  "last_exact_common_time_s": 8e-09,
+  "step_half": [],
+  "shared_signed_section_scales_SI": {
+    "quiet_change": {
+      "density_m3": 1307842751807488.0,
+      "ion_velocity_m_s": 1484.3194227220813,
+      "nodal_B_T": 0.00016648721818546264,
+      "psi_Wb_per_rad": 1.1216306926992159e-06
+    },
+    "pulse_change": {
+      "density_m3": 8.115930495232614e+16,
+      "ion_velocity_m_s": 15263.038880031763,
+      "nodal_B_T": 0.006482010825372253,
+      "psi_Wb_per_rad": 0.00012054882525946997
+    },
+    "pulse_minus_quiet": {
+      "density_m3": 8.133078315136614e+16,
+      "ion_velocity_m_s": 80621.15643189398,
+      "nodal_B_T": 0.006481135684446304,
+      "psi_Wb_per_rad": 0.00012038432924581233
+    }
+  }
+}

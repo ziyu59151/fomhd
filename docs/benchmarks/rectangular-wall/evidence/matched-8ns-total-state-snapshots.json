@@ -1,0 +1,210 @@
+[
+  {
+    "case": "14×20 repaired mesh",
+    "time_s": 8e-09,
+    "accepted_states": [
+      {
+        "raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000000.npz",
+        "sha256": "588853c3eee603f16499090d3ccae111246f1273a96fa19eef11747ce8a93311",
+        "step": 0,
+        "time_s": 0.0
+      },
+      {
+        "raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000000.npz",
+        "sha256": "ac514ffa49715bd5f5e1887ae4bd2606cb8f36fa126ce685d29cdfd0bff2b72e",
+        "step": 0,
+        "time_s": 0.0
+      },
+      {
+        "raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-quiet/run/snapshots/state_0000000160.npz",
+        "sha256": "509791c7579934c6fb245dd079e6c19e4f29a487b164d8cab073e10181899995",
+        "step": 160,
+        "time_s": 8e-09
+      },
+      {
+        "raw_snapshot": "archived-campaign/cases/a0-repaired-14x20-pulse/run/snapshots/state_0000000160.npz",
+        "sha256": "051450430aff730eb07d8f0d4c780dbb0015cc8c9231ed7b00849f1eec48ad29",
+        "step": 160,
+        "time_s": 8e-09
+      }
+    ],
+    "ranges_SI": {
+      "density_m3": [
+        [
+          8e+18,
+          2e+19
+        ],
+        [
+          8e+18,
+          2e+19
+        ],
+        [
+          7.999955796742399e+18,
+          2.0001307842751807e+19
+        ],
+        [
+          7.969090923581923e+18,
+          2.0049208079441805e+19
+        ]
+      ],
+      "psi_Wb_per_rad": [
+        [
+          -0.03901968070702447,
+          0.08575912103977873
+        ],
+        [
+          -0.03901968070702447,
+          0.08575912103977873
+        ],
+        [
+          -0.03901965579341999,
+          0.08575910447768308
+        ],
+        [
+          -0.039019487599414336,
+          0.08576915559109584
+        ]
+      ],
+      "ion_velocity_m_s": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          78962.61959435184
+        ],
+        [
+          -778.3129725226905,
+          642.5727927015157
+        ],
+        [
+          -9883.608802005165,
+          80621.85336629083
+        ]
+      ],
+      "nodal_B_T": [
+        [
+          -0.14447738198946863,
+          2.8811192057130004
+        ],
+        [
+          -0.14447738198946863,
+          2.8811192057130004
+        ],
+        [
+          -0.14447220816727996,
+          2.881119627573483
+        ],
+        [
+          -0.14447343623876696,
+          2.881324100540802
+        ]
+      ]
+    }
+  },
+  {
+    "case": "14×20 legacy mesh",
+    "time_s": 8e-09,
+    "accepted_states": [
+      {
+        "raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000000.npz",
+        "sha256": "5ad9f1b300a77b6c5505dd60c7691bb9142331b65986910df8ae43857eab6d3a",
+        "step": 0,
+        "time_s": 0.0
+      },
+      {
+        "raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000000.npz",
+        "sha256": "2bb57ef81bd16bb9b94741ddc77fb7e6d9ffcdc7dd57d7c834442efa9069d677",
+        "step": 0,
+        "time_s": 0.0
+      },
+      {
+        "raw_snapshot": "archived-comparison/cases/a0-fine-quiet/run/snapshots/state_0000000160.npz",
+        "sha256": "eec3fafe9c45099a8b2602e55d6748093dede93bf4b8d89f83ca874853d986ef",
+        "step": 160,
+        "time_s": 8e-09
+      },
+      {
+        "raw_snapshot": "archived-comparison/cases/a0-fine-pulse/run/snapshots/state_0000000160.npz",
+        "sha256": "b5ff4e2a1b2dcf91a5c14f920d6682284cc7ee5aeb906a018ea9902c4867379a",
+        "step": 160,
+        "time_s": 8e-09
+      }
+    ],
+    "ranges_SI": {
+      "density_m3": [
+        [
+          8e+18,
+          2e+19
+        ],
+        [
+          8e+18,
+          2e+19
+        ],
+        [
+          7.999636707874532e+18,
+          2.0001003681546605e+19
+        ],
+        [
+          7.969090544237331e+18,
+          2.0049360357032722e+19
+        ]
+      ],
+      "psi_Wb_per_rad": [
+        [
+          -0.03901968070702447,
+          0.08575912103977873
+        ],
+        [
+          -0.03901968070702447,
+          0.08575912103977873
+        ],
+        [
+          -0.03901976154532117,
+          0.08575911851417711
+        ],
+        [
+          -0.03901959311679426,
+          0.08576916919337527
+        ]
+      ],
+      "ion_velocity_m_s": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          78962.61959435184
+        ],
+        [
+          -613.060481040269,
+          1484.3194227220813
+        ],
+        [
+          -9937.691205304309,
+          80614.85066922015
+        ]
+      ],
+      "nodal_B_T": [
+        [
+          -0.14447738198946863,
+          2.8811192057130004
+        ],
+        [
+          -0.14447738198946863,
+          2.8811192057130004
+        ],
+        [
+          -0.14447296664304116,
+          2.8811818058709298
+        ],
+        [
+          -0.14447420102986705,
+          2.8813196281168296
+        ]
+      ]
+    }
+  }
+]
