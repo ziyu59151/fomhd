@@ -19,7 +19,7 @@ done
 mkdir -- "$3"
 run=$(realpath -- "$3")
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
-export PYTHONDONTWRITEBYTECODE=1 WARP_CACHE_PATH="$run/warp-cache"
+export PYTHONDONTWRITEBYTECODE=1 WARP_CACHE_PATH="${WARP_CACHE_PATH:-$run/warp-cache}"
 gpu_filter=()
 if [[ -n "${SLURM_JOB_GPUS:-}" ]]; then
     gpu_filter=(-i "$SLURM_JOB_GPUS")
@@ -56,6 +56,8 @@ measure() {
 }
 measure original "$original" 12 1
 measure optimized "$optimized" 12 1
-measure original "$original" 12 2
-measure optimized "$optimized" 12 2
+if [[ "${FOMHD_REPLAY_REPEATS:-2}" == 2 ]]; then
+    measure original "$original" 12 2
+    measure optimized "$optimized" 12 2
+fi
 measure optimized "$optimized" 24 1
