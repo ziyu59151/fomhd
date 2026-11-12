@@ -1,10 +1,9 @@
 # FOMHD roadmap and release scope
 
-Status: D072 selects few ion nodes or trajectory coefficients, field
-microsteps, and multirate waveform relaxation on the 0.5.0 branch. Historical
-T0/T1, T2-E and C1/C2 evidence and failures remain unchanged. T2-E, C1/C2 and
-unimplemented T tiers are research branches; they are not development or
-integration prerequisites. A3/1.0 and A4 retain the scoped roadmap below.
+The current order is A0 synchronous RK4 scaling and independent-mode
+acceptance, followed by A2. The [rectangular E/B baseline](benchmarks/rectangular-wall/README.md) is the common physical reference.
+A1 time methods are retained with their demonstrated limits and may be
+reassessed after A0 supplies a stable physics and cost comparison.
 
 The sibling design repository owns the full definitions in
 `mainline_design/numerics/algorithm_design/A0_A3_ALGORITHM_SELECTION.md`
@@ -16,9 +15,9 @@ They are review context, never a build or runtime dependency.
 
 | Stage | Model and purpose | Status |
 |---|---|---|
-| A0 | Fluid reference: bulk-ion fluid and fluid electrons | Bounded reference evidence retained on `release/a0` |
-| A1 | Use the controllable two-fluid system to study time decoupling, parallel iteration, storage and computational scaling for future kinetic hybrids | T0/T1 retained as references; D072 few-node multirate waveform method is active; T2-E and C1/C2 remain research controls |
-| A2 | Passive particle verification; read-only fields, no deposition or feedback | Planned; remains optional as an independent stage |
+| A0 | Fluid reference: bulk-ion fluid and fluid electrons | Active scaling and eigenmode acceptance on `release/a0` |
+| A1 | Use the controllable two-fluid system to study time decoupling, parallel iteration, storage and computational scaling for future kinetic hybrids | T0/T1 retained as references; D072 few-node multirate waveform method retained; T2-E and C1/C2 remain research controls |
+| A2 | Passive particle verification; read-only fields, no deposition or feedback | Starts after A0 baseline acceptance |
 | A3 | Retain bulk-ion fluid and fluid electrons; add self-consistent fully kinetic (FK) fast-ion populations | Planned; stable, reproducible, scoped acceptance is the 1.0 milestone |
 | A4 | Replace bulk ions with FK representations too, so all ion species are kinetic; electrons remain fluid | Long-term work after 1.0, not part of the current implementation |
 
@@ -57,7 +56,7 @@ only in identified common limits.
 
 ## What the A1 time experiments establish
 
-Synchronous fluid work is currently acceptable. Two-fluid A1 is a validation
+The tested synchronous fluid cases provide bounded references. Two-fluid A1 is a validation
 platform while a stable FK-fluid feedback implementation is not yet available;
 transferability to expensive future particle calculations is a selection
 criterion from the outset.
@@ -81,10 +80,9 @@ Microstep count, orbit subdivisions, population counts and marker counts are
 separate parameters. Compare with a reasonable synchronous or particle-subcycled
 reference that reuses field and moment data, not an artificially costly replay.
 
-## Current selected route and retained research
+## Retained time research
 
-D072 supersedes the development order in this section's historical T mapping.
-The active method directly solves a small number of ion nodes and exchanges
+D072 selected the historical few-node method. That method directly solves a small number of ion nodes and exchanges
 their polynomial waveform with real RK4 field microsteps. Expensive ion
 transport remains coarse after convergence. Its mixed-history discrete target
 has independent accuracy, stability, work and transaction acceptance. The
@@ -143,3 +141,13 @@ H/h/M/horizon growth, memory/jobs, acceptance/stopping and report templates are 
 `A1/A1_VALIDATION_AND_SCALING.md`. The planned executable schedule is
 [pseudocode/T2_WINDOW_PLAN.md](pseudocode/T2_WINDOW_PLAN.md). Implementation, correctness and performance claims require their versioned
 unit reports. A local field or kernel gain is not complete-system acceptance.
+
+## A2 baseline after A0 acceptance
+
+Use prescribed E/B fields and an ordinary GPU nonrelativistic Boris pusher
+for passive particles. Measure field gather, push, orbit phase and complete
+cost. A prescribed sequence of sampled fields gives affine updates that can
+be composed in time. In nonuniform fields, the gather depends on the orbit.
+First verify composition on known samples, then measure prediction, gather
+and nonlinear correction against the ordinary GPU pusher at equal orbit
+accuracy. Include synchronization and all iteration costs.

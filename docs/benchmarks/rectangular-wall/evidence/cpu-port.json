@@ -1,0 +1,57 @@
+{
+  "scope": "One accepted 50 ps CPU synchronous step from each repaired source on byte-identical 10x14 pulse",
+  "A0": {
+    "source": "archived-campaign/source-a0-repaired/src/fomhd/time.py",
+    "case": "archived-comparison/cases/a0-coarse-pulse/case.toml",
+    "backend": "cpu",
+    "input_hashes": {
+      "case": "2fbd62334911b007f0d0ca895000844472272cad0fd76ccee4df1ec9e62766d2",
+      "geometry": "388b6ffaa64bdad60cce65e535a0e1d3c7b9325245193515a64c83a03db45414",
+      "initial": "82f50663debe0ea5d6cea1b252d7c7f9ebb40ca18bb97a8e33c235de61ee0ee7",
+      "source": "c3cf6be7b77796d166da0bc8f856931baddf2c6a5e38d58821de739ed5fca90a"
+    },
+    "accepted_step": 1,
+    "accepted_time_s": 5e-11,
+    "accepted_checks": 844
+  },
+  "A1": {
+    "source": "archived-campaign/source-a1-repaired/src/fomhd/time.py",
+    "case": "archived-campaign/cases/a1-repaired-10x14-sync-pulse/case.toml",
+    "backend": "cpu",
+    "input_hashes": {
+      "case": "052e1d893e59b582c39659ef035d02d0738ba40fb632b8a3c31fd15e07f89f5b",
+      "geometry": "388b6ffaa64bdad60cce65e535a0e1d3c7b9325245193515a64c83a03db45414",
+      "initial": "82f50663debe0ea5d6cea1b252d7c7f9ebb40ca18bb97a8e33c235de61ee0ee7",
+      "source": "67ffb968ac2283069f9096dc7df28a49feead41f4e1f148db57bde2877f258ab"
+    },
+    "accepted_step": 1,
+    "accepted_time_s": 5e-11,
+    "accepted_checks": 844
+  },
+  "max_abs_gap_over_physical_reference": {
+    "initial": {
+      "n_i": 0.0,
+      "mom_i": 0.0,
+      "p_i": 0.0,
+      "n_e": 0.0,
+      "mom_e": 0.0,
+      "p_perp_e": 0.0,
+      "p_parallel_e": 0.0,
+      "B_R": 0.0,
+      "B_phi": 0.0,
+      "B_Z": 0.0
+    },
+    "final": {
+      "n_i": 0.0,
+      "mom_i": 1.1273363710121267e-21,
+      "p_i": 0.0,
+      "n_e": 0.0,
+      "mom_e": 6.899872304930795e-20,
+      "p_perp_e": 0.0,
+      "p_parallel_e": 0.0,
+      "B_R": 0.0,
+      "B_phi": 0.0,
+      "B_Z": 0.0
+    }
+  }
+}
