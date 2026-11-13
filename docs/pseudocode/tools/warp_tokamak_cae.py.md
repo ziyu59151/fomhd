@@ -68,3 +68,7 @@ unperturbed run before beginning its perturbation.
 Report target_periods = actual requested horizon * selected frequency, including
 explicit horizon overrides. CLI cycles is only the default horizon request.
 Each generated harness parameter includes an English scope/validation comment.
+# Magnetic sampling
+
+Use the common stored-chart magnetic reconstruction to turn a candidate
+direction into a cell magnetic field.

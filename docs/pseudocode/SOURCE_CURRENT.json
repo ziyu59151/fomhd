@@ -1,34 +1,38 @@
 {
   "layer": "A0",
-  "date": "2026-11-12",
-  "ancestor": "bc809bdd3aa5253e1ffa60c21e7dcf5e7c84d369",
-  "branch": "codex/a0-rk4-scaling",
-  "source_capture": "https://github.com/ziyu59151/fomhd/tree/95e5b56f23be59f46bbf6f47206d23b23c34645c",
+  "date": "2026-11-13",
+  "ancestor": "a3ac3c1766a0a34d1d14111fc9b622f375cf299f",
+  "branch": "codex/a0-rectangle-ghost",
+  "source_capture": "Working tree, identified by the source file hashes below",
   "source_files_sha256": {
     "src/fomhd/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "src/fomhd/__main__.py": "8ad8fe2cf712d8d62f592b4230ecad43dbfe9dbde7fc6cab2a7d406de466aa7c",
     "src/fomhd/backend.py": "c61923510b4b107dbc884a05b8fdbe64648d5b90278f550d3852d23f9378864a",
-    "src/fomhd/box_boundary.py": "250845ef5c7d82fd16609c286bf1cc8fef455548bc57d521b64926f61f4c70c1",
-    "src/fomhd/core.py": "392688c34d57348e5c1eb3378d137f90f9689ec588f8470805799554880be17b",
-    "src/fomhd/diagnostics.py": "8300b1480443bf7aeef203e67e69e1ffb5956ef7f929e8a2c5695cacfba676af",
+    "src/fomhd/box_boundary.py": "49bda1c663152f96155ed1c52ef2abfff9898633f356b7f74351c28539e8b015",
+    "src/fomhd/core.py": "36f1b2ed039e96a11219fcd77adbf0d3556ef568ec4d274bc25c13fd9a8db80f",
+    "src/fomhd/diagnostics.py": "c325f0286615eaf78eb780d859c538bbed7b5664db777f8cc2c4e6342d1a9c88",
     "src/fomhd/energy.py": "4527ef0c67d1b219ffdfbdffaab8e0e9029a17083b8e7f6c770f8c64bbb60861",
     "src/fomhd/fields.py": "a80e8ea02c10e4ca8ab4fc78c6b9f0b3da4988c0f24e1a2499792d550488456d",
-    "src/fomhd/fluid.py": "609665d6a34fdc78b050371bac00e50439fbf0ad114ad5d879344077f03cfecc",
+    "src/fomhd/fluid.py": "466e4275d8c17c5b6c4c50c050cb77bf4fd2e6319225444870d89d0de11f10ff",
     "src/fomhd/geometry.py": "864633ff459110344a3b8953365d8decb82221de09340d2c43f6b98d070c5ba4",
-    "src/fomhd/io.py": "888606736d17e75115fbaac256125a4231d3d71b4b1464c0170b9edc5661679d",
-    "src/fomhd/massless.py": "f253ddc7e23c88ca3b2f84f94da1843ebb554ce9b111d03476031244f01cf903",
+    "src/fomhd/ghost_magnetic.py": "50105dce92bc43f7fb94a1a3a7321dee39056e52a10d8815f8084080d3fb2810",
+    "src/fomhd/ghost_material.py": "0c4693de7a2f8da720677ee1ba574db7862530b180c118e73ad6593012fdf25c",
+    "src/fomhd/ghost_reconstruction.py": "5571e7e671cd6bf5c04fa02eea5db488551efba329f32c69b3b0f7c2e96e5774",
+    "src/fomhd/ghost_toroidal.py": "74549d7fb8b6d3efcc3e5425c4d20fd76ce18cb8de5f3a24b10473e30d6a496f",
+    "src/fomhd/io.py": "24306824fcaab17745d5d9d16c76d97509bce40a94bb3d18168494f545e031bd",
+    "src/fomhd/massless.py": "bfc6cbda1b22f9c867bac7786eabf14d716b6ce4015aad38f02119a4cf4c1d77",
     "src/fomhd/massless_checks.py": "29098d646b6673eb5e41f5345ce62b7162ef7959622ae3bb08f3447d9addeaba",
-    "src/fomhd/operators.py": "b4ac5201c284d0fb6ca941814c080d6f9be38d287dfc7dbf64c51d41625adb31",
+    "src/fomhd/operators.py": "c899e8ac76115724cdb47f57d3538bb2b10ce3ce4d5b1db3863a6a519ccfa00a",
     "src/fomhd/stability.py": "d5d7f1876b66f40200ada9dfbce71441771a2688f7d2f4e64ddb498f4e8a5b76",
-    "src/fomhd/stage.py": "a7a03a80211e4f41274ea26a8ecc591103b8b7f8f6a921df6d5a50ccb8faf407",
+    "src/fomhd/stage.py": "bb88677b3577d14cd1e7cb97f3aea47dfd7a69d848fe563f524cc455da565716",
     "src/fomhd/time.py": "3e4404789dbc454f6da17ddde596880cd65580b74aa55215f732231e7a388a1f",
     "src/fomhd/types.py": "a213365a68322df674c68deccadce15454fe5b6a4257480e713ecca1c432f00c",
     "src/fomhd/wall.py": "38ddb19ce2dd6de27e2bde2ac4fb9bc3689eb85810122b83cdff5727fd0155f0",
     "src/fomhd/wall_cache.py": "53356d5336ffb251f540a39e9c9aa4ebe69ca1787a6be7171cc5bffb6643682f"
   },
   "active_spatial_design": "/home/lxzeng/fomhd-design/mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md",
-  "active_spatial_design_sha256": "21a41d00031abd679f63ac67b0de9e87d9064122c009d655edebcf9dedc26041",
-  "traceability_sha256": "dbec04c6e95066eea919ea8f97526b0637374913709f7b4d887b8d24a22c60d6",
+  "active_spatial_design_sha256": "a095a5fa2d2d6f91135bf84c9b6c6a2cb84eb5b60a5d8dafa0a37ea44782b7e5",
+  "traceability_sha256": "2d2b78d957659b3cd380599efd5a383cdef1dfc0493cb4aa96d4ea4445c2f76f",
   "traceability": [
     {
       "id": "A0-PY-BOX-01",
@@ -47,10 +51,35 @@
       "pseudocode": "docs/pseudocode/src/fomhd/operators.py.md",
       "source": "src/fomhd/operators.py",
       "checks": "pytest:tests/warp/test_rectangle_magnetic_flux.py;pytest:tests/warp/test_rectangular_wall_entry.py"
+    },
+    {
+      "id": "A0-PY-BOX-GHOST-NORM",
+      "pseudocode": "docs/pseudocode/src/fomhd/ghost_magnetic.py.md",
+      "source": "src/fomhd/ghost_magnetic.py",
+      "checks": "pytest:tests/warp/test_ghost_magnetic.py"
+    },
+    {
+      "id": "A0-PY-BOX-GHOST-RECON",
+      "pseudocode": "docs/pseudocode/src/fomhd/ghost_reconstruction.py.md",
+      "source": "src/fomhd/ghost_reconstruction.py",
+      "checks": "pytest:tests/warp/test_ghost_reconstruction.py"
+    },
+    {
+      "id": "A0-PY-BOX-GHOST-TOR",
+      "pseudocode": "docs/pseudocode/src/fomhd/ghost_toroidal.py.md",
+      "source": "src/fomhd/ghost_toroidal.py",
+      "checks": "pytest:tests/warp/test_ghost_toroidal.py"
+    },
+    {
+      "id": "A0-PY-BOX-GHOST-MAT",
+      "pseudocode": "docs/pseudocode/src/fomhd/ghost_material.py.md",
+      "source": "src/fomhd/ghost_material.py",
+      "checks": "pytest:tests/warp/test_ghost_material.py"
     }
   ],
-  "numerical_scope_report": "docs/benchmarks/a0-rk4-gpu/README.md",
-  "cpu_suite": "docs/benchmarks/a0-rk4-gpu/raw/guarded/cpu-guarded.log",
-  "notes": "Wall validation stays on the original D075 publication. This source receipt also covers the D076 ordinary synchronous A0 implementation.",
-  "published_spatial_design": "docs/benchmarks/rectangular-wall/DESIGN.md"
+  "numerical_scope_report": "docs/A0_RECTANGLE_GHOST.md",
+  "cpu_suite": "/home/lxzeng/runs/fomhd/a0-rectangle-ghost-final-20261113.vgvxaC/cpu-regression.log",
+  "notes": "The replay source is frozen separately in its run directory. Earlier wall and GPU receipts retain the source and scope of their recorded results.",
+  "published_spatial_design": "docs/benchmarks/rectangular-wall/DESIGN.md",
+  "previous_receipt": "https://github.com/ziyu59151/fomhd/tree/95e5b56f23be59f46bbf6f47206d23b23c34645c"
 }

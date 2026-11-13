@@ -329,6 +329,57 @@ def build_fluid(state, species, bn, bhat, tag, context):
     )
 
 
+def _material_line_action(values, derivative, density, end_scales, adjoint):
+    """Apply a point derivative and its current-density wall trace lift."""
+    if adjoint:
+        result = values @ derivative
+    else:
+        result = values @ derivative.T
+    for near, following, scale in ((0, 1, end_scales[0]), (-1, -2, end_scales[1])):
+        near_density = density[..., near]
+        next_density = density[..., following]
+        wall_density = 1.5 * near_density - 0.5 * next_density
+        lift = scale * 0.75 * (next_density - near_density) / wall_density
+        lift = lift[:, None, :]
+        if adjoint:
+            correction = lift * values[..., near]
+            result[..., near] += correction
+            result[..., following] -= correction
+        else:
+            result[..., near] += lift * (values[..., near] - values[..., following])
+    return result
+
+
+def _ghost_material_actions(fluid, radial, axial, context, adjoint=False):
+    """Apply both separable rectangular derivatives in physical cell order."""
+    radius = context.geometry.R
+    height = context.geometry.Z
+    nr, nz = radius.size, height.size
+    hr = float(radius[1] - radius[0])
+    hz = float(height[1] - height[0])
+    radial_scales = (
+        -(radius[0] - 0.5 * hr) / (radius[0] * hr),
+        (radius[-1] + 0.5 * hr) / (radius[-1] * hr),
+    )
+    density = fluid.n.real.reshape(context.N, nz, nr)
+    radial = _material_line_action(
+        radial.reshape(context.N, 3, nz, nr),
+        context.op.material_radial_derivative,
+        density,
+        radial_scales,
+        adjoint,
+    )
+    axial = _material_line_action(
+        axial.reshape(context.N, 3, nz, nr).swapaxes(-2, -1),
+        context.op.material_axial_derivative,
+        density.swapaxes(-2, -1),
+        (-1.0 / hz, 1.0 / hz),
+        adjoint,
+    ).swapaxes(-2, -1)
+    shape = (context.N, 3, context.op.Nc)
+    return radial.reshape(shape), axial.reshape(shape)
+
+
 def velocity_gradient(fluid, x, context):
     """Return the compatible physical cylindrical gradient on all samples."""
     xp = _xp(context)
@@ -342,6 +393,16 @@ def velocity_gradient(fluid, x, context):
     face_density = fluid.nf.reshape(context.N, context.op.Ne)
     radius = xp.asarray(context.geometry.cells.R, dtype=xp.float64)
     gradient = xp.zeros((context.N, 3, 3, nc), dtype=xp.complex128)
+    if getattr(getattr(context.op, "options", None), "ghost_wall", False):
+        gradient[:, :, 0, :], gradient[:, :, 2, :] = _ghost_material_actions(
+            fluid, values, values, context
+        )
+        derivative_phi = context.compute.derivative(x, 3 * nc, context.N)
+        gradient[:, :, 1, :] = derivative_phi.reshape(values.shape) / radius
+        gradient[:, 0, 1, :] -= values[:, 1, :] / radius
+        gradient[:, 1, 1, :] += values[:, 0, :] / radius
+        return gradient.reshape(-1)
+
     nr = context.op.DR.shape[1]
     axial_offset = nr + nc
     for component in range(3):
@@ -383,6 +444,18 @@ def gradient_adjoint(fluid, tensor, context):
     face_density = fluid.nf.reshape(context.N, context.op.Ne)
     m0 = xp.real(xp.asarray(context.op.M0)).astype(xp.float64)
     radius = xp.asarray(context.geometry.cells.R, dtype=xp.float64)
+    if getattr(getattr(context.op, "options", None), "ghost_wall", False):
+        weighted = m0 * values
+        radial, axial = _ghost_material_actions(
+            fluid, weighted[:, :, 0, :], weighted[:, :, 2, :], context, adjoint=True
+        )
+        azimuthal = (weighted[:, :, 1, :] / radius).reshape(-1)
+        derivative_phi = context.compute.derivative(azimuthal, 3 * nc, context.N)
+        result = radial + axial - derivative_phi.reshape(radial.shape)
+        result[:, 0, :] += weighted[:, 1, 1, :] / radius
+        result[:, 1, :] -= weighted[:, 0, 1, :] / radius
+        return (result / m0).reshape(-1)
+
     nr = context.op.DR.shape[1]
     axial_offset = nr + nc
     result = xp.zeros((context.N, 3, nc), dtype=xp.complex128)

@@ -82,18 +82,20 @@ def _massless_peak_bytes(c: Context, vector_entries: int) -> int:
         "M0", "M1", "MB", "Rbar_r", "Rbar_v", "b1r", "b1z", "b2r", "b2z",
         "PR_r", "PZ_r", "PR_z", "PZ_z", "PR_v", "PZ_v",
         "wall_magnetic_divergence",
+        "material_radial_derivative", "material_axial_derivative",
+        "wall_toroidal_trace_indices",
     )
     resident = 0
     for matrix in (matrix for group in mode_groups for matrix in group):
         resident = add(resident, int(matrix.nbytes))
     for attribute in fixed_names:
         resident = add(resident, int(getattr(getattr(op, attribute), "nbytes", 0)))
-    qb = op.QB
-    if c.compute.is_csr(qb):
-        for array in (qb.data, qb.indices, qb.indptr):
-            resident = add(resident, int(array.nbytes))
-    else:
-        resident = add(resident, int(qb.nbytes))
+    for matrix in (op.QB, op.wall_magnetic_reconstruction):
+        if c.compute.is_csr(matrix):
+            for array in (matrix.data, matrix.indices, matrix.indptr):
+                resident = add(resident, int(array.nbytes))
+        else:
+            resident = add(resident, int(getattr(matrix, "nbytes", 0)))
     for axis in ("PR_r", "PZ_r", "PR_z", "PZ_z", "PR_v", "PZ_v"):
         factor = getattr(op, f"{axis}_factor")
         # Count originals even when they alias a retained transform.
@@ -105,6 +107,9 @@ def _massless_peak_bytes(c: Context, vector_entries: int) -> int:
     if op.box_magnetic_norm is not None:
         for array in op.box_magnetic_norm[:-1]:
             resident = add(resident, int(array.nbytes))
+    if op.ghost_toroidal is not None:
+        for array in vars(op.ghost_toroidal).values():
+            resident = add(resident, int(getattr(array, "nbytes", 0)))
 
     walls = len(c.geometry.walls)
     wall_square = product(walls, walls)
@@ -352,6 +357,26 @@ def sample_apply(matrix: Any, values: Any, N: int, backend: Any) -> Any:
     return backend.array(
         backend.mm(matrix, values.reshape(N, columns).T).T
     ).reshape(-1)
+
+
+def reconstruct_magnetic(operators: Any, values: Any, backend: Any = None) -> Any:
+    """Reconstruct mode-major magnetic components at cell centers on their backend."""
+    backend = backend or operators.compute
+    if values.ndim != 1 or values.size % operators.Nb != 0:
+        raise Failure("Shape", "magnetic reconstruction input shape")
+    modes = values.size // operators.Nb
+    result = sample_apply(operators.QB, values, modes, backend)
+    toroidal = getattr(operators, "ghost_toroidal", None)
+    if toroidal is not None:
+        from .ghost_toroidal import toroidal_reconstruct
+
+        start = operators.PZ_z.shape[0]
+        stop = start + operators.Rbar_v.size
+        vertices = values.reshape(modes, operators.Nb)[:, start:stop]
+        result.reshape(modes, 3, operators.Nc)[:, 1, :] = toroidal_reconstruct(
+            toroidal, vertices, backend
+        )
+    return result
 
 
 def inverse(

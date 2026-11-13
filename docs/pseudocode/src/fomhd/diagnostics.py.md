@@ -1,5 +1,8 @@
 # Runtime diagnostics
 
+Convert magnetic rates to cell values with the same stored-chart
+reconstruction used for the stage field.
+
 ## A0-PY-DIAG-00: Model dispatch
 
 For `electron_inertia=0`, the public `check_stage`, `check_step`,

@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from .core import inverse, mode_apply
+from .core import inverse, mode_apply, sample_apply
 from .operators import apply_t3
 from .types import Failure
 
@@ -67,17 +67,32 @@ def wall_magnetic_trace(B, context):
     """Physical R, phi, Z at each wall segment in backend sample layout.
 
     The normal trace is the prescribed area mean. Tangential components use
-    the existing wall-adjacent magnetic reconstruction.
+    the selected wall-adjacent magnetic reconstruction.
     """
     wall = context.op.box_wall
     xp = context.compute.xp
-    values = inverse(B, context.op.Nb, context, True).real.reshape(context.N, -1)
     count = wall.area.size
     trace = xp.empty((context.N, 3, count), dtype=xp.float64)
     row = xp.arange(count)
     trace[:, wall.direction, row] = inverse(wall.normal_hat, count, context, True).real.reshape(context.N, count)
-    trace[:, wall.tangent, row] = values[:, wall.magnetic_index]
-    trace[:, 1, :] = values[:, wall.toroidal_index].mean(axis=-1)
+    reconstruction = context.op.wall_magnetic_reconstruction
+    if reconstruction is None:
+        values = inverse(B, context.op.Nb, context, True).real.reshape(context.N, -1)
+        trace[:, wall.tangent, row] = values[:, wall.magnetic_index]
+        trace[:, 1, :] = values[:, wall.toroidal_index].mean(axis=-1)
+    else:
+        from .ghost_toroidal import toroidal_trace
+
+        op = context.op
+        modes = 2 * op.K + 1
+        samples = sample_apply(reconstruction, B, modes, context.compute)
+        trace[:, wall.tangent, row] = inverse(samples, count, context, True).real.reshape(context.N, count)
+        start = op.PZ_z.shape[0]
+        vertices = B.reshape(modes, op.Nb)[:, start:start + op.Rbar_v.size]
+        radial, axial = toroidal_trace(op.ghost_toroidal, vertices, context.compute)
+        toroidal = xp.concatenate((radial.reshape(modes, -1), axial.reshape(modes, -1)), axis=1)
+        samples = toroidal[:, op.wall_toroidal_trace_indices].reshape(-1)
+        trace[:, 1, :] = inverse(samples, count, context, True).real.reshape(context.N, count)
     return trace
 
 

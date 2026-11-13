@@ -15,6 +15,7 @@ from .core import (
     forward,
     inverse,
     mode_apply,
+    reconstruct_magnetic,
     sample_apply,
 )
 from .fluid import (
@@ -344,7 +345,7 @@ def _derive_electron(state, context):
     _finite(state.B, context, "magnetic field")
 
     BN = inverse(
-        sample_apply(context.op.QB, state.B, modes, context.compute),
+        reconstruct_magnetic(context.op, state.B, context.compute),
         3 * nc,
         context,
         True,

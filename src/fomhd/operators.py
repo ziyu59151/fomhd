@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from types import SimpleNamespace
 from typing import Any
 
@@ -24,10 +24,12 @@ class OperatorOptions:
     rank_rtol: float = 1e-10
     memory_cap_bytes: int = 512 << 20
     include_finite_mass: bool = True
+    ghost_wall: bool = False
 
 
 @dataclass
 class Operators:
+    options: OperatorOptions = field(default_factory=OperatorOptions)
     K: int = 0
     Nc: int = 0
     Ne: int = 0
@@ -36,6 +38,7 @@ class Operators:
     M1: Any = None
     MB: Any = None
     box_magnetic_norm: tuple[Any, Any, Any, float] | None = None
+    ghost_toroidal: Any = None
     Rbar_r: Any = None
     Rbar_v: Any = None
     b1r: Any = None
@@ -64,6 +67,10 @@ class Operators:
     I: Any = None
     H: Any = None
     QB: Any = None
+    wall_magnetic_reconstruction: Any = None
+    wall_toroidal_trace_indices: Any = None
+    material_radial_derivative: Any = None
+    material_axial_derivative: Any = None
     DR: Any = None
     DZ: Any = None
     T_full: Any = None
@@ -473,25 +480,37 @@ def _box_magnetic_norm(
     r_mean = geometry.Rbar_r[:nr + 1]
     lr = geometry.lr[:nr + 1]
     pr = backend.to_host(operators.PR_r[:nr + 1, :nr + 1]).real
-    # The centroid of the sampled B_Z uses R dR rather than dR.
-    radial = _link_magnetic_norm(
-        r_nodes,
-        r_mean - r_nodes + lr**2 / (12.0 * r_mean),
-        r_mean * lr,
-        pr * r_mean[None, :] / r_mean[:, None],
-    )
+    radial_chart = pr * r_mean[None, :] / r_mean[:, None]
     z_nodes = geometry.z_faces.Z[::nr]
     lz = geometry.lz[::nr]
-    z_offset = np.zeros_like(lz)
-    z_offset[0], z_offset[-1] = 0.5 * lz[0], -0.5 * lz[-1]
     pz = backend.to_host(operators.PZ_z[::nr, ::nr]).real
-    axial = _link_magnetic_norm(z_nodes, z_offset, lz, pz)
+    if operators.options.ghost_wall:
+        from .ghost_magnetic import ghost_link_norm
+
+        r_lower, r_upper = _box_link_bounds(r_nodes)
+        z_lower, z_upper = _box_link_bounds(z_nodes)
+        radial = ghost_link_norm(r_nodes, r_lower, r_upper, True, radial_chart)
+        axial = ghost_link_norm(z_nodes, z_lower, z_upper, False, pz)
+    else:
+        # The centroid of the sampled B_Z uses R dR rather than dR.
+        radial = _link_magnetic_norm(
+            r_nodes, r_mean - r_nodes + lr**2 / (12.0 * r_mean),
+            r_mean * lr, radial_chart,
+        )
+        z_offset = np.zeros_like(lz)
+        z_offset[0], z_offset[-1] = 0.5 * lz[0], -0.5 * lz[-1]
+        axial = _link_magnetic_norm(z_nodes, z_offset, lz, pz)
     return (
         backend.asarray(radial),
         backend.asarray(axial),
         backend.real_array(hr * geometry.R),
         hz,
     )
+
+
+def _box_link_bounds(nodes: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    boundaries = np.r_[nodes[0], 0.5 * (nodes[:-1] + nodes[1:]), nodes[-1]]
+    return boundaries[:-1], boundaries[1:]
 
 
 def magnetic_weight(
@@ -512,9 +531,14 @@ def magnetic_weight(
     br = b[:, :split_r].reshape(-1, nz + 1, nr)
     bz = b[:, split_z:].reshape(-1, nz, nr + 1)
     result[:, :split_r] = ((axial @ br) * radial_measure).reshape(-1, split_r)
-    result[:, split_r:split_z] = (
-        b[:, split_r:split_z] * operators.MB[split_r:split_z]
-    )
+    if operators.ghost_toroidal is None:
+        result[:, split_r:split_z] = b[:, split_r:split_z] * operators.MB[split_r:split_z]
+    else:
+        from .ghost_toroidal import toroidal_weight
+
+        result[:, split_r:split_z] = toroidal_weight(
+            operators.ghost_toroidal, b[:, split_r:split_z], backend
+        )
     result[:, split_z:] = (hz * (bz @ radial)).reshape(-1, (nr + 1) * nz)
     return result.reshape(values.shape)
 
@@ -704,7 +728,7 @@ def _estimate_finite_mass_storage(geometry: Geometry, K: int) -> dict[str, int]:
 
 
 def _estimate_operator_bytes(
-    geometry: Geometry, K: int, include_finite_mass: bool = True
+    geometry: Geometry, K: int, include_finite_mass: bool = True, ghost_wall: bool = False
 ) -> int:
     nc = len(geometry.cells.keys)
     nr = len(geometry.r_faces.keys)
@@ -799,12 +823,27 @@ def _estimate_operator_bytes(
         elements -= finite_mass_elements
     byte_count = _checked_product(elements, 16, "operator estimate bytes")
     if sparse_qb:
-        # At most 16 entries per row. Bound host triplets, conversion and CSR
-        # buffers together before applying the general workspace margin.
         sparse_entries = _checked_product(16, 3 * nc, "QB stencil entries")
+        sparse_rows = 3 * nc
+        if ghost_wall:
+            radial, axial = geometry.R.size, geometry.Z.size
+            walls = len(geometry.walls)
+            # Decharting fills a single poloidal line, not the whole plane.
+            sparse_entries = _checked_sum(
+                _checked_product(nc, radial + axial + 18, "ghost QB entries"),
+                _checked_product(walls, max(radial, axial) + 5, "ghost wall entries"),
+                "ghost reconstruction entries",
+            )
+            sparse_rows += 2 * walls
+            line_entries = _checked_sum(square(radial + 1), square(axial + 1), "ghost line factors")
+            byte_count = _checked_sum(
+                byte_count, _checked_product(64, line_entries, "ghost line assembly"),
+                "ghost line assembly",
+            )
+        # Bound host assembly, conversion and CSR buffers together.
         sparse_bytes = _checked_sum(
             _checked_product(96, sparse_entries, "QB assembly"),
-            _checked_product(16, 3 * nc + 1, "QB row pointers"),
+            _checked_product(16, sparse_rows + 2, "QB row pointers"),
             "QB sparse assembly",
         )
         byte_count = _checked_sum(byte_count, sparse_bytes, "operator estimate")
@@ -953,7 +992,17 @@ def _block_diagonal(blocks: list[Any], backend: Backend) -> Any:
     return result
 
 
-def _host_interpolation(geometry: Geometry) -> tuple[np.ndarray, np.ndarray]:
+def _host_interpolation(
+    geometry: Geometry, ghost_wall: bool = False
+) -> tuple[np.ndarray, np.ndarray]:
+    if ghost_wall:
+        from .ghost_material import material_face_interpolation
+
+        nr, nz = geometry.R.size, geometry.Z.size
+        return (
+            np.kron(np.eye(nz), material_face_interpolation(nr)),
+            np.kron(material_face_interpolation(nz), np.eye(nr)),
+        )
     nc = len(geometry.cells.keys)
     nr = len(geometry.r_faces.keys)
     nz = len(geometry.z_faces.keys)
@@ -1060,6 +1109,51 @@ def _build_qb(
     return backend.asarray(dense)
 
 
+def _build_ghost_reconstruction(geometry: Geometry, op: Operators, backend: Backend):
+    """Assemble the cell and wall magnetic samples from the same link closure."""
+    from scipy.sparse import block_diag, csr_matrix, eye, hstack, kron, vstack
+
+    from .ghost_reconstruction import ghost_link_reconstruction
+
+    nr, nz = geometry.R.size, geometry.Z.size
+    r = geometry.r_faces.R[:nr + 1]
+    z = geometry.z_faces.Z[::nr]
+    rm = geometry.Rbar_r[:nr + 1]
+    radial_chart = backend.to_host(op.PR_r[:nr + 1, :nr + 1]).real
+    radial_chart = radial_chart * rm[None, :] / rm[:, None]
+    axial_chart = backend.to_host(op.PZ_z[::nr, ::nr]).real
+    rc, rw = ghost_link_reconstruction(r, *_box_link_bounds(r), True, radial_chart)
+    zc, zw = ghost_link_reconstruction(z, *_box_link_bounds(z), False, axial_chart)
+    br = kron(zc, eye(nr), format="csr")
+    bz = kron(eye(nz), rc, format="csr")
+    bp = csr_matrix((op.Nc, geometry.Rbar_v.size))
+    qb = block_diag((br, bp, bz), format="csr", dtype=np.complex128)
+
+    radial_walls = kron(eye(nz), rw, format="csr")
+    axial_walls = kron(zw, eye(nr), format="csr")
+    radial_ids, axial_ids, order, trace_ids = [], [], [], []
+    for wall in geometry.walls:
+        if wall.component == "r_face":
+            _, j = geometry.r_faces.keys[wall.face]
+            order.append(len(radial_ids))
+            radial_ids.append(2 * j + int(wall.sign > 0))
+            trace_ids.append(radial_ids[-1])
+        else:
+            i, _ = geometry.z_faces.keys[wall.face]
+            order.append(-(len(axial_ids) + 1))
+            axial_ids.append(nr * int(wall.sign > 0) + i)
+            trace_ids.append(2 * nz + axial_ids[-1])
+    order = [index if index >= 0 else len(radial_ids) - index - 1 for index in order]
+    zeros_phi = lambda count: csr_matrix((count, bp.shape[1]))
+    radial_tangent = hstack((csr_matrix((len(radial_ids), br.shape[1])),
+                             zeros_phi(len(radial_ids)), radial_walls[radial_ids]))
+    axial_tangent = hstack((axial_walls[axial_ids], zeros_phi(len(axial_ids)),
+                            csr_matrix((len(axial_ids), bz.shape[1]))))
+    wall_map = vstack((radial_tangent, axial_tangent), format="csr", dtype=np.complex128)[order]
+    op.wall_toroidal_trace_indices = backend.xp.asarray(trace_ids)
+    return backend.csr(qb), backend.csr(wall_map)
+
+
 def build_operators(
     geometry: Geometry,
     K: int,
@@ -1071,15 +1165,20 @@ def build_operators(
         raise Failure("Operators", "operator mode or rank tolerance is invalid")
     if type(settings.include_finite_mass) is not bool:
         raise Failure("Operators", "include_finite_mass must be boolean")
+    if type(settings.ghost_wall) is not bool or (
+        settings.ghost_wall and (settings.include_finite_mass or geometry.lcfs_polygon is None)
+    ):
+        raise Failure("Operators", "ghost_wall requires a massless aligned box")
     backend = backend or Backend("cpu")
     _require_memory(
         _estimate_operator_bytes(
-            geometry, K, settings.include_finite_mass
+            geometry, K, settings.include_finite_mass, settings.ghost_wall
         ),
         settings.memory_cap_bytes,
         "operator_matrices",
     )
     operators, t1, t2, t3 = _make_fixed_spatial_state(geometry, backend)
+    operators.options = replace(settings)
     operators.finite_mass_available = settings.include_finite_mass
     if not settings.include_finite_mass:
         operators.finite_mass_unavailable_reason = (
@@ -1099,6 +1198,18 @@ def build_operators(
     operators.K = K
     if geometry.lcfs_polygon is not None:
         operators.box_magnetic_norm = _box_magnetic_norm(geometry, operators, backend)
+    if settings.ghost_wall:
+        from .ghost_toroidal import build_ghost_toroidal
+
+        nr_cells, nz_cells = geometry.R.size, geometry.Z.size
+        radial_vertices = slice(nr_cells + 2, 2 * nr_cells + 1)
+        axial_vertices = slice(nr_cells + 2, nz_cells * (nr_cells + 1), nr_cells + 1)
+        operators.ghost_toroidal = build_ghost_toroidal(
+            geometry.r_faces.R[:nr_cells + 1], geometry.z_faces.Z[::nr_cells],
+            backend.to_host(operators.PR_v[radial_vertices, radial_vertices]).real,
+            backend.to_host(operators.PZ_v[axial_vertices, axial_vertices]).real,
+            backend,
+        )
     nc = operators.Nc
     ne = operators.Ne
     nr = len(geometry.r_faces.keys)
@@ -1142,7 +1253,7 @@ def build_operators(
             operators.poisson_spectra.append(spectrum)
             operators.phi_factor.append(backend.factor(lphi))
 
-    i_r_host, i_z_host = _host_interpolation(geometry)
+    i_r_host, i_z_host = _host_interpolation(geometry, settings.ghost_wall)
     i_r = backend.asarray(i_r_host)
     i_z = backend.asarray(i_z_host)
     operators.I = _block_diagonal([i_r, _identity(nc, backend), i_z], backend)
@@ -1169,12 +1280,22 @@ def build_operators(
     operators.T = _select_rows(
         operators.T_full, operators.selected_wall_rows, backend
     )
-    operators.QB = _build_qb(
-        geometry,
-        (3 * nc, nb),
-        not settings.include_finite_mass and geometry.lcfs_polygon is not None,
-        backend,
-    )
+    if settings.ghost_wall:
+        from .ghost_material import material_line_derivative
+
+        operators.QB, operators.wall_magnetic_reconstruction = _build_ghost_reconstruction(
+            geometry, operators, backend
+        )
+        for name, points in (("radial", geometry.R), ("axial", geometry.Z)):
+            derivative = material_line_derivative(points.size, float(points[1] - points[0]))
+            setattr(operators, f"material_{name}_derivative", backend.real_array(derivative))
+    else:
+        operators.QB = _build_qb(
+            geometry,
+            (3 * nc, nb),
+            not settings.include_finite_mass and geometry.lcfs_polygon is not None,
+            backend,
+        )
     if settings.include_finite_mass:
         operators.Bc_full = _block_diagonal(operators.DJ, backend)
         operators.selected_constraint_rows = backend.independent_rows(

@@ -1,5 +1,8 @@
 # A0 Warp migration and electron-model work
 
+The aligned-box boundary extension has its own current implementation and
+verification scope. See [two-layer ghost closure](A0_RECTANGLE_GHOST.md).
+
 Status: active `main` implementation with bounded CPU/GPU verification,
 2026-11-05. Native reference is commit 48beca7 on `reference/a0-native`. This
 branch contains one active implementation under `src/fomhd/`; the native

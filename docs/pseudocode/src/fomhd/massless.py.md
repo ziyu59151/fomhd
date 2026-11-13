@@ -1,5 +1,8 @@
 # Massless quasineutral electron implementation pseudocode
 
+The common electron reconstruction converts the current stage's stored B
+through `core.reconstruct_magnetic` before its physical inverse transform.
+
 The branch accepts an absent `electron_inertia` as the default `0` and rejects
 explicit `1` rather than mixing finite and massless ownership.
 

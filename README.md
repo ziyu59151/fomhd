@@ -7,10 +7,11 @@
 [Synchronous GPU scaling](docs/benchmarks/a0-rk4-gpu/README.md)
 
 The default development baseline uses E/B vectors on the grid-aligned RZ
-conductor with the paired FOMHD Ampère closure and synchronous RK4. The
-next acceptance is a reproducible GPU A0 with measured capacity and a
-matched independent n_phi=1 compressional Alfvén mode. A2 passive particle
-development follows that acceptance.
+conductor with synchronous RK4. The active boundary comparison is the
+[two-layer ghost closure](docs/A0_RECTANGLE_GHOST.md), measured against the
+previous paired Ampère closure on the same axial Hall standing wave.
+Finite-current toroidal mode work follows this boundary check. The A0
+physics and measured capacity baseline precedes A2 passive particles.
 
 [Physical simulation prototype workflow](docs/RESEARCH_PROTOTYPE_WORKFLOW.md)
 records how verification, independent physical comparisons, and retained known

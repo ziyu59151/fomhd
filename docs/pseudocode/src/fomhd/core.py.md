@@ -45,6 +45,11 @@ explicit `1` selects finite-fluid combination.
    primitive is a Warp FP64 kernel.
 4. Forward transform delegates to the selected backend and preserves the
    retained mode layout.
+5. For magnetic reconstruction, apply `QB` to each mode's stored field.
+   In the ghost box `QB` carries the two poloidal transfers. Fill the
+   toroidal component from the factored dual-average reconstruction before
+   conversion to physical samples. Use the same operation on field rates.
+   A caller may supply the backend for archived reference operators.
 
 ## A0-PY-CORE-04 Reproducible time
 
@@ -62,5 +67,7 @@ explicit `1` selects finite-fluid combination.
    matrix temporary group from wall setup, projection, diagnostics, or
    the gradient adjoint. It never charges the inactive global Darwin system.
    Sparse QB resident storage consists of CSR values and index arrays.
+   The ghost rectangle also counts its sparse wall magnetic reconstruction
+   and its resident point derivative and toroidal line factors.
 3. Reject a finite-mass context given massless-only storage. All estimates
    use checked sums/products and guard allocation on both supported backends.

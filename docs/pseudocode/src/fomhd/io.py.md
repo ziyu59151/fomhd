@@ -39,6 +39,7 @@ load_case(path,overrides):
     max_phase_error_rad=0.1
   solver/backend/precision/reference constants/references strictly validated
   grid and fixed boundary strictly validated
+  rectangle_ghost_v1 selects the massless aligned-box ghost closure
   domain floors and complete budget registry strictly validated
   massless species-qualified registry keys use configured IDs
   diagnostics observations validated
@@ -183,3 +184,8 @@ The aligned-box operator fingerprint includes the two stored-chart magnetic
 norm blocks and their transverse factors. Archived initial fields and
 wall-flux arrays use the same chart. A checkpoint from the prior metric has
 a different operator identity.
+The ghost closure also fingerprints the material derivative, the toroidal
+line factors, and the tangential wall maps and index order. Ghost values are
+eliminated and never appear in saved states or checkpoint payloads. A
+checkpoint recorded under one rectangle closure cannot resume under the
+other closure.

@@ -4,7 +4,8 @@ Source: [box boundary](../../../../src/fomhd/box_boundary.py).
 Design: [D075 RZ outer box](/home/lxzeng/fomhd-design/mainline_design/implementation/A0/A0_GLOBAL_DISCRETIZATION.md#d075-grid-aligned-rectangular-outer-wall).
 
 1. `load_case` selects `fixed_outer_wall_static / rectangle_relative_v1`
-   for the massless model. `build_aligned_box` places the physical faces
+   or `fixed_outer_wall_static / rectangle_ghost_v1` for the massless model.
+   `build_aligned_box` places the physical faces
    half a spacing beyond the first and last cell centers in R and Z.
    It builds the existing full-cell topology on every center and retains a
    validated, strictly internal LCFS. The historical boundary selector
@@ -28,7 +29,11 @@ Design: [D075 RZ outer box](/home/lxzeng/fomhd-design/mainline_design/implementa
    `wall_cache.py` and checks every original row at each stage.
 4. The actual electron RHS uses the wall pressure traction. Assemble the
    magnetic trace with the prescribed normal field mean and tangential
-   values from the adjacent field DOFs. Evaluate the pressure tensor on
+   values from the adjacent field DOFs in the legacy closure or from the
+   two-ghost reconstruction at physical wall locations in the ghost closure.
+   Along the wall use the center transfer. Across the wall use the end
+   transfer on the same clipped dual means as the cell reconstruction.
+   Evaluate the pressure tensor on
    that trace, multiply by surface measure, and apply the negative weighted
    transpose of the density-weighted velocity trace. The electron
    gradient/strain stage remains the volume term. The wall normal data,
