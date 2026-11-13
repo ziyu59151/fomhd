@@ -277,7 +277,7 @@ def load_discrete_spectra(paths,context,meta,mode,frequency_hz,baseline):
 def discrete_perturb(state,context,meta,mode,amplitude,choice):
     """An exact discrete linear direction; no independent-reference substitution."""
     fields=choice['fields'];p=context.p;nc=context.op.Nc
-    bnode=(host(context.op.QB,context)@fields['B']).reshape(3,nc)
+    bnode=host(core.reconstruct_magnetic(context.op, fields['B']),context).reshape(3,nc)
     phase=np.exp(-1j*np.angle(bnode[1,np.argmax(abs(bnode[1]))]))
     norm=max(np.max(abs(bnode))/p.ref.magnetic,np.max(abs(fields['mom']))/(p.species[0].mass*p.ref.ni*p.ref.velocity),
              np.max(abs(fields['n']))/p.ref.ni,*(np.max(abs(fields[k]))/p.ref.pressure for k in ('pi','perp','parallel')))

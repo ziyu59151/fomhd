@@ -45,9 +45,32 @@ division identity failure raises `Failure`; no clipping is applied.
 
 ## A0-PY-FLUID-02: VelocityGradient and adjoint
 
+The rectangular ghost closure uses backend-owned `material_radial_derivative`
+and `material_axial_derivative` from spatial setup. Both act on physical center
+values in increasing coordinate order. The input remains `[sample][component]
+[cell]` with R as the fastest cell index. A cylindrical point gradient needs
+no extra `-x/R` term in its radial derivative. The two azimuthal connection
+terms below still apply.
+
+For each end face of either coordinate line, let `tau` be its two-center
+affine interpolation and `tau_n(x) = tau(n*x)/tau(n)`. Add
+`sign * area_per_radian/M0_near * (tau_n(x)-tau(x))` at the adjacent center.
+Evaluate its coefficients as `3*(n_next-n_near)/(4*tau(n))` multiplying
+`x_near-x_next`. Use current-stage densities. The signed area ratio is
+`±R_wall/(R_near*h_R)` radially and `±1/h_Z` axially. Both sides at each
+corner contribute to their own coordinate derivative. The transpose uses
+the same scalar on each end, scattering to its near and next centers with
+opposite signs after applying `M0` to the input. The caller still pairs the
+electron gradient with the existing density-weighted wall pressure traction.
+The shared face flux, conservative divergence and electric transfer are
+assembled separately from this material gradient.
+
 ```text
 VelocityGradient(fluid,x,context):
   require x and density/face-density extents
+  for a rectangular ghost closure, apply both material derivatives and
+    their current-stage trace lifts instead of the radial and axial
+    reconstruction below; use the same Fourier and connection terms
   for component beta in R,phi,Z:
     nx=n*x[beta]
     V_R=reshape(sample_apply(I_R,nx)/nf_R, (N,3,Nc))
@@ -63,6 +86,9 @@ VelocityGradient(fluid,x,context):
 GradientAdjoint(fluid,P,context):
   for row a:
     W[a,b]=M0*P[a,b]
+    for a rectangular ghost closure, use both material transposes and
+      their current-stage trace-lift transposes instead of the radial
+      and axial reconstruction transposes below
     radialNodes=n*I_R.H(D_R.H(W[a,R])/nf_R)
     axialNodes=n*I_Z.H(D_Z.H(W[a,Z])/nf_Z)
     azDerivative=DphiFull(W[a,phi]/Rc)

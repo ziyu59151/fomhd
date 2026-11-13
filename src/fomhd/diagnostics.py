@@ -916,12 +916,7 @@ def source_rates(source, midpoint, stage, context):
     ).reshape(context.N, 3, nc)
     magnetic_rate = _inverse(
         context,
-        _sample_apply(
-            context,
-            context.op.QB,
-            source.B,
-            2 * int(context.p.K) + 1,
-        ),
+        core.reconstruct_magnetic(context.op, source.B, context.compute),
         3 * nc,
         True,
         context.p.ref.magnetic / context.p.ref.time,

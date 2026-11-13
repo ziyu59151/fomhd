@@ -91,3 +91,30 @@ arrays, with transverse volume factors. Use this action on the rows of
 integrates magnetic energy and induction power. The cell/face transfer,
 Faraday and divergence matrices, and installed wall caps retain their
 existing representations.
+
+## Aligned-box two-layer ghost closure
+
+1. Accept the ghost option only for the massless aligned box. The physical
+   box, low cochain sampling, transforms and relative incidence are shared
+   with the legacy rectangle.
+2. Form the physical half/full link endpoints in R and Z. Build the two
+   ghost-backed magnetic norms and form Ampère by the same weighted adjoint
+   as above. Keep the installed caps separate from the evolving field.
+3. Form directional, moment-exact magnetic reconstruction rows on the two
+   ghost layers and physical links. Eliminate ghost values and compose
+   poloidal rows with the respective inverse line charts. Transfer the
+   toroidal field in two directions with factored line actions. First split
+   off the stored vacuum harmonic, undo the graph chart on the remaining
+   dual averages, and restore the harmonic. Transfer `Rbar_v * B_phi` from
+   the resulting dual means and divide by the physical evaluation radius.
+   Assemble sparse poloidal maps in existing cell/field order. Prepare
+   tangential wall rows with the same dechart and average-to-point
+   reconstruction. Each stage applies these fixed maps to
+   its own magnetic values on the selected backend.
+   Use the same harmonic-preserving dechart and its transpose around the
+   separable toroidal line norm. Apply all three components of the new norm
+   in Ampère assembly, magnetic energy and work.
+4. Form the ghost-backed material face interpolation and the matching H
+   weighted transpose. Keep the affine boundary trace. Store the two
+   point material derivatives on the selected backend for the paired
+   velocity gradient and pressure load.

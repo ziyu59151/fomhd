@@ -17,6 +17,7 @@ from scipy.interpolate import LinearNDInterpolator
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "src"), str(ROOT)]
 
+from fomhd.core import reconstruct_magnetic
 from tools.cold_hall_reference import ReferenceCase, evaluate_mode, solve_reference
 
 
@@ -873,8 +874,7 @@ def export_legacy(source: Path, destination: Path,
             int(report["K"]) * context.op.Nb:
             (int(report["K"]) + 1) * context.op.Nb
         ]
-    qb = host(context.op.QB, context)
-    bnode = (qb @ fields["B"]).reshape(3, nc)
+    bnode = reconstruct_magnetic(context.op, fields["B"]).reshape(3, nc)
     nodal_magnetic = float(np.sum(np.abs(bnode) ** 2 * host(context.op.M0, context)))
     staggered_magnetic = float(np.sum(
         np.abs(fields["B"]) ** 2 * np.asarray(context.op.MB).real
@@ -906,7 +906,7 @@ def export_legacy(source: Path, destination: Path,
             "R": host(context.geometry.cells.R, context).reshape(nc),
             "Z": host(context.geometry.cells.Z, context).reshape(nc),
             "M0": host(context.op.M0, context).real.reshape(nc),
-            "background_B_node": (qb @ background_field).reshape(3, nc),
+            "background_B_node": reconstruct_magnetic(context.op, background_field).reshape(3, nc),
             "rho": np.asarray(rho),
             "mu0": np.asarray(context.p.mu0),
             "wall_R": np.asarray([point.R for point in context.geometry.polygon]),

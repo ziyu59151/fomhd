@@ -10,6 +10,7 @@ from .core import (
     forward,
     inverse,
     mode_apply,
+    reconstruct_magnetic,
     sample_apply,
 )
 from .fields import electrostatic, longitudinal, transverse
@@ -627,7 +628,7 @@ def closed_reference(
         harmonic = xp.conj(topology[0]) / (
             xp.real(xp.asarray(context.op.MB)).astype(xp.float64)
         )
-    observed = context.compute.mv(context.op.QB, harmonic)
+    observed = reconstruct_magnetic(context.op, harmonic, context.compute)
     scale = float(xp.max(xp.abs(observed)))
     if not math.isfinite(scale) or scale <= 0:
         raise Failure("Fixture", "closed reference magnetic chain is empty")

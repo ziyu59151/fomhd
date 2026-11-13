@@ -4,6 +4,9 @@ This offline host tool reads production candidate exports. It does not rebuild
 the dense Jacobian, call an eigensolver, evolve a state, or write an input
 report/NPZ.
 
+The fallback that reconstructs a selected legacy eigenvector uses the
+shared stored-chart magnetic reconstruction.
+
 1. Resolve each input directory or NPZ with its sibling `report.json`. Hash both
    files and load only the small candidate/geometry arrays through
    `np.load(..., allow_pickle=False)`. Selectively reading an NPZ does not

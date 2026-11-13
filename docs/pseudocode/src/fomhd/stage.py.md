@@ -1,5 +1,8 @@
 # Stage implementation pseudocode
 
+Uniform reference field normalization uses the same physical magnetic
+reconstruction as stage evaluation.
+
 ## A0-PY-STAGE-00: Model dispatch
 
 `electron_inertia=0` dispatches `evaluate_stage` and `initialize` to

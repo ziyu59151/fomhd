@@ -494,7 +494,7 @@ def _operator_fingerprint(operators, backend):
             array = np.asarray(backend.to_host(matrix))
             digest.update(f"{name}:{array.shape}:".encode("ascii"))
             digest.update(np.ascontiguousarray(array).tobytes())
-    for name in (
+    fixed_matrices = (
         "I",
         "H",
         "QB",
@@ -511,7 +511,13 @@ def _operator_fingerprint(operators, backend):
         "PZ_z",
         "PR_v",
         "PZ_v",
-    ):
+    )
+    if getattr(operators, "wall_magnetic_reconstruction", None) is not None:
+        fixed_matrices += (
+            "wall_magnetic_reconstruction", "material_radial_derivative",
+            "material_axial_derivative", "wall_toroidal_trace_indices",
+        )
+    for name in fixed_matrices:
         if not finite_mass_available and name in ("Bc_full", "Bc"):
             continue
         value = getattr(operators, name)
@@ -537,6 +543,12 @@ def _operator_fingerprint(operators, backend):
             digest.update(f"{array.shape}:".encode("ascii"))
             digest.update(np.ascontiguousarray(array).tobytes())
         digest.update(struct.pack("<d", box_norm[-1]))
+    ghost_toroidal = getattr(operators, "ghost_toroidal", None)
+    if ghost_toroidal is not None:
+        for name, factor in vars(ghost_toroidal).items():
+            array = np.ascontiguousarray(backend.to_host(factor))
+            digest.update(f"ghost_toroidal:{name}:{array.shape}:".encode("ascii"))
+            digest.update(array.tobytes())
     row_groups = (
         ("selected_wall_rows",)
         if not finite_mass_available
@@ -1212,17 +1224,19 @@ def load_case(path, overrides=None, backend=None):
     _keys(boundary, {"kind", "potential", "version"}, "boundary")
     boundary_kind = _string(boundary, "kind")
     boundary_version = _string(boundary, "version")
+    rectangle = boundary_version in ("rectangle_relative_v1", "rectangle_ghost_v1")
     if _real(boundary, "potential") != 0 or (
         boundary_kind,
         boundary_version,
     ) not in {
         ("fixed_lcfs_static", "staircase_relative_v1"),
         ("fixed_outer_wall_static", "rectangle_relative_v1"),
+        ("fixed_outer_wall_static", "rectangle_ghost_v1"),
     }:
         raise ValueError("unsupported boundary")
 
-    if boundary_version == "rectangle_relative_v1" and inertia != 0:
-        raise ValueError("rectangle_relative_v1 requires massless electrons")
+    if rectangle and inertia != 0:
+        raise ValueError(f"{boundary_version} requires massless electrons")
 
     grid = document["grid"]
     _keys(grid, {"R0", "Z0", "hR", "hZ", "NR", "NZ", "K", "Nphi"}, "grid")
@@ -1440,7 +1454,7 @@ def load_case(path, overrides=None, backend=None):
     from . import operators as operators_module
 
     geometry_options = {"memory_cap_bytes": memory, "grid_rtol": 1e-12}
-    if boundary_version == "rectangle_relative_v1":
+    if rectangle:
         geometry = geometry_module.build_aligned_box(
             R, Z, polygon, geometry_options
         )
@@ -1461,18 +1475,19 @@ def load_case(path, overrides=None, backend=None):
             "rank_rtol": rank_rtol,
             "memory_cap_bytes": memory,
             "include_finite_mass": parameters.electron_inertia != 0,
+            "ghost_wall": boundary_version == "rectangle_ghost_v1",
         },
         backend,
     )
     geometry_identity = (
         boundary_version
-        if boundary_version == "rectangle_relative_v1"
+        if rectangle
         else "half_open_ray_certified_v2"
     )
     geometry_hash = _sha256_bytes(
         (input_hashes["geometry"] + geometry_identity).encode()
     )
-    if boundary_version == "rectangle_relative_v1":
+    if rectangle:
         from .box_boundary import install_normal_flux
 
         initial_arrays = _initial_arrays(initial_path, limits, rectangle=True)

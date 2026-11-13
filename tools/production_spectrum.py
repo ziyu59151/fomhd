@@ -105,13 +105,12 @@ def compute(kind,nodes,K,mode,output,eq_path=None,epsilon=1e-5,memory_limit_byte
     rho=context.p.species[0].mass*context.p.ref.ni
     b0=np.asarray(baseline.BN).reshape(5,3,nc).real.mean(axis=0)
     bhat=b0/np.linalg.norm(b0,axis=0)
-    qb=host(context.op.QB,context)
     candidate_fields_by_index={}
     candidates=[]
     for i,value in enumerate(values):
         if value.imag<=1e-5/context.p.ref.time or abs(value.real)>.1*value.imag:continue
         fields=direction(vectors[:,i],context,V,B)
-        bnode=(qb@fields['B']).reshape(3,nc)
+        bnode=core.reconstruct_magnetic(context.op, fields['B']).reshape(3,nc)
         parallel=float(np.sum(abs(np.sum(bnode*bhat,axis=0))**2*context.op.M0))
         total=float(np.sum(abs(bnode)**2*context.op.M0))
         mb=float(np.sum(abs(fields['B'])**2*weights)/context.p.mu0)
@@ -124,7 +123,7 @@ def compute(kind,nodes,K,mode,output,eq_path=None,epsilon=1e-5,memory_limit_byte
                                    magnetic_transfer_ratio=nodal_magnetic/max(staggered_magnetic,1e-300),
                                    MB_magnetic_norm=mb,M0_ion_kinetic_norm=mv))
             candidate_fields_by_index[i]=dict(velocity=fields['mom'].reshape(3,nc)/rho,
-                                              B_node=(qb@fields['B']).reshape(3,nc),
+                                              B_node=bnode,
                                               density=fields['n'])
     candidates.sort(key=lambda c:c['frequency_hz'])
     candidate_fields=[candidate_fields_by_index[item['index']] for item in candidates]

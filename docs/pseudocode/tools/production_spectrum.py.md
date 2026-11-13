@@ -30,7 +30,8 @@ Hall reference. It neither replaces the evolution stage nor supplies a source.
    elapsed time and process maximum RSS. Pass the requested positive whole-GiB
    memory cap to the ordinary context builder as `memory_limit_bytes`; the
    default remains 24 GiB and does not alter the numerical problem.
-7. During the existing candidate classification loop, retain each candidate's
+7. During the existing candidate classification loop, obtain the cell magnetic
+   field through the shared stored-chart reconstruction. Retain each candidate's
    physical, unencoded linear eigenvector amplitude. Export eig indices,
    frequencies, cell-center velocity `[candidate,3,cell]`, projected-node
    magnetic field `[candidate,3,cell]`, density, cell `R/Z`, cell measure
